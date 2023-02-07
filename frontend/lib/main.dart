@@ -1,3 +1,4 @@
+import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,8 +10,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Container(),
+    return const MaterialApp(
+      // home: BingoDetail(),
+      home: BingoForm(),
     );
   }
 }
