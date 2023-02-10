@@ -1,5 +1,5 @@
 import 'package:bin_got/pages/bingo_form_page.dart';
-import 'package:bin_got/widgets/bingo_widget.dart';
+import 'package:bin_got/widgets/bingo_board.dart';
 import 'package:flutter/material.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 
@@ -19,18 +19,21 @@ class BingoDetail extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        title: const Text(
-          'appBar',
-          style: TextStyle(color: Colors.black),
+        leading: IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.arrow_back_rounded),
+          iconSize: 30,
         ),
         actions: [
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.share),
+            iconSize: 30,
           ),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.save),
+            iconSize: 30,
           ),
         ],
       ),
@@ -70,17 +73,7 @@ class BingoDetail extends StatelessWidget {
               )
             ],
           ),
-          Column(
-            children: [
-              for (int i = 0; i < 3; i += 1)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (int i = 0; i < 3; i += 1) const EachBingo(),
-                  ],
-                )
-            ],
-          ),
+          const BingoBoard(),
           const SizedBox(
             height: 30,
           ),
@@ -90,10 +83,11 @@ class BingoDetail extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: const bottomBar(),
+      bottomNavigationBar: const BottomBar(),
     );
   }
 }
+
 
 // class TempCol extends StatelessWidget {
 //   const TempCol({

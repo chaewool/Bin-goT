@@ -1,9 +1,13 @@
 class BingoDetailModel {
-  final String background;
-  final int colorText, colorLine, lineStyle, font, achieve;
+  final int background, lineStyle, font, achieve;
+  final String colorText, colorLine;
   final bool isMine;
   final List items;
   // stickers;
+
+  // 아래 부분 items의 원소
+  // int itemId, content, checkGoal, checkCnt;
+  // bool check, finished;
 
   BingoDetailModel.fromJson(Map<dynamic, dynamic> json)
       : background = json['background'],

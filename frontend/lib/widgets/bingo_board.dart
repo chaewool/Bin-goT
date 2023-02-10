@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 
-// class EditIcon extends StatelessWidget {
-//   const EditIcon({super.key});
+class BingoBoard extends StatelessWidget {
+  const BingoBoard({
+    super.key,
+  });
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(onTap: () {
-//       Navigator.push(
-//         context,
-//         MaterialPageRoute(
-//           builder: (context) => const BingoForm(),
-//         ),
-//       );
-//     });
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return RepaintBoundary(
+      child: Column(
+        children: [
+          for (int i = 0; i < 3; i += 1)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (int i = 0; i < 3; i += 1) const EachBingo(),
+              ],
+            )
+        ],
+      ),
+    );
+  }
+}
 
 class EachBingo extends StatelessWidget {
   const EachBingo({

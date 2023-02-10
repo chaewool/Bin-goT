@@ -13,7 +13,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       home: const BingoDetail(),
       theme: ThemeData(
-        fontFamily: 'Ttangs',
+        fontFamily: 'RIDIBatang',
       ),
       // home: BingoForm(),
     );
