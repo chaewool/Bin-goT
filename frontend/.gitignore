@@ -46,3 +46,4 @@ app.*.map.json
 # private information
 /lib/providers/api_list.dart
 /lib/widgets/tab_bar_examples.dart
+/lib/utilities/image_icon.dart

@@ -1,4 +1,7 @@
+import 'package:bin_got/pages/my_page.dart';
+import 'package:bin_got/utilities/image_icon.dart';
 import 'package:bin_got/widgets/list.dart';
+import 'package:bin_got/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 
 class Main extends StatefulWidget {
@@ -28,38 +31,28 @@ class _MainState extends State<Main> {
         backgroundColor: Colors.white,
         leading: Padding(
           padding: const EdgeInsets.all(6),
-          child: Image.asset(
-            'assets/logos/bin_got_logo_0.5x.png',
-            fit: BoxFit.contain,
-          ),
+          child: halfLogo,
         ),
         actions: [
+          IconButton(onPressed: changeSearchMode, icon: searchIcon),
           IconButton(
-            onPressed: changeSearchMode,
-            icon: const Icon(
-              Icons.search_rounded,
-              color: Colors.black,
-              size: 30,
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.person,
-              color: Colors.black,
-              size: 30,
-            ),
-          )
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const MyPage()));
+              },
+              icon: myPageIcon)
         ],
       ),
-      body: Container(
-        decoration: const BoxDecoration(color: Color(0xFFF4FCF9)),
-        child: Column(
-          children: [
-            // const SearchBar(),
-            const SizedBox(height: 15),
-            for (int i = 0; i < 7; i += 1) const GroupList(),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: const BoxDecoration(color: Color(0xFFF4FCF9)),
+          child: Column(
+            children: [
+              isSearchMode ? const SearchBar() : const SizedBox(),
+              const SizedBox(height: 15),
+              for (int i = 0; i < 10; i += 1) const GroupList(),
+            ],
+          ),
         ),
       ),
     );
