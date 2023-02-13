@@ -1,5 +1,6 @@
 import 'package:bin_got/pages/my_page.dart';
-import 'package:bin_got/utilities/image_icon.dart';
+import 'package:bin_got/utilities/style.dart';
+import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
@@ -23,34 +24,31 @@ class _MainState extends State<Main> {
     });
   }
 
+  void toMyPage() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const MyPage()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: Padding(
-          padding: const EdgeInsets.all(6),
-          child: halfLogo,
-        ),
-        actions: [
-          IconButton(onPressed: changeSearchMode, icon: searchIcon),
-          IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const MyPage()));
-              },
-              icon: myPageIcon)
-        ],
+      appBar: topBar(
+        context: context,
+        isMainPage: true,
+        methodFunc1: changeSearchMode,
+        methodFunc2: toMyPage,
       ),
       body: SingleChildScrollView(
         child: Container(
-          decoration: const BoxDecoration(color: Color(0xFFF4FCF9)),
+          decoration: const BoxDecoration(color: backgroundColor),
           child: Column(
             children: [
               isSearchMode ? const SearchBar() : const SizedBox(),
               const SizedBox(height: 15),
-              for (int i = 0; i < 10; i += 1) const GroupList(),
+              for (int i = 0; i < 10; i += 1)
+                const GroupList(
+                  isSearchMode: false,
+                ),
             ],
           ),
         ),

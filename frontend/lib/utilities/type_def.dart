@@ -1,0 +1,1 @@
+typedef ReturnVoid = void Function();

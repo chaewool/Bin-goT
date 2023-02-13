@@ -1,5 +1,8 @@
+import 'package:bin_got/pages/group_form_page.dart';
+import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/search_bar.dart';
+import 'package:bin_got/widgets/select_box.dart';
 import 'package:flutter/material.dart';
 
 class SearchGroup extends StatelessWidget {
@@ -7,16 +10,33 @@ class SearchGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const List<String> dateFilter = <String>['시작일 ▲', '시작일 ▼'];
+    void toGroupForm() {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const GroupForm()));
+    }
+
     return Scaffold(
-      // appBar: topBar(context),
+      appBar:
+          topBar(context: context, isMainPage: false, methodFunc1: toGroupForm),
       body: SingleChildScrollView(
         child: Column(children: [
           const SearchBar(),
-          const SizedBox(
-            height: 15,
-            child: Text('여기에 필터, 정렬'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: const [
+                SelectBox(
+                  selectList: dateFilter,
+                ),
+              ],
+            ),
           ),
-          for (int i = 0; i < 10; i += 1) const GroupList(),
+          for (int i = 0; i < 10; i += 1)
+            const GroupList(
+              isSearchMode: true,
+            ),
         ]),
       ),
     );

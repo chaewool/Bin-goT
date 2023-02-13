@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomCheckBox extends StatefulWidget {
-  const CustomCheckBox({super.key});
+  final String label;
+  const CustomCheckBox({super.key, required this.label});
 
   @override
   State<CustomCheckBox> createState() => _CustomCheckBox();
@@ -38,7 +39,7 @@ class _CustomCheckBox extends State<CustomCheckBox> {
             onChanged: changeChecked),
         GestureDetector(
           onTap: () {},
-          child: const Text('공개'),
+          child: Text(widget.label),
         )
       ],
     );

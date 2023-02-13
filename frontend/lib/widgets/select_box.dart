@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
 
-const List<String> period = <String>[
-  '기간을 선택해주세요',
-  '하루 ~ 한 달',
-  '한 달 ~ 세 달',
-  '세 달 ~ 여섯 달',
-  '여섯 달 ~ 아홉 달',
-  '아홉 달 ~ 1년'
-];
+// const List<String> period = <String>[
+//   '기간을 선택해주세요',
+//   '하루 ~ 한 달',
+//   '한 달 ~ 세 달',
+//   '세 달 ~ 여섯 달',
+//   '여섯 달 ~ 아홉 달',
+//   '아홉 달 ~ 1년'
+// ];
 const List<String> sort = <String>['모집 중', '전체'];
-
-const List<String> dateFilter = <String>['시작일 ▲', '시작일 ▼'];
 
 const List<String> publicFilter = <String>['공개', '비공개', '전체'];
 
 class SelectBox extends StatefulWidget {
-  const SelectBox({super.key});
+  final List<String> selectList;
+  const SelectBox({super.key, required this.selectList});
 
   @override
   State<SelectBox> createState() => _SelectBox();
 }
 
 class _SelectBox extends State<SelectBox> {
-  String dropdownValue = period.first;
+  late String dropdownValue;
+  @override
+  void initState() {
+    super.initState();
+    dropdownValue = widget.selectList.first;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +45,7 @@ class _SelectBox extends State<SelectBox> {
           dropdownValue = value!;
         });
       },
-      items: period.map<DropdownMenuItem<String>>((String value) {
+      items: widget.selectList.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),

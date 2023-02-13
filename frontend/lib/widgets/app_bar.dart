@@ -1,10 +1,15 @@
 import 'package:bin_got/pages/my_page.dart';
 import 'package:bin_got/utilities/image_icon.dart';
+import 'package:bin_got/utilities/type_def.dart';
 import 'package:flutter/material.dart';
 
 // 재사용 가능하게 수정
 //
-AppBar topBar(BuildContext context) {
+AppBar topBar(
+    {required BuildContext context,
+    required bool isMainPage,
+    required ReturnVoid methodFunc1,
+    ReturnVoid? methodFunc2}) {
   return AppBar(
     elevation: 0,
     backgroundColor: Colors.white,
@@ -13,13 +18,12 @@ AppBar topBar(BuildContext context) {
       child: halfLogo,
     ),
     actions: [
-      IconButton(onPressed: () {}, icon: searchIcon),
-      IconButton(
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const MyPage()));
-          },
-          icon: myPageIcon)
+      isMainPage
+          ? IconButton(onPressed: methodFunc1, icon: searchIcon)
+          : const SizedBox(),
+      isMainPage
+          ? IconButton(onPressed: methodFunc2, icon: myPageIcon)
+          : IconButton(onPressed: methodFunc1, icon: createGroup)
     ],
   );
 }
