@@ -1,4 +1,3 @@
-import 'package:bin_got/pages/my_page.dart';
 import 'package:bin_got/utilities/image_icon.dart';
 import 'package:bin_got/utilities/type_def.dart';
 import 'package:flutter/material.dart';

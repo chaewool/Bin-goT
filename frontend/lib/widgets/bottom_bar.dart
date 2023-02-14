@@ -12,24 +12,43 @@ class BottomBar extends StatelessWidget {
         showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              size: 40,
-            ),
+            icon: Icon(Icons.home, size: 40),
             label: 'home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-              size: 40,
-            ),
+            icon: Icon(Icons.person, size: 40),
             label: 'myPage',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.chat,
-              size: 40,
-            ),
+            icon: Icon(Icons.chat, size: 40),
+            label: 'groupChat',
+          ),
+        ]);
+  }
+}
+
+class FormBottomBar extends StatelessWidget {
+  const FormBottomBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // bool isFirstPage = true;
+    return BottomNavigationBar(
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, size: 40),
+            label: 'home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, size: 40),
+            label: 'myPage',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat, size: 40),
             label: 'groupChat',
           ),
         ]);

@@ -7,6 +7,7 @@ class BingoTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: const BoxDecoration(),
       child: ContainedTabBarView(
         tabs: const [
           Tab(
@@ -40,7 +41,7 @@ class BingoTabBar extends StatelessWidget {
           Container(color: Colors.amber),
           Container(color: Colors.black),
         ],
-        onChange: (index) => print(index),
+        onChange: (index) => {},
       ),
     );
   }

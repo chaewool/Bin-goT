@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/type_def.dart';
 import 'package:flutter/material.dart';
 
 // const List<String> period = <String>[
@@ -8,12 +9,12 @@ import 'package:flutter/material.dart';
 //   '여섯 달 ~ 아홉 달',
 //   '아홉 달 ~ 1년'
 // ];
-const List<String> sort = <String>['모집 중', '전체'];
+const StringList sort = <String>['모집 중', '전체'];
 
-const List<String> publicFilter = <String>['공개', '비공개', '전체'];
+const StringList publicFilter = <String>['공개', '비공개', '전체'];
 
 class SelectBox extends StatefulWidget {
-  final List<String> selectList;
+  final StringList selectList;
   const SelectBox({super.key, required this.selectList});
 
   @override

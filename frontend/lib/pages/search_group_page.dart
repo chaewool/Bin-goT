@@ -12,8 +12,8 @@ class SearchGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     const List<String> dateFilter = <String>['시작일 ▲', '시작일 ▼'];
     void toGroupForm() {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const GroupForm()));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const GroupFirstForm()));
     }
 
     return Scaffold(
