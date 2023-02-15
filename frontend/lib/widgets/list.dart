@@ -1,5 +1,5 @@
-import 'package:bin_got/pages/group_main.dart';
-import 'package:bin_got/utilities/style.dart';
+import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/utilities/style_utils.dart';
 import 'package:flutter/material.dart';
 
 class GroupList extends StatelessWidget {

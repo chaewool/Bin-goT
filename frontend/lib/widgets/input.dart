@@ -1,9 +1,11 @@
+import 'package:bin_got/widgets/date_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class InputText extends StatelessWidget {
   final String explain;
-  const InputText({super.key, required this.explain});
+  final bool needMore;
+  const InputText({super.key, required this.explain, this.needMore = false});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +17,7 @@ class InputText extends StatelessWidget {
           hintText: explain,
         ),
         style: const TextStyle(fontSize: 20),
+        maxLines: needMore ? 7 : 1,
       ),
     );
   }
@@ -47,13 +50,17 @@ class InputDate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        border: const OutlineInputBorder(),
-        hintText: explain,
-      ),
-      style: const TextStyle(fontSize: 20),
-      keyboardType: TextInputType.datetime,
-    );
+    return GestureDetector(
+        child: TextField(
+          enabled: false,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            hintText: explain,
+          ),
+          style: const TextStyle(fontSize: 20),
+          keyboardType: TextInputType.datetime,
+        ),
+        onTap: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const DatePicker())));
   }
 }

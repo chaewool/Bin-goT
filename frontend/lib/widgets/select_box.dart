@@ -1,4 +1,4 @@
-import 'package:bin_got/utilities/type_def.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
 // const List<String> period = <String>[

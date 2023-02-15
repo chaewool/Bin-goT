@@ -1,10 +1,11 @@
 import 'package:bin_got/pages/my_page.dart';
-import 'package:bin_got/utilities/style.dart';
+import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 
+//* 메인 페이지
 class Main extends StatefulWidget {
   const Main({super.key});
 
@@ -46,9 +47,7 @@ class _MainState extends State<Main> {
               isSearchMode ? const SearchBar() : const SizedBox(),
               const SizedBox(height: 15),
               for (int i = 0; i < 10; i += 1)
-                const GroupList(
-                  isSearchMode: false,
-                ),
+                const GroupList(isSearchMode: false),
             ],
           ),
         ),
