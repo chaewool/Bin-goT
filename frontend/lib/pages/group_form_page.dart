@@ -20,14 +20,17 @@ class GroupFirstForm extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
             child: Column(
               children: const [
-                InputText(explain: '그룹명을 입력하세요'),
-                InputNumber(explain: '참여인원'),
+                CustomInput(explain: '그룹명을 입력하세요'),
+                CustomInput(
+                  explain: '참여인원',
+                  onlyNum: true,
+                ),
                 InputDate(explain: '시작일'),
                 InputDate(explain: '종료일'),
-                SelectBox(selectList: bingoSize),
-                SelectBox(selectList: joinMethod),
+                SelectBox(selectList: bingoSize, width: 60, height: 50),
+                SelectBox(selectList: joinMethod, width: 150, height: 50),
                 CustomCheckBox(label: '공개 여부'),
-                InputText(explain: '그룹 가입 시 비밀번호'),
+                CustomInput(explain: '그룹 가입 시 비밀번호'),
               ],
             ),
           ),
@@ -48,9 +51,13 @@ class GroupSecondForm extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: const [
-              InputText(explain: '그룹 설명을 입력하세요', needMore: true),
-              InputText(explain: '그룹 규칙을 입력하세요', needMore: true),
-              InputText(explain: '그룹 이미지를 선택하세요', needMore: true),
+              CustomInput(explain: '그룹 설명을 입력하세요', needMore: true),
+              CustomInput(explain: '그룹 규칙을 입력하세요', needMore: true),
+              CustomInput(
+                explain: '그룹 이미지를 선택하세요',
+                needMore: true,
+                enabled: false,
+              ),
             ],
           ),
         ),

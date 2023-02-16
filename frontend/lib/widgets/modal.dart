@@ -1,5 +1,5 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:bin_got/widgets/date_picker.dart';
+import 'package:flutter/material.dart';
 
 class BingoModal extends StatelessWidget {
   const BingoModal({super.key});
@@ -7,5 +7,14 @@ class BingoModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
+  }
+}
+
+class DateModal extends StatelessWidget {
+  const DateModal({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Dialog(child: DatePicker());
   }
 }

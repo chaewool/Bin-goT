@@ -45,16 +45,9 @@ class BingoDetail extends StatelessWidget {
             'title',
             style: TextStyle(fontSize: 40),
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          const Text(
-            'nickname',
-            style: TextStyle(fontSize: 20),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
+          const Text('nickname', style: TextStyle(fontSize: 20)),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -74,13 +67,8 @@ class BingoDetail extends StatelessWidget {
             ],
           ),
           const BingoBoard(),
-          const SizedBox(
-            height: 30,
-          ),
-          const Text(
-            '달성률 : 100%',
-            style: TextStyle(fontSize: 30),
-          ),
+          const SizedBox(height: 30),
+          const Text('달성률 : 100%', style: TextStyle(fontSize: 30)),
         ],
       ),
       bottomNavigationBar: const BottomBar(),
