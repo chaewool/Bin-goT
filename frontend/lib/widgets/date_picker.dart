@@ -3,6 +3,36 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:bin_got/utilities/calendar_utils.dart';
 
+// class DatePicker extends StatefulWidget {
+//   const DatePicker({super.key});
+
+//   @override
+//   State<DatePicker> createState() => _DatePickerState();
+// }
+
+// class _DatePickerState extends State<DatePicker> {
+//   @override
+//   Widget build(BuildContext context) {
+//     String _selectedDate = '';
+//     Future selectDate(context) async {
+//       final DateTimeRange? selected = await showDateRangePicker(
+//           context: context,
+//           firstDate: DateTime(2023),
+//           lastDate: DateTime(2024),
+//           currentDate: DateTime.now());
+//       if (selected != null) {
+//         print(selected);
+//         setState(() {
+//           _selectedDate = selected.toString();
+//         });
+//       }
+//     }
+//     return Dialog(
+
+//     );
+//   }
+// }
+
 class DatePicker extends StatefulWidget {
   const DatePicker({super.key});
 

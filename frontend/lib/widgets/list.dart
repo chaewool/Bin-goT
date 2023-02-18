@@ -1,5 +1,6 @@
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class GroupList extends StatelessWidget {
@@ -38,14 +39,15 @@ class GroupList extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text('미라클 모닝', style: nineteenText),
-                      Text('D-day', style: nineteenText),
+                      CustomText(
+                          content: '미라클 모닝', fontSize: FontSize.textSize),
+                      CustomText(content: 'D-day', fontSize: FontSize.textSize),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: const [
-                      Text(count, style: nineteenText),
+                      CustomText(content: count, fontSize: FontSize.textSize),
                     ],
                   )
                 ],

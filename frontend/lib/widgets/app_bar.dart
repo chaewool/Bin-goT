@@ -22,7 +22,7 @@ AppBar topBar(
           : const SizedBox(),
       isMainPage
           ? IconButton(onPressed: methodFunc2, icon: myPageIcon)
-          : IconButton(onPressed: methodFunc1, icon: createGroup)
+          : IconButton(onPressed: methodFunc1, icon: createGroupIcon)
     ],
   );
 }
