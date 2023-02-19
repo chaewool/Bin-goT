@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,macos,python,venv,django
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,python,venv,django
 
+### settings ###
+bingot_settings.py
+
 ### Django ###
 *.log
 *.pot
