@@ -33,14 +33,20 @@ class _GroupFirstFormState extends State<GroupFirstForm> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
             child: Column(
-              children: const [
-                CustomInput(explain: '그룹명을 입력하세요'),
-                CustomInput(explain: '참여인원', onlyNum: true),
-                InputDate(explain: '기간'),
-                SelectBox(selectList: bingoSize, width: 60, height: 50),
-                SelectBox(selectList: joinMethod, width: 150, height: 50),
-                CustomCheckBox(label: '공개 여부'),
-                CustomInput(explain: '그룹 가입 시 비밀번호'),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CustomInput(explain: '그룹명을 입력하세요'),
+                const CustomInput(explain: '참여인원', onlyNum: true),
+                const InputDate(explain: '기간'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: const [
+                    SelectBox(selectList: bingoSize, width: 60, height: 50),
+                    SelectBox(selectList: joinMethod, width: 150, height: 50),
+                  ],
+                ),
+                const CustomCheckBox(label: '공개 여부'),
+                const CustomInput(explain: '그룹 가입 시 비밀번호'),
               ],
             ),
           ),
