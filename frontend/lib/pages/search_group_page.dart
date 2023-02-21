@@ -27,7 +27,7 @@ class SearchGroup extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: const [
-                SelectBox(selectList: dateFilter, width: 50, height: 50),
+                SelectBox(selectList: dateFilter, width: 100, height: 50),
               ],
             ),
           ),

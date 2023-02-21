@@ -42,8 +42,8 @@ class ToGroupMainButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const GroupMain()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => GroupMain()));
         },
         child: Text(buttonText));
   }

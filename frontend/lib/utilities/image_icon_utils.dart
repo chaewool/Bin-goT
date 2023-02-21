@@ -5,15 +5,21 @@ import 'package:flutter/material.dart';
 var halfLogo = Image.asset('assets/logos/bin_got_logo_0.5x.png');
 
 // icon
-var searchIcon = const Icon(Icons.search_rounded, color: blackColor, size: 30);
+const searchIcon = Icon(Icons.search_rounded, color: blackColor, size: 30);
 
-var myPageIcon = const Icon(Icons.person, color: blackColor, size: 30);
+const myPageIcon = Icon(Icons.person, color: blackColor, size: 30);
 
-var createGroupIcon =
-    const Icon(Icons.add_circle_outline_outlined, color: blackColor, size: 30);
+const createGroupIcon =
+    Icon(Icons.add_circle_outline_outlined, color: blackColor, size: 30);
 
-var shareIcon = const Icon(Icons.share, color: blackColor, size: 30);
+const shareIcon = Icon(Icons.share, color: blackColor, size: 30);
 
-var copyIcon = const Icon(Icons.copy, color: blackColor, size: 30);
+const copyIcon = Icon(Icons.copy, color: blackColor, size: 30);
 
-var addIcon = const Icon(Icons.add, color: blackColor, size: 30);
+const addIcon = Icon(Icons.add, color: blackColor, size: 30);
+
+const backIcon = Icon(Icons.arrow_back_rounded, color: blackColor, size: 30);
+
+const exitIcon = Icon(Icons.output_rounded, color: blackColor, size: 30);
+
+const settingsIcon = Icon(Icons.settings, color: blackColor, size: 30);

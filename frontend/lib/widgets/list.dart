@@ -16,7 +16,7 @@ class GroupList extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const GroupMain()),
+            MaterialPageRoute(builder: (context) => GroupMain()),
           );
         },
         child: Container(
@@ -53,6 +53,61 @@ class GroupList extends StatelessWidget {
                 ],
               ),
             )),
+      ),
+    );
+  }
+}
+
+class RankList extends StatelessWidget {
+  int rank, achievement;
+  String nickname;
+  RankList(
+      {super.key,
+      required this.rank,
+      required this.nickname,
+      required this.achievement});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      child: Container(
+        height: 70,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: const [
+              BoxShadow(
+                  color: greyColor,
+                  blurRadius: 3,
+                  spreadRadius: 1,
+                  offset: Offset(3, 3))
+            ],
+            color: whiteColor),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    // borderRadius: BorderRadius.circular(100),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: greyColor)),
+                child:
+                    CustomText(content: '$rank', fontSize: FontSize.largeSize),
+              ),
+              const SizedBox(
+                width: 30,
+              ),
+              CustomText(
+                  content: '$nickname / $achievement%',
+                  fontSize: FontSize.textSize),
+            ],
+          ),
+        ),
       ),
     );
   }

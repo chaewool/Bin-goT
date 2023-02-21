@@ -32,7 +32,7 @@ class SearchBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const SelectBox(selectList: period, width: 50, height: 50),
+              const SelectBox(selectList: period, width: 150, height: 50),
               CustomButton(
                 methodFunc: () {
                   Navigator.push(
