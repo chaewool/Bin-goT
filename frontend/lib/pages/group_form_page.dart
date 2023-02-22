@@ -136,8 +136,9 @@ class GroupCreateCompleted extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(onPressed: shareToFriends, icon: shareIcon),
-              IconButton(onPressed: copyText, icon: copyIcon),
+              const CustomIconButton(
+                  onPressed: shareToFriends, icon: shareIcon),
+              CustomIconButton(onPressed: copyText, icon: copyIcon),
             ],
           ),
           const ToGroupMainButton(buttonText: '닫기')

@@ -1,6 +1,9 @@
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/pages/main_page.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
+import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -50,15 +53,48 @@ class ToGroupMainButton extends StatelessWidget {
 }
 
 class ExitButton extends StatelessWidget {
+  final bool isIconType;
+  final IconData icon;
   final String buttonText;
-  const ExitButton({super.key, this.buttonText = '닫기'});
+  const ExitButton(
+      {super.key,
+      required this.isIconType,
+      this.icon = backIcon,
+      this.buttonText = '닫기'});
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: Text(buttonText));
+    void toBack() {
+      Navigator.pop(context);
+    }
+
+    return isIconType
+        ? IconButton(onPressed: toBack, icon: CustomIcon(icon: icon))
+        : OutlinedButton(onPressed: toBack, child: Text(buttonText));
+  }
+}
+
+class CustomIconButton extends StatelessWidget {
+  final IconData icon;
+  final ReturnVoid onPressed;
+  final Color color;
+  final double size;
+  const CustomIconButton(
+      {super.key,
+      required this.onPressed,
+      required this.icon,
+      this.size = 30,
+      this.color = blackColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: CustomIcon(icon: icon),
+      color: color,
+      iconSize: size,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+    );
   }
 }

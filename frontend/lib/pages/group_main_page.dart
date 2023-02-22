@@ -9,7 +9,7 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class GroupMain extends StatelessWidget {
-  String groupName, start, end;
+  String groupName, start, end, explain, rule;
   int cnt, headcount;
   GroupMain({
     super.key,
@@ -23,6 +23,8 @@ class GroupMain extends StatelessWidget {
     this.end = '2023년 12월 31일',
     this.cnt = 5,
     this.headcount = 10,
+    this.explain = '그룹 설명이 들어갑니다',
+    this.rule = '그룹 규칙이 들어갑니다',
   });
 
   @override
@@ -45,7 +47,10 @@ class GroupMain extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: topBarWithBack(),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(50),
+        child: GroupAppBar(),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
@@ -64,8 +69,8 @@ class GroupMain extends StatelessWidget {
                 ],
               ),
               CustomButton(methodFunc: toCreateBingo, buttonText: '내 빙고 만들기'),
-              const ShowContentBox(contentTitle: '설명', content: '그룹 설명이 들어갑니다'),
-              const ShowContentBox(contentTitle: '규칙', content: '그룹 규칙이 들어갑니다'),
+              ShowContentBox(contentTitle: '설명', content: explain),
+              ShowContentBox(contentTitle: '규칙', content: rule),
               Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: Column(
@@ -119,7 +124,7 @@ class GroupRank extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: topBarWithBack(onlyBack: true),
+      appBar: const GroupAppBar(onlyBack: true),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
         child: SingleChildScrollView(
@@ -140,6 +145,18 @@ class GroupRank extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: const BottomBar(),
+    );
+  }
+}
+
+class GroupAdmin extends StatelessWidget {
+  const GroupAdmin({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      appBar: AdminAppBar(),
+      bottomNavigationBar: BottomBar(),
     );
   }
 }

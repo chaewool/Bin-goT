@@ -64,14 +64,14 @@ class ImageModal extends StatelessWidget {
               width: 100,
               height: 100,
               child: selectImage == null
-                  ? IconButton(
+                  ? CustomIconButton(
                       icon: addIcon,
                       onPressed: imagePicker,
                     )
                   : null,
             ),
           ),
-          const ExitButton()
+          const ExitButton(isIconType: false)
         ],
       ),
     );
