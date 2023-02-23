@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -74,6 +75,33 @@ class ImageModal extends StatelessWidget {
           const ExitButton(isIconType: false)
         ],
       ),
+    );
+  }
+}
+
+class CustomAlert extends StatelessWidget {
+  final String title, content;
+  final ReturnVoid onPressed;
+  const CustomAlert({
+    super.key,
+    required this.title,
+    required this.content,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    void closeAlert() {
+      Navigator.pop(context);
+    }
+
+    return AlertDialog(
+      title: CustomText(content: title, fontSize: FontSize.textSize),
+      content: CustomText(content: content, fontSize: FontSize.textSize),
+      actions: [
+        CustomButton(methodFunc: onPressed, buttonText: '확인'),
+        CustomButton(methodFunc: closeAlert, buttonText: '취소'),
+      ],
     );
   }
 }

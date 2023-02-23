@@ -1,5 +1,6 @@
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/pages/main_page.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -45,8 +46,8 @@ class ToGroupMainButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => GroupMain()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const GroupMain()));
         },
         child: Text(buttonText));
   }
@@ -64,13 +65,12 @@ class ExitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void toBack() {
-      Navigator.pop(context);
-    }
-
     return isIconType
-        ? IconButton(onPressed: toBack, icon: CustomIcon(icon: icon))
-        : OutlinedButton(onPressed: toBack, child: Text(buttonText));
+        ? IconButton(
+            onPressed: () => toBack(context: context),
+            icon: CustomIcon(icon: icon))
+        : OutlinedButton(
+            onPressed: () => toBack(context: context), child: Text(buttonText));
   }
 }
 

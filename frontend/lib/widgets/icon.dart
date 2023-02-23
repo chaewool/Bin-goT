@@ -1,4 +1,6 @@
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/button.dart';
 import 'package:flutter/material.dart';
 
 class CustomIcon extends StatelessWidget {
@@ -11,5 +13,23 @@ class CustomIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Icon(icon, color: color, size: size);
+  }
+}
+
+class IconInRow extends StatelessWidget {
+  final IconData icon;
+  final ReturnVoid onPressed;
+  const IconInRow({
+    super.key,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: CustomIconButton(icon: icon, onPressed: onPressed),
+    );
   }
 }

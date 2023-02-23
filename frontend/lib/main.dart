@@ -12,7 +12,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // home: const Main(),
-      home: GroupMain(),
+      home: const GroupMain(),
       theme: ThemeData(
         fontFamily: 'RIDIBatang',
       ),

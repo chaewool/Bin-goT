@@ -5,13 +5,14 @@ import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/list.dart';
+import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class GroupMain extends StatelessWidget {
-  String groupName, start, end, explain, rule;
-  int cnt, headcount;
-  GroupMain({
+  final String groupName, start, end, explain, rule;
+  final int cnt, headcount;
+  const GroupMain({
     super.key,
     // required this.groupName,
     // required this.start,
@@ -40,7 +41,7 @@ class GroupMain extends StatelessWidget {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => GroupRank(
+              builder: (context) => const GroupRank(
                   cnt: 3,
                   achievementList: achievementList,
                   nicknameList: nicknameList)));
@@ -61,13 +62,16 @@ class GroupMain extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomText(content: groupName, fontSize: FontSize.titleSize),
+                  const SizedBox(height: 10),
                   CustomText(
                       content: '참여 인원 $cnt/$headcount',
                       fontSize: FontSize.textSize),
+                  const SizedBox(height: 10),
                   CustomText(
                       content: '$start ~ $end', fontSize: FontSize.textSize),
                 ],
               ),
+              const SizedBox(height: 20),
               CustomButton(methodFunc: toCreateBingo, buttonText: '내 빙고 만들기'),
               ShowContentBox(contentTitle: '설명', content: explain),
               ShowContentBox(contentTitle: '규칙', content: rule),
@@ -110,11 +114,12 @@ class GroupMain extends StatelessWidget {
   }
 }
 
+//* 그룹 내 달성률 랭킹
 class GroupRank extends StatelessWidget {
-  int cnt;
-  List<int> achievementList;
-  List<String> nicknameList;
-  GroupRank({
+  final int cnt;
+  final List<int> achievementList;
+  final List<String> nicknameList;
+  const GroupRank({
     super.key,
     required this.cnt,
     required this.achievementList,
@@ -149,6 +154,7 @@ class GroupRank extends StatelessWidget {
   }
 }
 
+//* 그룹 관리 페이지
 class GroupAdmin extends StatelessWidget {
   const GroupAdmin({super.key});
 
@@ -156,6 +162,7 @@ class GroupAdmin extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: AdminAppBar(),
+      body: GroupAdminTabBar(),
       bottomNavigationBar: BottomBar(),
     );
   }
