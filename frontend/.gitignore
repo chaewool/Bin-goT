@@ -42,3 +42,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# private information
+/lib/providers/api_list.dart
+/lib/widgets/tab_bar_examples.dart
+/lib/widgets/date_picker_example.dart
+/lib/utilities/image_icon.dart

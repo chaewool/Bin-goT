@@ -1,4 +1,4 @@
-import 'package:bin_got/pages/bingo_detail_page.dart';
+import 'package:bin_got/pages/group_form_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,9 +11,10 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const BingoDetail(),
+      // home: const Main(),
+      home: const GroupFirstForm(),
       theme: ThemeData(
-        fontFamily: 'Ttangs',
+        fontFamily: 'RIDIBatang',
       ),
       // home: BingoForm(),
     );
