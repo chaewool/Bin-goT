@@ -1,4 +1,4 @@
-import 'package:bin_got/pages/my_page.dart';
+import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/list.dart';

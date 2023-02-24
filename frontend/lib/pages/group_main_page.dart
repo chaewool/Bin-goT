@@ -29,7 +29,7 @@ class GroupMain extends StatelessWidget {
     this.headcount = 10,
     this.explain = '그룹 설명이 들어갑니다',
     this.rule = '그룹 규칙이 들어갑니다',
-    this.isMember = false,
+    this.isMember = true,
     this.hasBingo = false,
   });
 
