@@ -27,7 +27,11 @@ SECRET_KEY = bingot_settings.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'bingot.xyz', 
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -40,6 +44,8 @@ INSTALLED_APPS = [
     'articles',
 
     # third party apps
+    'corsheaders',
+    'rest_framework',
 
     # django apps
     'django.contrib.admin',
@@ -51,6 +57,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -132,5 +139,16 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 # AUTH_USER_MODEL
+
 AUTH_USER_MODEL = 'accounts.User'
+
+
+# CORS
+
+CORS_ALLOWED_ORIGINS = [
+    'https://bingot.xyz', 
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
+]
