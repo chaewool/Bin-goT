@@ -1,3 +1,4 @@
+import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -136,11 +137,16 @@ class GroupCreateCompleted extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(onPressed: shareToFriends, icon: shareIcon),
-              IconButton(onPressed: copyText, icon: copyIcon),
+              const CustomIconButton(
+                  onPressed: shareToFriends, icon: shareIcon),
+              CustomIconButton(onPressed: copyText, icon: copyIcon),
             ],
           ),
-          const ToGroupMainButton(buttonText: '닫기')
+          CustomButton(
+            buttonText: '닫기',
+            methodFunc: () =>
+                toOtherPage(context: context, page: const GroupMain()),
+          )
         ],
       ),
     );
