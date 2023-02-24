@@ -5,6 +5,8 @@ const backgroundColor = Color(0xFFF4FCF9);
 const blackColor = Colors.black;
 const whiteColor = Colors.white;
 const greyColor = Colors.grey;
+const redColor = Colors.red;
+const greenColor = Colors.green;
 
 //* 글씨체
 const double titleSize = 24;

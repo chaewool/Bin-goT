@@ -167,8 +167,16 @@ class MemberList extends StatelessWidget {
                 children: [
                   isMember
                       ? const SizedBox()
-                      : IconInRow(icon: confirmIcon, onPressed: () {}),
-                  IconInRow(icon: closeIcon, onPressed: () {}),
+                      : IconInRow(
+                          icon: confirmIcon,
+                          onPressed: () {},
+                          color: greenColor,
+                        ),
+                  IconInRow(
+                    icon: closeIcon,
+                    onPressed: () {},
+                    color: isMember ? blackColor : redColor,
+                  ),
                 ],
               )
             ],

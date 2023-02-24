@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -81,26 +82,29 @@ class ImageModal extends StatelessWidget {
 
 class CustomAlert extends StatelessWidget {
   final String title, content;
-  final ReturnVoid onPressed;
+  final ReturnVoid? onPressed;
+  final bool hasCancel;
   const CustomAlert({
     super.key,
     required this.title,
     required this.content,
-    required this.onPressed,
+    this.hasCancel = true,
+    this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    void closeAlert() {
-      Navigator.pop(context);
-    }
-
     return AlertDialog(
       title: CustomText(content: title, fontSize: FontSize.textSize),
       content: CustomText(content: content, fontSize: FontSize.textSize),
       actions: [
-        CustomButton(methodFunc: onPressed, buttonText: '확인'),
-        CustomButton(methodFunc: closeAlert, buttonText: '취소'),
+        CustomButton(
+            methodFunc: onPressed ?? () => toBack(context: context),
+            buttonText: '확인'),
+        hasCancel
+            ? CustomButton(
+                methodFunc: () => toBack(context: context), buttonText: '취소')
+            : const SizedBox(),
       ],
     );
   }

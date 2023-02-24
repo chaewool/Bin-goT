@@ -21,3 +21,5 @@ const colorIcon = Icons.format_color_fill_rounded;
 const drawIcon = Icons.draw_outlined;
 const fontIcon = Icons.font_download;
 const emojiIcon = Icons.emoji_emotions_outlined;
+const homeIcon = Icons.home;
+const chatIcon = Icons.chat;

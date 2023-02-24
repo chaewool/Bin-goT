@@ -19,17 +19,18 @@ class CustomIcon extends StatelessWidget {
 class IconInRow extends StatelessWidget {
   final IconData icon;
   final ReturnVoid onPressed;
-  const IconInRow({
-    super.key,
-    required this.icon,
-    required this.onPressed,
-  });
+  final Color color;
+  const IconInRow(
+      {super.key,
+      required this.icon,
+      required this.onPressed,
+      this.color = blackColor});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: CustomIconButton(icon: icon, onPressed: onPressed),
+      child: CustomIconButton(icon: icon, onPressed: onPressed, color: color),
     );
   }
 }

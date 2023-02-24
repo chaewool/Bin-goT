@@ -1,4 +1,6 @@
+import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/pages/bingo_form_page.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/material.dart';
 class GroupMain extends StatelessWidget {
   final String groupName, start, end, explain, rule;
   final int cnt, headcount;
+  final bool isMember, hasBingo;
   const GroupMain({
     super.key,
     // required this.groupName,
@@ -26,26 +29,14 @@ class GroupMain extends StatelessWidget {
     this.headcount = 10,
     this.explain = '그룹 설명이 들어갑니다',
     this.rule = '그룹 규칙이 들어갑니다',
+    this.isMember = false,
+    this.hasBingo = false,
   });
 
   @override
   Widget build(BuildContext context) {
     const achievementList = [100, 90, 85];
     const nicknameList = ['조코', '아아', '닉넴'];
-    void toCreateBingo() {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const BingoForm()));
-    }
-
-    void toGroupRank() {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const GroupRank(
-                  cnt: 3,
-                  achievementList: achievementList,
-                  nicknameList: nicknameList)));
-    }
 
     return Scaffold(
       appBar: const PreferredSize(
@@ -72,7 +63,16 @@ class GroupMain extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              CustomButton(methodFunc: toCreateBingo, buttonText: '내 빙고 만들기'),
+              isMember
+                  ? CustomButton(
+                      methodFunc: () => toOtherPage(
+                            context: context,
+                            page: hasBingo
+                                ? const BingoDetail()
+                                : const BingoForm(),
+                          ),
+                      buttonText: hasBingo ? '내 빙고 보기' : '내 빙고 만들기')
+                  : const SizedBox(),
               ShowContentBox(contentTitle: '설명', content: explain),
               ShowContentBox(contentTitle: '규칙', content: rule),
               Padding(
@@ -88,7 +88,12 @@ class GroupMain extends StatelessWidget {
                           const CustomText(
                               content: '랭킹', fontSize: FontSize.textSize),
                           TextButton(
-                              onPressed: toGroupRank,
+                              onPressed: () => toOtherPage(
+                                  context: context,
+                                  page: const GroupRank(
+                                      cnt: 3,
+                                      achievementList: achievementList,
+                                      nicknameList: nicknameList)),
                               child: const CustomText(
                                 content: '전체보기',
                                 fontSize: FontSize.smallSize,
@@ -109,7 +114,7 @@ class GroupMain extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomBar(),
+      bottomNavigationBar: BottomBar(isMember: isMember),
     );
   }
 }
@@ -149,7 +154,7 @@ class GroupRank extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomBar(),
+      bottomNavigationBar: const BottomBar(isMember: true),
     );
   }
 }
@@ -163,7 +168,9 @@ class GroupAdmin extends StatelessWidget {
     return const Scaffold(
       appBar: AdminAppBar(),
       body: GroupAdminTabBar(),
-      bottomNavigationBar: BottomBar(),
+      bottomNavigationBar: BottomBar(
+        isMember: true,
+      ),
     );
   }
 }

@@ -1,55 +1,30 @@
-import 'package:bin_got/pages/group_main_page.dart';
-import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
   final ReturnVoid methodFunc;
   final String buttonText;
+  final FontSize? fontSize;
   const CustomButton(
-      {super.key, required this.methodFunc, required this.buttonText});
+      {super.key,
+      required this.methodFunc,
+      required this.buttonText,
+      this.fontSize});
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
       onPressed: methodFunc,
-      child: Text(buttonText),
-      // style: ButtonStyle(textStyle: MaterialStateProperty.),
+      child: CustomText(
+        content: buttonText,
+        fontSize: fontSize ?? FontSize.textSize,
+      ),
     );
-  }
-}
-
-class ToMainButton extends StatelessWidget {
-  final String buttonText;
-  const ToMainButton({super.key, required this.buttonText});
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => const Main()));
-        },
-        child: Text(buttonText));
-  }
-}
-
-class ToGroupMainButton extends StatelessWidget {
-  final String buttonText;
-  const ToGroupMainButton({super.key, required this.buttonText});
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const GroupMain()));
-        },
-        child: Text(buttonText));
   }
 }
 
@@ -90,8 +65,7 @@ class CustomIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
-      icon: CustomIcon(icon: icon),
-      color: color,
+      icon: CustomIcon(icon: icon, color: color),
       iconSize: size,
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(),

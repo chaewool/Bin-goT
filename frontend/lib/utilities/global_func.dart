@@ -77,17 +77,20 @@ void toOtherPage({required BuildContext context, required Widget page}) {
   Navigator.push(context, MaterialPageRoute(builder: (context) => page));
 }
 
-void showAlert(
-    {required BuildContext context,
-    required String title,
-    required String content,
-    required ReturnVoid onPressed}) {
+void showAlert({
+  required BuildContext context,
+  required String title,
+  required String content,
+  ReturnVoid? onPressed,
+  bool hasCancel = true,
+}) {
   showDialog(
       context: context,
       builder: (context) => CustomAlert(
             title: title,
             content: content,
             onPressed: onPressed,
+            hasCancel: hasCancel,
           ));
 }
 

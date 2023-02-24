@@ -49,7 +49,7 @@ class BingoDetail extends StatelessWidget {
           CustomText(content: '달성률 : $achieve%', fontSize: FontSize.largeSize)
         ],
       ),
-      bottomNavigationBar: const BottomBar(),
+      bottomNavigationBar: const BottomBar(isMember: true),
     );
   }
 }
