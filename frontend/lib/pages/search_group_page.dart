@@ -17,8 +17,7 @@ class SearchGroup extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar:
-          topBar(context: context, isMainPage: false, methodFunc1: toGroupForm),
+      appBar: TopBar(isMainPage: false, methodFunc1: toGroupForm),
       body: SingleChildScrollView(
         child: Column(children: [
           const SearchBar(),
@@ -27,14 +26,11 @@ class SearchGroup extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: const [
-                SelectBox(selectList: dateFilter, width: 50, height: 50),
+                SelectBox(selectList: dateFilter, width: 100, height: 50),
               ],
             ),
           ),
-          for (int i = 0; i < 10; i += 1)
-            const GroupList(
-              isSearchMode: true,
-            ),
+          for (int i = 0; i < 10; i += 1) const GroupList(isSearchMode: true),
         ]),
       ),
     );

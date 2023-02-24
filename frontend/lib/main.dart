@@ -1,4 +1,4 @@
-import 'package:bin_got/pages/group_form_page.dart';
+import 'package:bin_got/pages/group_main_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,11 +12,10 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // home: const Main(),
-      home: const GroupFirstForm(),
+      home: const GroupMain(),
       theme: ThemeData(
         fontFamily: 'RIDIBatang',
       ),
-      // home: BingoForm(),
     );
   }
 }

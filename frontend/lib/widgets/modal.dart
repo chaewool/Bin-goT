@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -64,16 +66,46 @@ class ImageModal extends StatelessWidget {
               width: 100,
               height: 100,
               child: selectImage == null
-                  ? IconButton(
+                  ? CustomIconButton(
                       icon: addIcon,
                       onPressed: imagePicker,
                     )
                   : null,
             ),
           ),
-          const ExitButton()
+          const ExitButton(isIconType: false)
         ],
       ),
+    );
+  }
+}
+
+class CustomAlert extends StatelessWidget {
+  final String title, content;
+  final ReturnVoid? onPressed;
+  final bool hasCancel;
+  const CustomAlert({
+    super.key,
+    required this.title,
+    required this.content,
+    this.hasCancel = true,
+    this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: CustomText(content: title, fontSize: FontSize.textSize),
+      content: CustomText(content: content, fontSize: FontSize.textSize),
+      actions: [
+        CustomButton(
+            methodFunc: onPressed ?? () => toBack(context: context),
+            buttonText: '확인'),
+        hasCancel
+            ? CustomButton(
+                methodFunc: () => toBack(context: context), buttonText: '취소')
+            : const SizedBox(),
+      ],
     );
   }
 }

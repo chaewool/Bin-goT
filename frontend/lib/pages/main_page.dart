@@ -33,8 +33,7 @@ class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: topBar(
-        context: context,
+      appBar: TopBar(
         isMainPage: true,
         methodFunc1: changeSearchMode,
         methodFunc2: toMyPage,
