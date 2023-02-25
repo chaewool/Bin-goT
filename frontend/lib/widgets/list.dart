@@ -3,7 +3,7 @@ import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
@@ -43,12 +43,15 @@ class GroupList extends StatelessWidget {
                       CustomText(content: 'D-day', fontSize: FontSize.textSize),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: const [
-                      CustomText(content: count, fontSize: FontSize.textSize),
-                    ],
-                  )
+                  isSearchMode
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: const [
+                            CustomText(
+                                content: count, fontSize: FontSize.textSize),
+                          ],
+                        )
+                      : const SizedBox()
                 ],
               ),
             )),
@@ -167,12 +170,12 @@ class MemberList extends StatelessWidget {
                 children: [
                   isMember
                       ? const SizedBox()
-                      : IconInRow(
+                      : IconButtonInRow(
                           icon: confirmIcon,
                           onPressed: () {},
                           color: greenColor,
                         ),
-                  IconInRow(
+                  IconButtonInRow(
                     icon: closeIcon,
                     onPressed: () {},
                     color: isMember ? blackColor : redColor,

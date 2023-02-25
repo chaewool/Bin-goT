@@ -1,15 +1,46 @@
 import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 const double appBarHeight = 50;
+
+//* appBar 기본 틀
+class CustomAppBar extends StatelessWidget {
+  final Widget? leadingChild;
+  final WidgetList? actions;
+  final String? title;
+  const CustomAppBar({
+    super.key,
+    this.leadingChild,
+    this.actions,
+    this.title,
+  });
+
+  @override
+  PreferredSizeWidget build(BuildContext context) {
+    return AppBar(
+        elevation: 0,
+        backgroundColor: whiteColor,
+        title: title != null
+            ? Center(
+                child:
+                    CustomText(content: title!, fontSize: FontSize.largeSize))
+            : const SizedBox(),
+        leading: Padding(
+          padding: const EdgeInsets.all(6),
+          child: leadingChild,
+        ),
+        actions: actions);
+  }
+}
 
 //* main, search
 class TopBar extends StatelessWidget with PreferredSizeWidget {
@@ -24,21 +55,16 @@ class TopBar extends StatelessWidget with PreferredSizeWidget {
   });
 
   @override
-  PreferredSizeWidget build(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: whiteColor,
-      leading: Padding(
-        padding: const EdgeInsets.all(6),
-        child: halfLogo,
-      ),
+  Widget build(BuildContext context) {
+    return CustomAppBar(
+      leadingChild: halfLogo,
       actions: [
         isMainPage
-            ? IconInRow(onPressed: methodFunc1, icon: searchIcon)
+            ? IconButtonInRow(onPressed: methodFunc1, icon: searchIcon)
             : const SizedBox(),
         isMainPage
-            ? IconInRow(onPressed: methodFunc2!, icon: myPageIcon)
-            : IconInRow(onPressed: methodFunc1, icon: createGroupIcon)
+            ? IconButtonInRow(onPressed: methodFunc2!, icon: myPageIcon)
+            : IconButtonInRow(onPressed: methodFunc1, icon: createGroupIcon)
       ],
     );
   }
@@ -54,29 +80,27 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
     super.key,
     this.onlyBack = false,
     this.isMember = false,
-    this.isAdmin = true,
+    this.isAdmin = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: whiteColor,
-      leading: const ExitButton(isIconType: true),
+    return CustomAppBar(
+      leadingChild: const ExitButton(isIconType: true),
       actions: onlyBack
           ? null
           : [
               isAdmin
-                  ? IconInRow(
+                  ? IconButtonInRow(
                       icon: settingsIcon,
                       onPressed: () => toOtherPage(
                           context: context, page: const GroupAdmin()))
                   : const SizedBox(),
               isAdmin || isMember
-                  ? IconInRow(icon: shareIcon, onPressed: () {})
+                  ? IconButtonInRow(icon: shareIcon, onPressed: () {})
                   : const SizedBox(),
               isAdmin || isMember
-                  ? IconInRow(
+                  ? IconButtonInRow(
                       icon: exitIcon,
                       onPressed: () => showAlert(
                           context: context,
@@ -100,18 +124,14 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: whiteColor,
-      leading: const ExitButton(isIconType: true),
-      title: const Center(
-          child: CustomText(content: '그룹 관리', fontSize: FontSize.largeSize)),
+    return CustomAppBar(
+      leadingChild: const ExitButton(isIconType: true),
       actions: [
-        IconInRow(
+        IconButtonInRow(
             icon: editIcon,
             onPressed: () =>
                 toOtherPage(context: context, page: const GroupFirstForm())),
-        IconInRow(
+        IconButtonInRow(
             icon: deleteIcon,
             onPressed: () => showAlert(
                   context: context,
@@ -127,31 +147,53 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(appBarHeight);
 }
 
+//* 빙고 상세
 class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
   const BingoDetailAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
-      leading: IconButton(
+    return CustomAppBar(
+      leadingChild: CustomIconButton(
         onPressed: () => toBack(context: context),
-        icon: const Icon(Icons.arrow_back_rounded),
-        iconSize: 30,
+        icon: backIcon,
       ),
       actions: [
-        IconButton(
+        IconButtonInRow(
           onPressed: () {},
-          icon: const Icon(Icons.share),
-          iconSize: 30,
+          icon: shareIcon,
         ),
-        IconButton(
+        IconButtonInRow(
           onPressed: () {},
-          icon: const Icon(Icons.save),
-          iconSize: 30,
+          icon: saveIcon,
         ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(appBarHeight);
+}
+
+//* 마이 페이지
+class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
+  const MyPageAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAppBar(
+      actions: [
+        IconButtonInRow(
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => const NotificationModal(),
+          ),
+          icon: bellIcon,
+        ),
+        IconButtonInRow(
+            onPressed: () => toOtherPage(context: context, page: const Help()),
+            icon: helpIcon),
+        IconButtonInRow(onPressed: () {}, icon: exitIcon),
       ],
     );
   }

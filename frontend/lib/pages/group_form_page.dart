@@ -143,8 +143,8 @@ class GroupCreateCompleted extends StatelessWidget {
             ],
           ),
           CustomButton(
-            buttonText: '닫기',
-            methodFunc: () =>
+            content: '닫기',
+            onPressed: () =>
                 toOtherPage(context: context, page: const GroupMain()),
           )
         ],

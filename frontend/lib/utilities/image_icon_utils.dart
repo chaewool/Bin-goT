@@ -23,3 +23,6 @@ const fontIcon = Icons.font_download;
 const emojiIcon = Icons.emoji_emotions_outlined;
 const homeIcon = Icons.home;
 const chatIcon = Icons.chat;
+const bellIcon = Icons.notifications_none;
+const helpIcon = Icons.help_outline;
+const saveIcon = Icons.save;

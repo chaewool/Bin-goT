@@ -49,8 +49,8 @@ class BottomBar extends StatelessWidget {
             child: SizedBox(
               height: 50,
               child: CustomButton(
-                buttonText: '가입 신청하기',
-                methodFunc: () => showAlert(
+                content: '가입 신청하기',
+                onPressed: () => showAlert(
                   context: context,
                   title: '가입 신청',
                   content: '가입 신청되었습니다.',
@@ -74,20 +74,20 @@ class FormBottomBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             CustomButton(
-                methodFunc: () => isFirstPage
+                onPressed: () => isFirstPage
                     ? toBack(context: context)
                     : toOtherPage(
                         context: context,
                         page: const GroupFirstForm(),
                       ),
-                buttonText: isFirstPage ? '취소' : '이전'),
+                content: isFirstPage ? '취소' : '이전'),
             CustomButton(
-                methodFunc: () => toOtherPage(
+                onPressed: () => toOtherPage(
                     context: context,
                     page: isFirstPage
                         ? const GroupSecondForm()
                         : const GroupCreateCompleted()),
-                buttonText: isFirstPage ? '다음' : '완료')
+                content: isFirstPage ? '다음' : '완료')
           ],
         ));
   }

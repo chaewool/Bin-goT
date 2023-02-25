@@ -34,13 +34,13 @@ class SearchBar extends StatelessWidget {
             children: [
               const SelectBox(selectList: period, width: 150, height: 50),
               CustomButton(
-                methodFunc: () {
+                onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const SearchGroup()));
                 },
-                buttonText: '검색',
+                content: '검색',
               ),
             ],
           ),

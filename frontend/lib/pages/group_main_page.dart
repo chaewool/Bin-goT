@@ -65,13 +65,13 @@ class GroupMain extends StatelessWidget {
               const SizedBox(height: 20),
               isMember
                   ? CustomButton(
-                      methodFunc: () => toOtherPage(
+                      onPressed: () => toOtherPage(
                             context: context,
                             page: hasBingo
                                 ? const BingoDetail()
                                 : const BingoForm(),
                           ),
-                      buttonText: hasBingo ? '내 빙고 보기' : '내 빙고 만들기')
+                      content: hasBingo ? '내 빙고 보기' : '내 빙고 만들기')
                   : const SizedBox(),
               ShowContentBox(contentTitle: '설명', content: explain),
               ShowContentBox(contentTitle: '규칙', content: rule),

@@ -7,6 +7,7 @@ const whiteColor = Colors.white;
 const greyColor = Colors.grey;
 const redColor = Colors.red;
 const greenColor = Colors.green;
+const blueColor = Colors.blue;
 
 //* 글씨체
 const double titleSize = 24;

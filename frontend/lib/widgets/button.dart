@@ -7,21 +7,21 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
-  final ReturnVoid methodFunc;
-  final String buttonText;
+  final ReturnVoid onPressed;
+  final String content;
   final FontSize? fontSize;
   const CustomButton(
       {super.key,
-      required this.methodFunc,
-      required this.buttonText,
+      required this.onPressed,
+      required this.content,
       this.fontSize});
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: methodFunc,
+      onPressed: onPressed,
       child: CustomText(
-        content: buttonText,
+        content: content,
         fontSize: fontSize ?? FontSize.textSize,
       ),
     );
@@ -72,6 +72,55 @@ class CustomIconButton extends StatelessWidget {
       ),
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(),
+    );
+  }
+}
+
+class IconButtonInRow extends StatelessWidget {
+  final IconData icon;
+  final ReturnVoid onPressed;
+  final Color color;
+  final double size;
+  const IconButtonInRow({
+    super.key,
+    required this.icon,
+    required this.onPressed,
+    this.color = blackColor,
+    this.size = 30,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: CustomIconButton(
+        icon: icon,
+        onPressed: onPressed,
+        color: color,
+        size: size,
+      ),
+    );
+  }
+}
+
+class CustomTextButton extends StatelessWidget {
+  final String content;
+  final FontSize fontSize;
+  final ReturnVoid onTap;
+  const CustomTextButton(
+      {super.key,
+      required this.content,
+      required this.fontSize,
+      required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: CustomText(
+        content: content,
+        fontSize: fontSize,
+      ),
     );
   }
 }
