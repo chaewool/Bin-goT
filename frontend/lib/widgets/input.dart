@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,12 +49,11 @@ class InputDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: showModal(context: context, page: const DateModal()),
       child: CustomInput(
         explain: explain,
         enabled: false,
       ),
-      onTap: () =>
-          showDialog(context: context, builder: (context) => const DateModal()),
     );
   }
 }

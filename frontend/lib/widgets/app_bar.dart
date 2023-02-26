@@ -93,7 +93,7 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
               isAdmin
                   ? IconButtonInRow(
                       icon: settingsIcon,
-                      onPressed: () => toOtherPage(
+                      onPressed: toOtherPage(
                           context: context, page: const GroupAdmin()))
                   : const SizedBox(),
               isAdmin || isMember
@@ -102,7 +102,7 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
               isAdmin || isMember
                   ? IconButtonInRow(
                       icon: exitIcon,
-                      onPressed: () => showAlert(
+                      onPressed: showAlert(
                           context: context,
                           title: '그룹 탈퇴 확인',
                           content: '정말 그룹을 탈퇴하시겠습니까?',
@@ -129,16 +129,16 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
       actions: [
         IconButtonInRow(
             icon: editIcon,
-            onPressed: () =>
+            onPressed:
                 toOtherPage(context: context, page: const GroupFirstForm())),
         IconButtonInRow(
             icon: deleteIcon,
-            onPressed: () => showAlert(
-                  context: context,
-                  title: '그룹 삭제',
-                  content: '그룹을 정말 삭제하시겠습니까?',
-                  onPressed: () {},
-                )),
+            onPressed: showAlert(
+              context: context,
+              title: '그룹 삭제',
+              content: '그룹을 정말 삭제하시겠습니까?',
+              onPressed: () {},
+            )),
       ],
     );
   }
@@ -155,7 +155,7 @@ class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
   Widget build(BuildContext context) {
     return CustomAppBar(
       leadingChild: CustomIconButton(
-        onPressed: () => toBack(context: context),
+        onPressed: toBack(context: context),
         icon: backIcon,
       ),
       actions: [
@@ -184,16 +184,17 @@ class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
     return CustomAppBar(
       actions: [
         IconButtonInRow(
-          onPressed: () => showDialog(
+          onPressed: showModal(
             context: context,
-            builder: (context) => const NotificationModal(),
+            page: const NotificationModal(),
           ),
           icon: bellIcon,
         ),
         IconButtonInRow(
-            onPressed: () => toOtherPage(context: context, page: const Help()),
+            onPressed: toOtherPage(context: context, page: const Help()),
             icon: helpIcon),
         IconButtonInRow(onPressed: () {}, icon: exitIcon),
+        const SizedBox(width: 10)
       ],
     );
   }

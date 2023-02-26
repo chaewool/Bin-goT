@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
@@ -44,11 +45,8 @@ class _MyPageState extends State<MyPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomBadge(
-                  onTap: () => showDialog(
-                    context: context,
-                    builder: (context) => const SelectBadgeModal(),
-                  ),
-                ),
+                    onTap: showModal(
+                        context: context, page: const SelectBadgeModal())),
                 Row(
                   children: isEditMode
                       ? [

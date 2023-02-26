@@ -1,4 +1,5 @@
 import 'package:bin_got/pages/user_page.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/list.dart';
@@ -25,18 +26,13 @@ class _MainState extends State<Main> {
     });
   }
 
-  void toMyPage() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const MyPage()));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TopBar(
         isMainPage: true,
         methodFunc1: changeSearchMode,
-        methodFunc2: toMyPage,
+        methodFunc2: toOtherPage(context: context, page: const MyPage()),
       ),
       body: SingleChildScrollView(
         child: Container(

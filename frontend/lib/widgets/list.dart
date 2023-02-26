@@ -17,7 +17,7 @@ class GroupList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
       child: GestureDetector(
-        onTap: () => toOtherPage(context: context, page: const GroupMain()),
+        onTap: toOtherPage(context: context, page: const GroupMain()),
         child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -78,7 +78,7 @@ class RankList extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       child: GestureDetector(
         onTap: isMember
-            ? () => toOtherPage(context: context, page: const BingoDetail())
+            ? toOtherPage(context: context, page: const BingoDetail())
             : null,
         child: Container(
           height: 70,

@@ -71,10 +71,7 @@ class GroupSecondForm extends StatelessWidget {
               const CustomInput(explain: '그룹 설명을 입력하세요', needMore: true),
               const CustomInput(explain: '그룹 규칙을 입력하세요', needMore: true),
               GestureDetector(
-                onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => const ImageModal(),
-                ),
+                onTap: showModal(context: context, page: const ImageModal()),
                 child: const CustomInput(
                   explain: '그룹 이미지를 선택하세요',
                   needMore: true,
@@ -144,8 +141,7 @@ class GroupCreateCompleted extends StatelessWidget {
           ),
           CustomButton(
             content: '닫기',
-            onPressed: () =>
-                toOtherPage(context: context, page: const GroupMain()),
+            onPressed: toOtherPage(context: context, page: const GroupMain()),
           )
         ],
       ),

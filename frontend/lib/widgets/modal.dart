@@ -96,8 +96,7 @@ class CustomAlert extends StatelessWidget {
       content: CustomText(content: content, fontSize: FontSize.textSize),
       actions: [
         CustomButton(
-            onPressed: onPressed ?? () => toBack(context: context),
-            content: '확인'),
+            onPressed: onPressed ?? toBack(context: context), content: '확인'),
         hasCancel
             ? const ExitButton(isIconType: false, buttonText: '취소')
             : const SizedBox(),
@@ -135,7 +134,7 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
   Widget build(BuildContext context) {
     return CustomModal(
         title: '배지 선택',
-        onPressed: () => toBack(context: context),
+        onPressed: toBack(context: context),
         children: [
           for (int i = 0; i < 4; i += 1)
             Row(
