@@ -2,12 +2,15 @@ from django.shortcuts import redirect
 from django.views import View
 from django.http import JsonResponse
 import requests
+import logging
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User
 from bingot_settings import KAKAO_REST_API_KEY
 from .serializers import ServiceTokenObtainPairSerializer
+
+logger = logging.getLogger('accounts')
 
 class KakaoView(View):
     def get(self, request):
@@ -36,6 +39,7 @@ class KaKaoCallBackView(View):
         # 토큰 발급
         token_response = requests.post(kakao_token_api, data=data)
         access_token = token_response.json().get('access_token')
+        logger.info(f'발급받은 토큰: {token_response}')
 
         # 카카오 로그인 완료, 토큰으로 사용자 정보 가져오기 요청
         kakao_token_api = 'https://kapi.kakao.com/v2/user/me'
@@ -43,6 +47,7 @@ class KaKaoCallBackView(View):
 
         # 요청 검증 및 처리
         user_info_response = requests.get(kakao_token_api, headers=headers).json()
+        logger.info(f'가져온 사용자 정보: {user_info_response}')
         kakao_id = user_info_response.id
 
         # 제공받은 사용자 정보로 서비스 회원 여부 확인
