@@ -5,7 +5,6 @@ class User(AbstractUser):
     user_id = models.AutoField(primary_key=True, db_column='user_id')
     kakao_id = models.CharField(max_length=255, unique=True, null=False)
     username = models.CharField(max_length=20, unique=True, null=False)
-    password = models.CharField(max_length=20, null=False)
     profile = models.IntegerField(null=False, default=0)
     noti_rank = models.BooleanField(null=False, default=True)
     noti_due = models.BooleanField(null=False, default=True)

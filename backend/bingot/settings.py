@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # third party apps
     'corsheaders',
     'rest_framework',
+    'rest_framework_simplejwt',
 
     # django apps
     'django.contrib.admin',
@@ -152,3 +153,15 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
     'http://127.0.0.1:8080',
 ]
+
+
+# JWT
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
