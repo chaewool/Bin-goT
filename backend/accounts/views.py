@@ -57,7 +57,7 @@ class KaKaoCallBackView(View):
             user = User.objects.create(kakao_id=kakao_id, username=username)
             
         # 서비스 토큰 발급
-        return redirect('token_obtain_pair', user=user)
+        return redirect('accounts:token_obtain_pair', user=user)
 
 
 class ServiceTokenObtainPairView(TokenObtainPairView):
