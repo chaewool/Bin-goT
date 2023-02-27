@@ -46,7 +46,8 @@ class KaKaoCallBackView(View):
 
         # 요청 검증 및 처리
         user_info_response = requests.get(kakao_token_api, headers=headers).json()
-        kakao_id = user_info_response['id']
+        logger.info(user_info_response)
+        kakao_id = user_info_response.id
 
         # 제공받은 사용자 정보로 서비스 회원 여부 확인
         # 회원이 아니라면 회원 가입 처리
