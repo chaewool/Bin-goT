@@ -189,20 +189,25 @@ LOGGING = {
         },
     },
     'handlers': {
-        'console': {
+        'file': {
             'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'django.server',
-        }
+            'filters': ['require_debug_true'],
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'files/log/logfile.log'),
+            'encoding': 'UTF-8',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
     },
     'loggers': {
         'django.request': {
-            'handlers':['console'],
+            'handlers':['file'],
             'propagate': False,
             'level':'INFO',
         },
         'accounts': {
-            'handlers': ['console'],
+            'handlers': ['file'],
             'propagate': False,
             'level': 'INFO',
         },
