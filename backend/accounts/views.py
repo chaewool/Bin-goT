@@ -53,7 +53,7 @@ class KaKaoCallBackView(View):
         if User.objects.filter(kakao_id=kakao_id).exists():
             user = User.objects.get(kakao_id=kakao_id)
         else:
-            username = user_info_response.properties.nickname
+            username = user_info_response['properties']['nickname']
             user = User.objects.create(kakao_id=kakao_id, username=username)
             
         # 서비스 토큰 발급
