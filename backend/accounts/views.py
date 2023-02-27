@@ -46,7 +46,6 @@ class KaKaoCallBackView(View):
 
         # 요청 검증 및 처리
         user_info_response = requests.get(kakao_token_api, headers=headers).json()
-        logger.info(user_info_response)
         kakao_id = user_info_response['id']
 
         # 제공받은 사용자 정보로 서비스 회원 여부 확인
@@ -54,7 +53,7 @@ class KaKaoCallBackView(View):
         if User.objects.filter(kakao_id=kakao_id).exists():
             user = User.objects.get(kakao_id=kakao_id)
         else:
-            username = user_info_response.username
+            username = user_info_response.properties.nickname
             user = User.objects.create(kakao_id=kakao_id, username=username)
             
         # 서비스 토큰 발급
