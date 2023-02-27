@@ -207,11 +207,64 @@ class CustomModal extends StatelessWidget {
   }
 }
 
-class NotificationModal extends StatelessWidget {
+class NotificationModal extends StatefulWidget {
   const NotificationModal({super.key});
 
   @override
+  State<NotificationModal> createState() => _NotificationModalState();
+}
+
+class _NotificationModalState extends State<NotificationModal> {
+  StringList notificationList = [
+    '진행률/랭킹 알림',
+    '남은 기간 알림',
+    '채팅 알림',
+    '인증 완료 알림',
+  ];
+  List<StringList> notificationOptions = [
+    ['ON', 'OFF'],
+    ['세 달', '한 달', '일주일', '3일'],
+    ['ON', 'OFF'],
+    ['ON', 'OFF']
+  ];
+  IntList idxList = [0, 0, 0, 0];
+  void changeIdx(int i) {
+    if (i != 1) {
+      setState(() {
+        idxList[i] = 1 - idxList[i];
+      });
+    } else if (idxList[i] < 3) {
+      setState(() {
+        idxList[i] += 1;
+      });
+    } else {
+      setState(() {
+        idxList[i] = 0;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const CustomModal(title: '알림 설정', children: []);
+    return CustomModal(
+      title: '알림 설정',
+      children: [
+        for (int i = 0; i < 4; i += 1)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomText(
+                    content: notificationList[i], fontSize: FontSize.textSize),
+                CustomButton(
+                  content: notificationOptions[i][idxList[i]],
+                  onPressed: () => changeIdx(i),
+                )
+              ],
+            ),
+          )
+      ],
+    );
   }
 }

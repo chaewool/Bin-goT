@@ -1,6 +1,7 @@
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/list.dart';
@@ -39,27 +40,27 @@ class GroupAdminTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomTextTabBar(tabTitles: const [
-      '가입 신청',
-      '참여자'
-    ], listItems: [
-      [
-        for (int i = 0; i < 10; i += 1)
-          MemberList(
-            image: halfLogo,
-            isMember: false,
-            nickname: '조코링링링',
-          )
+    return CustomTextTabBar(
+      tabTitles: const ['가입 신청', '참여자'],
+      listItems: [
+        [
+          for (int i = 0; i < 10; i += 1)
+            MemberList(
+              image: halfLogo,
+              isMember: false,
+              nickname: '조코링링링',
+            )
+        ],
+        [
+          for (int i = 0; i < 7; i += 1)
+            MemberList(
+              image: halfLogo,
+              isMember: true,
+              nickname: '조코링링링',
+            ),
+        ],
       ],
-      [
-        for (int i = 0; i < 7; i += 1)
-          MemberList(
-            image: halfLogo,
-            isMember: true,
-            nickname: '조코링링링',
-          )
-      ]
-    ]);
+    );
   }
 }
 
@@ -72,28 +73,58 @@ class MyPageTabBar extends StatefulWidget {
 }
 
 class _MyPageTabBarState extends State<MyPageTabBar> {
-  List<StringList> buttonOptions = [
-    ['그룹명 순', '그룹명 역순'],
-    ['전체', '진행 중', '완료'],
-    ['캘린더로 보기', '리스트로 보기']
+  List<List<StringList>> buttonOptions = [
+    [
+      ['그룹명 순', '그룹명 역순'],
+      ['전체', '진행 중', '완료'],
+      ['캘린더로 보기', '리스트로 보기']
+    ],
+    [
+      ['최신순', '오래된순'],
+      ['전체', '진행 중', '완료'],
+      ['리스트로 보기', '갤러리로 보기']
+    ]
   ];
-  IntList idxList = [0, 0, 0];
+  late List<StringList> presentOptions;
+  late int presentIdx;
+
+  List<IntList> idxList = [
+    [0, 0, 0],
+    [0, 0, 0]
+  ];
   void changeIdx(int idx) {
-    if (idxList[idx] < buttonOptions[idx].length - 1) {
+    if (idxList[presentIdx][idx] < presentOptions[idx].length - 1) {
       setState(() {
-        idxList[idx] += 1;
+        idxList[presentIdx][idx] += 1;
       });
     } else {
       setState(() {
-        idxList[idx] = 0;
+        idxList[presentIdx][idx] = 0;
       });
     }
+  }
+
+  void changeTab(int index) {
+    if (presentIdx != index) {
+      setState(() {
+        presentIdx = index;
+        presentOptions = buttonOptions[presentIdx];
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    presentOptions = buttonOptions[0];
+    presentIdx = 0;
   }
 
   @override
   Widget build(BuildContext context) {
     return CustomTextTabBar(
       tabTitles: const ['내 그룹', '내 빙고'],
+      onChange: changeTab,
       upperView: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Row(
@@ -101,7 +132,7 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
           children: [
             for (int i = 0; i < 3; i += 1)
               CustomTextButton(
-                content: buttonOptions[i][idxList[i]],
+                content: presentOptions[i][idxList[presentIdx][i]],
                 fontSize: FontSize.smallSize,
                 onTap: () => changeIdx(i),
               ),
@@ -111,11 +142,28 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
       listItems: [
         [
           for (int i = 0; i < 10; i += 1)
-            idxList[2] == 0
+            idxList[0][2] == 0
                 ? const GroupList(isSearchMode: true)
                 : const SizedBox()
         ],
-        [for (int i = 0; i < 10; i += 1) const GroupList(isSearchMode: false)]
+        idxList[1][2] == 0
+            ? [
+                BingoGallery(bingoList: [
+                  for (int k = 0; k < 10; k += 1)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        width: 150,
+                        height: 200,
+                        color: greenColor,
+                      ),
+                    )
+                ])
+              ]
+            : [
+                for (int i = 0; i < 10; i += 1)
+                  const GroupList(isSearchMode: false),
+              ]
       ],
     );
   }
@@ -126,11 +174,14 @@ class CustomTextTabBar extends StatelessWidget {
   final StringList tabTitles;
   final List<WidgetList> listItems;
   final Widget? upperView;
-  const CustomTextTabBar(
-      {super.key,
-      required this.tabTitles,
-      required this.listItems,
-      this.upperView});
+  final void Function(int)? onChange;
+  const CustomTextTabBar({
+    super.key,
+    required this.tabTitles,
+    required this.listItems,
+    this.upperView,
+    this.onChange,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +206,7 @@ class CustomTextTabBar extends StatelessWidget {
               ),
             ),
         ],
-        onChange: (index) => {},
+        onChange: onChange,
       ),
     );
   }

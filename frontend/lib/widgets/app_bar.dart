@@ -193,7 +193,13 @@ class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
         IconButtonInRow(
             onPressed: toOtherPage(context: context, page: const Help()),
             icon: helpIcon),
-        IconButtonInRow(onPressed: () {}, icon: exitIcon),
+        IconButtonInRow(
+            onPressed: showAlert(
+                title: '로그아웃 확인',
+                context: context,
+                content: '로그아웃하시겠습니까?',
+                onPressed: () {}),
+            icon: exitIcon),
         const SizedBox(width: 10)
       ],
     );

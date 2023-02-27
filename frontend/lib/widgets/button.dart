@@ -9,12 +9,12 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatelessWidget {
   final ReturnVoid onPressed;
   final String content;
-  final FontSize? fontSize;
+  final FontSize fontSize;
   const CustomButton(
       {super.key,
       required this.onPressed,
       required this.content,
-      this.fontSize});
+      this.fontSize = FontSize.textSize});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class CustomButton extends StatelessWidget {
       onPressed: onPressed,
       child: CustomText(
         content: content,
-        fontSize: fontSize ?? FontSize.textSize,
+        fontSize: fontSize,
       ),
     );
   }

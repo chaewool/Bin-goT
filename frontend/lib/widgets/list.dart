@@ -7,6 +7,7 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
+//* 그룹 목록
 class GroupList extends StatelessWidget {
   final bool isSearchMode;
   const GroupList({super.key, required this.isSearchMode});
@@ -60,6 +61,7 @@ class GroupList extends StatelessWidget {
   }
 }
 
+//* 순위 목록
 class RankList extends StatelessWidget {
   final int rank, achievement;
   final String nickname;
@@ -160,7 +162,6 @@ class MemberList extends StatelessWidget {
                 height: 50,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.circular(100),
                     shape: BoxShape.circle,
                     border: Border.all(color: greyColor)),
                 child: image,
