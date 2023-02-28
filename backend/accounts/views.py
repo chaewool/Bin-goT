@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from django.http import JsonResponse
-from rest_framework.views import APIView
+from django.views import View
 import requests
 import logging
 
@@ -11,7 +11,7 @@ from bingot_settings import KAKAO_REST_API_KEY
 
 logger = logging.getLogger('accounts')
 
-class KakaoView(APIView):
+class KakaoView(View):
     def get(self, request):
         # 인가 코드 받기 요청
         app_key = KAKAO_REST_API_KEY
@@ -23,7 +23,7 @@ class KakaoView(APIView):
             f'{kakao_auth_api}&client_id={app_key}&redirect_uri={redirect_uri}'
         )
 
-class KaKaoCallBackView(APIView):
+class KaKaoCallBackView(View):
     def get(self, request):
         # 인가 코드로 카카오 토큰 발급 요청
         auth_code = request.GET.get('code')
@@ -59,7 +59,7 @@ class KaKaoCallBackView(APIView):
         return JsonResponse({user: user})
 
 
-class TokenObtainView(APIView):
+class TokenObtainView(View):
     def post(self, request):
         # 사용자 정보로 서비스 토큰 발급
         user = User.objects.get(user_id=request.POST.get('user_id'))
