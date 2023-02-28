@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from .models import User, Badge, Achieve
 
 class BadgeAdmin(admin.ModelAdmin):
-    list_display = ('badge_id', 'badgename', 'badge_cond')
+    list_display = ('pk', 'badgename', 'badge_cond')
 
 class AchieveAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'badge')

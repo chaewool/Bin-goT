@@ -55,18 +55,14 @@ class KaKaoCallBackView(View):
         # 확인이 끝나면 사용자 정보 반환
         if User.objects.filter(kakao_id=kakao_id).exists():
             user = User.objects.get(kakao_id=kakao_id)
-            
-            return JsonResponse(UserSerializer(user).data)
         else:
             username = user_info_response['properties']['nickname']
             user = User(kakao_id=kakao_id, username=username)
             
-            serializer = UserSerializer(data=user)
-        
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                
-                return JsonResponse(serializer.data)
+        serializer = UserSerializer(user)
+        serializer.save()
+            
+        return JsonResponse(serializer.data)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
