@@ -2,6 +2,7 @@ from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.views import View
 from django.contrib.auth import get_user_model
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import requests
 import logging
@@ -54,18 +55,16 @@ class KaKaoCallBackView(View):
             user = User.objects.get(kakao_id=kakao_id)
         else:
             username = user_info_response['properties']['nickname']
-            user = User.objects.create(kakao_id=kakao_id, username=username)
+            user = User(kakao_id=kakao_id, username=username)
         
-        logger.info(user)
-        logger.info(type(user))
-        user = UserSerializer(user).data
-        logger.info(user)
-        logger.info(type(user))
+        serializer = UserSerializer(user)
         
-        # 사용자 정보 반환
-        return JsonResponse({'user': user})
+        if serializer.is_valid(raise_exception=True):
+            # 사용자 정보 반환
+            return JsonResponse(user.data)
 
 
+@csrf_exempt
 class TokenObtainView(View):
     def post(self, request):
         # 사용자 정보로 서비스 토큰 발급
