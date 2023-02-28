@@ -1,14 +1,15 @@
 from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.views import View
+from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import requests
 import logging
 
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-from .models import User
 from bingot_settings import KAKAO_REST_API_KEY
+from .serializers import UserSerializer
 
+User = get_user_model()
 logger = logging.getLogger('accounts')
 
 class KakaoView(View):
@@ -54,7 +55,13 @@ class KaKaoCallBackView(View):
         else:
             username = user_info_response['properties']['nickname']
             user = User.objects.create(kakao_id=kakao_id, username=username)
-            
+        
+        logger.info(user)
+        logger.info(type(user))
+        user = UserSerializer(user).data
+        logger.info(user)
+        logger.info(type(user))
+        
         # 사용자 정보 반환
         return JsonResponse({'user': user})
 
