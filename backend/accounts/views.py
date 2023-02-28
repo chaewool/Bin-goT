@@ -56,7 +56,7 @@ class KaKaoCallBackView(View):
             user = User.objects.create(kakao_id=kakao_id, username=username)
             
         # 사용자 정보 반환
-        return JsonResponse({user: user})
+        return JsonResponse({'user': user})
 
 
 class TokenObtainView(View):
