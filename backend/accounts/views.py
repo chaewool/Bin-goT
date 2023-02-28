@@ -66,7 +66,7 @@ class KaKaoCallBackView(View):
                 serializer.save()
                 
         # 사용자 정보 반환
-        return JsonResponse(user.data)
+        return JsonResponse(serializer.data)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
