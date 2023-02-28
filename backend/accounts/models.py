@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    user_id = models.AutoField(primary_key=True, db_column='user_id')
     kakao_id = models.CharField(max_length=255, unique=True, null=False)
     username = models.CharField(max_length=20, unique=True, null=False)
     profile = models.IntegerField(null=False, default=0)
@@ -15,7 +14,6 @@ class User(AbstractUser):
         return self.username
 
 class Badge(models.Model):
-    badge_id = models.AutoField(primary_key=True, db_column='badge_id')
     badgename = models.CharField(max_length=20, unique=True, null=False)
     badge_cond = models.CharField(max_length=100, null=False)
 

@@ -73,7 +73,7 @@ class KaKaoCallBackView(View):
 class TokenObtainView(View):
     def post(self, request):
         # 사용자 정보로 서비스 토큰 발급
-        user = User.objects.get(user_id=request.POST.get('user_id'))
+        user = User.objects.get(id=request.POST.get('id'))
         token = TokenObtainPairSerializer.get_token(user)
         
         return JsonResponse({
