@@ -57,14 +57,9 @@ class KaKaoCallBackView(View):
             user = User.objects.get(kakao_id=kakao_id)
         else:
             username = user_info_response['properties']['nickname']
-            user = User(kakao_id=kakao_id, username=username)
+            user = User.objects.create(kakao_id=kakao_id, username=username)
             
-        serializer = UserSerializer(data=user)
-
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            
-        return JsonResponse(serializer.data)
+        return JsonResponse(user)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
