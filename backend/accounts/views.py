@@ -54,15 +54,19 @@ class KaKaoCallBackView(View):
         # 회원이 아니라면 회원 가입 처리
         if User.objects.filter(kakao_id=kakao_id).exists():
             user = User.objects.get(kakao_id=kakao_id)
+            
+            serializer = UserSerializer(data=user)
         else:
             username = user_info_response['properties']['nickname']
             user = User(kakao_id=kakao_id, username=username)
+            
+            serializer = UserSerializer(data=user)
         
-        serializer = UserSerializer(user)
-        
-        if serializer.is_valid(raise_exception=True):
-            # 사용자 정보 반환
-            return JsonResponse(user.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                
+        # 사용자 정보 반환
+        return JsonResponse(user.data)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
