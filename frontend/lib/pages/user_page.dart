@@ -41,54 +41,55 @@ class _MyPageState extends State<MyPage> {
       appBar: const MyPageAppBar(),
       body: Column(
         mainAxisSize: MainAxisSize.max,
+        children: [profile(context), const Expanded(child: MyPageTabBar())],
+      ),
+    );
+  }
+
+  Padding profile(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomBadge(
-                    onTap: showModal(
-                        context: context, page: const SelectBadgeModal())),
-                Row(
-                  children: isEditMode
-                      ? [
-                          const CustomInput(
-                            width: 150,
-                            height: 30,
-                          ),
-                          IconButtonInRow(
-                            icon: confirmIcon,
-                            onPressed: () {},
-                            size: 20,
-                          ),
-                          IconButtonInRow(
-                            icon: closeIcon,
-                            onPressed: changeEditMode,
-                            size: 20,
-                          ),
-                        ]
-                      : [
-                          SizedBox(
-                            width: 150,
-                            height: 40,
-                            child: Center(
-                              child: CustomText(
-                                  content: widget.nickname,
-                                  fontSize: FontSize.titleSize),
-                            ),
-                          ),
-                          IconButtonInRow(
-                            onPressed: changeEditMode,
-                            icon: editIcon,
-                            size: 20,
-                          )
-                        ],
-                ),
-              ],
-            ),
+          CustomBadge(
+              onTap:
+                  showModal(context: context, page: const SelectBadgeModal())),
+          Row(
+            children: isEditMode
+                ? [
+                    const CustomInput(
+                      width: 150,
+                      height: 30,
+                    ),
+                    IconButtonInRow(
+                      icon: confirmIcon,
+                      onPressed: () {},
+                      size: 20,
+                    ),
+                    IconButtonInRow(
+                      icon: closeIcon,
+                      onPressed: changeEditMode,
+                      size: 20,
+                    ),
+                  ]
+                : [
+                    SizedBox(
+                      width: 150,
+                      height: 40,
+                      child: Center(
+                        child: CustomText(
+                            content: widget.nickname,
+                            fontSize: FontSize.titleSize),
+                      ),
+                    ),
+                    IconButtonInRow(
+                      onPressed: changeEditMode,
+                      icon: editIcon,
+                      size: 20,
+                    )
+                  ],
           ),
-          const Expanded(child: MyPageTabBar())
         ],
       ),
     );
@@ -108,14 +109,14 @@ class Help extends StatelessWidget {
     ];
     StringList answerList = ['이렇게 만듭니다', '저렇게 생성합니다', '그렇게 합니다'];
     return Scaffold(
-      appBar: const GroupAppBar(onlyBack: true),
+      appBar: const AppBarWithBack(title: '도움말'),
       body: SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
           children: [
             for (int i = 0; i < 3; i += 1)
-              EachAccordian(
+              EachAccordion(
                 question: 'Q. ${questionList[i]}',
                 answer: 'A. ${answerList[i]}',
               ),

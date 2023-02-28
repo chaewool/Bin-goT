@@ -69,6 +69,7 @@ flutter:
   assets:
     - assets/logos/bin_got_logo_0.5x.png
     - assets/logos/bin_got_logo_1x.png
+    - assets/images/kakao_login_button.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

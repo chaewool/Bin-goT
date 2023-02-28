@@ -1,3 +1,5 @@
+import 'package:bin_got/pages/bingo_detail_page.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -18,12 +20,10 @@ class ShowContentBox extends StatelessWidget {
         children: [
           CustomText(content: contentTitle, fontSize: FontSize.textSize),
           const SizedBox(height: 20),
-          Container(
+          CustomBoxContainer(
             width: 300,
             height: 100,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: greyColor)),
+            borderColor: greyColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
               child: CustomText(content: content, fontSize: FontSize.textSize),
@@ -42,15 +42,72 @@ class BingoGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int bingoRows = bingoList.length ~/ 2 + bingoList.length % 2;
+    int bingoRows = bingoList.length ~/ 2;
     return Column(
       children: [
         for (int i = 0; i < bingoRows; i += 1)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [for (int j = 0; j < 2; j += 1) bingoList[2 * i + j]],
-          )
+            children: [
+              for (int j = 0; j < 2; j += 1)
+                GestureDetector(
+                  onTap: toOtherPage(
+                    context: context,
+                    page: const BingoDetail(),
+                  ),
+                  child: bingoList[2 * i + j],
+                )
+            ],
+          ),
+        bingoList.length % 2 == 1
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: toOtherPage(
+                      context: context,
+                      page: const BingoDetail(),
+                    ),
+                    child: bingoList.last,
+                  )
+                ],
+              )
+            : const SizedBox(),
       ],
+    );
+  }
+}
+
+//* Box Container 기본 틀
+class CustomBoxContainer extends StatelessWidget {
+  final bool hasRoundEdge;
+  final Color? borderColor;
+  final Color color;
+  final BoxShadowList? boxShadow;
+  final double? width, height;
+  final Widget? child;
+  const CustomBoxContainer({
+    super.key,
+    this.hasRoundEdge = true,
+    this.borderColor,
+    this.color = whiteColor,
+    this.boxShadow,
+    this.width,
+    this.height,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+          borderRadius: hasRoundEdge ? BorderRadius.circular(10) : null,
+          color: color,
+          boxShadow: boxShadow,
+          border: borderColor != null ? Border.all(color: borderColor!) : null),
+      child: child,
     );
   }
 }

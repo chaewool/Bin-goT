@@ -2,16 +2,16 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
-class EachAccordian extends StatefulWidget {
+class EachAccordion extends StatefulWidget {
   final String question, answer;
-  const EachAccordian(
+  const EachAccordion(
       {super.key, required this.question, required this.answer});
 
   @override
-  State<EachAccordian> createState() => _EachAccordianState();
+  State<EachAccordion> createState() => _EachAccordionState();
 }
 
-class _EachAccordianState extends State<EachAccordian> {
+class _EachAccordionState extends State<EachAccordion> {
   bool accordianState = false;
   @override
   Widget build(BuildContext context) {

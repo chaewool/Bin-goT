@@ -3,6 +3,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -144,15 +145,15 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
           for (int i = 0; i < 10; i += 1)
             idxList[0][2] == 0
                 ? const GroupList(isSearchMode: true)
-                : const SizedBox()
+                : const DatePicker()
         ],
         idxList[1][2] == 0
             ? [
                 BingoGallery(bingoList: [
                   for (int k = 0; k < 10; k += 1)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CustomBoxContainer(
                         width: 150,
                         height: 200,
                         color: greenColor,
@@ -161,8 +162,7 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
                 ])
               ]
             : [
-                for (int i = 0; i < 10; i += 1)
-                  const GroupList(isSearchMode: false),
+                for (int i = 0; i < 10; i += 1) const BingoList(),
               ]
       ],
     );

@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 const double appBarHeight = 50;
 
 //* appBar 기본 틀
-class CustomAppBar extends StatelessWidget {
+class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   final Widget? leadingChild;
   final WidgetList? actions;
   final String? title;
@@ -40,32 +40,61 @@ class CustomAppBar extends StatelessWidget {
         ),
         actions: actions);
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(appBarHeight);
 }
 
-//* main, search
-class TopBar extends StatelessWidget with PreferredSizeWidget {
-  final bool isMainPage;
-  final ReturnVoid methodFunc1;
-  final ReturnVoid? methodFunc2;
-  const TopBar({
+//* 뒤로 가기 버튼을 포함한 app bar
+class AppBarWithBack extends StatelessWidget with PreferredSizeWidget {
+  final WidgetList? actions;
+  final String? title;
+  const AppBarWithBack({
     super.key,
-    required this.isMainPage,
-    required this.methodFunc1,
-    this.methodFunc2,
+    this.actions,
+    this.title,
   });
 
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
+      leadingChild: const ExitButton(isIconType: true),
+      title: title,
+      actions: actions,
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(appBarHeight);
+}
+
+//* main, search
+class MainBar extends StatelessWidget with PreferredSizeWidget {
+  final ReturnVoid? onPressed;
+  const MainBar({super.key, this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAppBar(
       leadingChild: halfLogo,
-      actions: [
-        isMainPage
-            ? IconButtonInRow(onPressed: methodFunc1, icon: searchIcon)
-            : const SizedBox(),
-        isMainPage
-            ? IconButtonInRow(onPressed: methodFunc2!, icon: myPageIcon)
-            : IconButtonInRow(onPressed: methodFunc1, icon: createGroupIcon)
-      ],
+      actions: onPressed != null
+          ? [
+              IconButtonInRow(onPressed: onPressed!, icon: searchIcon),
+              IconButtonInRow(
+                icon: myPageIcon,
+                onPressed: toOtherPage(context: context, page: const MyPage()),
+              )
+            ]
+          : [
+              const SizedBox(),
+              IconButtonInRow(
+                onPressed: toOtherPage(
+                  context: context,
+                  page: const GroupFirstForm(),
+                ),
+                icon: createGroupIcon,
+              )
+            ],
     );
   }
 
@@ -85,8 +114,7 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAppBar(
-      leadingChild: const ExitButton(isIconType: true),
+    return AppBarWithBack(
       actions: onlyBack
           ? null
           : [
@@ -124,8 +152,7 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAppBar(
-      leadingChild: const ExitButton(isIconType: true),
+    return AppBarWithBack(
       actions: [
         IconButtonInRow(
             icon: editIcon,
@@ -153,11 +180,7 @@ class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAppBar(
-      leadingChild: CustomIconButton(
-        onPressed: toBack(context: context),
-        icon: backIcon,
-      ),
+    return AppBarWithBack(
       actions: [
         IconButtonInRow(
           onPressed: () {},
@@ -181,7 +204,7 @@ class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAppBar(
+    return AppBarWithBack(
       actions: [
         IconButtonInRow(
           onPressed: showModal(
@@ -194,12 +217,13 @@ class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
             onPressed: toOtherPage(context: context, page: const Help()),
             icon: helpIcon),
         IconButtonInRow(
-            onPressed: showAlert(
-                title: '로그아웃 확인',
-                context: context,
-                content: '로그아웃하시겠습니까?',
-                onPressed: () {}),
-            icon: exitIcon),
+          onPressed: showAlert(
+              title: '로그아웃 확인',
+              context: context,
+              content: '로그아웃하시겠습니까?',
+              onPressed: () {}),
+          icon: exitIcon,
+        ),
         const SizedBox(width: 10)
       ],
     );

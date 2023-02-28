@@ -14,10 +14,7 @@ class SearchGroup extends StatelessWidget {
     const List<String> dateFilter = <String>['시작일 ▲', '시작일 ▼'];
 
     return Scaffold(
-      appBar: TopBar(
-          isMainPage: false,
-          methodFunc1:
-              toOtherPage(context: context, page: const GroupFirstForm())),
+      appBar: const MainBar(),
       body: SingleChildScrollView(
         child: Column(children: [
           const SearchBar(),

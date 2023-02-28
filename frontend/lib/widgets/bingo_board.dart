@@ -1,4 +1,6 @@
 import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/widgets/box_container.dart';
 import 'package:flutter/material.dart';
 
 class BingoBoard extends StatelessWidget {
@@ -45,9 +47,10 @@ class EachBingo extends StatelessWidget {
           ],
         ),
       ),
-      child: Container(
-        decoration: const BoxDecoration(color: Colors.blueGrey),
-        child: const Padding(
+      child: const CustomBoxContainer(
+        color: greyColor,
+        hasRoundEdge: false,
+        child: Padding(
           padding: EdgeInsets.symmetric(
             vertical: 26,
             horizontal: 26,
