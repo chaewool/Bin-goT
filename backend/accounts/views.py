@@ -59,7 +59,7 @@ class KaKaoCallBackView(View):
             username = user_info_response['properties']['nickname']
             user = User(kakao_id=kakao_id, username=username)
             
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(data=user)
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
