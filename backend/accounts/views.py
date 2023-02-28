@@ -9,6 +9,7 @@ import requests
 import logging
 
 from bingot_settings import KAKAO_REST_API_KEY
+from .serializers import UserSerializer
 
 User = get_user_model()
 logger = logging.getLogger('accounts')
@@ -57,8 +58,10 @@ class KaKaoCallBackView(View):
         else:
             username = user_info_response['properties']['nickname']
             user = User.objects.create(kakao_id=kakao_id, username=username)
+        
+        serializer = UserSerializer(user)
             
-        return JsonResponse(user)
+        return JsonResponse(serializer.data)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
