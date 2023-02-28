@@ -9,7 +9,6 @@ import requests
 import logging
 
 from bingot_settings import KAKAO_REST_API_KEY
-from .serializers import UserSerializer
 
 User = get_user_model()
 logger = logging.getLogger('accounts')
