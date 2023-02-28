@@ -60,7 +60,9 @@ class KaKaoCallBackView(View):
             user = User(kakao_id=kakao_id, username=username)
             
         serializer = UserSerializer(user)
-        serializer.save()
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
             
         return JsonResponse(serializer.data)
 
