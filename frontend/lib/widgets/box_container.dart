@@ -86,6 +86,7 @@ class CustomBoxContainer extends StatelessWidget {
   final BoxShadowList? boxShadow;
   final double? width, height;
   final Widget? child;
+  final DecorationImage? image;
   const CustomBoxContainer({
     super.key,
     this.hasRoundEdge = true,
@@ -94,6 +95,7 @@ class CustomBoxContainer extends StatelessWidget {
     this.boxShadow,
     this.width,
     this.height,
+    this.image,
     this.child,
   });
 
@@ -103,10 +105,12 @@ class CustomBoxContainer extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-          borderRadius: hasRoundEdge ? BorderRadius.circular(10) : null,
-          color: color,
-          boxShadow: boxShadow,
-          border: borderColor != null ? Border.all(color: borderColor!) : null),
+        borderRadius: hasRoundEdge ? BorderRadius.circular(10) : null,
+        color: color,
+        boxShadow: boxShadow,
+        border: borderColor != null ? Border.all(color: borderColor!) : null,
+        image: image,
+      ),
       child: child,
     );
   }

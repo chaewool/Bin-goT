@@ -7,7 +7,7 @@ import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
-import 'package:bin_got/widgets/my_page_widgets.dart';
+import 'package:bin_got/widgets/badge.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';

@@ -4,21 +4,47 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/date_picker.dart';
-import 'package:bin_got/widgets/my_page_widgets.dart';
+import 'package:bin_got/widgets/badge.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 //* 빙고
 class BingoModal extends StatelessWidget {
-  const BingoModal({super.key});
+  final int index, cnt;
+  const BingoModal({super.key, required this.index, required this.cnt});
 
   @override
   Widget build(BuildContext context) {
-    return const Dialog(
-      child: Text('bingo!'),
+    return CustomModal(
+      buttonText: '저장',
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            CustomIconButton(onPressed: () {}, icon: leftIcon),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                CustomText(content: '$index/$cnt', fontSize: FontSize.textSize),
+                const CustomBoxContainer(
+                  width: 100,
+                  height: 100,
+                  borderColor: blackColor,
+                  child: CustomText(
+                    content: '내용',
+                    fontSize: FontSize.textSize,
+                  ),
+                ),
+              ],
+            ),
+            CustomIconButton(onPressed: () {}, icon: rightIcon)
+          ],
+        )
+      ],
     );
   }
 }
@@ -53,17 +79,14 @@ class ImageModal extends StatelessWidget {
     return CustomModal(title: '그룹 이미지 선택', hasConfirm: false, children: [
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(),
-              image: selectImage != null
-                  ? DecorationImage(
-                      fit: BoxFit.cover,
-                      image: FileImage(File(selectImage!.path)))
-                  : null),
+        child: CustomBoxContainer(
           width: 100,
           height: 100,
+          borderColor: blackColor,
+          image: selectImage != null
+              ? DecorationImage(
+                  fit: BoxFit.cover, image: FileImage(File(selectImage!.path)))
+              : null,
           child: selectImage == null
               ? CustomIconButton(
                   icon: addIcon,

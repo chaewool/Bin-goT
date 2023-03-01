@@ -33,3 +33,6 @@ const chatIcon = Icons.chat;
 const bellIcon = Icons.notifications_none;
 const helpIcon = Icons.help_outline;
 const saveIcon = Icons.save;
+
+const leftIcon = Icons.chevron_left_rounded;
+const rightIcon = Icons.chevron_right_rounded;

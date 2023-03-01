@@ -17,19 +17,76 @@ class BingoTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const List<IconData> iconList = [colorIcon, drawIcon, fontIcon, emojiIcon];
-    return Container(
-      decoration: const BoxDecoration(),
+    return CustomBoxContainer(
+      hasRoundEdge: false,
       child: ContainedTabBarView(
         tabs: [
-          for (IconData icon in iconList) Tab(icon: CustomIcon(icon: icon))
+          for (IconData icon in iconList)
+            Tab(
+              child: CustomIcon(icon: icon),
+            ),
         ],
-        views: [
-          Container(color: Colors.red),
-          Container(color: Colors.green),
-          Container(color: Colors.amber),
-          Container(color: Colors.black),
+        views: [paintTab(), lineTab(), fontTab(), stickerTab()],
+      ),
+    );
+  }
+
+  SingleChildScrollView paintTab() {
+    return SingleChildScrollView(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          for (int i = 0; i < 10; i += 1)
+            CustomBoxContainer(
+              hasRoundEdge: false,
+              child: halfLogo,
+            ),
         ],
-        onChange: (index) => {},
+      ),
+    );
+  }
+
+  SingleChildScrollView lineTab() {
+    return SingleChildScrollView(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          CustomBoxContainer(
+            hasRoundEdge: false,
+            child: halfLogo,
+            // width: MediaQuery.of(context).size.width,
+          ),
+        ],
+      ),
+    );
+  }
+
+  SingleChildScrollView fontTab() {
+    return SingleChildScrollView(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          CustomBoxContainer(
+            hasRoundEdge: false,
+            child: halfLogo,
+            // width: MediaQuery.of(context).size.width,
+          ),
+        ],
+      ),
+    );
+  }
+
+  SingleChildScrollView stickerTab() {
+    return SingleChildScrollView(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          CustomBoxContainer(
+            hasRoundEdge: false,
+            child: halfLogo,
+            // width: MediaQuery.of(context).size.width,
+          ),
+        ],
       ),
     );
   }
@@ -185,8 +242,8 @@ class CustomTextTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(),
+    return CustomBoxContainer(
+      hasRoundEdge: false,
       child: ContainedTabBarView(
         tabs: [
           for (String tabTitle in tabTitles)

@@ -44,7 +44,9 @@ class BingoDetail extends StatelessWidget {
               )
             ],
           ),
-          const BingoBoard(),
+          const BingoBoard(
+            bingoSize: 3,
+          ),
           const SizedBox(height: 30),
           CustomText(content: '달성률 : $achieve%', fontSize: FontSize.largeSize)
         ],

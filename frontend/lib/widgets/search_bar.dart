@@ -1,5 +1,7 @@
 import 'package:bin_got/pages/search_group_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/select_box.dart';
@@ -18,8 +20,8 @@ class SearchBar extends StatelessWidget {
       '여섯 달 ~ 아홉 달',
       '아홉 달 ~ 1년'
     ];
-    return Container(
-      decoration: const BoxDecoration(color: Colors.white),
+    return CustomBoxContainer(
+      color: whiteColor,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 17),
         child: Column(children: [
