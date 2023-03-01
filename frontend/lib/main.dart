@@ -1,4 +1,4 @@
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,7 +12,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // home: const Main(),
-      home: const GroupMain(),
+      home: const Intro(),
       theme: ThemeData(
         fontFamily: 'RIDIBatang',
       ),

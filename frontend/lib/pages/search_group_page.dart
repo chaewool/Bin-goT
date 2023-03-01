@@ -1,4 +1,5 @@
 import 'package:bin_got/pages/group_form_page.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/search_bar.dart';
@@ -11,13 +12,9 @@ class SearchGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const List<String> dateFilter = <String>['시작일 ▲', '시작일 ▼'];
-    void toGroupForm() {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const GroupFirstForm()));
-    }
 
     return Scaffold(
-      appBar: TopBar(isMainPage: false, methodFunc1: toGroupForm),
+      appBar: const MainBar(),
       body: SingleChildScrollView(
         child: Column(children: [
           const SearchBar(),

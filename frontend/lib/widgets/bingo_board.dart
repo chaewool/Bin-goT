@@ -1,3 +1,6 @@
+import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/widgets/box_container.dart';
 import 'package:flutter/material.dart';
 
 class BingoBoard extends StatelessWidget {
@@ -31,25 +34,23 @@ class EachBingo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                content: const Text('data'),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () {
-                        // Navigator.of(context).pop();
-                      },
-                      child: const Text('확인'))
-                ],
-              );
-            });
-      },
-      child: Container(
-        decoration: const BoxDecoration(color: Colors.blueGrey),
-        child: const Padding(
+      onPressed: showModal(
+        context: context,
+        page: AlertDialog(
+          content: const Text('data'),
+          actions: [
+            ElevatedButton(
+                onPressed: () {
+                  // Navigator.of(context).pop();
+                },
+                child: const Text('확인'))
+          ],
+        ),
+      ),
+      child: const CustomBoxContainer(
+        color: greyColor,
+        hasRoundEdge: false,
+        child: Padding(
           padding: EdgeInsets.symmetric(
             vertical: 26,
             horizontal: 26,

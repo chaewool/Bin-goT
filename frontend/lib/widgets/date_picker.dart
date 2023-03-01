@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -107,19 +108,19 @@ class _DatePickerState extends State<DatePicker> {
           Text('종료일 : $endDay', style: const TextStyle(fontSize: 20)),
           Row(
             children: [
-              CustomButton(methodFunc: () {}, buttonText: '한 달'),
-              CustomButton(methodFunc: () {}, buttonText: '100일'),
-              CustomButton(methodFunc: () {}, buttonText: '6개월'),
-              CustomButton(methodFunc: () {}, buttonText: '1년'),
+              CustomButton(onPressed: () {}, content: '한 달'),
+              CustomButton(onPressed: () {}, content: '100일'),
+              CustomButton(onPressed: () {}, content: '6개월'),
+              CustomButton(onPressed: () {}, content: '1년'),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CustomButton(
-                  methodFunc: () => Navigator.pop(context), buttonText: '취소'),
+                  onPressed: () => toBack(context: context), content: '취소'),
               CustomButton(
-                  methodFunc: () => Navigator.pop(context), buttonText: '완료')
+                  onPressed: () => toBack(context: context), content: '완료')
             ],
           )
         ],

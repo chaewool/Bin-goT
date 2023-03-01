@@ -1,4 +1,5 @@
 import 'package:bin_got/pages/search_group_page.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/select_box.dart';
@@ -34,13 +35,9 @@ class SearchBar extends StatelessWidget {
             children: [
               const SelectBox(selectList: period, width: 150, height: 50),
               CustomButton(
-                methodFunc: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SearchGroup()));
-                },
-                buttonText: '검색',
+                onPressed:
+                    toOtherPage(context: context, page: const SearchGroup()),
+                content: '검색',
               ),
             ],
           ),

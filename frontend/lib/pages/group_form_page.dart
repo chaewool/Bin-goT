@@ -4,6 +4,7 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
+import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/input.dart';
@@ -71,10 +72,7 @@ class GroupSecondForm extends StatelessWidget {
               const CustomInput(explain: '그룹 설명을 입력하세요', needMore: true),
               const CustomInput(explain: '그룹 규칙을 입력하세요', needMore: true),
               GestureDetector(
-                onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => const ImageModal(),
-                ),
+                onTap: showModal(context: context, page: const ImageModal()),
                 child: const CustomInput(
                   explain: '그룹 이미지를 선택하세요',
                   needMore: true,
@@ -120,12 +118,10 @@ class GroupCreateCompleted extends StatelessWidget {
             fontSize: FontSize.largeSize,
             center: true,
           ),
-          Container(
+          CustomBoxContainer(
             width: 200,
             height: 200,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black)),
+            borderColor: blackColor,
             child: Center(
               child: CustomText(
                 content: message,
@@ -143,9 +139,8 @@ class GroupCreateCompleted extends StatelessWidget {
             ],
           ),
           CustomButton(
-            buttonText: '닫기',
-            methodFunc: () =>
-                toOtherPage(context: context, page: const GroupMain()),
+            content: '닫기',
+            onPressed: toOtherPage(context: context, page: const GroupMain()),
           )
         ],
       ),

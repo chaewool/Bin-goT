@@ -1,45 +1,100 @@
 import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 const double appBarHeight = 50;
 
-//* main, search
-class TopBar extends StatelessWidget with PreferredSizeWidget {
-  final bool isMainPage;
-  final ReturnVoid methodFunc1;
-  final ReturnVoid? methodFunc2;
-  const TopBar({
+//* appBar 기본 틀
+class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
+  final Widget? leadingChild;
+  final WidgetList? actions;
+  final String? title;
+  const CustomAppBar({
     super.key,
-    required this.isMainPage,
-    required this.methodFunc1,
-    this.methodFunc2,
+    this.leadingChild,
+    this.actions,
+    this.title,
   });
 
   @override
   PreferredSizeWidget build(BuildContext context) {
     return AppBar(
-      elevation: 0,
-      backgroundColor: whiteColor,
-      leading: Padding(
-        padding: const EdgeInsets.all(6),
-        child: halfLogo,
-      ),
-      actions: [
-        isMainPage
-            ? IconInRow(onPressed: methodFunc1, icon: searchIcon)
+        elevation: 0,
+        backgroundColor: whiteColor,
+        title: title != null
+            ? Center(
+                child:
+                    CustomText(content: title!, fontSize: FontSize.largeSize))
             : const SizedBox(),
-        isMainPage
-            ? IconInRow(onPressed: methodFunc2!, icon: myPageIcon)
-            : IconInRow(onPressed: methodFunc1, icon: createGroupIcon)
-      ],
+        leading: Padding(
+          padding: const EdgeInsets.all(6),
+          child: leadingChild,
+        ),
+        actions: actions);
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(appBarHeight);
+}
+
+//* 뒤로 가기 버튼을 포함한 app bar
+class AppBarWithBack extends StatelessWidget with PreferredSizeWidget {
+  final WidgetList? actions;
+  final String? title;
+  const AppBarWithBack({
+    super.key,
+    this.actions,
+    this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAppBar(
+      leadingChild: const ExitButton(isIconType: true),
+      title: title,
+      actions: actions,
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(appBarHeight);
+}
+
+//* main, search
+class MainBar extends StatelessWidget with PreferredSizeWidget {
+  final ReturnVoid? onPressed;
+  const MainBar({super.key, this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAppBar(
+      leadingChild: halfLogo,
+      actions: onPressed != null
+          ? [
+              IconButtonInRow(onPressed: onPressed!, icon: searchIcon),
+              IconButtonInRow(
+                icon: myPageIcon,
+                onPressed: toOtherPage(context: context, page: const MyPage()),
+              )
+            ]
+          : [
+              const SizedBox(),
+              IconButtonInRow(
+                onPressed: toOtherPage(
+                  context: context,
+                  page: const GroupFirstForm(),
+                ),
+                icon: createGroupIcon,
+              )
+            ],
     );
   }
 
@@ -54,31 +109,28 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
     super.key,
     this.onlyBack = false,
     this.isMember = false,
-    this.isAdmin = true,
+    this.isAdmin = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: whiteColor,
-      leading: const ExitButton(isIconType: true),
+    return AppBarWithBack(
       actions: onlyBack
           ? null
           : [
               isAdmin
-                  ? IconInRow(
+                  ? IconButtonInRow(
                       icon: settingsIcon,
-                      onPressed: () => toOtherPage(
+                      onPressed: toOtherPage(
                           context: context, page: const GroupAdmin()))
                   : const SizedBox(),
               isAdmin || isMember
-                  ? IconInRow(icon: shareIcon, onPressed: () {})
+                  ? IconButtonInRow(icon: shareIcon, onPressed: () {})
                   : const SizedBox(),
               isAdmin || isMember
-                  ? IconInRow(
+                  ? IconButtonInRow(
                       icon: exitIcon,
-                      onPressed: () => showAlert(
+                      onPressed: showAlert(
                           context: context,
                           title: '그룹 탈퇴 확인',
                           content: '정말 그룹을 탈퇴하시겠습니까?',
@@ -100,25 +152,20 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: whiteColor,
-      leading: const ExitButton(isIconType: true),
-      title: const Center(
-          child: CustomText(content: '그룹 관리', fontSize: FontSize.largeSize)),
+    return AppBarWithBack(
       actions: [
-        IconInRow(
+        IconButtonInRow(
             icon: editIcon,
-            onPressed: () =>
+            onPressed:
                 toOtherPage(context: context, page: const GroupFirstForm())),
-        IconInRow(
+        IconButtonInRow(
             icon: deleteIcon,
-            onPressed: () => showAlert(
-                  context: context,
-                  title: '그룹 삭제',
-                  content: '그룹을 정말 삭제하시겠습니까?',
-                  onPressed: () {},
-                )),
+            onPressed: showAlert(
+              context: context,
+              title: '그룹 삭제',
+              content: '그룹을 정말 삭제하시겠습니까?',
+              onPressed: () {},
+            )),
       ],
     );
   }
@@ -127,31 +174,57 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(appBarHeight);
 }
 
+//* 빙고 상세
 class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
   const BingoDetailAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
-      leading: IconButton(
-        onPressed: () => toBack(context: context),
-        icon: const Icon(Icons.arrow_back_rounded),
-        iconSize: 30,
-      ),
+    return AppBarWithBack(
       actions: [
-        IconButton(
+        IconButtonInRow(
           onPressed: () {},
-          icon: const Icon(Icons.share),
-          iconSize: 30,
+          icon: shareIcon,
         ),
-        IconButton(
+        IconButtonInRow(
           onPressed: () {},
-          icon: const Icon(Icons.save),
-          iconSize: 30,
+          icon: saveIcon,
         ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(appBarHeight);
+}
+
+//* 마이 페이지
+class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
+  const MyPageAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBarWithBack(
+      actions: [
+        IconButtonInRow(
+          onPressed: showModal(
+            context: context,
+            page: const NotificationModal(),
+          ),
+          icon: bellIcon,
+        ),
+        IconButtonInRow(
+            onPressed: toOtherPage(context: context, page: const Help()),
+            icon: helpIcon),
+        IconButtonInRow(
+          onPressed: showAlert(
+              title: '로그아웃 확인',
+              context: context,
+              content: '로그아웃하시겠습니까?',
+              onPressed: () {}),
+          icon: exitIcon,
+        ),
+        const SizedBox(width: 10)
       ],
     );
   }

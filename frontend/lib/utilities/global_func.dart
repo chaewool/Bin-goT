@@ -73,18 +73,23 @@ void shareToFriends() async {
   }
 }
 
-void toOtherPage({required BuildContext context, required Widget page}) {
-  Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+ReturnVoid toOtherPage({required BuildContext context, required Widget page}) {
+  return () =>
+      Navigator.push(context, MaterialPageRoute(builder: (context) => page));
 }
 
-void showAlert({
+ReturnVoid toBack({required BuildContext context}) {
+  return () => Navigator.pop(context);
+}
+
+ReturnVoid showAlert({
   required BuildContext context,
   required String title,
   required String content,
   ReturnVoid? onPressed,
   bool hasCancel = true,
 }) {
-  showDialog(
+  return () => showDialog(
       context: context,
       builder: (context) => CustomAlert(
             title: title,
@@ -94,6 +99,6 @@ void showAlert({
           ));
 }
 
-void toBack({required BuildContext context}) {
-  Navigator.pop(context);
+ReturnVoid showModal({required BuildContext context, required Widget page}) {
+  return () => showDialog(context: context, builder: (context) => page);
 }

@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 // logo
-var halfLogo = Image.asset('assets/logos/bin_got_logo_0.5x.png');
+var halfLogo = Image.asset(
+  'assets/logos/bin_got_logo_1x.png',
+  scale: 4,
+);
+var kakaoLogin = Image.asset(
+  'assets/images/kakao_login_button.png',
+  scale: 1.4,
+);
 
 // icon
 const searchIcon = Icons.search_rounded;
@@ -23,3 +30,6 @@ const fontIcon = Icons.font_download;
 const emojiIcon = Icons.emoji_emotions_outlined;
 const homeIcon = Icons.home;
 const chatIcon = Icons.chat;
+const bellIcon = Icons.notifications_none;
+const helpIcon = Icons.help_outline;
+const saveIcon = Icons.save;

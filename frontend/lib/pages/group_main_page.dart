@@ -29,7 +29,7 @@ class GroupMain extends StatelessWidget {
     this.headcount = 10,
     this.explain = '그룹 설명이 들어갑니다',
     this.rule = '그룹 규칙이 들어갑니다',
-    this.isMember = false,
+    this.isMember = true,
     this.hasBingo = false,
   });
 
@@ -65,13 +65,12 @@ class GroupMain extends StatelessWidget {
               const SizedBox(height: 20),
               isMember
                   ? CustomButton(
-                      methodFunc: () => toOtherPage(
-                            context: context,
-                            page: hasBingo
-                                ? const BingoDetail()
-                                : const BingoForm(),
-                          ),
-                      buttonText: hasBingo ? '내 빙고 보기' : '내 빙고 만들기')
+                      onPressed: toOtherPage(
+                        context: context,
+                        page:
+                            hasBingo ? const BingoDetail() : const BingoForm(),
+                      ),
+                      content: hasBingo ? '내 빙고 보기' : '내 빙고 만들기')
                   : const SizedBox(),
               ShowContentBox(contentTitle: '설명', content: explain),
               ShowContentBox(contentTitle: '규칙', content: rule),
@@ -88,7 +87,7 @@ class GroupMain extends StatelessWidget {
                           const CustomText(
                               content: '랭킹', fontSize: FontSize.textSize),
                           TextButton(
-                              onPressed: () => toOtherPage(
+                              onPressed: toOtherPage(
                                   context: context,
                                   page: const GroupRank(
                                       cnt: 3,
