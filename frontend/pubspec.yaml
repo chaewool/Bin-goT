@@ -70,6 +70,12 @@ flutter:
     - assets/logos/bin_got_logo_0.5x.png
     - assets/logos/bin_got_logo_1x.png
     - assets/images/kakao_login_button.png
+    - assets/images/aaron-burden.jpg
+    - assets/images/annie-spratt.jpg
+    - assets/images/greg-rakozy.jpg
+    - assets/images/joe-woods.jpg
+    - assets/images/luke-chesser.jpg
+    - assets/images/resul-mentes.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 
 class BingoBoard extends StatelessWidget {
   final int bingoSize;
-  const BingoBoard({super.key, required this.bingoSize});
+  final String font;
+  const BingoBoard({super.key, required this.bingoSize, required this.font});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,10 @@ class BingoBoard extends StatelessWidget {
               children: [
                 for (int j = 0; j < bingoSize; j += 1)
                   EachBingo(
-                      index: bingoSize * i + j, cnt: bingoSize * bingoSize),
+                    index: bingoSize * i + j,
+                    cnt: bingoSize * bingoSize,
+                    font: font,
+                  ),
               ],
             ),
         ],
@@ -34,10 +38,12 @@ class BingoBoard extends StatelessWidget {
 
 class EachBingo extends StatelessWidget {
   final int index, cnt;
+  final String font;
   const EachBingo({
     super.key,
     required this.index,
     required this.cnt,
+    required this.font,
   });
 
   @override
@@ -45,17 +51,18 @@ class EachBingo extends StatelessWidget {
     return TextButton(
       onPressed:
           showModal(context: context, page: BingoModal(index: index, cnt: cnt)),
-      child: const CustomBoxContainer(
+      child: CustomBoxContainer(
         color: greyColor,
         hasRoundEdge: false,
         child: Padding(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             vertical: 26,
             horizontal: 26,
           ),
           child: CustomText(
             content: '빙고칸',
             fontSize: FontSize.textSize,
+            font: font,
           ),
         ),
       ),

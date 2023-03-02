@@ -5,6 +5,7 @@ var halfLogo = Image.asset(
   'assets/logos/bin_got_logo_1x.png',
   scale: 4,
 );
+// login
 var kakaoLogin = Image.asset(
   'assets/images/kakao_login_button.png',
   scale: 1.4,
@@ -36,3 +37,11 @@ const saveIcon = Icons.save;
 
 const leftIcon = Icons.chevron_left_rounded;
 const rightIcon = Icons.chevron_right_rounded;
+
+// background image
+var iceBall = 'assets/images/aaron-burden.jpg';
+var plant = 'assets/images/annie-spratt.jpg';
+var milkyway = 'assets/images/greg-rakozy.jpg';
+var wall = 'assets/images/joe-woods.jpg';
+var gradation = 'assets/images/luke-chesser.jpg';
+var daySky = 'assets/images/resul-mentes.jpg';

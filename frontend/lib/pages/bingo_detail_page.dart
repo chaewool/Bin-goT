@@ -10,12 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 
 class BingoDetail extends StatelessWidget {
-  final String title, nickname, achieve;
+  final String title, nickname, achieve, font;
   const BingoDetail({
     super.key,
     this.title = '빙고판이다',
     this.nickname = '노래 추천 좀',
     this.achieve = '100',
+    this.font = 'RIDIBatang',
   });
 
   @override
@@ -44,8 +45,9 @@ class BingoDetail extends StatelessWidget {
               )
             ],
           ),
-          const BingoBoard(
+          BingoBoard(
             bingoSize: 3,
+            font: font,
           ),
           const SizedBox(height: 30),
           CustomText(content: '달성률 : $achieve%', fontSize: FontSize.largeSize)

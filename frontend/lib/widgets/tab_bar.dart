@@ -5,15 +5,24 @@ import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/material.dart';
 
 //* 빙고 생성 탭
-class BingoTabBar extends StatelessWidget {
-  const BingoTabBar({super.key});
+class BingoTabBar extends StatefulWidget {
+  final IntList selected;
+  final void Function(int tabIndex, int i) changeSelected;
+  const BingoTabBar(
+      {super.key, required this.selected, required this.changeSelected});
 
+  @override
+  State<BingoTabBar> createState() => _BingoTabBarState();
+}
+
+class _BingoTabBarState extends State<BingoTabBar> {
   @override
   Widget build(BuildContext context) {
     const List<IconData> iconList = [colorIcon, drawIcon, fontIcon, emojiIcon];
@@ -31,18 +40,24 @@ class BingoTabBar extends StatelessWidget {
     );
   }
 
-  SingleChildScrollView paintTab() {
-    return SingleChildScrollView(
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          for (int i = 0; i < 10; i += 1)
-            CustomBoxContainer(
-              hasRoundEdge: false,
-              child: halfLogo,
-            ),
-        ],
-      ),
+  Row paintTab() {
+    var page = 0;
+    StringList backgroundList = [
+      iceBall,
+      plant,
+      milkyway,
+      wall,
+      gradation,
+      daySky,
+    ];
+    void changePage() {}
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        for (int i = 3 * page; i < 3 * page + 3; i += 1)
+          ModifiedImage(image: backgroundList[i]),
+      ],
     );
   }
 
@@ -61,18 +76,37 @@ class BingoTabBar extends StatelessWidget {
     );
   }
 
-  SingleChildScrollView fontTab() {
-    return SingleChildScrollView(
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          CustomBoxContainer(
-            hasRoundEdge: false,
-            child: halfLogo,
-            // width: MediaQuery.of(context).size.width,
+  Column fontTab() {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        for (int i = 0; i < 3; i += 1)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              for (int j = 0; j < 2; j += 1)
+                GestureDetector(
+                  onTap: () => widget.changeSelected(2, 2 * i + j),
+                  child: CustomBoxContainer(
+                    width: 150,
+                    height: 40,
+                    boxShadow: widget.selected[2] != 2 * i + j
+                        ? const [defaultShadow]
+                        : const [selectedShadow],
+                    child: Center(
+                      child: CustomText(
+                        content: showedFont[2 * i + j],
+                        fontSize: FontSize.textSize,
+                        font: matchFont[2 * i + j],
+                      ),
+                    ),
+                    // width: MediaQuery.of(context).size.width,
+                  ),
+                ),
+            ],
           ),
-        ],
-      ),
+      ],
     );
   }
 

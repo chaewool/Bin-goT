@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
 //* 색
@@ -9,7 +10,7 @@ const redColor = Colors.red;
 const greenColor = Colors.green;
 const blueColor = Colors.blue;
 
-//* 글씨체
+//* 글씨 크기
 const double titleSize = 24;
 const double largeSize = 21;
 const double textSize = 19;
@@ -33,6 +34,26 @@ double convertedFontSize(FontSize size) {
   }
 }
 
+//* 글씨체
+StringList showedFont = [
+  '리디 바탕',
+  '교보',
+  '코레일',
+  '코레일',
+  // '코레일',
+  '한국기계연구원',
+  '땅스부대찌개'
+];
+StringList matchFont = [
+  'RIDIBatang',
+  'Kyobo',
+  'Korail',
+  'KorailRoundGothic',
+  // 'KorailCondensed',
+  'Kimm',
+  'Ttangs'
+];
+
 //* 그림자
 const defaultShadow = BoxShadow(
     color: greyColor, blurRadius: 3, spreadRadius: 0.3, offset: Offset(1, 2));
@@ -43,3 +64,8 @@ var shadowWithOpacity = BoxShadow(
     spreadRadius: 0,
     blurRadius: 4,
     offset: const Offset(0, 3));
+const selectedShadow = BoxShadow(
+  color: blueColor,
+  blurRadius: 3,
+  spreadRadius: 3,
+);
