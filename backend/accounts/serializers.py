@@ -1,7 +1,7 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = '__all__'
+        fields = ('id', 'username', 'profile', 'noti_rank', 'noti_due', 'noti_chat', 'is_activated', 'groups')

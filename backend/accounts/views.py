@@ -1,20 +1,24 @@
 from django.shortcuts import redirect
-from django.http import JsonResponse
-from django.views import View
 from django.contrib.auth import get_user_model
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import requests
 import logging
 
 from bingot_settings import KAKAO_REST_API_KEY
+from commons import SUCCESS, FAIL
 from .serializers import UserSerializer
+from .models import Achieve, Badge
 
 User = get_user_model()
 logger = logging.getLogger('accounts')
 
-class KakaoView(View):
+class KakaoView(APIView):
+    permission_classes = [AllowAny]
+    
     def get(self, request):
         # 인가 코드 받기 요청
         app_key = KAKAO_REST_API_KEY
@@ -26,7 +30,9 @@ class KakaoView(View):
             f'{kakao_auth_api}&client_id={app_key}&redirect_uri={redirect_uri}'
         )
 
-class KaKaoCallBackView(View):
+class KaKaoCallBackView(APIView):
+    permission_classes = [AllowAny]
+    
     def get(self, request):
         # 인가 코드로 카카오 토큰 발급 요청
         auth_code = request.GET.get('code')
@@ -58,20 +64,90 @@ class KaKaoCallBackView(View):
         else:
             username = user_info_response['properties']['nickname']
             user = User.objects.create(kakao_id=kakao_id, username=username)
+            badge = Badge.objects.get(id=0)
+            Achieve.objects.create(user=user, badge=badge)
         
         serializer = UserSerializer(user)
             
-        return JsonResponse(serializer.data)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class TokenObtainView(View):
+class KaKaoUnlinkView(APIView):
+    def delete(self, request):
+        user = request.user
+        user = User.objects.get(id=user.id)
+        user.delete()
+        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+
+
+class TokenObtainView(APIView):
+    permission_classes = [AllowAny]
+    
     def post(self, request):
         # 사용자 정보로 서비스 토큰 발급
         user = User.objects.get(id=request.POST.get('id'))
         token = TokenObtainPairSerializer.get_token(user)
         
-        return JsonResponse({
+        return Response(data={
             'refresh_token': str(token),
             'access_token': str(token.access_token),
-        })
+        }, status=status.HTTP_200_OK)
+
+
+class UsernameCheckView(APIView):
+    def post(self, request):
+        username = request.POST.get('username')
+        
+        if User.objects.filter(username=username).exists():
+            return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+    
+    
+class UsernameUpdateView(APIView):
+    def post(self, request):
+        user = request.user
+        username = request.POST.get('username')
+        
+        if User.objects.filter(username=username).exists():
+            return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.username = username
+        user.save()
+        
+        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+    
+    
+class BadgeListView(APIView):
+    def get(self, request):
+        user = request.user
+        data = Achieve.objects.filter(user=user)
+        return Response(data=data, status=status.HTTP_200_OK)
+        
+    
+class BadgeUpdateView(APIView):
+    def post(self, request):
+        user = request.user
+        badge_id = request.POST.get('badge_id')
+        badge = Badge.objects.get(id=badge_id)
+        
+        if Achieve.objects.filter(user=user, badge=badge).exists():
+            user.profile = badge_id
+            user.save()
+            
+            return Response(SUCCESS, status=status.HTTP_200_OK)
+        return Response(FAIL, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+class NotificationUpdateView(APIView):
+    def post(self, request):
+        user = request.user
+        noti_rank = request.POST.get('noti_rank')
+        noti_chat = request.POST.get('noti_chat')
+        noti_due = request.POST.get('noti_due')
+        
+        user.noti_rank = noti_rank
+        user.noti_chat = noti_chat
+        user.noti_due = noti_due
+        user.save()
+            
+        return Response(SUCCESS, status=status.HTTP_200_OK)

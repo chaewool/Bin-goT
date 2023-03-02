@@ -8,7 +8,6 @@ class User(AbstractUser):
     noti_rank = models.BooleanField(null=False, default=True)
     noti_due = models.BooleanField(null=False, default=True)
     noti_chat = models.BooleanField(null=False, default=True)
-    is_activated = models.BooleanField(null=False, default=True)
 
     def __str__(self) -> str:
         return self.username
