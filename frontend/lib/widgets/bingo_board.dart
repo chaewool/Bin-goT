@@ -1,6 +1,7 @@
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -8,14 +9,28 @@ import 'package:flutter/material.dart';
 class BingoBoard extends StatelessWidget {
   final int bingoSize;
   final String font;
-  const BingoBoard({super.key, required this.bingoSize, required this.font});
+  final String? background;
+  const BingoBoard(
+      {super.key,
+      required this.bingoSize,
+      required this.font,
+      this.background});
 
   @override
   Widget build(BuildContext context) {
-    return CustomBoxContainer(
-      hasRoundEdge: false,
-      color: blackColor,
-      child: Column(
+    return Stack(children: [
+      CustomBoxContainer(
+        hasRoundEdge: false,
+        color: blackColor,
+        child: background != null
+            ? ModifiedImage(
+                image: background!,
+                width: 400,
+                height: 270,
+              )
+            : const SizedBox(),
+      ),
+      Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           for (int i = 0; i < bingoSize; i += 1)
@@ -32,7 +47,7 @@ class BingoBoard extends StatelessWidget {
             ),
         ],
       ),
-    );
+    ]);
   }
 }
 
@@ -53,12 +68,10 @@ class EachBingo extends StatelessWidget {
           showModal(context: context, page: BingoModal(index: index, cnt: cnt)),
       child: CustomBoxContainer(
         color: greyColor,
+        width: 100,
+        height: 70,
         hasRoundEdge: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 26,
-            horizontal: 26,
-          ),
+        child: Center(
           child: CustomText(
             content: '빙고칸',
             fontSize: FontSize.textSize,

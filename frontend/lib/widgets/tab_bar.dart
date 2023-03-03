@@ -23,6 +23,15 @@ class BingoTabBar extends StatefulWidget {
 }
 
 class _BingoTabBarState extends State<BingoTabBar> {
+  int? background;
+  ReturnVoid changeIdx(int idx) {
+    return () {
+      setState(() {
+        background = idx;
+      });
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     const List<IconData> iconList = [colorIcon, drawIcon, fontIcon, emojiIcon];
@@ -42,21 +51,20 @@ class _BingoTabBarState extends State<BingoTabBar> {
 
   Row paintTab() {
     var page = 0;
-    StringList backgroundList = [
-      iceBall,
-      plant,
-      milkyway,
-      wall,
-      gradation,
-      daySky,
-    ];
+
     void changePage() {}
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         for (int i = 3 * page; i < 3 * page + 3; i += 1)
-          ModifiedImage(image: backgroundList[i]),
+          GestureDetector(
+            onTap: () => widget.changeSelected(0, i),
+            child: ModifiedImage(
+              image: backgroundList[i],
+              boxShadow: widget.selected[0] == i ? [selectedShadow] : null,
+            ),
+          ),
       ],
     );
   }

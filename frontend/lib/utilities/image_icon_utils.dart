@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
 // logo
@@ -45,3 +46,13 @@ var milkyway = 'assets/images/greg-rakozy.jpg';
 var wall = 'assets/images/joe-woods.jpg';
 var gradation = 'assets/images/luke-chesser.jpg';
 var daySky = 'assets/images/resul-mentes.jpg';
+
+//* 배경
+StringList backgroundList = [
+  iceBall,
+  plant,
+  milkyway,
+  wall,
+  gradation,
+  daySky,
+];

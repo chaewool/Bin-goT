@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
@@ -16,7 +17,7 @@ class BingoForm extends StatefulWidget {
 
 class _BingoFormState extends State<BingoForm> {
   String font = 'RIDIBatang';
-  String? background;
+  int? backgroundIdx;
   IntList selected = [0, 0, 0];
   void changeFont(String newFont) {
     setState(() {
@@ -24,11 +25,24 @@ class _BingoFormState extends State<BingoForm> {
     });
   }
 
+  void changeBackground(int newIdx) {
+    setState(() {
+      backgroundIdx = newIdx;
+    });
+  }
+
   void changeSelected(int tabIndex, int i) {
     setState(() {
       selected[tabIndex] = i;
-      if (tabIndex == 2) {
-        changeFont(matchFont[i]);
+      switch (tabIndex) {
+        case 0:
+          changeBackground(i);
+          break;
+        case 2:
+          changeFont(matchFont[i]);
+          break;
+        default:
+          break;
       }
     });
   }
@@ -48,9 +62,11 @@ class _BingoFormState extends State<BingoForm> {
             Flexible(
               flex: 4,
               child: BingoBoard(
-                bingoSize: 3,
-                font: font,
-              ),
+                  bingoSize: 3,
+                  font: font,
+                  background: backgroundIdx != null
+                      ? backgroundList[backgroundIdx!]
+                      : null),
             ),
             Flexible(
                 flex: 4,

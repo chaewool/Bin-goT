@@ -8,6 +8,7 @@ import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/badge.dart';
+import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,29 +20,54 @@ class BingoModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ReturnVoid moveBingo(bool toRight) {
+      if (toRight) {
+        if (index < cnt - 1) {
+          return () {
+            toBack(context: context)();
+            showModal(
+                context: context,
+                page: BingoModal(
+                  index: index + 1,
+                  cnt: cnt,
+                ))();
+          };
+        }
+      } else if (0 < index) {
+        return () {
+          toBack(context: context)();
+          showModal(
+              context: context,
+              page: BingoModal(
+                index: index - 1,
+                cnt: cnt,
+              ))();
+        };
+      }
+      return () {};
+    }
+
     return CustomModal(
       buttonText: '저장',
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            CustomIconButton(onPressed: () {}, icon: leftIcon),
+            CustomIconButton(onPressed: moveBingo(false), icon: leftIcon),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                CustomText(content: '$index/$cnt', fontSize: FontSize.textSize),
-                const CustomBoxContainer(
-                  width: 100,
-                  height: 100,
-                  borderColor: blackColor,
-                  child: CustomText(
-                    content: '내용',
-                    fontSize: FontSize.textSize,
-                  ),
+                CustomText(
+                    content: '${index + 1}/$cnt', fontSize: FontSize.textSize),
+                const CustomInput(
+                  explain: '이루고 싶은 목표를 설정해주세요',
+                  needMore: true,
+                  width: 200,
+                  height: 200,
                 ),
               ],
             ),
-            CustomIconButton(onPressed: () {}, icon: rightIcon)
+            CustomIconButton(onPressed: moveBingo(true), icon: rightIcon)
           ],
         )
       ],
