@@ -4,7 +4,6 @@ from groups.models import Group
 from boards.models import BoardItem
 
 class Chat(models.Model):
-    chat_id = models.AutoField(primary_key=True, db_column='chat_id')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     content = models.TextField()
@@ -14,7 +13,6 @@ class Chat(models.Model):
         return f'[{self.created_at}] {self.group} - {self.user} : {self.content}'
 
 class Review(models.Model):
-    review_id = models.AutoField(primary_key=True, db_column='review_id')
     item = models.ForeignKey(BoardItem, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     content = models.TextField()
@@ -25,7 +23,6 @@ class Review(models.Model):
         return f'[{self.created_at}] {self.group} - {self.item} : {self.content}'
 
 class File(models.Model):
-    file_id = models.AutoField(primary_key=True, db_column='file_id')
     filename = models.CharField(max_length=255, null=False)
     filetype = models.CharField(max_length=4, null=False)
 

@@ -1,11 +1,15 @@
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
-class ServiceTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
+from .models import Badge
 
-        token['id'] = user.user_id
-        token['username'] = user.username
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ('id', 'username', 'profile', 'noti_rank', 'noti_due', 'noti_chat', 'is_active', 'groups')
 
-        return token
+
+class BadgeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Badge
+        fields = '__all__'

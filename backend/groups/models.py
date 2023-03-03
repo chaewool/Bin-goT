@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 
 class Group(models.Model):
-    group_id = models.AutoField(primary_key=True, db_column='group_id')
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(-1))
     groupname = models.CharField(max_length=20, unique=True, null=False)
     headcount = models.IntegerField(null=False)
