@@ -10,7 +10,7 @@ import logging
 
 from bingot_settings import KAKAO_REST_API_KEY
 from commons import SUCCESS, FAIL
-from .serializers import UserSerializer
+from .serializers import UserSerializer, BadgeSerializer
 from .models import Achieve, Badge
 
 User = get_user_model()
@@ -120,7 +120,14 @@ class UsernameUpdateView(APIView):
 class BadgeListView(APIView):
     def get(self, request):
         user = request.user
-        data = Achieve.objects.filter(user=user)
+        data = BadgeSerializer(Badge.objects.all(), many=True).data
+
+        for i in range(len(data)):
+            if Achieve.objects.filter(user=user, badge=data[i].get('id')).exists():
+                data[i]['has_badge'] = True
+            else:
+                data[i]['has_badge'] = False
+
         return Response(data=data, status=status.HTTP_200_OK)
         
     
