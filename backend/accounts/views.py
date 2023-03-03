@@ -64,7 +64,7 @@ class KaKaoCallBackView(APIView):
         else:
             username = user_info_response['properties']['nickname']
             user = User.objects.create(kakao_id=kakao_id, username=username)
-            badge = Badge.objects.get(id=0)
+            badge = Badge.objects.get(id=1)
             Achieve.objects.create(user=user, badge=badge)
         
         serializer = UserSerializer(user)
