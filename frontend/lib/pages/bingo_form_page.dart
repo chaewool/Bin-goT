@@ -56,17 +56,20 @@ class _BingoFormState extends State<BingoForm> {
         child: Column(
           children: [
             const Flexible(
-              flex: 1,
+              flex: 2,
               child: CustomInput(explain: '빙고 이름'),
             ),
             Flexible(
-              flex: 4,
-              child: BingoBoard(
-                  bingoSize: 3,
-                  font: font,
-                  background: backgroundIdx != null
-                      ? backgroundList[backgroundIdx!]
-                      : null),
+              flex: 5,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                child: BingoBoard(
+                    bingoSize: 3,
+                    font: font,
+                    background: backgroundIdx != null
+                        ? backgroundList[backgroundIdx!]
+                        : null),
+              ),
             ),
             Flexible(
                 flex: 4,

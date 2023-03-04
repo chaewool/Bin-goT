@@ -23,15 +23,6 @@ class BingoTabBar extends StatefulWidget {
 }
 
 class _BingoTabBarState extends State<BingoTabBar> {
-  int? background;
-  ReturnVoid changeIdx(int idx) {
-    return () {
-      setState(() {
-        background = idx;
-      });
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     const List<IconData> iconList = [colorIcon, drawIcon, fontIcon, emojiIcon];
@@ -70,13 +61,34 @@ class _BingoTabBarState extends State<BingoTabBar> {
   }
 
   SingleChildScrollView lineTab() {
+    StringList optionList = ['둥근 모서리 적용', '테두리 적용', '내부 색 선택', '투명도 조절'];
     return SingleChildScrollView(
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
           CustomBoxContainer(
             hasRoundEdge: false,
-            child: halfLogo,
+            child: Column(
+              children: [
+                for (int i = 0; i < optionList.length ~/ 2; i += 1)
+                  Row(
+                    children: [
+                      for (int j = 0; j < 2; j += 1)
+                        CustomBoxContainer(
+                          boxShadow: const [defaultShadow],
+                          width: 150,
+                          height: 40,
+                          child: Center(
+                            child: CustomText(
+                              content: optionList[2 * i + j],
+                              fontSize: FontSize.textSize,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+              ],
+            ),
             // width: MediaQuery.of(context).size.width,
           ),
         ],
