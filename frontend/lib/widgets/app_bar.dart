@@ -190,6 +190,9 @@ class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
           onPressed: () {},
           icon: saveIcon,
         ),
+        const SizedBox(
+          width: 20,
+        )
       ],
     );
   }

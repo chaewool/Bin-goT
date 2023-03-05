@@ -34,22 +34,26 @@ class BingoDetail extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              CustomIconButton(
+              IconButtonInRow(
                 onPressed:
                     toOtherPage(context: context, page: const BingoForm()),
                 icon: editIcon,
               ),
-              CustomIconButton(
+              IconButtonInRow(
                 onPressed: () {},
                 icon: deleteIcon,
-              )
+              ),
+              const SizedBox(width: 20)
             ],
           ),
-          BingoBoard(
-            bingoSize: 3,
-            font: font,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: BingoBoard(
+              isDetail: true,
+              bingoSize: 3,
+              font: font,
+            ),
           ),
-          const SizedBox(height: 30),
           CustomText(content: '달성률 : $achieve%', fontSize: FontSize.largeSize)
         ],
       ),

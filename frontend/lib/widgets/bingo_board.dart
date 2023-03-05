@@ -6,15 +6,19 @@ import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
+//* 빙고판
 class BingoBoard extends StatelessWidget {
+  final bool isDetail;
   final int bingoSize;
   final String font;
   final String? background;
-  const BingoBoard(
-      {super.key,
-      required this.bingoSize,
-      required this.font,
-      this.background});
+  const BingoBoard({
+    super.key,
+    required this.bingoSize,
+    required this.font,
+    this.background,
+    required this.isDetail,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +43,7 @@ class BingoBoard extends StatelessWidget {
               children: [
                 for (int j = 0; j < bingoSize; j += 1)
                   EachBingo(
+                    isDetail: isDetail,
                     index: bingoSize * i + j,
                     cnt: bingoSize * bingoSize,
                     font: font,
@@ -52,20 +57,26 @@ class BingoBoard extends StatelessWidget {
 }
 
 class EachBingo extends StatelessWidget {
+  final bool isDetail;
   final int index, cnt;
   final String font;
-  const EachBingo({
-    super.key,
-    required this.index,
-    required this.cnt,
-    required this.font,
-  });
+  const EachBingo(
+      {super.key,
+      required this.index,
+      required this.cnt,
+      required this.font,
+      required this.isDetail});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed:
-          showModal(context: context, page: BingoModal(index: index, cnt: cnt)),
+      onPressed: showModal(
+          context: context,
+          page: BingoModal(
+            index: index,
+            cnt: cnt,
+            isDetail: isDetail,
+          )),
       child: CustomBoxContainer(
         color: greyColor,
         width: 100,

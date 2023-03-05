@@ -15,8 +15,13 @@ import 'package:image_picker/image_picker.dart';
 
 //* 빙고
 class BingoModal extends StatelessWidget {
+  final bool isDetail;
   final int index, cnt;
-  const BingoModal({super.key, required this.index, required this.cnt});
+  const BingoModal(
+      {super.key,
+      required this.index,
+      required this.cnt,
+      required this.isDetail});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +33,7 @@ class BingoModal extends StatelessWidget {
             showModal(
                 context: context,
                 page: BingoModal(
+                  isDetail: isDetail,
                   index: index + 1,
                   cnt: cnt,
                 ))();
@@ -39,6 +45,7 @@ class BingoModal extends StatelessWidget {
           showModal(
               context: context,
               page: BingoModal(
+                isDetail: isDetail,
                 index: index - 1,
                 cnt: cnt,
               ))();
@@ -49,6 +56,12 @@ class BingoModal extends StatelessWidget {
 
     return CustomModal(
       buttonText: '저장',
+      additionalButton: isDetail
+          ? null
+          : CustomButton(
+              content: '저장 후 닫기',
+              onPressed: toBack(context: context),
+            ),
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -59,11 +72,12 @@ class BingoModal extends StatelessWidget {
               children: [
                 CustomText(
                     content: '${index + 1}/$cnt', fontSize: FontSize.textSize),
-                const CustomInput(
+                CustomInput(
                   explain: '이루고 싶은 목표를 설정해주세요',
                   needMore: true,
                   width: 200,
                   height: 200,
+                  enabled: !isDetail,
                 ),
               ],
             ),
@@ -226,13 +240,16 @@ class CustomModal extends StatelessWidget {
   final WidgetList children;
   final ReturnVoid? onPressed;
   final String buttonText;
-  const CustomModal(
-      {super.key,
-      this.title,
-      this.hasConfirm = true,
-      required this.children,
-      this.onPressed,
-      this.buttonText = '적용'});
+  final Widget? additionalButton;
+  const CustomModal({
+    super.key,
+    this.title,
+    this.hasConfirm = true,
+    required this.children,
+    this.onPressed,
+    this.buttonText = '적용',
+    this.additionalButton,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -247,15 +264,39 @@ class CustomModal extends StatelessWidget {
           : const SizedBox(),
       children: [
         ...children,
-        hasConfirm
-            ? CustomButton(onPressed: onPressed ?? () {}, content: buttonText)
-            : const SizedBox(),
-        const ExitButton(isIconType: false, buttonText: '취소'),
+        Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: additionalButton != null ? 30 : 50),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: additionalButton != null
+                ? [
+                    additionalButton!,
+                    hasConfirm
+                        ? CustomButton(
+                            onPressed: onPressed ?? toBack(context: context),
+                            content: buttonText,
+                          )
+                        : const SizedBox(),
+                    const ExitButton(isIconType: false, buttonText: '취소'),
+                  ]
+                : [
+                    hasConfirm
+                        ? CustomButton(
+                            onPressed: onPressed ?? toBack(context: context),
+                            content: buttonText,
+                          )
+                        : const SizedBox(),
+                    const ExitButton(isIconType: false, buttonText: '취소'),
+                  ],
+          ),
+        )
       ],
     );
   }
 }
 
+//* 알림 설정
 class NotificationModal extends StatefulWidget {
   const NotificationModal({super.key});
 

@@ -1,3 +1,5 @@
+import 'package:bin_got/pages/bingo_detail_page.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -50,6 +52,7 @@ class _BingoFormState extends State<BingoForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: const AppBarWithBack(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -64,6 +67,7 @@ class _BingoFormState extends State<BingoForm> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                 child: BingoBoard(
+                    isDetail: false,
                     bingoSize: 3,
                     font: font,
                     background: backgroundIdx != null
@@ -78,7 +82,8 @@ class _BingoFormState extends State<BingoForm> {
             Flexible(
               flex: 1,
               child: CustomButton(
-                onPressed: () {},
+                onPressed:
+                    toOtherPage(context: context, page: const BingoDetail()),
                 content: '완료',
                 fontSize: FontSize.textSize,
               ),
