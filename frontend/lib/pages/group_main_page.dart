@@ -7,6 +7,7 @@ import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/list.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -44,73 +45,65 @@ class GroupMain extends StatelessWidget {
         child: GroupAppBar(),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: ColWithPadding(
+          vertical: 30,
+          horizontal: 30,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomText(content: groupName, fontSize: FontSize.titleSize),
+                const SizedBox(height: 10),
+                CustomText(content: '참여 인원 $cnt/$headcount'),
+                const SizedBox(height: 10),
+                CustomText(content: '$start ~ $end'),
+              ],
+            ),
+            const SizedBox(height: 20),
+            isMember
+                ? CustomButton(
+                    onPressed: toOtherPage(
+                      context: context,
+                      page: hasBingo ? const BingoDetail() : const BingoForm(),
+                    ),
+                    content: hasBingo ? '내 빙고 보기' : '내 빙고 만들기')
+                : const SizedBox(),
+            ShowContentBox(contentTitle: '설명', content: explain),
+            ShowContentBox(contentTitle: '규칙', content: rule),
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomText(content: groupName, fontSize: FontSize.titleSize),
-                  const SizedBox(height: 10),
-                  CustomText(
-                      content: '참여 인원 $cnt/$headcount',
-                      fontSize: FontSize.textSize),
-                  const SizedBox(height: 10),
-                  CustomText(
-                      content: '$start ~ $end', fontSize: FontSize.textSize),
+                  RowWithPadding(
+                    vertical: 10,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const CustomText(content: '랭킹'),
+                      TextButton(
+                          onPressed: toOtherPage(
+                              context: context,
+                              page: const GroupRank(
+                                  cnt: 3,
+                                  achievementList: achievementList,
+                                  nicknameList: nicknameList)),
+                          child: const CustomText(
+                            content: '전체보기',
+                            fontSize: FontSize.smallSize,
+                          ))
+                    ],
+                  ),
+                  for (int i = 0; i < 3; i += 1)
+                    RankList(
+                      rank: i + 1,
+                      nickname: nicknameList[i],
+                      achievement: achievementList[i],
+                    ),
                 ],
               ),
-              const SizedBox(height: 20),
-              isMember
-                  ? CustomButton(
-                      onPressed: toOtherPage(
-                        context: context,
-                        page:
-                            hasBingo ? const BingoDetail() : const BingoForm(),
-                      ),
-                      content: hasBingo ? '내 빙고 보기' : '내 빙고 만들기')
-                  : const SizedBox(),
-              ShowContentBox(contentTitle: '설명', content: explain),
-              ShowContentBox(contentTitle: '규칙', content: rule),
-              Padding(
-                padding: const EdgeInsets.only(top: 30),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const CustomText(
-                              content: '랭킹', fontSize: FontSize.textSize),
-                          TextButton(
-                              onPressed: toOtherPage(
-                                  context: context,
-                                  page: const GroupRank(
-                                      cnt: 3,
-                                      achievementList: achievementList,
-                                      nicknameList: nicknameList)),
-                              child: const CustomText(
-                                content: '전체보기',
-                                fontSize: FontSize.smallSize,
-                              ))
-                        ],
-                      ),
-                    ),
-                    for (int i = 0; i < 3; i += 1)
-                      RankList(
-                        rank: i + 1,
-                        nickname: nicknameList[i],
-                        achievement: achievementList[i],
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: BottomBar(isMember: isMember),

@@ -8,6 +8,7 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/badge.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -46,52 +47,50 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  Padding profile(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomBadge(
-              onTap:
-                  showModal(context: context, page: const SelectBadgeModal())),
-          Row(
-            children: isEditMode
-                ? [
-                    const CustomInput(
-                      width: 150,
-                      height: 30,
+  RowWithPadding profile(BuildContext context) {
+    return RowWithPadding(
+      vertical: 20,
+      horizontal: 40,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CustomBadge(
+            onTap: showModal(context: context, page: const SelectBadgeModal())),
+        Row(
+          children: isEditMode
+              ? [
+                  const CustomInput(
+                    width: 150,
+                    height: 30,
+                  ),
+                  IconButtonInRow(
+                    icon: confirmIcon,
+                    onPressed: () {},
+                    size: 20,
+                  ),
+                  IconButtonInRow(
+                    icon: closeIcon,
+                    onPressed: changeEditMode,
+                    size: 20,
+                  ),
+                ]
+              : [
+                  SizedBox(
+                    width: 150,
+                    height: 40,
+                    child: Center(
+                      child: CustomText(
+                          content: widget.nickname,
+                          fontSize: FontSize.titleSize),
                     ),
-                    IconButtonInRow(
-                      icon: confirmIcon,
-                      onPressed: () {},
-                      size: 20,
-                    ),
-                    IconButtonInRow(
-                      icon: closeIcon,
-                      onPressed: changeEditMode,
-                      size: 20,
-                    ),
-                  ]
-                : [
-                    SizedBox(
-                      width: 150,
-                      height: 40,
-                      child: Center(
-                        child: CustomText(
-                            content: widget.nickname,
-                            fontSize: FontSize.titleSize),
-                      ),
-                    ),
-                    IconButtonInRow(
-                      onPressed: changeEditMode,
-                      icon: editIcon,
-                      size: 20,
-                    )
-                  ],
-          ),
-        ],
-      ),
+                  ),
+                  IconButtonInRow(
+                    onPressed: changeEditMode,
+                    icon: editIcon,
+                    size: 20,
+                  )
+                ],
+        ),
+      ],
     );
   }
 }
@@ -111,17 +110,16 @@ class Help extends StatelessWidget {
     return Scaffold(
       appBar: const AppBarWithBack(title: '도움말'),
       body: SingleChildScrollView(
-          child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          children: [
-            for (int i = 0; i < 3; i += 1)
-              EachAccordion(
-                question: 'Q. ${questionList[i]}',
-                answer: 'A. ${answerList[i]}',
-              ),
-          ],
-        ),
+          child: ColWithPadding(
+        horizontal: 20,
+        vertical: 10,
+        children: [
+          for (int i = 0; i < 3; i += 1)
+            EachAccordion(
+              question: 'Q. ${questionList[i]}',
+              answer: 'A. ${answerList[i]}',
+            ),
+        ],
       )),
     );
   }

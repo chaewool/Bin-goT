@@ -7,6 +7,7 @@ import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bingo_board.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -54,42 +55,41 @@ class _BingoFormState extends State<BingoForm> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: const AppBarWithBack(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        child: Column(
-          children: [
-            const Flexible(
-              flex: 2,
-              child: CustomInput(explain: '빙고 이름'),
+      body: ColWithPadding(
+        horizontal: 10,
+        vertical: 5,
+        children: [
+          const Flexible(
+            flex: 2,
+            child: CustomInput(explain: '빙고 이름'),
+          ),
+          Flexible(
+            flex: 5,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+              child: BingoBoard(
+                  isDetail: false,
+                  bingoSize: 3,
+                  font: font,
+                  background: backgroundIdx != null
+                      ? backgroundList[backgroundIdx!]
+                      : null),
             ),
-            Flexible(
-              flex: 5,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                child: BingoBoard(
-                    isDetail: false,
-                    bingoSize: 3,
-                    font: font,
-                    background: backgroundIdx != null
-                        ? backgroundList[backgroundIdx!]
-                        : null),
-              ),
+          ),
+          Flexible(
+              flex: 4,
+              child: BingoTabBar(
+                  selected: selected, changeSelected: changeSelected)),
+          Flexible(
+            flex: 1,
+            child: CustomButton(
+              onPressed:
+                  toOtherPage(context: context, page: const BingoDetail()),
+              content: '완료',
+              fontSize: FontSize.textSize,
             ),
-            Flexible(
-                flex: 4,
-                child: BingoTabBar(
-                    selected: selected, changeSelected: changeSelected)),
-            Flexible(
-              flex: 1,
-              child: CustomButton(
-                onPressed:
-                    toOtherPage(context: context, page: const BingoDetail()),
-                content: '완료',
-                fontSize: FontSize.textSize,
-              ),
-            )
-          ],
-        ),
+          )
+        ],
       ),
     );
   }

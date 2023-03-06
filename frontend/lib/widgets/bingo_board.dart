@@ -85,7 +85,6 @@ class EachBingo extends StatelessWidget {
         child: Center(
           child: CustomText(
             content: '빙고칸',
-            fontSize: FontSize.textSize,
             font: font,
           ),
         ),

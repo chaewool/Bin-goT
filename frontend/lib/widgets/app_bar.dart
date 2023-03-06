@@ -31,8 +31,10 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
         backgroundColor: whiteColor,
         title: title != null
             ? Center(
-                child:
-                    CustomText(content: title!, fontSize: FontSize.largeSize))
+                child: CustomText(
+                content: title!,
+                fontSize: FontSize.largeSize,
+              ))
             : const SizedBox(),
         leading: Padding(
           padding: const EdgeInsets.all(6),

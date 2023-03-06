@@ -4,6 +4,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/select_box.dart';
 import 'package:flutter/material.dart';
 
@@ -22,9 +23,10 @@ class SearchBar extends StatelessWidget {
     ];
     return CustomBoxContainer(
       color: whiteColor,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 17),
-        child: Column(children: [
+      child: ColWithPadding(
+        horizontal: 30,
+        vertical: 17,
+        children: [
           const TextField(
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -45,15 +47,11 @@ class SearchBar extends StatelessWidget {
           ),
           Row(
             children: const [
-              CustomCheckBox(
-                label: '공개',
-              ),
-              CustomCheckBox(
-                label: '비공개',
-              )
+              CustomCheckBox(label: '공개'),
+              CustomCheckBox(label: '비공개')
             ],
           )
-        ]),
+        ],
       ),
     );
   }

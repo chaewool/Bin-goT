@@ -9,6 +9,7 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/badge.dart';
 import 'package:bin_got/widgets/input.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -70,8 +71,7 @@ class BingoModal extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                CustomText(
-                    content: '${index + 1}/$cnt', fontSize: FontSize.textSize),
+                CustomText(content: '${index + 1}/$cnt'),
                 CustomInput(
                   explain: '이루고 싶은 목표를 설정해주세요',
                   needMore: true,
@@ -155,8 +155,8 @@ class CustomAlert extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: CustomText(content: title, fontSize: FontSize.textSize),
-      content: CustomText(content: content, fontSize: FontSize.textSize),
+      title: CustomText(content: title),
+      content: CustomText(content: content),
       actions: [
         CustomButton(
             onPressed: onPressed ?? toBack(context: context), content: '확인'),
@@ -204,28 +204,26 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 for (int j = 0; j < 3; j += 1)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        CustomBadge(
-                          onTap: () => selectBadge(3 * i + j),
-                          boxShadow: 3 * i + j == badgeIdx
-                              ? [
-                                  const BoxShadow(
-                                      blurRadius: 3,
-                                      spreadRadius: 3,
-                                      color: blueColor)
-                                ]
-                              : null,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CustomText(
-                              content: '배지명', fontSize: FontSize.textSize),
-                        )
-                      ],
-                    ),
+                  ColWithPadding(
+                    vertical: 8,
+                    horizontal: 8,
+                    children: [
+                      CustomBadge(
+                        onTap: () => selectBadge(3 * i + j),
+                        boxShadow: 3 * i + j == badgeIdx
+                            ? [
+                                const BoxShadow(
+                                    blurRadius: 3,
+                                    spreadRadius: 3,
+                                    color: blueColor)
+                              ]
+                            : null,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CustomText(content: '배지명'),
+                      )
+                    ],
                   ),
               ],
             ),
@@ -264,32 +262,29 @@ class CustomModal extends StatelessWidget {
           : const SizedBox(),
       children: [
         ...children,
-        Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: additionalButton != null ? 30 : 50),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: additionalButton != null
-                ? [
-                    additionalButton!,
-                    hasConfirm
-                        ? CustomButton(
-                            onPressed: onPressed ?? toBack(context: context),
-                            content: buttonText,
-                          )
-                        : const SizedBox(),
-                    const ExitButton(isIconType: false, buttonText: '취소'),
-                  ]
-                : [
-                    hasConfirm
-                        ? CustomButton(
-                            onPressed: onPressed ?? toBack(context: context),
-                            content: buttonText,
-                          )
-                        : const SizedBox(),
-                    const ExitButton(isIconType: false, buttonText: '취소'),
-                  ],
-          ),
+        RowWithPadding(
+          horizontal: additionalButton != null ? 30 : 50,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: additionalButton != null
+              ? [
+                  additionalButton!,
+                  hasConfirm
+                      ? CustomButton(
+                          onPressed: onPressed ?? toBack(context: context),
+                          content: buttonText,
+                        )
+                      : const SizedBox(),
+                  const ExitButton(isIconType: false, buttonText: '취소'),
+                ]
+              : [
+                  hasConfirm
+                      ? CustomButton(
+                          onPressed: onPressed ?? toBack(context: context),
+                          content: buttonText,
+                        )
+                      : const SizedBox(),
+                  const ExitButton(isIconType: false, buttonText: '취소'),
+                ],
         )
       ],
     );
@@ -340,19 +335,17 @@ class _NotificationModalState extends State<NotificationModal> {
       title: '알림 설정',
       children: [
         for (int i = 0; i < 4; i += 1)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomText(
-                    content: notificationList[i], fontSize: FontSize.textSize),
-                CustomButton(
-                  content: notificationOptions[i][idxList[i]],
-                  onPressed: () => changeIdx(i),
-                )
-              ],
-            ),
+          RowWithPadding(
+            vertical: 10,
+            horizontal: 25,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(content: notificationList[i]),
+              CustomButton(
+                content: notificationOptions[i][idxList[i]],
+                onPressed: () => changeIdx(i),
+              )
+            ],
           )
       ],
     );

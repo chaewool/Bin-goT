@@ -1,4 +1,3 @@
-import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
@@ -13,8 +12,8 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // home: const Main(),
-      // home: const Intro(),
-      home: const BingoForm(),
+      home: const Intro(),
+      // home: const BingoForm(),
       theme: ThemeData(
         fontFamily: 'RIDIBatang',
       ),

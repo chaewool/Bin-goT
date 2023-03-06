@@ -18,7 +18,7 @@ class ShowContentBox extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(content: contentTitle, fontSize: FontSize.textSize),
+          CustomText(content: contentTitle),
           const SizedBox(height: 20),
           CustomBoxContainer(
             width: 300,
@@ -26,7 +26,7 @@ class ShowContentBox extends StatelessWidget {
             borderColor: greyColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              child: CustomText(content: content, fontSize: FontSize.textSize),
+              child: CustomText(content: content),
             ),
           )
         ],
@@ -87,6 +87,7 @@ class CustomBoxContainer extends StatelessWidget {
   final double? width, height;
   final Widget? child;
   final DecorationImage? image;
+  final ReturnVoid? onTap;
   const CustomBoxContainer({
     super.key,
     this.hasRoundEdge = true,
@@ -97,21 +98,25 @@ class CustomBoxContainer extends StatelessWidget {
     this.height,
     this.image,
     this.child,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: hasRoundEdge ? BorderRadius.circular(10) : null,
-        color: color,
-        boxShadow: boxShadow,
-        border: borderColor != null ? Border.all(color: borderColor!) : null,
-        image: image,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: hasRoundEdge ? BorderRadius.circular(10) : null,
+          color: color,
+          boxShadow: boxShadow,
+          border: borderColor != null ? Border.all(color: borderColor!) : null,
+          image: image,
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }

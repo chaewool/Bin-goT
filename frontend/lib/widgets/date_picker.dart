@@ -1,5 +1,6 @@
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:bin_got/utilities/calendar_utils.dart';
@@ -57,74 +58,71 @@ class _DatePickerState extends State<DatePicker> {
     String endDay =
         _rangeEnd != null ? _rangeEnd.toString().split(' ').first : '';
 
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          TableCalendar(
-            firstDay: kFirstDay,
-            lastDay: kLastDay,
-            focusedDay: _focusedDay,
-            calendarFormat: _calendarFormat,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            rangeStartDay: _rangeStart,
-            rangeEndDay: _rangeEnd,
-            rangeSelectionMode: _rangeSelectionMode,
-            headerStyle: const HeaderStyle(
-                titleCentered: true, formatButtonVisible: false),
-            onDaySelected: (selectedDay, focusedDay) {
-              if (!isSameDay(_selectedDay, selectedDay)) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                  _rangeStart = null; // Important to clean those
-                  _rangeEnd = null;
-                  _rangeSelectionMode = RangeSelectionMode.toggledOff;
-                });
-              }
-            },
-            onRangeSelected: (start, end, focusedDay) {
+    return ColWithPadding(
+      vertical: 10,
+      horizontal: 10,
+      children: [
+        TableCalendar(
+          firstDay: kFirstDay,
+          lastDay: kLastDay,
+          focusedDay: _focusedDay,
+          calendarFormat: _calendarFormat,
+          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+          rangeStartDay: _rangeStart,
+          rangeEndDay: _rangeEnd,
+          rangeSelectionMode: _rangeSelectionMode,
+          headerStyle: const HeaderStyle(
+              titleCentered: true, formatButtonVisible: false),
+          onDaySelected: (selectedDay, focusedDay) {
+            if (!isSameDay(_selectedDay, selectedDay)) {
               setState(() {
-                _selectedDay = null;
+                _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
-                _rangeStart = start;
-                _rangeEnd = end;
-                _rangeSelectionMode = RangeSelectionMode.toggledOn;
+                _rangeStart = null; // Important to clean those
+                _rangeEnd = null;
+                _rangeSelectionMode = RangeSelectionMode.toggledOff;
               });
-            },
-            onPageChanged: (focusedDay) {
+            }
+          },
+          onRangeSelected: (start, end, focusedDay) {
+            setState(() {
+              _selectedDay = null;
               _focusedDay = focusedDay;
-            },
-            onFormatChanged: (format) {
-              if (_calendarFormat != format) {
-                // Call `setState()` when updating calendar format
-                setState(() {
-                  _calendarFormat = format;
-                });
-              }
-            },
-          ),
-          Text('시작일 : $startDay', style: const TextStyle(fontSize: 20)),
-          Text('종료일 : $endDay', style: const TextStyle(fontSize: 20)),
-          Row(
-            children: [
-              CustomButton(onPressed: () {}, content: '한 달'),
-              CustomButton(onPressed: () {}, content: '100일'),
-              CustomButton(onPressed: () {}, content: '6개월'),
-              CustomButton(onPressed: () {}, content: '1년'),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomButton(
-                  onPressed: () => toBack(context: context), content: '취소'),
-              CustomButton(
-                  onPressed: () => toBack(context: context), content: '완료')
-            ],
-          )
-        ],
-      ),
+              _rangeStart = start;
+              _rangeEnd = end;
+              _rangeSelectionMode = RangeSelectionMode.toggledOn;
+            });
+          },
+          onPageChanged: (focusedDay) {
+            _focusedDay = focusedDay;
+          },
+          onFormatChanged: (format) {
+            if (_calendarFormat != format) {
+              // Call `setState()` when updating calendar format
+              setState(() {
+                _calendarFormat = format;
+              });
+            }
+          },
+        ),
+        Text('시작일 : $startDay', style: const TextStyle(fontSize: 20)),
+        Text('종료일 : $endDay', style: const TextStyle(fontSize: 20)),
+        Row(
+          children: [
+            CustomButton(onPressed: () {}, content: '한 달'),
+            CustomButton(onPressed: () {}, content: '100일'),
+            CustomButton(onPressed: () {}, content: '6개월'),
+            CustomButton(onPressed: () {}, content: '1년'),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomButton(onPressed: toBack(context: context), content: '취소'),
+            CustomButton(onPressed: toBack(context: context), content: '완료')
+          ],
+        )
+      ],
     );
   }
 }

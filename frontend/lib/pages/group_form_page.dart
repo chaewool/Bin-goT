@@ -9,6 +9,7 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/select_box.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -31,26 +32,26 @@ class _GroupFirstFormState extends State<GroupFirstForm> {
     // }
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CustomInput(explain: '그룹명을 입력하세요'),
-                const CustomInput(explain: '참여인원', onlyNum: true),
-                const InputDate(explain: '기간'),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const [
-                    SelectBox(selectList: bingoSize, width: 60, height: 50),
-                    SelectBox(selectList: joinMethod, width: 150, height: 50),
-                  ],
-                ),
-                const CustomCheckBox(label: '공개 여부'),
-                const CustomInput(explain: '그룹 가입 시 비밀번호'),
-              ],
-            ),
+          child: ColWithPadding(
+            horizontal: 30,
+            vertical: 40,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CustomInput(explain: '그룹명을 입력하세요'),
+              const CustomInput(explain: '참여인원', onlyNum: true),
+              const InputDate(explain: '기간'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: const [
+                  SelectBox(selectList: bingoSize, width: 60, height: 50),
+                  SelectBox(selectList: joinMethod, width: 150, height: 50),
+                ],
+              ),
+              const CustomCheckBox(label: '공개 여부'),
+              const CustomInput(explain: '그룹 가입 시 비밀번호'),
+            ],
           ),
         ),
         bottomNavigationBar: const FormBottomBar(isFirstPage: true));
@@ -64,10 +65,12 @@ class GroupSecondForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const CustomInput(explain: '그룹 설명을 입력하세요', needMore: true),
               const CustomInput(explain: '그룹 규칙을 입력하세요', needMore: true),
@@ -105,7 +108,8 @@ class GroupCreateCompleted extends StatelessWidget {
     }
 
     return Scaffold(
-      body: Column(
+      body: ColWithPadding(
+        vertical: 60,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           const CustomText(
@@ -125,7 +129,6 @@ class GroupCreateCompleted extends StatelessWidget {
             child: Center(
               child: CustomText(
                 content: message,
-                fontSize: FontSize.textSize,
                 center: true,
               ),
             ),
@@ -133,9 +136,14 @@ class GroupCreateCompleted extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CustomIconButton(
-                  onPressed: shareToFriends, icon: shareIcon),
-              CustomIconButton(onPressed: copyText, icon: copyIcon),
+              const IconButtonInRow(
+                onPressed: shareToFriends,
+                icon: shareIcon,
+              ),
+              IconButtonInRow(
+                onPressed: copyText,
+                icon: copyIcon,
+              ),
             ],
           ),
           CustomButton(

@@ -4,6 +4,7 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +24,11 @@ class GroupList extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const CustomText(content: '미라클 모닝', fontSize: FontSize.textSize),
+            const CustomText(content: '미라클 모닝'),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const CustomText(content: 'D-day', fontSize: FontSize.textSize),
+                const CustomText(content: 'D-day'),
                 const SizedBox(height: 5),
                 isSearchMode
                     ? const CustomText(
@@ -73,9 +74,7 @@ class RankList extends StatelessWidget {
             child: CustomText(content: '$rank', fontSize: FontSize.largeSize),
           ),
           const SizedBox(width: 30),
-          CustomText(
-              content: '$nickname / $achievement%',
-              fontSize: FontSize.textSize),
+          CustomText(content: '$nickname / $achievement%'),
         ],
       ),
     );
@@ -108,7 +107,7 @@ class MemberList extends StatelessWidget {
                 shape: BoxShape.circle, border: Border.all(color: greyColor)),
             child: image,
           ),
-          CustomText(content: nickname, fontSize: FontSize.textSize),
+          CustomText(content: nickname),
           Row(
             children: [
               isMember
@@ -149,19 +148,14 @@ class CustomList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      child: GestureDetector(
+      child: CustomBoxContainer(
         onTap: onTap,
-        child: Container(
-          height: height,
-          width: width,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: boxShadow,
-              color: whiteColor),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: child,
-          ),
+        height: height,
+        width: width,
+        boxShadow: boxShadow,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: child,
         ),
       ),
     );
@@ -181,9 +175,9 @@ class BingoList extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: const [
-          CustomText(content: '빙고 이름', fontSize: FontSize.textSize),
-          CustomText(content: '그룹 이름', fontSize: FontSize.textSize),
-          CustomText(content: 'D-day', fontSize: FontSize.textSize),
+          CustomText(content: '빙고 이름'),
+          CustomText(content: '그룹 이름'),
+          CustomText(content: 'D-day'),
         ],
       ),
     );

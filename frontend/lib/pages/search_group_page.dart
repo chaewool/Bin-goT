@@ -1,5 +1,6 @@
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/list.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/select_box.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +17,11 @@ class SearchGroup extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(children: [
           const SearchBar(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
-                SelectBox(selectList: dateFilter, width: 100, height: 50),
-              ],
-            ),
+          const RowWithPadding(
+            horizontal: 25,
+            children: [
+              SelectBox(selectList: dateFilter, width: 100, height: 50),
+            ],
           ),
           for (int i = 0; i < 10; i += 1) const GroupList(isSearchMode: true),
         ]),

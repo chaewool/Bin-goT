@@ -1,4 +1,3 @@
-import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
@@ -24,16 +23,12 @@ class _EachAccordionState extends State<EachAccordion> {
             headerBuilder: (context, isExpended) => Center(
               child: CustomText(
                 content: widget.question,
-                fontSize: FontSize.textSize,
               ),
             ),
             body: Padding(
               padding: const EdgeInsets.only(bottom: 15),
               child: Center(
-                child: CustomText(
-                  content: widget.answer,
-                  fontSize: FontSize.textSize,
-                ),
+                child: CustomText(content: widget.answer),
               ),
             ),
             isExpanded: accordianState,

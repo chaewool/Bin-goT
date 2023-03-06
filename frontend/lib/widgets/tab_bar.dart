@@ -7,6 +7,7 @@ import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/list.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +63,14 @@ class _BingoTabBarState extends State<BingoTabBar> {
 
   SingleChildScrollView lineTab() {
     StringList optionList = ['둥근 모서리 적용', '테두리 적용', '내부 색 선택', '투명도 조절'];
+    BoolList selectedList = [false, false];
+
+    void changeSelected(int index) {
+      setState(() {
+        selectedList[index] = !selectedList[index];
+      });
+    }
+
     return SingleChildScrollView(
       child: Row(
         mainAxisSize: MainAxisSize.max,
@@ -75,14 +84,14 @@ class _BingoTabBarState extends State<BingoTabBar> {
                     children: [
                       for (int j = 0; j < 2; j += 1)
                         CustomBoxContainer(
-                          boxShadow: const [defaultShadow],
+                          onTap: () => changeSelected(i),
+                          boxShadow: i < 2 && selectedList[i]
+                              ? [selectedShadow]
+                              : const [defaultShadow],
                           width: 150,
                           height: 40,
                           child: Center(
-                            child: CustomText(
-                              content: optionList[2 * i + j],
-                              fontSize: FontSize.textSize,
-                            ),
+                            child: CustomText(content: optionList[2 * i + j]),
                           ),
                         ),
                     ],
@@ -106,23 +115,20 @@ class _BingoTabBarState extends State<BingoTabBar> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               for (int j = 0; j < 2; j += 1)
-                GestureDetector(
+                CustomBoxContainer(
                   onTap: () => widget.changeSelected(2, 2 * i + j),
-                  child: CustomBoxContainer(
-                    width: 150,
-                    height: 40,
-                    boxShadow: widget.selected[2] != 2 * i + j
-                        ? const [defaultShadow]
-                        : const [selectedShadow],
-                    child: Center(
-                      child: CustomText(
-                        content: showedFont[2 * i + j],
-                        fontSize: FontSize.textSize,
-                        font: matchFont[2 * i + j],
-                      ),
+                  width: 150,
+                  height: 40,
+                  boxShadow: widget.selected[2] != 2 * i + j
+                      ? const [defaultShadow]
+                      : const [selectedShadow],
+                  child: Center(
+                    child: CustomText(
+                      content: showedFont[2 * i + j],
+                      font: matchFont[2 * i + j],
                     ),
-                    // width: MediaQuery.of(context).size.width,
                   ),
+                  // width: MediaQuery.of(context).size.width,
                 ),
             ],
           ),
@@ -237,19 +243,17 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
     return CustomTextTabBar(
       tabTitles: const ['내 그룹', '내 빙고'],
       onChange: changeTab,
-      upperView: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            for (int i = 0; i < 3; i += 1)
-              CustomTextButton(
-                content: presentOptions[i][idxList[presentIdx][i]],
-                fontSize: FontSize.smallSize,
-                onTap: () => changeIdx(i),
-              ),
-          ],
-        ),
+      upperView: RowWithPadding(
+        vertical: 20,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          for (int i = 0; i < 3; i += 1)
+            CustomTextButton(
+              content: presentOptions[i][idxList[presentIdx][i]],
+              fontSize: FontSize.smallSize,
+              onTap: () => changeIdx(i),
+            ),
+        ],
       ),
       listItems: [
         [
