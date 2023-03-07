@@ -78,6 +78,7 @@ class CustomIconButton extends StatelessWidget {
       ),
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(),
+      iconSize: size,
     );
   }
 }

@@ -147,7 +147,7 @@ class GroupCreateCompleted extends StatelessWidget {
             ],
           ),
           CustomButton(
-            content: '닫기',
+            content: '생성된 그룹으로 가기',
             onPressed: toOtherPage(context: context, page: const GroupMain()),
           )
         ],

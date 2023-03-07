@@ -8,3 +8,4 @@ typedef FuncList = List<ReturnVoid>;
 typedef BoxShadowList = List<BoxShadow>;
 typedef ImageList = List<Image>;
 typedef BoolList = List<bool>;
+typedef IconDataList = List<IconData>;

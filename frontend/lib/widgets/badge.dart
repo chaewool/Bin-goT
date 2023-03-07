@@ -3,9 +3,9 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
 class CustomBadge extends StatefulWidget {
-  final ReturnVoid onTap;
+  final ReturnVoid? onTap;
   final List<BoxShadow>? boxShadow;
-  const CustomBadge({super.key, required this.onTap, this.boxShadow});
+  const CustomBadge({super.key, this.onTap, this.boxShadow});
 
   @override
   State<CustomBadge> createState() => _CustomBadgeState();

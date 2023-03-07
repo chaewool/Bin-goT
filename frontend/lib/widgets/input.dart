@@ -1,4 +1,5 @@
 import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,8 @@ class CustomInput extends StatelessWidget {
   final String? explain;
   final bool needMore, onlyNum, enabled;
   final double? width, height;
+  final bool filled;
+  final Color filledColor;
 
   const CustomInput({
     super.key,
@@ -16,6 +19,8 @@ class CustomInput extends StatelessWidget {
     this.enabled = true,
     this.width,
     this.height,
+    this.filled = false,
+    this.filledColor = whiteColor,
   });
 
   @override
@@ -27,6 +32,8 @@ class CustomInput extends StatelessWidget {
         height: height,
         child: TextField(
           decoration: InputDecoration(
+            filled: filled,
+            fillColor: filledColor,
             border: const OutlineInputBorder(),
             hintText: explain,
           ),
