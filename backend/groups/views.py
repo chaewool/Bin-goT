@@ -1,13 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import boto3
 from datetime import datetime
 import json
 
-from bingot_settings import AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY, AWS_S3_BUCKET_NAME
-from commons import SUCCESS, FAIL
-from .serializers import GroupCreateSerializer, GroupDetailSerializer
+from commons import SUCCESS, FAIL, upload_image, delete_image
+from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer
 from .models import Group, Participate
 
 class GroupCreateView(APIView):
@@ -42,21 +40,9 @@ class GroupCreateView(APIView):
             if img != None:
                 serializer.save(leader=user, period=period, has_img=True)
                 
-                s3_client = boto3.client(
-                    's3',
-                    aws_access_key_id     = AWS_S3_ACCESS_KEY_ID,
-                    aws_secret_access_key = AWS_S3_SECRET_ACCESS_KEY
-                )
                 url = 'groups' + '/' + str(serializer.data.get('id'))
                 
-                s3_client.upload_fileobj(
-                    img, 
-                    AWS_S3_BUCKET_NAME, 
-                    url, 
-                    ExtraArgs={
-                        "ContentType": img.content_type
-                    }
-                )
+                upload_image(url, img)
             else:
                 serializer.save(leader=user, period=period, has_img=False)
         
@@ -113,12 +99,30 @@ class GroupDetailView(APIView):
 
 
 class GroupUpdateView(APIView):
-    def put(self, request):
+    def put(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
         
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+        if user == group.leader:
+            serializer = GroupUpdateSerializer(instance=group, data=request.data)
+            
+            if serializer.is_valid(raise_exception=True):
+                url = 'groups' + '/' + str(group.id)
+                
+                if img != None:
+                    img = request.FILES.get('img')    
+                    upload_image(url, img)
+                    serializer.save(has_img=True)
+                else:
+                    if group.has_img:
+                        delete_image(url)
+                    serializer.save(has_img=False)
+                
+                return Response(data=SUCCESS, status=status.HTTP_200_OK)
+        return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GroupDeleteView(APIView):
-    def delete(self, request):
+    def delete(self, request, group_id):
         
         return Response(data=SUCCESS, status=status.HTTP_200_OK)
