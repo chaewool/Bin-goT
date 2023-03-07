@@ -7,7 +7,8 @@ import json
 
 from bingot_settings import AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY, AWS_S3_BUCKET_NAME
 from commons import SUCCESS, FAIL
-from .serializers import GroupCreateSerializer
+from .serializers import GroupCreateSerializer, GroupDetailSerializer
+from .models import Group, Participate
 
 class GroupCreateView(APIView):
     def post(self, request):
@@ -59,19 +60,60 @@ class GroupCreateView(APIView):
             else:
                 serializer.save(leader=user, period=period, has_img=False)
         
-        data = {**SUCCESS, 'group_id': serializer.data.get('id')}
+        group_id = serializer.data.get('id')
+        if is_public:
+            num = len(Participate.objects.all())
+            rand_name = f'익명의 참여자 {num + 1}'
+            Participate.objects.create(user=user, group=Group.objects.get(id=group_id), is_banned=False, rand_name=rand_name)
+        else:
+            Participate.objects.create(user=user, group=Group.objects.get(id=group_id), is_banned=False)
+        
+        data = {**SUCCESS, 'group_id': group_id}
             
         return Response(data=data, status=status.HTTP_200_OK)
 
 
 class GroupDetailView(APIView):
-    def get(self, request):
+    def post(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        password = request.POST.get('password')
         
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+        rand_name = user.username
+        participate = Participate.objects.filter(user=user, group=group)
+        
+        # 그룹 가입 여부 확인
+        if participate.exists():
+            # 강제 탈퇴 여부 확인
+            if participate.is_banned:
+                data = {**FAIL, 'message': '탈퇴 처리된 그룹입니다.'}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            
+            if group.leader == user:
+                is_participant = 2
+            else:
+                is_participant = 1
+            
+            # 공개 그룹인 경우 익명 닉네임 표시
+            if group.is_public:
+                rand_name = participate.rand_name
+                
+        else:
+            # 비밀번호 확인
+            if not group.is_public and password != group.password:
+                data = {**FAIL, 'message': '잘못된 비밀번호입니다.'}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            
+            is_participant = 0
+
+        serializer = GroupDetailSerializer(group)
+        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name}
+        
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class GroupUpdateView(APIView):
-    def update(self, request):
+    def put(self, request):
         
         return Response(data=SUCCESS, status=status.HTTP_200_OK)
 
