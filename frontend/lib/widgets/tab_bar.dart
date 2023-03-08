@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 
 //* 빙고 생성 탭
 class BingoTabBar extends StatefulWidget {
-  final IntList selected;
+  final List<dynamic> selected;
   final void Function(int tabIndex, int i) changeSelected;
   const BingoTabBar(
       {super.key, required this.selected, required this.changeSelected});
@@ -36,15 +36,20 @@ class _BingoTabBarState extends State<BingoTabBar> {
               child: CustomIcon(icon: icon),
             ),
         ],
-        views: [paintTab(), lineTab(), fontTab(), stickerTab()],
+        views: [
+          paintTab(),
+          optionOrFontTab(1),
+          optionOrFontTab(2),
+          stickerTab()
+        ],
       ),
     );
   }
 
+  // * 배경 화면
   Row paintTab() {
     var page = 0;
 
-    void changePage() {}
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -61,71 +66,41 @@ class _BingoTabBarState extends State<BingoTabBar> {
     );
   }
 
-  SingleChildScrollView lineTab() {
-    StringList optionList = ['둥근 모서리 적용', '테두리 적용', '내부 색 선택', '투명도 조절'];
-    BoolList selectedList = [false, false];
-
-    void changeSelected(int index) {
-      setState(() {
-        selectedList[index] = !selectedList[index];
-      });
+  Column optionOrFontTab(int index) {
+    StringList optionList = ['둥근 모서리 적용', '테두리 적용', '내부 색 선택', '빙고칸 간격 조절'];
+    BoxShadowList applyBoxShadow(int i, int j) {
+      if (index == 1) {
+        switch (i + j) {
+          case 2:
+            if (widget.selected[1][2] == whiteColor) {
+            } else {}
+        }
+      }
+      return widget.selected[2] != 2 * i + j
+          ? const [defaultShadow]
+          : const [selectedShadow];
     }
 
-    return SingleChildScrollView(
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          CustomBoxContainer(
-            hasRoundEdge: false,
-            child: Column(
-              children: [
-                for (int i = 0; i < optionList.length ~/ 2; i += 1)
-                  Row(
-                    children: [
-                      for (int j = 0; j < 2; j += 1)
-                        CustomBoxContainer(
-                          onTap: () => changeSelected(i),
-                          boxShadow: i < 2 && selectedList[i]
-                              ? [selectedShadow]
-                              : const [defaultShadow],
-                          width: 150,
-                          height: 40,
-                          child: Center(
-                            child: CustomText(content: optionList[2 * i + j]),
-                          ),
-                        ),
-                    ],
-                  ),
-              ],
-            ),
-            // width: MediaQuery.of(context).size.width,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Column fontTab() {
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        for (int i = 0; i < 3; i += 1)
+        for (int i = 0; i < index + 1; i += 1)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               for (int j = 0; j < 2; j += 1)
                 CustomBoxContainer(
-                  onTap: () => widget.changeSelected(2, 2 * i + j),
+                  onTap: () => widget.changeSelected(index, 2 * i + j),
                   width: 150,
                   height: 40,
-                  boxShadow: widget.selected[2] != 2 * i + j
-                      ? const [defaultShadow]
-                      : const [selectedShadow],
+                  boxShadow: applyBoxShadow(i, j),
                   child: Center(
                     child: CustomText(
-                      content: showedFont[2 * i + j],
-                      font: matchFont[2 * i + j],
+                      content: index == 2
+                          ? showedFont[2 * i + j]
+                          : optionList[2 * i + j],
+                      font: index == 2 ? matchFont[2 * i + j] : 'RIDIBatang',
                     ),
                   ),
                   // width: MediaQuery.of(context).size.width,

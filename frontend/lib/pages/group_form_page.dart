@@ -16,14 +16,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 //* 그룹 생성/수정 첫 번째 페이지
-class GroupFirstForm extends StatefulWidget {
-  const GroupFirstForm({super.key});
+class GroupForm extends StatefulWidget {
+  const GroupForm({super.key});
 
   @override
-  State<GroupFirstForm> createState() => _GroupFirstFormState();
+  State<GroupForm> createState() => _GroupFormState();
 }
 
-class _GroupFirstFormState extends State<GroupFirstForm> {
+class _GroupFormState extends State<GroupForm> {
   @override
   Widget build(BuildContext context) {
     const StringList bingoSize = ['N * N', '2 * 2', '3 * 3', '4 * 4', '5 * 5'];
@@ -51,27 +51,6 @@ class _GroupFirstFormState extends State<GroupFirstForm> {
               ),
               const CustomCheckBox(label: '공개 여부'),
               const CustomInput(explain: '그룹 가입 시 비밀번호'),
-            ],
-          ),
-        ),
-        bottomNavigationBar: const FormBottomBar(isFirstPage: true));
-  }
-}
-
-//* 그룹 생성/수정 두 번째 페이지
-class GroupSecondForm extends StatelessWidget {
-  const GroupSecondForm({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
               const CustomInput(explain: '그룹 설명을 입력하세요', needMore: true),
               const CustomInput(explain: '그룹 규칙을 입력하세요', needMore: true),
               GestureDetector(
@@ -85,9 +64,7 @@ class GroupSecondForm extends StatelessWidget {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: const FormBottomBar(isFirstPage: false),
-    );
+        bottomNavigationBar: const FormBottomBar());
   }
 }
 

@@ -11,13 +11,14 @@ import 'package:bin_got/widgets/bottom_bar.dart';
 
 class BingoDetail extends StatelessWidget {
   final String title, nickname, achieve, font;
-  const BingoDetail({
-    super.key,
-    this.title = '빙고판이다',
-    this.nickname = '노래 추천 좀',
-    this.achieve = '100',
-    this.font = 'RIDIBatang',
-  });
+  final Color eachColor;
+  const BingoDetail(
+      {super.key,
+      this.title = '빙고판이다',
+      this.nickname = '노래 추천 좀',
+      this.achieve = '100',
+      this.font = 'RIDIBatang',
+      this.eachColor = blackColor});
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +50,7 @@ class BingoDetail extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: BingoBoard(
+              eachColor: eachColor,
               isDetail: true,
               bingoSize: 3,
               font: font,

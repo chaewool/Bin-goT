@@ -79,24 +79,23 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
   Widget build(BuildContext context) {
     return CustomAppBar(
       leadingChild: halfLogo,
-      actions: onPressed != null
-          ? [
-              IconButtonInRow(onPressed: onPressed!, icon: searchIcon),
-              IconButtonInRow(
-                icon: myPageIcon,
-                onPressed: toOtherPage(context: context, page: const MyPage()),
-              )
-            ]
-          : [
-              const SizedBox(),
-              IconButtonInRow(
-                onPressed: toOtherPage(
-                  context: context,
-                  page: const GroupFirstForm(),
-                ),
-                icon: createGroupIcon,
-              )
-            ],
+      actions: [
+        IconButtonInRow(onPressed: onPressed!, icon: searchIcon),
+        // onPressed != null
+        //     ? IconButtonInRow(onPressed: onPressed!, icon: searchIcon)
+        //     : const SizedBox(),
+        IconButtonInRow(
+          icon: myPageIcon,
+          onPressed: toOtherPage(context: context, page: const MyPage()),
+        ),
+        IconButtonInRow(
+          onPressed: toOtherPage(
+            context: context,
+            page: const GroupForm(),
+          ),
+          icon: createGroupIcon,
+        )
+      ],
     );
   }
 
@@ -158,8 +157,7 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
       actions: [
         IconButtonInRow(
             icon: editIcon,
-            onPressed:
-                toOtherPage(context: context, page: const GroupFirstForm())),
+            onPressed: toOtherPage(context: context, page: const GroupForm())),
         IconButtonInRow(
             icon: deleteIcon,
             onPressed: showAlert(

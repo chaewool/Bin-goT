@@ -12,12 +12,14 @@ class BingoBoard extends StatelessWidget {
   final int bingoSize;
   final String font;
   final String? background;
+  final Color eachColor;
   const BingoBoard({
     super.key,
     required this.bingoSize,
     required this.font,
     this.background,
     required this.isDetail,
+    required this.eachColor,
   });
 
   @override
@@ -43,6 +45,7 @@ class BingoBoard extends StatelessWidget {
               children: [
                 for (int j = 0; j < bingoSize; j += 1)
                   EachBingo(
+                    eachColor: eachColor,
                     isDetail: isDetail,
                     index: bingoSize * i + j,
                     cnt: bingoSize * bingoSize,
@@ -60,12 +63,15 @@ class EachBingo extends StatelessWidget {
   final bool isDetail;
   final int index, cnt;
   final String font;
-  const EachBingo(
-      {super.key,
-      required this.index,
-      required this.cnt,
-      required this.font,
-      required this.isDetail});
+  final Color eachColor;
+  const EachBingo({
+    super.key,
+    required this.index,
+    required this.cnt,
+    required this.font,
+    required this.isDetail,
+    required this.eachColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +84,13 @@ class EachBingo extends StatelessWidget {
             isDetail: isDetail,
           )),
       child: CustomBoxContainer(
-        color: greyColor,
+        color: eachColor,
         width: 100,
         height: 70,
         hasRoundEdge: false,
         child: Center(
           child: CustomText(
+            color: eachColor == blackColor ? whiteColor : blackColor,
             content: '빙고칸',
             font: font,
           ),

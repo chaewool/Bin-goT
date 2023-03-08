@@ -64,8 +64,7 @@ class BottomBar extends StatelessWidget {
 
 //* 그룹 생성 페이지 하단 버튼
 class FormBottomBar extends StatelessWidget {
-  final bool isFirstPage;
-  const FormBottomBar({super.key, required this.isFirstPage});
+  const FormBottomBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -74,21 +73,11 @@ class FormBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          CustomButton(
-              onPressed: isFirstPage
-                  ? toBack(context: context)
-                  : toOtherPage(
-                      context: context,
-                      page: const GroupFirstForm(),
-                    ),
-              content: isFirstPage ? '취소' : '이전'),
+          CustomButton(onPressed: toBack(context: context), content: '취소'),
           CustomButton(
               onPressed: toOtherPage(
-                  context: context,
-                  page: isFirstPage
-                      ? const GroupSecondForm()
-                      : const GroupCreateCompleted()),
-              content: isFirstPage ? '다음' : '완료')
+                  context: context, page: const GroupCreateCompleted()),
+              content: '완료')
         ],
       ),
     );
