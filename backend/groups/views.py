@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth import get_user_model
 from datetime import datetime
 import json
 
@@ -21,7 +22,7 @@ class GroupCreateView(APIView):
         is_public = data.get('is_public')
         password = data.get('password')
         
-        if period > 365 or headcount < 1 or headcount > 30 or size < 2 or size > 5 or (is_public and password == ''):
+        if period > 365 or headcount < 1 or headcount > 30 or size < 2 or size > 5 or (not is_public and password == ''):
             return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
         
         if 271 <= period <= 365:
@@ -38,23 +39,26 @@ class GroupCreateView(APIView):
         serializer = GroupCreateSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             if img != None:
-                serializer.save(leader=user, period=period, has_img=True)
+                group = serializer.save(leader=user, period=period, has_img=True)
                 
-                url = 'groups' + '/' + str(serializer.data.get('id'))
+                url = 'groups' + '/' + str(group.id)
                 
                 upload_image(url, img)
             else:
-                serializer.save(leader=user, period=period, has_img=False)
+                group = serializer.save(leader=user, period=period, has_img=False)
         
-        group_id = serializer.data.get('id')
         if is_public:
-            num = len(Participate.objects.all())
-            rand_name = f'익명의 참여자 {num + 1}'
-            Participate.objects.create(user=user, group=Group.objects.get(id=group_id), is_banned=False, rand_name=rand_name)
+            num = [x.rand_name for x in Participate.objects.filter(group=group)]
+            rand_name = f'익명의 참여자 {len(num) + 1:0>2}'
+            for i in range(len(num)):
+                if str(num[i][-2:]) != f'{i + 1:0>2}':
+                    rand_name = f'익명의 참여자 {i + 1:0>2}'
+                    break
+            Participate.objects.create(user=user, group=group, is_banned=False, rand_name=rand_name)
         else:
-            Participate.objects.create(user=user, group=Group.objects.get(id=group_id), is_banned=False)
+            Participate.objects.create(user=user, group=group, is_banned=False)
         
-        data = {**SUCCESS, 'group_id': group_id}
+        data = {**SUCCESS, 'group_id': group.id}
             
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -102,24 +106,82 @@ class GroupUpdateView(APIView):
     def put(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
+        data = json.loads(request.data.get('data'))
+
+        if not data['groupname']:
+            data['groupname'] = group.groupname
+        
+        if not data['headcount']:
+            data['headcount'] = group.headcount
+
+        if data['headcount'] < 1 or data['headcount'] > 30:
+            return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
         
         if user == group.leader:
-            serializer = GroupUpdateSerializer(instance=group, data=request.data)
-            
+            serializer = GroupUpdateSerializer(instance=group, data=data)
+
             if serializer.is_valid(raise_exception=True):
+                img = request.FILES.get('img')    
                 url = 'groups' + '/' + str(group.id)
                 
                 if img != None:
-                    img = request.FILES.get('img')    
                     upload_image(url, img)
                     serializer.save(has_img=True)
                 else:
-                    if group.has_img:
-                        delete_image(url)
-                    serializer.save(has_img=False)
+                    serializer.save()
                 
                 return Response(data=SUCCESS, status=status.HTTP_200_OK)
         return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GroupJoinView(APIView):
+    def post(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+
+        if not Participate.objects.filter(user=user, group=group).exists():
+            if group.is_public:
+                num = [x.rand_name for x in Participate.objects.filter(group=group)]
+                rand_name = f'익명의 참여자 {len(num) + 1:0>2}'
+                for i in range(len(num)):
+                    if str(num[i][-2:]) != f'{i + 1:0>2}':
+                        rand_name = f'익명의 참여자 {i + 1:0>2}'
+                        break
+                Participate.objects.create(user=user, group=group, is_banned=False, rand_name=rand_name)
+                return Response(data=SUCCESS, status=status.HTTP_200_OK)
+            
+            Participate.objects.create(user=user, group=group, is_banned=True)
+            return Response(data=FAIL, status=status.HTTP_200_OK)
+        
+        data = {**FAIL, 'message': '이미 가입한 그룹입니다.'}
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GroupGrantView(APIView):
+    def post(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        applicant_id = request.POST.get('applicant_id')
+        grant = request.POST.get('grant')
+
+        if group.leader == user:
+            applicant = get_user_model().objects.get(id=applicant_id)
+            participate = Participate.objects.filter(user=applicant, group=group)
+
+            if participate.is_banned and not grant:
+                pass
+            elif participate.is_banned and grant:
+                participate.is_banned = False
+                participate.save()
+            elif not participate.is_banned and not grant:
+                participate.is_banned = True
+                participate.save()
+
+            return Response(data=SUCCESS, status=status.HTTP_200_OK)
+        
+        data = {**FAIL, 'message': '그룹장이 아닙니다.'}
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        
 
 
 class GroupDeleteView(APIView):
