@@ -6,6 +6,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/badge.dart';
 import 'package:bin_got/widgets/input.dart';
@@ -15,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 //* 빙고
-class BingoModal extends StatelessWidget {
+class BingoModal extends StatefulWidget {
   final bool isDetail;
   final int index, cnt;
   const BingoModal(
@@ -25,65 +26,104 @@ class BingoModal extends StatelessWidget {
       required this.isDetail});
 
   @override
+  State<BingoModal> createState() => _BingoModalState();
+}
+
+class _BingoModalState extends State<BingoModal> {
+  @override
   Widget build(BuildContext context) {
     ReturnVoid moveBingo(bool toRight) {
       if (toRight) {
-        if (index < cnt - 1) {
+        if (widget.index < widget.cnt - 1) {
           return () {
             toBack(context: context)();
             showModal(
                 context: context,
                 page: BingoModal(
-                  isDetail: isDetail,
-                  index: index + 1,
-                  cnt: cnt,
+                  isDetail: widget.isDetail,
+                  index: widget.index + 1,
+                  cnt: widget.cnt,
                 ))();
           };
         }
-      } else if (0 < index) {
+      } else if (0 < widget.index) {
         return () {
           toBack(context: context)();
           showModal(
               context: context,
               page: BingoModal(
-                isDetail: isDetail,
-                index: index - 1,
-                cnt: cnt,
+                isDetail: widget.isDetail,
+                index: widget.index - 1,
+                cnt: widget.cnt,
               ))();
         };
       }
       return () {};
     }
 
+    bool isChecked = false;
+    void Function(bool?) changeCheckState(bool? state) {
+      return (bool? state) => setState(() {
+            isChecked = !isChecked;
+          });
+    }
+
     return CustomModal(
       buttonText: '저장',
-      additionalButton: isDetail
+      additionalButton: widget.isDetail
           ? null
           : CustomButton(
               content: '저장 후 닫기',
               onPressed: toBack(context: context),
             ),
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            CustomIconButton(onPressed: moveBingo(false), icon: leftIcon),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+            CustomText(content: '${widget.index + 1}/${widget.cnt}'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                CustomText(content: '${index + 1}/$cnt'),
+                CustomIconButton(onPressed: moveBingo(false), icon: leftIcon),
                 CustomInput(
                   explain: '이루고 싶은 목표를 설정해주세요',
                   needMore: true,
                   width: 200,
                   height: 200,
-                  enabled: !isDetail,
+                  enabled: !widget.isDetail,
+                  fontSize: FontSize.textSize,
                 ),
+                CustomIconButton(onPressed: moveBingo(true), icon: rightIcon)
               ],
             ),
-            CustomIconButton(onPressed: moveBingo(true), icon: rightIcon)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomCheckBox(
+                  label: '횟수 체크',
+                  onChange: changeCheckState(!isChecked),
+                  value: isChecked,
+                ),
+                isChecked
+                    ? const CustomBoxContainer(
+                        child: CustomInput(
+                          width: 100,
+                          height: 40,
+                          onlyNum: true,
+                          explain: '숫자 입력',
+                        ),
+                      )
+                    : const SizedBox(),
+                isChecked
+                    ? const CustomText(
+                        content: '회',
+                        fontSize: FontSize.smallSize,
+                      )
+                    : const SizedBox()
+              ],
+            ),
           ],
-        )
+        ),
       ],
     );
   }

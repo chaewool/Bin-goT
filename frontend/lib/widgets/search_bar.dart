@@ -46,9 +46,17 @@ class SearchBar extends StatelessWidget {
             ],
           ),
           Row(
-            children: const [
-              CustomCheckBox(label: '공개'),
-              CustomCheckBox(label: '비공개')
+            children: [
+              CustomCheckBox(
+                label: '공개',
+                onChange: (p0) {},
+                value: true,
+              ),
+              CustomCheckBox(
+                label: '비공개',
+                onChange: (p0) {},
+                value: true,
+              )
             ],
           )
         ],

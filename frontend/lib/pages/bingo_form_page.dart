@@ -22,20 +22,21 @@ class _BingoFormState extends State<BingoForm> {
   String font = 'RIDIBatang';
   int? backgroundIdx;
   List<dynamic> selected = [
-    0,
+    null,
     [false, false, false, 0],
     0
   ];
+
+  void changeOption(int i) {
+    selected[1][i] = !selected[1][i];
+  }
+
   void changeFont(String newFont) {
-    setState(() {
-      font = newFont;
-    });
+    font = newFont;
   }
 
   void changeBackground(int newIdx) {
-    setState(() {
-      backgroundIdx = newIdx;
-    });
+    backgroundIdx = backgroundIdx != newIdx ? newIdx : null;
   }
 
   void changeSelected(int tabIndex, int i) {
@@ -46,7 +47,14 @@ class _BingoFormState extends State<BingoForm> {
           changeBackground(i);
           break;
         case 1:
-          // 옵션 목록
+          switch (i) {
+            case 3:
+              selected[tabIndex][i] += selected[tabIndex][i] < 2 ? 1 : -2;
+              break;
+            default:
+              changeOption(i);
+              break;
+          }
           break;
         case 2:
           selected[tabIndex] = i;
@@ -76,7 +84,10 @@ class _BingoFormState extends State<BingoForm> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               child: BingoBoard(
-                eachColor: selected[1][2] ? whiteColor : blackColor,
+                gap: selected[1][3],
+                hasRoundEdge: selected[1][0],
+                eachColor: selected[1][2] ? blackColor : whiteColor,
+                hasBorder: selected[1][1],
                 isDetail: false,
                 bingoSize: widget.bingoSize,
                 font: font,

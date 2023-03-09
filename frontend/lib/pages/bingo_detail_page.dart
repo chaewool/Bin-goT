@@ -50,6 +50,7 @@ class BingoDetail extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: BingoBoard(
+              gap: 1,
               eachColor: eachColor,
               isDetail: true,
               bingoSize: 3,

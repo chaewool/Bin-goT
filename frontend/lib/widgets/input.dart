@@ -10,6 +10,7 @@ class CustomInput extends StatelessWidget {
   final double? width, height;
   final bool filled;
   final Color filledColor;
+  final FontSize fontSize;
 
   const CustomInput({
     super.key,
@@ -21,6 +22,7 @@ class CustomInput extends StatelessWidget {
     this.height,
     this.filled = false,
     this.filledColor = whiteColor,
+    this.fontSize = FontSize.smallSize,
   });
 
   @override
@@ -37,12 +39,14 @@ class CustomInput extends StatelessWidget {
             border: const OutlineInputBorder(),
             hintText: explain,
           ),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: convertedFontSize(fontSize)),
           maxLines: needMore ? 7 : 1,
           keyboardType: onlyNum ? TextInputType.number : null,
           inputFormatters:
               onlyNum ? [FilteringTextInputFormatter.digitsOnly] : null,
           enabled: enabled,
+          textAlign: TextAlign.start,
+          textAlignVertical: TextAlignVertical.bottom,
         ),
       ),
     );

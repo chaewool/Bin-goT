@@ -31,10 +31,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
       hasRoundEdge: false,
       child: ContainedTabBarView(
         tabs: [
-          for (IconData icon in iconList)
-            Tab(
-              child: CustomIcon(icon: icon),
-            ),
+          for (IconData icon in iconList) Tab(child: CustomIcon(icon: icon)),
         ],
         views: [
           paintTab(),
@@ -54,7 +51,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        for (int i = 3 * page; i < 3 * page + 3; i += 1)
+        for (int i = 2 * page; i < 2 * page + 2; i += 1)
           GestureDetector(
             onTap: () => widget.changeSelected(0, i),
             child: ModifiedImage(
@@ -66,17 +63,30 @@ class _BingoTabBarState extends State<BingoTabBar> {
     );
   }
 
+  //* 빙고칸 & font 변경
   Column optionOrFontTab(int index) {
-    StringList optionList = ['둥근 모서리 적용', '테두리 적용', '내부 색 선택', '빙고칸 간격 조절'];
+    StringList gapList = ['좁은', '보통', '넓은'];
+    String convertedColor() => widget.selected[1][2] ? '흰색' : '검은색';
+    String presentGap(int i) => gapList[i];
+
+    StringList optionList = [
+      '둥근 모서리 적용',
+      '테두리 적용',
+      '${convertedColor()}으로 변경',
+      '${presentGap(widget.selected[1][3])} 간격'
+    ];
     BoxShadowList applyBoxShadow(int i, int j) {
+      int elementIdx = 2 * i + j;
       if (index == 1) {
-        switch (i + j) {
-          case 2:
-            if (widget.selected[1][2] == whiteColor) {
-            } else {}
+        // return [defaultShadow];
+        if (elementIdx == 3) {
+          return [defaultShadow];
         }
+        return widget.selected[index][elementIdx]
+            ? const [selectedShadow]
+            : const [defaultShadow];
       }
-      return widget.selected[2] != 2 * i + j
+      return widget.selected[index] != elementIdx
           ? const [defaultShadow]
           : const [selectedShadow];
     }

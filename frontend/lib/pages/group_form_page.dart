@@ -49,7 +49,11 @@ class _GroupFormState extends State<GroupForm> {
                   SelectBox(selectList: joinMethod, width: 150, height: 50),
                 ],
               ),
-              const CustomCheckBox(label: '공개 여부'),
+              CustomCheckBox(
+                label: '공개 여부',
+                value: true,
+                onChange: (p0) {},
+              ),
               const CustomInput(explain: '그룹 가입 시 비밀번호'),
               const CustomInput(explain: '그룹 설명을 입력하세요', needMore: true),
               const CustomInput(explain: '그룹 규칙을 입력하세요', needMore: true),
