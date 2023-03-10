@@ -12,13 +12,14 @@ import 'package:bin_got/widgets/bottom_bar.dart';
 class BingoDetail extends StatelessWidget {
   final String title, nickname, achieve, font;
   final Color eachColor;
-  const BingoDetail(
-      {super.key,
-      this.title = '빙고판이다',
-      this.nickname = '노래 추천 좀',
-      this.achieve = '100',
-      this.font = 'RIDIBatang',
-      this.eachColor = blackColor});
+  const BingoDetail({
+    super.key,
+    this.title = '빙고판이다',
+    this.nickname = '노래 추천 좀',
+    this.achieve = '100',
+    this.font = 'RIDIBatang',
+    this.eachColor = blackColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,36 +29,52 @@ class BingoDetail extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CustomText(content: title, fontSize: FontSize.titleSize),
-          const SizedBox(height: 20),
-          CustomText(content: nickname, fontSize: FontSize.smallSize),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButtonInRow(
-                onPressed:
-                    toOtherPage(context: context, page: const BingoForm()),
-                icon: editIcon,
-              ),
-              IconButtonInRow(
-                onPressed: () {},
-                icon: deleteIcon,
-              ),
-              const SizedBox(width: 20)
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: BingoBoard(
-              gap: 1,
-              eachColor: eachColor,
-              isDetail: true,
-              bingoSize: 3,
-              font: font,
+          Flexible(
+              flex: 2,
+              child: CustomText(content: title, fontSize: FontSize.titleSize)),
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child:
+                  CustomText(content: nickname, fontSize: FontSize.smallSize),
             ),
           ),
-          CustomText(content: '달성률 : $achieve%', fontSize: FontSize.largeSize)
+          Flexible(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButtonInRow(
+                  onPressed:
+                      toOtherPage(context: context, page: const BingoForm()),
+                  icon: editIcon,
+                ),
+                IconButtonInRow(
+                  onPressed: () {},
+                  icon: deleteIcon,
+                ),
+                const SizedBox(width: 20)
+              ],
+            ),
+          ),
+          Flexible(
+            flex: 6,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: BingoBoard(
+                gap: 1,
+                eachColor: eachColor,
+                isDetail: true,
+                bingoSize: 3,
+                font: font,
+              ),
+            ),
+          ),
+          Flexible(
+              flex: 2,
+              child: CustomText(
+                  content: '달성률 : $achieve%', fontSize: FontSize.largeSize))
         ],
       ),
       bottomNavigationBar: const BottomBar(isMember: true),

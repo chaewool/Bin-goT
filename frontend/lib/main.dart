@@ -1,4 +1,4 @@
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,8 +11,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const GroupMain(),
-      // home: const Intro(),
+      // home: const GroupMain(),
+      home: const Intro(),
       // home: const BingoForm(),
       theme: ThemeData(
         fontFamily: 'RIDIBatang',

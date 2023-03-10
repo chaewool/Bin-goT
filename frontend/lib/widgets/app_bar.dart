@@ -80,10 +80,9 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
     return CustomAppBar(
       leadingChild: halfLogo,
       actions: [
-        IconButtonInRow(onPressed: onPressed!, icon: searchIcon),
-        // onPressed != null
-        //     ? IconButtonInRow(onPressed: onPressed!, icon: searchIcon)
-        //     : const SizedBox(),
+        onPressed != null
+            ? IconButtonInRow(onPressed: onPressed!, icon: searchIcon)
+            : const SizedBox(),
         IconButtonInRow(
           icon: myPageIcon,
           onPressed: toOtherPage(context: context, page: const MyPage()),

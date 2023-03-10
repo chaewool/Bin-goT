@@ -81,6 +81,12 @@ class _BingoModalState extends State<BingoModal> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             CustomText(content: '${widget.index + 1}/${widget.cnt}'),
+            const CustomInput(
+              width: 200,
+              height: 50,
+              explain: '제목(6자 이내)',
+              maxLength: 6,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
