@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from datetime import datetime
+from datetime import datetime, date
 import json
 
 from commons import SUCCESS, FAIL, upload_image, delete_image
@@ -124,5 +124,40 @@ class GroupUpdateView(APIView):
 
 class GroupDeleteView(APIView):
     def delete(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        
+        if user != group.leader:
+            data = {**FAIL, 'message': '요청한 사용자가 그룹장이 아닙니다.'}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        
+        if date.today() > group.start:
+            data = {**FAIL, 'message': '시작일이 지났습니다.'}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        
+        if len(Participate.objects.filter(group=group)) > 1:
+            data = {**FAIL, 'message': '참여자가 존재합니다.'}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        
+        group.delete()
+        
+        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+
+
+class GroupResignView(APIView):
+    def delete(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        participate = Participate.objects.filter(user=user, group=group)
+        
+        if not participate:
+            data = {**FAIL, 'message': '해당 그룹에 참여하지 않았습니다.'}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        
+        if date.today() > group.start:
+            data = {**FAIL, 'message': '시작일이 지났습니다.'}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        
+        participate.delete()
         
         return Response(data=SUCCESS, status=status.HTTP_200_OK)
