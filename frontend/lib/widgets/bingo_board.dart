@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
@@ -91,10 +93,11 @@ class BingoBoard extends StatelessWidget {
 class EachBingo extends StatelessWidget {
   final bool isDetail, hasRoundEdge, hasBorder;
   final int index, cnt;
-  final String font;
+  final String font, title;
   final Color eachColor;
   const EachBingo({
     super.key,
+    this.title = '빙고칸이다dkdk',
     required this.index,
     required this.cnt,
     required this.font,
@@ -107,6 +110,20 @@ class EachBingo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color convertedColor() => eachColor == blackColor ? whiteColor : blackColor;
+    String modifiedTitle() {
+      final length = title.length;
+      if (length < 4) {
+        return title;
+      } else {
+        final end = min(6, length);
+        var result = '${title.substring(0, 3)}\n${title.substring(3, end)}';
+        if (length >= 6) {
+          result += '...';
+        }
+        return result;
+      }
+    }
+
     return CustomBoxContainer(
       onTap: showModal(
         context: context,
@@ -123,7 +140,7 @@ class EachBingo extends StatelessWidget {
         child: Center(
           child: CustomText(
             color: convertedColor(),
-            content: '빙고칸',
+            content: modifiedTitle(),
             font: font,
           ),
         ),

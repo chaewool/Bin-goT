@@ -84,8 +84,7 @@ class _BingoModalState extends State<BingoModal> {
             const CustomInput(
               width: 200,
               height: 50,
-              explain: '제목(6자 이내)',
-              maxLength: 6,
+              explain: '제목',
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

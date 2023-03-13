@@ -24,7 +24,8 @@ class _BingoFormState extends State<BingoForm> {
   List<dynamic> selected = [
     null,
     [false, false, false, 0],
-    0
+    0,
+    0,
   ];
 
   void changeOption(int i) {
@@ -37,6 +38,10 @@ class _BingoFormState extends State<BingoForm> {
 
   void changeBackground(int newIdx) {
     backgroundIdx = backgroundIdx != newIdx ? newIdx : null;
+  }
+
+  void changeCheck(int newIdx) {
+    selected[3] = newIdx;
   }
 
   void changeSelected(int tabIndex, int i) {
@@ -61,6 +66,7 @@ class _BingoFormState extends State<BingoForm> {
           changeFont(matchFont[i]);
           break;
         default:
+          changeCheck(i);
           break;
       }
     });
@@ -98,9 +104,12 @@ class _BingoFormState extends State<BingoForm> {
             ),
           ),
           Flexible(
-              flex: 4,
-              child: BingoTabBar(
-                  selected: selected, changeSelected: changeSelected)),
+            flex: 4,
+            child: BingoTabBar(
+              selected: selected,
+              changeSelected: changeSelected,
+            ),
+          ),
           Flexible(
             flex: 1,
             child: Center(

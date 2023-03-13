@@ -33,12 +33,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
         tabs: [
           for (IconData icon in iconList) Tab(child: CustomIcon(icon: icon)),
         ],
-        views: [
-          paintTab(),
-          optionOrFontTab(1),
-          optionOrFontTab(2),
-          stickerTab()
-        ],
+        views: [paintTab(), optionOrFontTab(1), optionOrFontTab(2), checkTab()],
       ),
     );
   }
@@ -121,18 +116,23 @@ class _BingoTabBarState extends State<BingoTabBar> {
     );
   }
 
-  SingleChildScrollView stickerTab() {
-    return SingleChildScrollView(
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          CustomBoxContainer(
-            hasRoundEdge: false,
-            child: halfLogo,
-            // width: MediaQuery.of(context).size.width,
-          ),
-        ],
-      ),
+  Column checkTab() {
+    final iconList = [confirmIcon, closeIcon, circleIcon];
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (int i = 0; i < 3; i += 1)
+              CustomIconButton(
+                onPressed: () => widget.changeSelected(3, i),
+                icon: iconList[i],
+                size: 70,
+                color: i == widget.selected[3] ? redColor : blackColor,
+              ),
+          ],
+        ),
+      ],
     );
   }
 }
