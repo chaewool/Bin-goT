@@ -8,6 +8,6 @@ class BadgeAdmin(admin.ModelAdmin):
 class AchieveAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'badge')
 
-admin.site.register(User, UserAdmin)
+# admin.site.register(User, UserAdmin)
 admin.site.register(Badge, BadgeAdmin)
 admin.site.register(Achieve, AchieveAdmin)
