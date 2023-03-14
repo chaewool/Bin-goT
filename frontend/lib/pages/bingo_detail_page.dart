@@ -68,6 +68,7 @@ class BingoDetail extends StatelessWidget {
                 isDetail: true,
                 bingoSize: 3,
                 font: font,
+                checkIcon: 0,
               ),
             ),
           ),

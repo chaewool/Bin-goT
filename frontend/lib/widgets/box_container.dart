@@ -87,7 +87,7 @@ class CustomBoxContainer extends StatelessWidget {
   final double? width, height;
   final Widget? child;
   final DecorationImage? image;
-  final ReturnVoid? onTap;
+  final ReturnVoid? onTap, onLongPress;
   const CustomBoxContainer({
     super.key,
     this.hasRoundEdge = true,
@@ -99,11 +99,13 @@ class CustomBoxContainer extends StatelessWidget {
     this.image,
     this.child,
     this.onTap,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onLongPress: onLongPress,
       onTap: onTap,
       child: Container(
         width: width,

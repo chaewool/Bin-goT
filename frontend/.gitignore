@@ -47,3 +47,4 @@ app.*.map.json
 /lib/providers/api_list.dart
 /lib/widgets/date_picker_example.dart
 /lib/utilities/image_icon.dart
+.env

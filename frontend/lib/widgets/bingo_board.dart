@@ -1,16 +1,18 @@
 import 'dart:math';
 
 import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 //* 빙고판
-class BingoBoard extends StatelessWidget {
+class BingoBoard extends StatefulWidget {
   final bool isDetail, hasRoundEdge, hasBorder;
-  final int bingoSize, gap;
+  final int bingoSize, gap, checkIcon;
   final String font;
   final String? background;
   final Color eachColor;
@@ -22,14 +24,20 @@ class BingoBoard extends StatelessWidget {
     required this.gap,
     required this.isDetail,
     required this.eachColor,
+    required this.checkIcon,
     this.hasRoundEdge = false,
     this.hasBorder = false,
   });
 
   @override
+  State<BingoBoard> createState() => _BingoBoardState();
+}
+
+class _BingoBoardState extends State<BingoBoard> {
+  @override
   Widget build(BuildContext context) {
     double applyGap() {
-      switch (gap) {
+      switch (widget.gap) {
         case 0:
           return 0;
         case 1:
@@ -39,18 +47,18 @@ class BingoBoard extends StatelessWidget {
       }
     }
 
+    void longPressed() {}
+
     return Stack(
       children: [
         Flexible(
           flex: 3,
           fit: FlexFit.tight,
-          child: background != null
+          child: widget.background != null
               ? CustomBoxContainer(
                   hasRoundEdge: false,
                   image: DecorationImage(
-                    image: AssetImage(
-                      background!,
-                    ),
+                    image: AssetImage(widget.background!),
                     fit: BoxFit.fill,
                   ),
                 )
@@ -58,27 +66,26 @@ class BingoBoard extends StatelessWidget {
         ),
         Column(
           children: [
-            for (int i = 0; i < bingoSize; i += 1)
+            for (int i = 0; i < widget.bingoSize; i += 1)
               Flexible(
-                flex: 1,
                 child: Row(
                   children: [
-                    for (int j = 0; j < bingoSize; j += 1)
+                    for (int j = 0; j < widget.bingoSize; j += 1)
                       Flexible(
-                        flex: 1,
                         child: Padding(
                           padding: EdgeInsets.all(applyGap()),
                           child: EachBingo(
-                            hasRoundEdge: hasRoundEdge,
-                            eachColor: eachColor,
-                            isDetail: isDetail,
-                            index: bingoSize * i + j,
-                            cnt: bingoSize * bingoSize,
-                            hasBorder: hasBorder,
-                            font: font,
+                            hasRoundEdge: widget.hasRoundEdge,
+                            eachColor: widget.eachColor,
+                            isDetail: widget.isDetail,
+                            index: widget.bingoSize * i + j,
+                            cnt: widget.bingoSize * widget.bingoSize,
+                            hasBorder: widget.hasBorder,
+                            font: widget.font,
+                            checkIcon: widget.checkIcon,
                           ),
                         ),
-                      ),
+                      )
                   ],
                 ),
               ),
@@ -92,7 +99,7 @@ class BingoBoard extends StatelessWidget {
 //* 빙고칸
 class EachBingo extends StatelessWidget {
   final bool isDetail, hasRoundEdge, hasBorder;
-  final int index, cnt;
+  final int index, cnt, checkIcon;
   final String font, title;
   final Color eachColor;
   const EachBingo({
@@ -105,6 +112,7 @@ class EachBingo extends StatelessWidget {
     required this.eachColor,
     required this.hasRoundEdge,
     required this.hasBorder,
+    required this.checkIcon,
   });
 
   @override
@@ -125,6 +133,7 @@ class EachBingo extends StatelessWidget {
     }
 
     return CustomBoxContainer(
+      onLongPress: () {},
       onTap: showModal(
         context: context,
         page: BingoModal(
@@ -137,12 +146,22 @@ class EachBingo extends StatelessWidget {
         color: eachColor,
         hasRoundEdge: hasRoundEdge,
         borderColor: hasBorder ? convertedColor() : null,
-        child: Center(
-          child: CustomText(
-            color: convertedColor(),
-            content: modifiedTitle(),
-            font: font,
-          ),
+        child: Stack(
+          children: [
+            Center(
+              child: CustomText(
+                color: convertedColor(),
+                content: modifiedTitle(),
+                font: font,
+              ),
+            ),
+            Center(
+              child: CustomIcon(
+                icon: iconList[checkIcon],
+                size: 80,
+              ),
+            ),
+          ],
         ),
       ),
     );

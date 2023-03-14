@@ -41,6 +41,8 @@ const circleIcon = Icons.circle_outlined;
 const leftIcon = Icons.chevron_left_rounded;
 const rightIcon = Icons.chevron_right_rounded;
 
+final iconList = [confirmIcon, closeIcon, circleIcon];
+
 //* background image
 var iceBall = 'assets/images/aaron-burden.jpg';
 var plant = 'assets/images/annie-spratt.jpg';

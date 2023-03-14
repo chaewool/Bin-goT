@@ -100,6 +100,7 @@ class _BingoFormState extends State<BingoForm> {
                 background: backgroundIdx != null
                     ? backgroundList[backgroundIdx!]
                     : null,
+                checkIcon: selected[3],
               ),
             ),
           ),

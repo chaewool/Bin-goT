@@ -117,7 +117,6 @@ class _BingoTabBarState extends State<BingoTabBar> {
   }
 
   Column checkTab() {
-    final iconList = [confirmIcon, closeIcon, circleIcon];
     return Column(
       children: [
         Row(
@@ -128,7 +127,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
                 onPressed: () => widget.changeSelected(3, i),
                 icon: iconList[i],
                 size: 70,
-                color: i == widget.selected[3] ? redColor : blackColor,
+                color: i == widget.selected[3] ? greenColor : blackColor,
               ),
           ],
         ),
