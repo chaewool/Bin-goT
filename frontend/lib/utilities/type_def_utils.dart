@@ -1,5 +1,7 @@
+import 'package:bin_got/models/user_model.dart';
 import 'package:flutter/material.dart';
 
+//* 기본
 typedef ReturnVoid = void Function();
 typedef StringList = List<String>;
 typedef WidgetList = List<Widget>;
@@ -9,3 +11,6 @@ typedef BoxShadowList = List<BoxShadow>;
 typedef ImageList = List<Image>;
 typedef BoolList = List<bool>;
 typedef IconDataList = List<IconData>;
+
+//* api 관련
+typedef MyGroupList = List<MyGroupModel>;

@@ -272,14 +272,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.8.0"
-  kakao_flutter_sdk:
-    dependency: "direct main"
-    description:
-      name: kakao_flutter_sdk
-      sha256: "3a39edf52ee441a9d3b91932819a6f781d0a24eadc84510817e85501d109bb75"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.0"
   kakao_flutter_sdk_auth:
     dependency: transitive
     description:
@@ -296,43 +288,11 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  kakao_flutter_sdk_friend:
-    dependency: transitive
-    description:
-      name: kakao_flutter_sdk_friend
-      sha256: "42e9e6435f4ffcee21a65e2f9fec75839aca24329aabf05da9a2a4320b71218f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.0"
-  kakao_flutter_sdk_navi:
-    dependency: transitive
-    description:
-      name: kakao_flutter_sdk_navi
-      sha256: f161bd71a712caeeb2bcf60798a09765de5c8621200ff4e6ff39add30823f5c2
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.0"
   kakao_flutter_sdk_share:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: kakao_flutter_sdk_share
       sha256: "2cfd1a27d9ca98f3a442281ddade25e80535fb403533cf66b09c82d1d049f83d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.0"
-  kakao_flutter_sdk_story:
-    dependency: transitive
-    description:
-      name: kakao_flutter_sdk_story
-      sha256: f524842bf771ae4c33056c4ffa98d88df55a6179ef115db67894e56e6f5a66af
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.0"
-  kakao_flutter_sdk_talk:
-    dependency: transitive
-    description:
-      name: kakao_flutter_sdk_talk
-      sha256: "1208e498640260237c072123813dacb65370634b2b4a755690d1405dce45c6f0"
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
@@ -345,7 +305,7 @@ packages:
     source: hosted
     version: "1.4.0"
   kakao_flutter_sdk_user:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: kakao_flutter_sdk_user
       sha256: b46e0d6fd99116b320ebad2701d20ca02934a26e23003ebc3d6ae3524761bb09
@@ -605,38 +565,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
-  webview_flutter:
-    dependency: transitive
-    description:
-      name: webview_flutter
-      sha256: "392c1d83b70fe2495de3ea2c84531268d5b8de2de3f01086a53334d8b6030a88"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.4"
-  webview_flutter_android:
-    dependency: transitive
-    description:
-      name: webview_flutter_android
-      sha256: "8b3b2450e98876c70bfcead876d9390573b34b9418c19e28168b74f6cb252dbd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.10.4"
-  webview_flutter_platform_interface:
-    dependency: transitive
-    description:
-      name: webview_flutter_platform_interface
-      sha256: "812165e4e34ca677bdfbfa58c01e33b27fd03ab5fa75b70832d4b7d4ca1fa8cf"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.9.5"
-  webview_flutter_wkwebview:
-    dependency: transitive
-    description:
-      name: webview_flutter_wkwebview
-      sha256: a5364369c758892aa487cbf59ea41d9edd10f9d9baf06a94e80f1bd1b4c7bbc0
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.9.5"
   win32:
     dependency: transitive
     description:

@@ -29,6 +29,7 @@ class Intro extends StatelessWidget {
                 ],
               ),
               GestureDetector(
+                // onTap: () => login(context),
                 onTap: toOtherPage(context: context, page: const Main()),
                 child: kakaoLogin,
               ),
