@@ -10,7 +10,7 @@ class User(AbstractUser):
     noti_rank = models.BooleanField(null=False, default=True)
     noti_due = models.BooleanField(null=False, default=True)
     noti_chat = models.BooleanField(null=False, default=True)
-    groups = models.ManyToManyField(Group, through=Participate)
+    groups = models.ManyToManyField(Group, through=Participate, related_name="groups")
 
     def __str__(self) -> str:
         return self.username

@@ -12,4 +12,6 @@ urlpatterns = [
     path('<int:group_id>/join/', views.GroupJoinView.as_view(), name='group_join'),
     path('<int:group_id>/grant/', views.GroupGrantView.as_view(), name='group_grant'),
     path('<int:group_id>/resign/', views.GroupResignView.as_view(), name='group_resign'),
+    
+    path('search/', views.GroupSearchView.as_view(), name='group_search'),
 ]

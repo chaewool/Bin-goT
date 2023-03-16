@@ -5,8 +5,8 @@ from django.contrib.auth import get_user_model
 from datetime import datetime, date
 import json
 
-from commons import SUCCESS, FAIL, upload_image, delete_image
-from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer
+from commons import SUCCESS, FAIL, upload_image
+from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer
 from .models import Group, Participate
 
 class GroupCreateView(APIView):
@@ -223,3 +223,40 @@ class GroupResignView(APIView):
         participate.delete()
         
         return Response(data=SUCCESS, status=status.HTTP_200_OK)
+
+
+class GroupSearchView(APIView):
+    def get(self, request):
+        user = request.user
+        period = request.GET.get('period')
+        keyword = request.GET.get('keyword')
+        public = int(request.GET.get('public'))
+        page = int(request.GET.get('page'))
+        cnt = int(request.GET.get('cnt'))
+        
+        if period and keyword:
+            if public == 1:
+                groups = Group.objects.filter(period=period, groupname__icontains=keyword, start__gte=date.today(), is_public=True)[(page - 1) * cnt: page * cnt]
+            elif public == 2:
+                groups = Group.objects.filter(period=period, groupname__icontains=keyword, start__gte=date.today(), is_public=False)[(page - 1) * cnt: page * cnt]
+            else:
+                groups = Group.objects.filter(period=period, groupname__icontains=keyword, start__gte=date.today())[(page - 1) * cnt: page * cnt]
+        elif period and not keyword:
+            if public == 1:
+                groups = Group.objects.filter(period=period, start__gte=date.today(), is_public=True)[(page - 1) * cnt: page * cnt]
+            elif public == 2:
+                groups = Group.objects.filter(period=period, start__gte=date.today(), is_public=False)[(page - 1) * cnt: page * cnt]
+            else:
+                groups = Group.objects.filter(period=period, start__gte=date.today())[(page - 1) * cnt: page * cnt]
+        elif not period and keyword:
+            if public == 1:
+                groups = Group.objects.filter(groupname__icontains=keyword, start__lte=date.today(), is_public=True)[(page - 1) * cnt: page * cnt]
+            elif public == 2:
+                groups = Group.objects.filter(groupname__icontains=keyword, start__lte=date.today(), is_public=False)[(page - 1) * cnt: page * cnt]
+            else:
+                groups = Group.objects.filter(groupname__icontains=keyword, start__lte=date.today())[(page - 1) * cnt: page * cnt]
+        
+        data = GroupSearchSerializer(groups, many=True).data
+        data = [d for d in data if d['count'] < d['headcount']]
+        
+        return Response(data=data, status=status.HTTP_200_OK)
