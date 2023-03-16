@@ -14,23 +14,19 @@ import 'package:flutter/material.dart';
 
 class GroupMain extends StatelessWidget {
   final String groupName, start, end, explain, rule;
-  final int cnt, headcount;
+  final int cnt, headCount, groupId;
   final bool isMember, hasBingo;
   const GroupMain({
     super.key,
-    // required this.groupName,
-    // required this.start,
-    // required this.end,
-    // required this.cnt,
-    // required this.headcount,
-    this.groupName = '빙고 채울 분들!',
-    this.start = '2023년 1월 1일',
-    this.end = '2023년 12월 31일',
-    this.cnt = 5,
-    this.headcount = 10,
+    required this.groupId,
+    required this.groupName,
+    required this.start,
+    required this.end,
+    required this.cnt,
+    required this.headCount,
     this.explain = '그룹 설명이 들어갑니다',
     this.rule = '그룹 규칙이 들어갑니다',
-    this.isMember = true,
+    required this.isMember,
     this.hasBingo = false,
   });
 
@@ -55,7 +51,7 @@ class GroupMain extends StatelessWidget {
               children: [
                 CustomText(content: groupName, fontSize: FontSize.titleSize),
                 const SizedBox(height: 10),
-                CustomText(content: '참여 인원 $cnt/$headcount'),
+                CustomText(content: '참여 인원 $cnt/$headCount'),
                 const SizedBox(height: 10),
                 CustomText(content: '$start ~ $end'),
               ],

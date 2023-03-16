@@ -13,4 +13,6 @@ typedef BoolList = List<bool>;
 typedef IconDataList = List<IconData>;
 
 //* api 관련
+typedef DynamicMap = Map<String, dynamic>;
 typedef MyGroupList = List<MyGroupModel>;
+typedef DynamicMapList = List<DynamicMap>;

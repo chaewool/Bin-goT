@@ -12,32 +12,56 @@ import 'package:flutter/material.dart';
 //* 그룹 목록
 class GroupList extends StatelessWidget {
   final bool isSearchMode;
-  const GroupList({super.key, required this.isSearchMode});
+  final int groupId, headCount, count;
+  final String groupName, start, end, status;
+  const GroupList({
+    super.key,
+    required this.isSearchMode,
+    required this.groupId,
+    required this.headCount,
+    required this.count,
+    required this.start,
+    required this.end,
+    required this.groupName,
+    required this.status,
+  });
 
   @override
   Widget build(BuildContext context) {
-    const String count = '(5/10)';
+    String groupMember = '($count/$headCount)';
     return CustomList(
-        height: 70,
-        boxShadow: [shadowWithOpacity],
-        onTap: toOtherPage(context: context, page: const GroupMain()),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const CustomText(content: '미라클 모닝'),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CustomText(content: 'D-day'),
-                const SizedBox(height: 5),
-                isSearchMode
-                    ? const CustomText(
-                        content: count, fontSize: FontSize.smallSize)
-                    : const SizedBox(),
-              ],
-            )
-          ],
-        ));
+      height: 70,
+      boxShadow: [shadowWithOpacity],
+      onTap: toOtherPage(
+        context: context,
+        page: GroupMain(
+          groupName: groupName,
+          start: start,
+          end: end,
+          cnt: count,
+          headCount: headCount,
+          isMember: true,
+          groupId: groupId,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CustomText(content: groupName),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CustomText(content: 'D-day'),
+              const SizedBox(height: 5),
+              isSearchMode
+                  ? CustomText(
+                      content: groupMember, fontSize: FontSize.smallSize)
+                  : const SizedBox(),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
 

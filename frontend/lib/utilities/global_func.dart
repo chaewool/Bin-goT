@@ -3,6 +3,9 @@ import 'package:bin_got/widgets/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 
+//* 함수
+
+//* 공유 템플릿
 final FeedTemplate defaultFeed = FeedTemplate(
   content: Content(
     title: '딸기 치즈 케익',
@@ -50,6 +53,7 @@ final FeedTemplate defaultFeed = FeedTemplate(
   ],
 );
 
+//* 공유
 void shareToFriends() async {
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
@@ -73,15 +77,18 @@ void shareToFriends() async {
   }
 }
 
+//* 페이지 이동
 ReturnVoid toOtherPage({required BuildContext context, required Widget page}) {
   return () =>
       Navigator.push(context, MaterialPageRoute(builder: (context) => page));
 }
 
+//* 뒤로 가기
 ReturnVoid toBack({required BuildContext context}) {
   return () => Navigator.pop(context);
 }
 
+//* alert 띄우기
 ReturnVoid showAlert({
   required BuildContext context,
   required String title,
@@ -99,6 +106,10 @@ ReturnVoid showAlert({
           ));
 }
 
+//* modal 띄우기
 ReturnVoid showModal({required BuildContext context, required Widget page}) {
   return () => showDialog(context: context, builder: (context) => page);
 }
+
+//* 변수
+late var token;

@@ -4,9 +4,27 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Intro extends StatelessWidget {
+class Intro extends StatefulWidget {
   const Intro({super.key});
+
+  @override
+  State<Intro> createState() => _IntroState();
+}
+
+class _IntroState extends State<Intro> {
+  late SharedPreferences prefs;
+  Future initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initPrefs();
+  }
 
   @override
   Widget build(BuildContext context) {
