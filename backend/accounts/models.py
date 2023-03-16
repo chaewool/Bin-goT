@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+from groups.models import Group, Participate
+
 class User(AbstractUser):
     kakao_id = models.CharField(max_length=255, unique=True, null=False)
     username = models.CharField(max_length=20, unique=True, null=False)
@@ -8,6 +10,7 @@ class User(AbstractUser):
     noti_rank = models.BooleanField(null=False, default=True)
     noti_due = models.BooleanField(null=False, default=True)
     noti_chat = models.BooleanField(null=False, default=True)
+    groups = models.ManyToManyField(Group, through=Participate, related_name="groups")
 
     def __str__(self) -> str:
         return self.username

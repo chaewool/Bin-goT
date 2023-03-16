@@ -10,8 +10,9 @@ import logging
 
 from bingot_settings import KAKAO_REST_API_KEY
 from commons import SUCCESS, FAIL
-from .serializers import UserSerializer, BadgeSerializer
+from .serializers import UserSerializer, BadgeSerializer, ProfileGroupSerializer
 from .models import Achieve, Badge
+
 
 User = get_user_model()
 logger = logging.getLogger('accounts')
@@ -75,7 +76,6 @@ class KaKaoCallBackView(APIView):
 class KaKaoUnlinkView(APIView):
     def delete(self, request):
         user = request.user
-        user = User.objects.get(id=user.id)
         user.delete()
         return Response(data=SUCCESS, status=status.HTTP_200_OK)
 
@@ -158,3 +158,11 @@ class NotificationUpdateView(APIView):
         user.save()
             
         return Response(SUCCESS, status=status.HTTP_200_OK)
+
+
+class ProfileGroupsView(APIView):
+    def get(self, request):
+        user = request.user
+        data = ProfileGroupSerializer(user.groups, many=True).data
+        
+        return Response(data=data, status=status.HTTP_200_OK)

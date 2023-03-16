@@ -15,6 +15,7 @@ class Group(models.Model):
     is_public = models.BooleanField(null=False)
     password = models.CharField(max_length=20)
     need_auth = models.BooleanField(null=False)
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through="Participate", related_name="users")
 
     def __str__(self) -> str:
         return self.groupname
