@@ -1,4 +1,4 @@
-FROM python:3.10.5
+FROM python:3.9.16
 WORKDIR /var/jenkins_home/workspace/bingot/backend
 COPY requirements.txt ./
 
