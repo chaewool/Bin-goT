@@ -15,7 +15,7 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-//* 그룹 생성/수정 첫 번째 페이지
+//* 그룹 생성/수정 페이지
 class GroupForm extends StatefulWidget {
   const GroupForm({super.key});
 

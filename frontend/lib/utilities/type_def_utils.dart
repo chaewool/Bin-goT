@@ -1,4 +1,6 @@
+import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_model.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 //* 기본
@@ -16,3 +18,5 @@ typedef IconDataList = List<IconData>;
 typedef DynamicMap = Map<String, dynamic>;
 typedef MyGroupList = List<MyGroupModel>;
 typedef DynamicMapList = List<DynamicMap>;
+typedef GroupList = List<GroupModel>;
+typedef DynamicResponse = Response<dynamic>;

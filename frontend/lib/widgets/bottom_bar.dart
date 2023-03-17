@@ -68,6 +68,8 @@ class FormBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    late final groupId;
+    void createGroup() {}
     return BottomAppBar(
       color: Colors.grey,
       child: Row(
@@ -76,7 +78,8 @@ class FormBottomBar extends StatelessWidget {
           CustomButton(onPressed: toBack(context: context), content: '취소'),
           CustomButton(
               onPressed: toOtherPage(
-                  context: context, page: const GroupCreateCompleted()),
+                  context: context,
+                  page: const GroupCreateCompleted(groupId: groupId)),
               content: '완료')
         ],
       ),
