@@ -9,7 +9,6 @@ import requests
 import logging
 
 from bingot_settings import KAKAO_REST_API_KEY
-from commons import SUCCESS, FAIL
 from .serializers import UserSerializer, BadgeSerializer, ProfileGroupSerializer
 from .models import Achieve, Badge
 
@@ -77,7 +76,7 @@ class KaKaoUnlinkView(APIView):
     def delete(self, request):
         user = request.user
         user.delete()
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 class TokenObtainView(APIView):
@@ -99,8 +98,8 @@ class UsernameCheckView(APIView):
         username = request.POST.get('username')
         
         if User.objects.filter(username=username).exists():
-            return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+            return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_200_OK)
     
     
 class UsernameUpdateView(APIView):
@@ -109,12 +108,12 @@ class UsernameUpdateView(APIView):
         username = request.POST.get('username')
         
         if User.objects.filter(username=username).exists():
-            return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         user.username = username
         user.save()
         
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
     
     
 class BadgeListView(APIView):
@@ -141,8 +140,8 @@ class BadgeUpdateView(APIView):
             user.profile = badge_id
             user.save()
             
-            return Response(SUCCESS, status=status.HTTP_200_OK)
-        return Response(FAIL, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
+        return Response(data={'message': '보유하지 않은 배지입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
     
 class NotificationUpdateView(APIView):
@@ -157,7 +156,7 @@ class NotificationUpdateView(APIView):
         user.noti_due = noti_due
         user.save()
             
-        return Response(SUCCESS, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 class ProfileGroupsView(APIView):

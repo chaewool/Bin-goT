@@ -1,9 +1,6 @@
 import boto3
 from bingot_settings import AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY, AWS_S3_BUCKET_NAME
 
-SUCCESS = {'success': True}
-FAIL = {'success': False}
-
 def upload_image(url, img):
     s3_client = boto3.client(
         's3',

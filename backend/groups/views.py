@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from datetime import datetime, date
 import json
 
-from commons import SUCCESS, FAIL, upload_image
+from commons import upload_image
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer
 from .models import Group, Participate
 
@@ -22,8 +22,14 @@ class GroupCreateView(APIView):
         is_public = data.get('is_public')
         password = data.get('password')
         
-        if period > 365 or headcount < 1 or headcount > 30 or size < 2 or size > 5 or (not is_public and password == ''):
-            return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
+        if period > 365:
+            return Response(data={'message': '기간은 1년 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        elif headcount < 1 or headcount > 30:
+            return Response(data={'message': '인원 수는 1명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        elif size < 2 or size > 5:
+            return Response(data={'message': '빙고 크기는 2 이상 5 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        elif not is_public and password == '':
+            return Response(data={'message': '비공개 그룹은 비밀번호를 설정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if 271 <= period <= 365:
             period = 4
@@ -58,9 +64,7 @@ class GroupCreateView(APIView):
         else:
             Participate.objects.create(user=user, group=group, is_banned=False)
         
-        data = {**SUCCESS, 'group_id': group.id}
-            
-        return Response(data=data, status=status.HTTP_200_OK)
+        return Response(data={'group_id': group.id}, status=status.HTTP_200_OK)
 
 
 class GroupDetailView(APIView):
@@ -76,8 +80,7 @@ class GroupDetailView(APIView):
         if participate.exists():
             # 강제 탈퇴 여부 확인
             if participate.is_banned:
-                data = {**FAIL, 'message': '탈퇴 처리된 그룹입니다.'}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data={'message': '탈퇴 처리된 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
             
             if group.leader == user:
                 is_participant = 2
@@ -91,7 +94,7 @@ class GroupDetailView(APIView):
         else:
             # 비밀번호 확인
             if not group.is_public and password != group.password:
-                data = {**FAIL, 'message': '잘못된 비밀번호입니다.'}
+                data = {'message': '비밀번호가 일치하지 않습니다.'}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             
             is_participant = 0
@@ -115,7 +118,7 @@ class GroupUpdateView(APIView):
             data['headcount'] = group.headcount
 
         if data['headcount'] < 1 or data['headcount'] > 30:
-            return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': '인원 수는 1명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if user == group.leader:
             serializer = GroupUpdateSerializer(instance=group, data=data)
@@ -130,8 +133,8 @@ class GroupUpdateView(APIView):
                 else:
                     serializer.save()
                 
-                return Response(data=SUCCESS, status=status.HTTP_200_OK)
-        return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_200_OK)
+        return Response(data={'message': '수정 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GroupJoinView(APIView):
@@ -148,13 +151,11 @@ class GroupJoinView(APIView):
                         rand_name = f'익명의 참여자 {i + 1:0>2}'
                         break
                 Participate.objects.create(user=user, group=group, is_banned=False, rand_name=rand_name)
-                return Response(data=SUCCESS, status=status.HTTP_200_OK)
-            
-            Participate.objects.create(user=user, group=group, is_banned=True)
-            return Response(data=FAIL, status=status.HTTP_200_OK)
+            else:
+                Participate.objects.create(user=user, group=group, is_banned=True)
+            return Response(status=status.HTTP_200_OK)
         
-        data = {**FAIL, 'message': '이미 가입한 그룹입니다.'}
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={'message': '이미 가입한 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GroupGrantView(APIView):
@@ -177,11 +178,9 @@ class GroupGrantView(APIView):
                 participate.is_banned = True
                 participate.save()
 
-            return Response(data=SUCCESS, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
         
-        data = {**FAIL, 'message': '그룹장이 아닙니다.'}
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-        
+        return Response(data={'message': '승인 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GroupDeleteView(APIView):
@@ -190,20 +189,17 @@ class GroupDeleteView(APIView):
         group = Group.objects.get(id=group_id)
         
         if user != group.leader:
-            data = {**FAIL, 'message': '요청한 사용자가 그룹장이 아닙니다.'}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': '삭제 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if date.today() > group.start:
-            data = {**FAIL, 'message': '시작일이 지났습니다.'}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': '시작일이 경과하여 삭제할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if len(Participate.objects.filter(group=group)) > 1:
-            data = {**FAIL, 'message': '참여자가 존재합니다.'}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': '참여자가 존재하여 삭제할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         group.delete()
         
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 class GroupResignView(APIView):
@@ -213,16 +209,14 @@ class GroupResignView(APIView):
         participate = Participate.objects.filter(user=user, group=group)
         
         if not participate:
-            data = {**FAIL, 'message': '해당 그룹에 참여하지 않았습니다.'}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if date.today() > group.start:
-            data = {**FAIL, 'message': '시작일이 지났습니다.'}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': '시작일이 경과하여 탈퇴할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         participate.delete()
         
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 class GroupSearchView(APIView):
