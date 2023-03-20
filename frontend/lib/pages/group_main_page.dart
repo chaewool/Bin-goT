@@ -1,7 +1,9 @@
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/pages/bingo_form_page.dart';
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/box_container.dart';
@@ -12,29 +14,53 @@ import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
-class GroupMain extends StatelessWidget {
-  final String groupName, start, end, explain, rule;
-  final int cnt, headCount, groupId;
-  final bool isMember, hasBingo;
+class GroupMain extends StatefulWidget {
+  final int groupId;
   const GroupMain({
     super.key,
     required this.groupId,
-    required this.groupName,
-    required this.start,
-    required this.end,
-    required this.cnt,
-    required this.headCount,
-    this.explain = '그룹 설명이 들어갑니다',
-    this.rule = '그룹 규칙이 들어갑니다',
-    required this.isMember,
-    this.hasBingo = false,
   });
 
   @override
-  Widget build(BuildContext context) {
-    const achievementList = [100, 90, 85];
-    const nicknameList = ['조코', '아아', '닉넴'];
+  State<GroupMain> createState() => _GroupMainState();
+}
 
+class _GroupMainState extends State<GroupMain> {
+  late final String groupName, explain;
+  late final DateTime start, end;
+  late final int cnt, period, headCount, bingoId, memberState, bingoSize;
+  late final String? description, rule;
+  late final bool isPublic, hasImage, needAuth;
+  late final DynamicMapList rank;
+  void getDetail() {
+    GroupProvider.readGroupDetail(widget.groupId).then((data) {
+      groupName = data.groupName;
+      start = data.start;
+      end = data.end;
+      explain = data.explain;
+      rule = data.rule;
+      cnt = data.cnt;
+      period = data.period;
+      headCount = data.headCount;
+      memberState = data.memberState;
+      bingoId = data.bingoId;
+      bingoSize = data.bingoSize;
+      description = data.description;
+      isPublic = data.isPublic;
+      hasImage = data.hasImage;
+      needAuth = data.needAuth;
+      rank = data.rank;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDetail();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(50),
@@ -61,9 +87,12 @@ class GroupMain extends StatelessWidget {
                 ? CustomButton(
                     onPressed: toOtherPage(
                       context: context,
-                      page: hasBingo ? const BingoDetail() : const BingoForm(),
+                      page: bingoId != 0
+                          ? const BingoDetail()
+                          : const BingoForm(),
                     ),
-                    content: hasBingo ? '내 빙고 보기' : '내 빙고 만들기')
+                    content: bingoId != 0 ? '내 빙고 보기' : '내 빙고 만들기',
+                  )
                 : const SizedBox(),
             ShowContentBox(contentTitle: '설명', content: explain),
             ShowContentBox(contentTitle: '규칙', content: rule),

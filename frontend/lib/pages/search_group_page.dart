@@ -94,7 +94,7 @@ class _SearchGroupState extends State<SearchGroup> {
       itemCount: data.length,
       itemBuilder: (context, index) {
         var group = data[index];
-        return GroupList(
+        return GroupListItem(
           isSearchMode: false,
           groupId: group.id,
           groupName: group.groupName,

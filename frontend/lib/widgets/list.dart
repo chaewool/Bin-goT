@@ -10,11 +10,11 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 //* 그룹 목록
-class GroupList extends StatelessWidget {
+class GroupListItem extends StatelessWidget {
   final bool isSearchMode;
   final int groupId, headCount, count;
   final String groupName, start, end, status;
-  const GroupList({
+  const GroupListItem({
     super.key,
     required this.isSearchMode,
     required this.groupId,

@@ -1,5 +1,4 @@
 import 'package:bin_got/pages/group_chat.dart';
-import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -64,12 +63,11 @@ class BottomBar extends StatelessWidget {
 
 //* 그룹 생성 페이지 하단 버튼
 class FormBottomBar extends StatelessWidget {
-  const FormBottomBar({super.key});
+  final ReturnVoid createGroup;
+  const FormBottomBar({super.key, required this.createGroup});
 
   @override
   Widget build(BuildContext context) {
-    late final groupId;
-    void createGroup() {}
     return BottomAppBar(
       color: Colors.grey,
       child: Row(
@@ -77,10 +75,9 @@ class FormBottomBar extends StatelessWidget {
         children: [
           CustomButton(onPressed: toBack(context: context), content: '취소'),
           CustomButton(
-              onPressed: toOtherPage(
-                  context: context,
-                  page: const GroupCreateCompleted(groupId: groupId)),
-              content: '완료')
+            onPressed: createGroup,
+            content: '완료',
+          )
         ],
       ),
     );

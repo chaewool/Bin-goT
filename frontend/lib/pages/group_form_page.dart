@@ -1,4 +1,5 @@
 import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -28,6 +29,12 @@ class _GroupFormState extends State<GroupForm> {
   Widget build(BuildContext context) {
     const StringList bingoSize = ['N * N', '2 * 2', '3 * 3', '4 * 4', '5 * 5'];
     const StringList joinMethod = ['그룹장의 승인 필요', '자동 가입'];
+    void createGroup() async {
+      GroupProvider.createOwnGroup(groupData: groupData).then((data) =>
+          toOtherPage(
+              context: context,
+              page: GroupCreateCompleted(groupId: data.groupId!))());
+    }
     // void datePicker() {
     // }
 
@@ -68,7 +75,7 @@ class _GroupFormState extends State<GroupForm> {
             ],
           ),
         ),
-        bottomNavigationBar: const FormBottomBar());
+        bottomNavigationBar: FormBottomBar(createGroup: createGroup));
   }
 }
 
@@ -76,8 +83,13 @@ class _GroupFormState extends State<GroupForm> {
 class GroupCreateCompleted extends StatelessWidget {
   final bool isPrivate;
   final String password;
-  const GroupCreateCompleted(
-      {super.key, this.isPrivate = false, this.password = ''});
+  final int groupId;
+  const GroupCreateCompleted({
+    super.key,
+    this.isPrivate = false,
+    this.password = '',
+    required this.groupId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +141,8 @@ class GroupCreateCompleted extends StatelessWidget {
           ),
           CustomButton(
             content: '생성된 그룹으로 가기',
-            onPressed: toOtherPage(context: context, page: const GroupMain()),
+            onPressed: toOtherPage(
+                context: context, page: const GroupMain(groupId: groupId)),
           )
         ],
       ),

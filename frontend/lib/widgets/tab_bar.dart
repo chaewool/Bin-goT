@@ -243,7 +243,7 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
         [
           for (int i = 0; i < 10; i += 1)
             idxList[0][2] == 0
-                ? const GroupList(isSearchMode: true)
+                ? const GroupListItem(isSearchMode: true)
                 : const DatePicker()
         ],
         idxList[1][2] == 0
