@@ -22,4 +22,5 @@ urlpatterns = [
     path('notification/update/', views.NotificationUpdateView.as_view(), name='notification_update'),
     
     path('profile/groups/', views.ProfileGroupsView.as_view(), name='profile_groups'),
+    path('profile/boards/', views.ProfileBoardsView.as_view(), name='profile_boards'),
 ]

@@ -9,12 +9,13 @@ import requests
 import logging
 
 from bingot_settings import KAKAO_REST_API_KEY
-from .serializers import UserSerializer, BadgeSerializer, ProfileGroupSerializer
+from .serializers import UserSerializer, BadgeSerializer, ProfileGroupSerializer, ProfileBoardSerializer
 from .models import Achieve, Badge
 
 
 User = get_user_model()
 logger = logging.getLogger('accounts')
+
 
 class KakaoView(APIView):
     permission_classes = [AllowAny]
@@ -29,6 +30,7 @@ class KakaoView(APIView):
         return redirect(
             f'{kakao_auth_api}&client_id={app_key}&redirect_uri={redirect_uri}'
         )
+
 
 class KaKaoCallBackView(APIView):
     permission_classes = [AllowAny]
@@ -163,5 +165,13 @@ class ProfileGroupsView(APIView):
     def get(self, request):
         user = request.user
         data = ProfileGroupSerializer(user.groups, many=True).data
+        
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class ProfileBoardsView(APIView):
+    def get(self, request):
+        user = request.user
+        data = ProfileBoardSerializer(user.boards, many=True).data
         
         return Response(data=data, status=status.HTTP_200_OK)

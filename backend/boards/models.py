@@ -5,7 +5,7 @@ from groups.models import Group
 
 class Board(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='boards')
     title = models.CharField(max_length=20)
     background = models.IntegerField(default=0)
     is_black = models.BooleanField(default=False)
