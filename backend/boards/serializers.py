@@ -12,13 +12,16 @@ class BoardCreateSerializer(serializers.ModelSerializer):
 class BoardItemCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoardItem
-        exclude = ('board',)
+        exclude = ('board', 'id')
 
 
 class BoardDetailSerializer(serializers.ModelSerializer):
+    items = BoardItemCreateSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Board
-        exclude = ('group',)
+        exclude = ('id', )
+
 
 class BoardUpdateSerializer(serializers.ModelSerializer):
     boardname = serializers.CharField(required=False)

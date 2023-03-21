@@ -20,7 +20,7 @@ class Board(models.Model):
 
 
 class BoardItem(models.Model):
-    board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='items')
     item_id = models.IntegerField(default=0)
     title = models.CharField(max_length=20, )
     content = models.CharField(max_length=100, )

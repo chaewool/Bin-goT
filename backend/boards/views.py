@@ -41,8 +41,17 @@ class BoardCreateView(APIView):
 class BoardDetailView(APIView):
     def get(self, request, board_id):
         board = Board.objects.get(id=board_id)
+        serializer = BoardDetailSerializer(board)
         
-        return Response(data={'test': True}, status=status.HTTP_200_OK)
+        achieve = 0
+        
+        for item in serializer.data['items']:
+            if item['finished']:
+                achieve += 1
+        
+        data = {**serializer.data, 'acheive':achieve / board.group.size}
+        
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class BoardUpdateView(APIView):
