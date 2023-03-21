@@ -7,7 +7,7 @@ class Chat(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f'[{self.created_at}] {self.group} - {self.user} : {self.content}'
@@ -16,15 +16,15 @@ class Review(models.Model):
     item = models.ForeignKey(BoardItem, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     content = models.TextField()
-    reviewed = models.BooleanField(null=False, default=False)
-    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    reviewed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f'[{self.created_at}] {self.group} - {self.item} : {self.content}'
 
 class File(models.Model):
-    filename = models.CharField(max_length=255, null=False)
-    filetype = models.CharField(max_length=4, null=False)
+    filename = models.CharField(max_length=255)
+    filetype = models.CharField(max_length=4)
 
     def __str__(self) -> str:
         return f'{self.filename}'

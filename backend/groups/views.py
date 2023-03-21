@@ -8,6 +8,7 @@ import json
 from commons import upload_image
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer
 from .models import Group, Participate
+from boards.models import Board
 
 class GroupCreateView(APIView):
     def post(self, request):
@@ -75,6 +76,10 @@ class GroupDetailView(APIView):
         
         rand_name = user.username
         participate = Participate.objects.filter(user=user, group=group)
+        board_id = 0
+        
+        if Board.objects.filter(user=user, group=group).exists():
+            board_id = Board.objects.get(user=user, group=group).id
         
         # 그룹 가입 여부 확인
         if participate.exists():
@@ -100,7 +105,7 @@ class GroupDetailView(APIView):
             is_participant = 0
 
         serializer = GroupDetailSerializer(group)
-        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name}
+        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id}
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -221,7 +226,6 @@ class GroupResignView(APIView):
 
 class GroupSearchView(APIView):
     def get(self, request):
-        user = request.user
         period = request.GET.get('period')
         keyword = request.GET.get('keyword')
         public = int(request.GET.get('public'))
