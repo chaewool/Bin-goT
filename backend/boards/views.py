@@ -4,7 +4,7 @@ from rest_framework import status
 from datetime import date
 import json
 
-from commons import upload_image
+from commons import upload_image, delete_image
 from .models import Board
 from groups.models import Group, Participate
 from .serializers import BoardCreateSerializer, BoardItemCreateSerializer, BoardDetailSerializer
@@ -114,6 +114,8 @@ class BoardDeleteView(APIView):
         if date.today() > board.group.start:
             return Response(data={'message': '시작일이 경과하여 삭제할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        url = 'boards' + '/' + str(board.id)
+        delete_image(url)
         board.delete()
         
         return Response(status=status.HTTP_200_OK)
