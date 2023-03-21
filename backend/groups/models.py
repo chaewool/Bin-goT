@@ -37,6 +37,7 @@ class Chat(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    has_img = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'[{self.created_at}] {self.group} - {self.user} : {self.content}'
@@ -48,6 +49,7 @@ class Review(models.Model):
     content = models.TextField()
     reviewed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    has_img = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'[{self.created_at}] {self.group} - {self.item} : {self.content}'

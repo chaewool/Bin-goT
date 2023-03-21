@@ -7,7 +7,7 @@ import json
 
 from commons import upload_image, delete_image
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer
-from .models import Group, Participate
+from .models import Group, Participate, Chat, Review
 from boards.models import Board
 
 class GroupCreateView(APIView):
@@ -224,6 +224,29 @@ class GroupResignView(APIView):
         participate.delete()
         
         return Response(status=status.HTTP_200_OK)
+
+
+class GroupChatCreateView(APIView):
+    def post(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        content = request.POST.get('content')
+        img = request.FILES.get('img')
+        
+        if not Participate.objects.filter(user=user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        chat = Chat(user=user, group=group, content=content)
+
+        if img:
+            chat.has_img = True
+            chat.save()
+
+            url = 'chats' + '/' + str(chat.id)
+            
+            upload_image(url, img)
+            
+        return Response(data={'chat_id': chat.id}, status=status.HTTP_200_OK)
 
 
 class GroupSearchView(APIView):
