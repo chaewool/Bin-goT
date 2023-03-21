@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'accounts',
     'groups',
     'boards',
-    'articles',
 
     # third party apps
     'corsheaders',

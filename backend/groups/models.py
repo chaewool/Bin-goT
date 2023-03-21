@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 
+
 class Group(models.Model):
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(-1))
     groupname = models.CharField(max_length=20, unique=True)
@@ -20,6 +21,7 @@ class Group(models.Model):
     def __str__(self) -> str:
         return self.groupname
 
+
 class Participate(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
@@ -28,3 +30,24 @@ class Participate(models.Model):
     
     def __str__(self) -> str:
         return f'{self.group} - {self.user}'
+
+
+class Chat(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f'[{self.created_at}] {self.group} - {self.user} : {self.content}'
+
+
+class Review(models.Model):
+    item = models.ForeignKey('boards.BoardItem', on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    content = models.TextField()
+    reviewed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f'[{self.created_at}] {self.group} - {self.item} : {self.content}'
