@@ -6,8 +6,8 @@ import json
 
 from commons import upload_image
 from .models import Board
-from groups.models import Group
-from .serializers import BoardCreateSerializer, BoardItemCreateSerializer, BoardDetailSerializer, BoardUpdateSerializer
+from groups.models import Group, Participate
+from .serializers import BoardCreateSerializer, BoardItemCreateSerializer, BoardDetailSerializer
 
 
 class BoardCreateView(APIView):
@@ -16,6 +16,12 @@ class BoardCreateView(APIView):
         thumbnail = request.FILES.get('thumbnail')
         data = json.loads(request.data.get('data'))
         group = Group.objects.get(id=data['group_id'])
+        
+        if not Participate.objects.filter(user=user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if date.today() > group.start:
+            return Response(data={'message': '시작일이 경과하여 생성할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if Board.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '이미 해당 그룹에서 빙고를 생성했습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -56,15 +62,51 @@ class BoardDetailView(APIView):
 
 class BoardUpdateView(APIView):
     def put(self, request, board_id):
+        user = request.user
         board = Board.objects.get(id=board_id)
+        group = board.group
+        thumbnail = request.FILES.get('thumbnail')
+        data = json.loads(request.data.get('data'))
         
-        return Response(data={'test': True}, status=status.HTTP_200_OK)
+        if not Participate.objects.filter(user=user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user != board.user:
+            return Response(data={'message': '수정 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        if date.today() > group.start:
+            return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        items = data['items']
+        if len(items) < board.group.size ** 2:
+            return Response(data={'message': '항목의 개수가 부족합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        board_serializer = BoardCreateSerializer(instance=board, data=data)
+        
+        if board_serializer.is_valid(raise_exception=True):
+            boarditem_serializers = []
+            for i in range(len(items)):
+                bs = BoardItemCreateSerializer(instance=board.items.all()[i], data=items[i])
+                if bs.is_valid(raise_exception=True):
+                    boarditem_serializers.append(bs)
+            
+            board_serializer.save()
+            for bs in boarditem_serializers:
+                bs.save()
+            
+            url = 'boards' + '/' + str(board.id)
+            upload_image(url, thumbnail)
+            
+            return Response(status=status.HTTP_200_OK)
 
 
 class BoardDeleteView(APIView):
     def delete(self, request, board_id):
         user = request.user
         board = Board.objects.get(id=board_id)
+        
+        if not Participate.objects.filter(user=user, group=board.group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if user != board.user:
             return Response(data={'message': '삭제 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)

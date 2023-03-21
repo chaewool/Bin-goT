@@ -14,4 +14,5 @@ urlpatterns = [
     path('<int:group_id>/resign/', views.GroupResignView.as_view(), name='group_resign'),
     
     path('search/', views.GroupSearchView.as_view(), name='group_search'),
+    path('recommend/', views.GroupRecommendView.as_view(), name='group_recommend'),
 ]

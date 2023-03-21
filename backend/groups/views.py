@@ -258,3 +258,13 @@ class GroupSearchView(APIView):
         data = [d for d in data if d['count'] < d['headcount']]
         
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class GroupRecommendView(APIView):
+    def get(self, request):
+        groups = Group.objects.filter(is_public=True)
+        
+        data = GroupSearchSerializer(groups, many=True).data
+        data = [d for d in data if d['count'] < d['headcount']]
+        
+        return Response(data=data, status=status.HTTP_200_OK)
