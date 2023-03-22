@@ -245,6 +245,9 @@ class GroupChatCreateView(APIView):
             url = 'chats' + '/' + str(chat.id)
             
             upload_image(url, img)
+        else:
+            chat.has_img = False
+            chat.save()
             
         return Response(data={'chat_id': chat.id}, status=status.HTTP_200_OK)
 
