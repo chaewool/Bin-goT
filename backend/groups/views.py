@@ -300,6 +300,39 @@ class GroupReviewCreateView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class GroupReviewCheckView(APIView):
+    def put(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        review = Review.objects.get(id=request.POST.get('review_id'))
+        
+        if not Participate.objects.filter(user=user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if review.user == user:
+            return Response(data={'message': '자신의 인증 요청은 인증할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if review.reviewed:
+            return Response(data={'message': '이미 인증된 요청입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if review.item.finished:
+            return Response(data={'message': '이미 완료된 항목입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 횟수 측정 여부 확인
+        if review.item.check:
+            review.item.check_cnt += 1
+            
+            if review.item.check_cnt == review.item.check_goal:
+                review.item.finish = True
+        else:    
+            review.item.finish = True
+        
+        review.reviewed = True
+        review.save()
+        
+        return Response(status=status.HTTP_200_OK)
+
+
 class GroupSearchView(APIView):
     def get(self, request):
         period = request.GET.get('period')

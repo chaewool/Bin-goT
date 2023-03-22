@@ -17,7 +17,7 @@ urlpatterns = [
     path('<int:group_id>/chat/list/', views.GroupChatListView.as_view(), name='group_chat_list'),
 
     path('<int:group_id>/review/create/', views.GroupReviewCreateView.as_view(), name='group_review_create'),
-    # path('<int:group_id>/review/check/', views.GroupReviewCheckView.as_view(), name='group_review_check'),
+    path('<int:group_id>/review/check/', views.GroupReviewCheckView.as_view(), name='group_review_check'),
     
     path('search/', views.GroupSearchView.as_view(), name='group_search'),
     path('recommend/', views.GroupRecommendView.as_view(), name='group_recommend'),
