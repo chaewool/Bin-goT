@@ -369,9 +369,9 @@ class GroupSearchView(APIView):
 
 class GroupRecommendView(APIView):
     def get(self, request):
-        groups = Group.objects.filter(is_public=True)
+        groups = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
         
         data = GroupSearchSerializer(groups, many=True).data
-        data = [d for d in data if d['count'] < d['headcount']]
+        data = [d for d in data if d['count'] < d['headcount']][:20]
         
         return Response(data=data, status=status.HTTP_200_OK)
