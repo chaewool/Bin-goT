@@ -44,8 +44,9 @@ class Chat(models.Model):
 
 
 class Review(models.Model):
-    item = models.ForeignKey('boards.BoardItem', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    item = models.ForeignKey('boards.BoardItem', on_delete=models.CASCADE)
     content = models.TextField()
     reviewed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

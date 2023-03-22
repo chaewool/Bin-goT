@@ -8,7 +8,7 @@ import json
 from commons import upload_image, delete_image
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer
 from .models import Group, Participate, Chat, Review
-from boards.models import Board
+from boards.models import Board, BoardItem
 
 class GroupCreateView(APIView):
     def post(self, request):
@@ -249,7 +249,38 @@ class GroupChatCreateView(APIView):
             chat.has_img = False
             chat.save()
             
-        return Response(data={'chat_id': chat.id}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
+
+
+class GroupReviewCreateView(APIView):
+    def post(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        board = Board.objects.get(id=request.POST.get('board_id'))
+        item = BoardItem.objects.get(id=request.POST.get('item_id'))
+        content = request.POST.get('content')
+        img = request.FILES.get('img')
+        
+        if not Participate.objects.filter(user=user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user != board.user:
+            return Response(data={'message': '인증 요청 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        review = Review(user=user, group=group, item=item, content=content, reviewed=False)
+
+        if img:
+            review.has_img = True
+            review.save()
+
+            url = 'reviews' + '/' + str(review.id)
+            
+            upload_image(url, img)
+        else:
+            review.has_img = False
+            review.save()
+            
+        return Response(status=status.HTTP_200_OK)
 
 
 class GroupSearchView(APIView):
