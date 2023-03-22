@@ -6,7 +6,7 @@ from datetime import datetime, date
 import json
 
 from commons import upload_image, delete_image
-from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer
+from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer, ChatListSerializer, ReviewListSerializer
 from .models import Group, Participate, Chat, Review
 from boards.models import Board, BoardItem
 
@@ -250,6 +250,23 @@ class GroupChatCreateView(APIView):
             chat.save()
             
         return Response(status=status.HTTP_200_OK)
+
+
+class GroupChatListView(APIView):
+    def get(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        page = int(request.GET.get('page'))
+        
+        if not Participate.objects.filter(user=user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        chat_serializer = ChatListSerializer(Chat.objects.filter(group=group), many=True)
+        review_serializer = ReviewListSerializer(Review.objects.filter(group=group), many=True)
+        
+        data = sorted(chat_serializer.data + review_serializer.data, key=lambda x: x['created_at'], reverse=True)[(page - 1) * 50: page * 50]
+        
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class GroupReviewCreateView(APIView):
