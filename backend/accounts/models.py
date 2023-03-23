@@ -15,7 +15,6 @@ class User(AbstractUser):
         return self.username
 
 class Badge(models.Model):
-    badgename = models.CharField(max_length=20, unique=True)
     badge_cond = models.CharField(max_length=100)
 
     def __str__(self) -> str:

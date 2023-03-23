@@ -4,7 +4,7 @@ from .models import User, Badge, Achieve
 from groups.models import Group
 
 class BadgeAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'badgename', 'badge_cond')
+    list_display = ('pk', 'badge_cond')
 
 class AchieveAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'badge')
