@@ -1,3 +1,4 @@
+import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -184,7 +185,7 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
     [
       ['최신순', '오래된순'],
       ['전체', '진행 중', '완료'],
-      ['리스트로 보기', '갤러리로 보기']
+      // ['리스트로 보기', '갤러리로 보기']
     ]
   ];
   late List<StringList> presentOptions;
@@ -192,7 +193,7 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
 
   List<IntList> idxList = [
     [0, 0, 0],
-    [0, 0, 0]
+    [0, 0]
   ];
   void changeIdx(int idx) {
     if (idxList[presentIdx][idx] < presentOptions[idx].length - 1) {
@@ -241,28 +242,42 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
       ),
       listItems: [
         [
-          for (int i = 0; i < 10; i += 1)
-            idxList[0][2] == 0
-                ? const GroupListItem(isSearchMode: true)
-                : const DatePicker()
+          FutureBuilder(
+            future: UserProvider.getMyGroups(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (idxList[0][2] == 0) {
+                  return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        var group = snapshot.data![index];
+                        return GroupListItem(
+                          isSearchMode: false,
+                          groupInfo: group,
+                        );
+                      });
+                }
+                return const DatePicker();
+              }
+              return const CustomText(content: '그룹 정보를 불러오는 중입니다');
+            },
+          )
         ],
-        idxList[1][2] == 0
-            ? [
-                BingoGallery(bingoList: [
-                  for (int k = 0; k < 10; k += 1)
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CustomBoxContainer(
-                        width: 150,
-                        height: 200,
-                        color: greenColor,
-                      ),
-                    )
-                ])
-              ]
-            : [
-                for (int i = 0; i < 10; i += 1) const BingoList(),
-              ]
+        [
+          BingoGallery(
+            bingoList: [
+              for (int k = 0; k < 10; k += 1)
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CustomBoxContainer(
+                    width: 150,
+                    height: 200,
+                    color: greenColor,
+                  ),
+                ),
+            ],
+          )
+        ]
       ],
     );
   }

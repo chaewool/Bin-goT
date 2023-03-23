@@ -1,12 +1,11 @@
-import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final baseUrl = dotenv.env['baseUrl'];
-
-final options =
-    BaseOptions(baseUrl: baseUrl!, headers: {'Authorization': 'JWT $token'});
+// final options =
+//     BaseOptions(baseUrl: baseUrl!, headers: {'Authorization': 'JWT $token'});
+final options = BaseOptions(baseUrl: baseUrl!);
 final dio = Dio(options);
 
 //* 사용자
@@ -22,47 +21,6 @@ const groupUrl = '/groups';
 
 //* Api 기본 틀
 class ApiProvider {
-  //* read list
-  static FutureList _listApi(
-      {required String url, required List list, required dynamic model}) async {
-    try {
-      final response = await dio.get(url);
-      if (response.statusCode == 200) {
-        for (var element in response.data) {
-          list.add(model.fromJson(element));
-        }
-        return list;
-      }
-      throw Error();
-    } catch (error) {
-      throw Error();
-    }
-  }
-
-  static FutureList listApi(
-      {required String url, required List list, required dynamic model}) async {
-    return _listApi(url: url, list: list, model: model);
-  }
-
-  //* read detail
-  static FutureDynamic _detailApi(
-      {required String url, required dynamic model}) async {
-    try {
-      final response = await dio.get(url);
-      if (response.statusCode == 200) {
-        return model.fromJson(response.data);
-      }
-      throw Error();
-    } catch (error) {
-      throw Error();
-    }
-  }
-
-  static FutureDynamic detailApi(
-      {required String url, required dynamic model}) async {
-    return _detailApi(url: url, model: model);
-  }
-
   //* create
   static FutureDynamicMap _createApi(
       {required String url, required DynamicMap data}) async {
@@ -83,7 +41,7 @@ class ApiProvider {
   }
 
   //* data unnecessary
-  static FutureVoid _deliverApi({required String url}) async {
+  static FutureVoid _deliverApi(String url) async {
     try {
       final response = await dio.post(url);
       if (response.statusCode == 200) {
@@ -95,8 +53,8 @@ class ApiProvider {
     }
   }
 
-  static FutureVoid deliverApi({required String url}) async {
-    return _deliverApi(url: url);
+  static FutureVoid deliverApi(String url) async {
+    return _deliverApi(url);
   }
 
   //* update
@@ -119,7 +77,7 @@ class ApiProvider {
   }
 
   //* delete
-  static FutureVoid _deleteApi({required String url}) async {
+  static FutureVoid _deleteApi(String url) async {
     try {
       final response = await dio.delete(url);
       if (response.statusCode == 200) {
@@ -131,7 +89,7 @@ class ApiProvider {
     }
   }
 
-  static FutureVoid deleteApi({required String url}) async {
-    _deleteApi(url: url);
+  static FutureVoid deleteApi(String url) async {
+    _deleteApi(url);
   }
 }

@@ -15,6 +15,10 @@ class Intro extends StatefulWidget {
 
 class _IntroState extends State<Intro> {
   late SharedPreferences prefs;
+  var showLogo = false;
+  var showExplain = false;
+  var showTitle = false;
+
   Future initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token');
@@ -24,6 +28,21 @@ class _IntroState extends State<Intro> {
   void initState() {
     super.initState();
     initPrefs();
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        showLogo = true;
+      });
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        showExplain = true;
+      });
+    });
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        showTitle = true;
+      });
+    });
   }
 
   @override
@@ -38,16 +57,22 @@ class _IntroState extends State<Intro> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              halfLogo,
+              showLogo ? halfLogo : const SizedBox(),
               Column(
-                children: const [
-                  CustomText(content: '당신을 채울', fontSize: FontSize.sloganSize),
-                  SizedBox(height: 20),
-                  CustomText(content: 'Bin:goT', fontSize: FontSize.sloganSize),
+                children: [
+                  showExplain
+                      ? const CustomText(
+                          content: '당신을 채울', fontSize: FontSize.sloganSize)
+                      : const SizedBox(),
+                  const SizedBox(height: 20),
+                  showTitle
+                      ? const CustomText(
+                          content: 'Bin:goT', fontSize: FontSize.sloganSize)
+                      : const SizedBox(),
                 ],
               ),
               GestureDetector(
-                // onTap: () => login(context),
+                // onTap: () => UserProvider.login(context),
                 onTap: toOtherPage(context: context, page: const Main()),
                 child: kakaoLogin,
               ),

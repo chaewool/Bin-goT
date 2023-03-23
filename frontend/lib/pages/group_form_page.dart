@@ -18,7 +18,8 @@ import 'package:flutter/services.dart';
 
 //* 그룹 생성/수정 페이지
 class GroupForm extends StatefulWidget {
-  const GroupForm({super.key});
+  final int? groupId;
+  const GroupForm({super.key, this.groupId});
 
   @override
   State<GroupForm> createState() => _GroupFormState();
@@ -29,11 +30,10 @@ class _GroupFormState extends State<GroupForm> {
   Widget build(BuildContext context) {
     const StringList bingoSize = ['N * N', '2 * 2', '3 * 3', '4 * 4', '5 * 5'];
     const StringList joinMethod = ['그룹장의 승인 필요', '자동 가입'];
+    DynamicMap groupData = {};
     void createGroup() async {
-      GroupProvider.createOwnGroup(groupData: groupData).then((data) =>
-          toOtherPage(
-              context: context,
-              page: GroupCreateCompleted(groupId: data.groupId!))());
+      GroupProvider.createOwnGroup(groupData).then((groupId) => toOtherPage(
+          context: context, page: GroupCreateCompleted(groupId: groupId))());
     }
     // void datePicker() {
     // }
@@ -142,7 +142,7 @@ class GroupCreateCompleted extends StatelessWidget {
           CustomButton(
             content: '생성된 그룹으로 가기',
             onPressed: toOtherPage(
-                context: context, page: const GroupMain(groupId: groupId)),
+                context: context, page: GroupMain(groupId: groupId)),
           )
         ],
       ),

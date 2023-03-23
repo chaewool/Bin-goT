@@ -23,7 +23,7 @@ class _MainState extends State<Main> {
   @override
   void initState() {
     super.initState();
-    groups = PersonalApi.getMyGroups();
+    groups = UserProvider.getMyGroups();
   }
 
   void changeSearchMode() {
@@ -108,13 +108,7 @@ class _MainState extends State<Main> {
         var group = data[index];
         return GroupListItem(
           isSearchMode: false,
-          groupId: group.id,
-          groupName: group.groupName,
-          headCount: group.headCount,
-          count: group.count,
-          start: group.start,
-          end: group.end,
-          status: group.status,
+          groupInfo: group,
         );
       },
       separatorBuilder: (context, index) => const SizedBox(height: 20),

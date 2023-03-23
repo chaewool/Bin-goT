@@ -22,11 +22,12 @@ String grantMemberUrl(int groupId) => '${groupDetailUrl(groupId)}/grant/';
 String editGroupUrl(int groupId) => '${groupDetailUrl(groupId)}/update/';
 String deleteGroupUrl(int groupId) => '${groupDetailUrl(groupId)}/delete/';
 String exitGroupUrl(int groupId) => '${groupDetailUrl(groupId)}/resign/';
+String groupRankUrl(int groupId) => '${groupDetailUrl(groupId)}/rank/';
 
 //* group provider
 class GroupProvider with ApiProvider {
   //* search
-  static FutureList searchGroupList({
+  static Future<GroupList> searchGroupList({
     int? period,
     String? keyword,
     int? align,
@@ -45,24 +46,49 @@ class GroupProvider with ApiProvider {
       page: page,
     );
     GroupList groupList = [];
-    return ApiProvider.listApi(url: url, list: groupList, model: GroupModel);
+    try {
+      final response = await dio.get(url);
+      if (response.statusCode == 200) {
+        for (var group in response.data) {
+          groupList.add(GroupModel.fromJson(group));
+        }
+        return groupList;
+      }
+      throw Error();
+    } catch (error) {
+      throw Error();
+    }
   }
 
   //* detail
-  static FutureDynamic readGroupDetail(int groupId) async {
-    return ApiProvider.detailApi(
-        url: groupDetailUrl(groupId), model: GroupDetail);
+  static Future<GroupDetailModel> readGroupDetail(int groupId) async {
+    try {
+      final response = await dio.get(groupDetailUrl(groupId));
+      if (response.statusCode == 200) {
+        return GroupDetailModel.fromJson(response.data);
+      }
+      throw Error();
+    } catch (error) {
+      throw Error();
+    }
   }
 
   //* join
   static FutureVoid joinGroup(int groupId) async {
-    ApiProvider.deliverApi(url: joinGroupUrl(groupId));
+    ApiProvider.deliverApi(joinGroupUrl(groupId));
   }
 
   //* create
   static FutureInt createOwnGroup(DynamicMap groupData) async {
-    return ApiProvider.createApi(
-        url: createGroupUrl, data: groupData)['groupId'];
+    try {
+      final response = await dio.post(createGroupUrl, data: groupData);
+      if (response.statusCode == 200) {
+        return response.data.groupId;
+      }
+      throw Error();
+    } catch (error) {
+      throw Error();
+    }
   }
 
   //* join or forced exit
@@ -77,11 +103,27 @@ class GroupProvider with ApiProvider {
 
   //* delete
   static FutureVoid deleteOwnGroup(int groupId) async {
-    ApiProvider.deleteApi(url: deleteGroupUrl(groupId));
+    ApiProvider.deleteApi(deleteGroupUrl(groupId));
   }
 
   //* exit
   static FutureVoid exitThisGroup(int groupId) async {
-    ApiProvider.deleteApi(url: exitGroupUrl(groupId));
+    ApiProvider.deleteApi(exitGroupUrl(groupId));
+  }
+
+  //* rank
+  static Future<RankList> groupRank(int groupId) async {
+    try {
+      final response = await dio.get(groupRankUrl(groupId));
+      if (response.statusCode == 200) {
+        RankList rankList = response.data.map<GroupRankModel>((json) {
+          return GroupRankModel.fromJson(json);
+        }).toList();
+        return rankList;
+      }
+      throw Error();
+    } catch (error) {
+      throw Error();
+    }
   }
 }

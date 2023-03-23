@@ -112,4 +112,4 @@ ReturnVoid showModal({required BuildContext context, required Widget page}) {
 }
 
 //* 변수
-late var token;
+var token;

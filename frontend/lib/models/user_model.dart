@@ -20,7 +20,8 @@ class ServiceTokenModel {
 
 class MyGroupModel {
   final int id, headCount, count;
-  final String groupName, start, end, status;
+  final String groupName, status;
+  final DateTime start, end;
   MyGroupModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         headCount = json['headcount'],

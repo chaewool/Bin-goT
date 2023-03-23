@@ -1,3 +1,4 @@
+import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
@@ -26,38 +27,7 @@ class GroupMain extends StatefulWidget {
 }
 
 class _GroupMainState extends State<GroupMain> {
-  late final String groupName, explain;
-  late final DateTime start, end;
-  late final int cnt, period, headCount, bingoId, memberState, bingoSize;
-  late final String? description, rule;
-  late final bool isPublic, hasImage, needAuth;
-  late final DynamicMapList rank;
-  void getDetail() {
-    GroupProvider.readGroupDetail(widget.groupId).then((data) {
-      groupName = data.groupName;
-      start = data.start;
-      end = data.end;
-      explain = data.explain;
-      rule = data.rule;
-      cnt = data.cnt;
-      period = data.period;
-      headCount = data.headCount;
-      memberState = data.memberState;
-      bingoId = data.bingoId;
-      bingoSize = data.bingoSize;
-      description = data.description;
-      isPublic = data.isPublic;
-      hasImage = data.hasImage;
-      needAuth = data.needAuth;
-      rank = data.rank;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getDetail();
-  }
+  late final memberState;
 
   @override
   Widget build(BuildContext context) {
@@ -67,87 +37,108 @@ class _GroupMainState extends State<GroupMain> {
         child: GroupAppBar(),
       ),
       body: SingleChildScrollView(
-        child: ColWithPadding(
-          vertical: 30,
-          horizontal: 30,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: FutureBuilder(
+        future: GroupProvider.readGroupDetail(widget.groupId),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final GroupDetailModel data = snapshot.data!;
+            memberState = data.memberState;
+            ColWithPadding(
+              vertical: 30,
+              horizontal: 30,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                CustomText(content: groupName, fontSize: FontSize.titleSize),
-                const SizedBox(height: 10),
-                CustomText(content: '참여 인원 $cnt/$headCount'),
-                const SizedBox(height: 10),
-                CustomText(content: '$start ~ $end'),
+                groupHeader(data),
+                const SizedBox(height: 20),
+                data.memberState != 0
+                    ? CustomButton(
+                        onPressed: toOtherPage(
+                          context: context,
+                          page: data.bingoId != 0
+                              ? const BingoDetail()
+                              : const BingoForm(),
+                        ),
+                        content: data.bingoId != 0 ? '내 빙고 보기' : '내 빙고 만들기',
+                      )
+                    : const SizedBox(),
+                ShowContentBox(
+                    contentTitle: '설명', content: data.description ?? ''),
+                ShowContentBox(contentTitle: '규칙', content: data.rule ?? ''),
+                // groupRankTop3(context, data),
               ],
+            );
+          }
+          return const Center(child: CustomText(content: '정보를 불러오는 중입니다'));
+        },
+      )),
+      bottomNavigationBar: BottomBar(isMember: memberState != 0),
+    );
+  }
+
+  Padding groupRankTop3(BuildContext context, GroupDetailModel data) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RowWithPadding(
+            vertical: 10,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const CustomText(content: '랭킹'),
+              TextButton(
+                onPressed: memberState != 0
+                    ? toOtherPage(
+                        context: context,
+                        page: GroupRank(
+                          groupId: widget.groupId,
+                          isMember: memberState != 0,
+                        ))
+                    : null,
+                child: const CustomText(
+                  content: '전체보기',
+                  fontSize: FontSize.smallSize,
+                ),
+              )
+            ],
+          ),
+          for (int i = 0; i < 3; i += 1)
+            RankListItem(
+              rank: i + 1,
+              rankListItem: data.rank,
+              isMember: memberState != 0,
             ),
-            const SizedBox(height: 20),
-            isMember
-                ? CustomButton(
-                    onPressed: toOtherPage(
-                      context: context,
-                      page: bingoId != 0
-                          ? const BingoDetail()
-                          : const BingoForm(),
-                    ),
-                    content: bingoId != 0 ? '내 빙고 보기' : '내 빙고 만들기',
-                  )
-                : const SizedBox(),
-            ShowContentBox(contentTitle: '설명', content: explain),
-            ShowContentBox(contentTitle: '규칙', content: rule),
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RowWithPadding(
-                    vertical: 10,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const CustomText(content: '랭킹'),
-                      TextButton(
-                          onPressed: toOtherPage(
-                              context: context,
-                              page: const GroupRank(
-                                  cnt: 3,
-                                  achievementList: achievementList,
-                                  nicknameList: nicknameList)),
-                          child: const CustomText(
-                            content: '전체보기',
-                            fontSize: FontSize.smallSize,
-                          ))
-                    ],
-                  ),
-                  for (int i = 0; i < 3; i += 1)
-                    RankList(
-                      rank: i + 1,
-                      nickname: nicknameList[i],
-                      achievement: achievementList[i],
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
-      bottomNavigationBar: BottomBar(isMember: isMember),
+    );
+  }
+
+  Column groupHeader(GroupDetailModel data) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CustomText(content: data.groupName, fontSize: FontSize.titleSize),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: CustomText(content: '참여 인원 ${data.count}/${data.headCount}'),
+        ),
+        CustomText(content: '${data.start} ~ ${data.end}'),
+      ],
     );
   }
 }
 
 //* 그룹 내 달성률 랭킹
-class GroupRank extends StatelessWidget {
-  final int cnt;
-  final List<int> achievementList;
-  final List<String> nicknameList;
-  const GroupRank({
-    super.key,
-    required this.cnt,
-    required this.achievementList,
-    required this.nicknameList,
-  });
+class GroupRank extends StatefulWidget {
+  final int groupId;
+  final bool isMember;
+  const GroupRank({required this.groupId, required this.isMember, super.key});
 
+  @override
+  State<GroupRank> createState() => _GroupRankState();
+}
+
+class _GroupRankState extends State<GroupRank> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,16 +153,37 @@ class GroupRank extends StatelessWidget {
                 child:
                     CustomText(content: '그룹 랭킹', fontSize: FontSize.titleSize),
               ),
-              for (int i = 0; i < cnt; i += 1)
-                RankList(
-                    rank: i + 1,
-                    nickname: nicknameList[i],
-                    achievement: achievementList[i])
+              FutureBuilder(
+                future: GroupProvider.groupRank(widget.groupId),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return groupRankList(snapshot);
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              )
             ],
           ),
         ),
       ),
       bottomNavigationBar: const BottomBar(isMember: true),
+    );
+  }
+
+  ListView groupRankList(AsyncSnapshot<RankList> snapshot) {
+    return ListView.separated(
+      itemBuilder: (context, index) {
+        var rankListItem = snapshot.data![index];
+        return RankListItem(
+          rank: index + 1,
+          rankListItem: rankListItem,
+          isMember: widget.isMember,
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(height: 20),
+      itemCount: snapshot.data!.length,
     );
   }
 }

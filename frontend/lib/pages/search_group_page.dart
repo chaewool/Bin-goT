@@ -22,7 +22,7 @@ class _SearchGroupState extends State<SearchGroup> {
   @override
   void initState() {
     super.initState();
-    groups = PersonalApi.getMyGroups();
+    groups = UserProvider.getMyGroups();
   }
 
   @override
@@ -96,13 +96,7 @@ class _SearchGroupState extends State<SearchGroup> {
         var group = data[index];
         return GroupListItem(
           isSearchMode: false,
-          groupId: group.id,
-          groupName: group.groupName,
-          headCount: group.headCount,
-          count: group.count,
-          start: group.start,
-          end: group.end,
-          status: group.status,
+          groupInfo: group,
         );
       },
       separatorBuilder: (context, index) => const SizedBox(height: 20),

@@ -1,3 +1,5 @@
+import 'package:bin_got/models/group_model.dart';
+import 'package:bin_got/models/user_model.dart';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -12,46 +14,32 @@ import 'package:flutter/material.dart';
 //* 그룹 목록
 class GroupListItem extends StatelessWidget {
   final bool isSearchMode;
-  final int groupId, headCount, count;
-  final String groupName, start, end, status;
+  final MyGroupModel groupInfo;
   const GroupListItem({
     super.key,
     required this.isSearchMode,
-    required this.groupId,
-    required this.headCount,
-    required this.count,
-    required this.start,
-    required this.end,
-    required this.groupName,
-    required this.status,
+    required this.groupInfo,
   });
 
   @override
   Widget build(BuildContext context) {
-    String groupMember = '($count/$headCount)';
+    final difference = DateTime.now().difference(groupInfo.start);
+    String groupMember = '(${groupInfo.count}/${groupInfo.headCount})';
     return CustomList(
       height: 70,
       boxShadow: [shadowWithOpacity],
       onTap: toOtherPage(
         context: context,
-        page: GroupMain(
-          groupName: groupName,
-          start: start,
-          end: end,
-          cnt: count,
-          headCount: headCount,
-          isMember: true,
-          groupId: groupId,
-        ),
+        page: GroupMain(groupId: groupInfo.id),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          CustomText(content: groupName),
+          CustomText(content: groupInfo.groupName),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CustomText(content: 'D-day'),
+              CustomText(content: '${difference.inDays}'),
               const SizedBox(height: 5),
               isSearchMode
                   ? CustomText(
@@ -66,16 +54,15 @@ class GroupListItem extends StatelessWidget {
 }
 
 //* 순위 목록
-class RankList extends StatelessWidget {
-  final int rank, achievement;
-  final String nickname;
+class RankListItem extends StatelessWidget {
+  final int rank;
+  final GroupRankModel rankListItem;
   final bool isMember;
-  const RankList({
+  const RankListItem({
     super.key,
     required this.rank,
-    required this.nickname,
-    required this.achievement,
-    this.isMember = true,
+    required this.rankListItem,
+    required this.isMember,
   });
 
   @override
@@ -98,7 +85,8 @@ class RankList extends StatelessWidget {
             child: CustomText(content: '$rank', fontSize: FontSize.largeSize),
           ),
           const SizedBox(width: 30),
-          CustomText(content: '$nickname / $achievement%'),
+          CustomText(
+              content: '${rankListItem.nickname} / ${rankListItem.achieve}%'),
         ],
       ),
     );

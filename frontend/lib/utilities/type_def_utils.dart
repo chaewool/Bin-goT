@@ -14,15 +14,17 @@ typedef ImageList = List<Image>;
 typedef BoolList = List<bool>;
 typedef IconDataList = List<IconData>;
 
-//* api 관련
+//* api
 typedef DynamicMap = Map<String, dynamic>;
 typedef DynamicMapList = List<DynamicMap>;
 typedef DynamicResponse = Response<dynamic>;
-
-typedef MyGroupList = List<MyGroupModel>;
-typedef GroupList = List<GroupModel>;
 typedef FutureList = Future<List>;
 typedef FutureInt = Future<int>;
 typedef FutureDynamic = Future<dynamic>;
 typedef FutureDynamicMap = Future<DynamicMap>;
 typedef FutureVoid = Future<void>;
+
+//* group api
+typedef MyGroupList = List<MyGroupModel>;
+typedef GroupList = List<GroupModel>;
+typedef RankList = List<GroupRankModel>;

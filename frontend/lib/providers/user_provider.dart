@@ -1,3 +1,4 @@
+import 'package:bin_got/models/user_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +21,10 @@ const notiUrl = '$accountUrl/notification/update/';
 
 const exitService = '$kakaoUrl/unlink/';
 
-class PersonalApi {
-  void login(BuildContext context) async {
+class UserProvider {
+  static void login(BuildContext context) async {
     try {
-      await UserApi.instance.loginWithKakaoAccount();
+      final kakaoToken = await UserApi.instance.loginWithKakaoAccount();
     } catch (error) {
       if (error is PlatformException && error.code == 'CANCELED') {
         return;
@@ -59,17 +60,34 @@ class PersonalApi {
 
   static Future<MyGroupList> getMyGroups() async {
     try {
-      MyGroupList myGroupList = [];
       final response = await dio.get(groupListUrl);
       if (response.statusCode == 200) {
-        for (var group in response.data) {
-          myGroupList.add(group);
+        if (response.data.isNotEmpty) {
+          MyGroupList myGroupList = response.data.map<MyGroupModel>((json) {
+            MyGroupModel.fromJson(json);
+          }).toList();
+          return myGroupList;
         }
-        return myGroupList;
+        return [];
       }
       throw Error();
     } catch (error) {
       throw Error();
     }
   }
+
+  // static Future<MyGroupList> getMyBingos() async {
+  //   try {
+  //     final response = await dio.get(groupListUrl);
+  //     if (response.statusCode == 200) {
+  //       MyGroupList myGroupList = response.data.map<MyGroupModel>((json) {
+  //         MyGroupModel.fromJson(json);
+  //       }).toList();
+  //       return myGroupList;
+  //     }
+  //     throw Error();
+  //   } catch (error) {
+  //     throw Error();
+  //   }
+  // }
 }

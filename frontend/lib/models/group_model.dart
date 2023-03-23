@@ -1,11 +1,11 @@
 import 'package:bin_got/utilities/type_def_utils.dart';
 
 class GroupModel {
-  final int id, headCount, count;
+  final int groupId, headCount, count;
   final String groupName, start, end;
   final bool isPublic;
   GroupModel.fromJson(DynamicMap json)
-      : id = json['id'],
+      : groupId = json['id'],
         headCount = json['headcount'],
         count = json['count'],
         groupName = json['group_name'],
@@ -14,14 +14,26 @@ class GroupModel {
         isPublic = json['is_public'];
 }
 
-class GroupDetail {
-  final int id, headCount, count, bingoSize, period;
-  final String groupName, start, end, password;
-  final String? description;
-  final bool isPublic, hasImage, needAuth, isParticipant;
-  final DynamicMapList rank;
-  GroupDetail.fromJson(DynamicMap json)
+class GroupRankModel {
+  final int userId, achieve, bingoId;
+  final String nickname;
+  GroupRankModel.fromJson(DynamicMap json)
+      : userId = json['userId'],
+        achieve = json['achieve'],
+        bingoId = json['bingoId'],
+        nickname = json['nickname'];
+}
+
+class GroupDetailModel {
+  final int id, headCount, count, bingoSize, period, memberState, bingoId;
+  final String groupName, password;
+  final String? description, rule;
+  final DateTime start, end;
+  final bool isPublic, hasImage, needAuth;
+  final GroupRankModel rank;
+  GroupDetailModel.fromJson(DynamicMap json)
       : id = json['id'],
+        bingoId = json['bingo_id'],
         headCount = json['headcount'],
         count = json['count'],
         bingoSize = json['size'],
@@ -30,18 +42,19 @@ class GroupDetail {
         end = json['end'],
         isPublic = json['is_public'],
         description = json['description'],
+        rule = json['rule'],
         hasImage = json['has_image'],
         period = json['period'],
         password = json['password'],
         needAuth = json['need_auth'],
-        isParticipant = json['is_participant'],
+        memberState = json['is_participant'],
         rank = json['rank'];
 }
 
-class ChatDetail {
+class ChatDetailModel {
   final int chatId, userId;
   final String nickname, content, createdAt, image;
-  ChatDetail.fromJson(DynamicMap json)
+  ChatDetailModel.fromJson(DynamicMap json)
       : chatId = json['chat_id'],
         userId = json['user_id'],
         nickname = json['nickname'],
