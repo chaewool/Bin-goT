@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from datetime import datetime, date
 import json
 
-from commons import upload_image, delete_image
+from commons import upload_image, delete_image, RedisRanker
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer, ChatListSerializer, ReviewListSerializer
 from .models import Group, Participate, Chat, Review
 from boards.models import Board, BoardItem
@@ -75,14 +75,14 @@ class GroupDetailView(APIView):
         password = request.POST.get('password')
         
         rand_name = user.username
-        participate = Participate.objects.filter(user=user, group=group)
+        participate = Participate.objects.get(user=user, group=group)
         board_id = 0
         
         if Board.objects.filter(user=user, group=group).exists():
             board_id = Board.objects.get(user=user, group=group).id
         
         # 그룹 가입 여부 확인
-        if participate.exists():
+        if participate:
             # 강제 탈퇴 여부 확인
             if participate.is_banned:
                 return Response(data={'message': '탈퇴 처리된 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -105,7 +105,13 @@ class GroupDetailView(APIView):
             is_participant = 0
 
         serializer = GroupDetailSerializer(group)
-        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id}
+        ranker = RedisRanker(group_id)
+        rank = []
+        for ranker_id in ranker.getTops(3):
+            r = get_user_model.objects.get(id=ranker_id)
+            rank.append({'user_id': ranker_id, 'nickname': Participate.objects.get(group=group, user=r).nickname, 'achieve': ranker.getScore(ranker_id) / (group.size ** 2), 'board_id': Board.objects.get(group=group, user=user).id})
+        
+        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank}
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -318,17 +324,25 @@ class GroupReviewCheckView(APIView):
         if review.item.finished:
             return Response(data={'message': '이미 완료된 항목입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        ranker = RedisRanker(group_id)
+        
         # 횟수 측정 여부 확인
         if review.item.check:
             review.item.check_cnt += 1
             
             if review.item.check_cnt == review.item.check_goal:
                 review.item.finish = True
+                ranker.plusOne(str(user.id))
         else:    
             review.item.finish = True
+            ranker.plusOne(str(user.id))
         
         review.reviewed = True
         review.save()
+        
+        rank = ranker.getRank(str(user.id))
+        
+        print(rank)
         
         return Response(status=status.HTTP_200_OK)
 
