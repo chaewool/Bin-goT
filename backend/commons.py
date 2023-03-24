@@ -32,7 +32,7 @@ def delete_image(url):
     
 import redis
 
-conn_redis = redis.Redis(host="127.0.0.1", port=6379, db=1, password=REDIS_PASSWORD, decode_responses=True)
+conn_redis = redis.StrictRedis(host="127.0.0.1", port=6379, db=1, password=REDIS_PASSWORD, decode_responses=True)
 
 class RedisRanker:
     def __init__(self, key, is_ranker_reset=True):
