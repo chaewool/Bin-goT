@@ -84,7 +84,7 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
             ? IconButtonInRow(onPressed: onPressed!, icon: searchIcon)
             : const SizedBox(),
         IconButtonInRow(
-          icon: myPageIcon,
+          icon: settingsIcon,
           onPressed: toOtherPage(context: context, page: const MyPage()),
         ),
         IconButtonInRow(

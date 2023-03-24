@@ -1,3 +1,4 @@
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -167,15 +168,15 @@ class GroupAdminTabBar extends StatelessWidget {
   }
 }
 
-//* 마이 페이지 탭
-class MyPageTabBar extends StatefulWidget {
-  const MyPageTabBar({super.key});
+//* 메인 페이지 탭
+class MyTabBar extends StatefulWidget {
+  const MyTabBar({super.key});
 
   @override
-  State<MyPageTabBar> createState() => _MyPageTabBarState();
+  State<MyTabBar> createState() => _MyTabBarState();
 }
 
-class _MyPageTabBarState extends State<MyPageTabBar> {
+class _MyTabBarState extends State<MyTabBar> {
   List<List<StringList>> buttonOptions = [
     [
       ['그룹명 순', '그룹명 역순'],
@@ -185,7 +186,7 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
     [
       ['최신순', '오래된순'],
       ['전체', '진행 중', '완료'],
-      // ['리스트로 보기', '갤러리로 보기']
+      ['', '']
     ]
   ];
   late List<StringList> presentOptions;
@@ -193,7 +194,7 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
 
   List<IntList> idxList = [
     [0, 0, 0],
-    [0, 0]
+    [0, 0, 0]
   ];
   void changeIdx(int idx) {
     if (idxList[presentIdx][idx] < presentOptions[idx].length - 1) {
@@ -233,10 +234,12 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           for (int i = 0; i < 3; i += 1)
-            CustomTextButton(
-              content: presentOptions[i][idxList[presentIdx][i]],
-              fontSize: FontSize.smallSize,
-              onTap: () => changeIdx(i),
+            Center(
+              child: CustomTextButton(
+                content: presentOptions[i][idxList[presentIdx][i]],
+                fontSize: FontSize.smallSize,
+                onTap: () => changeIdx(i),
+              ),
             ),
         ],
       ),
@@ -246,18 +249,62 @@ class _MyPageTabBarState extends State<MyPageTabBar> {
             future: UserProvider.getMyGroups(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                if (idxList[0][2] == 0) {
-                  return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        var group = snapshot.data![index];
-                        return GroupListItem(
-                          isSearchMode: false,
-                          groupInfo: group,
-                        );
-                      });
+                if (snapshot.data!.isNotEmpty) {
+                  if (idxList[0][2] == 0) {
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          var group = snapshot.data![index];
+                          return GroupListItem(
+                            isSearchMode: false,
+                            groupInfo: group,
+                          );
+                        });
+                  }
+                  return const DatePicker();
                 }
-                return const DatePicker();
+                return Column(
+                  children: [
+                    const Center(
+                      child: CustomText(
+                        center: true,
+                        fontSize: FontSize.titleSize,
+                        content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                      ),
+                    ),
+                    Center(
+                      child: FutureBuilder(
+                        future: GroupProvider().recommendGroupList(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data!.isNotEmpty) {
+                              return ColWithPadding(
+                                children: [
+                                  const CustomText(content: '추천 그룹'),
+                                  ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: snapshot.data!.length,
+                                      itemBuilder: (context, index) {
+                                        var group = snapshot.data![index];
+                                        return GroupListItem(
+                                          isSearchMode: false,
+                                          groupInfo: group,
+                                        );
+                                      })
+                                ],
+                              );
+                            }
+                            return const CustomText(
+                              content: '추천 그룹을 불러올 수 없습니다.\n 직접 그룹을 만들어보세요',
+                            );
+                          }
+                          return const CircularProgressIndicator();
+                        },
+                      ),
+                    )
+                  ],
+                );
               }
               return const CustomText(content: '그룹 정보를 불러오는 중입니다');
             },

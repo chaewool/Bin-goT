@@ -32,7 +32,7 @@ class _GroupFormState extends State<GroupForm> {
     const StringList joinMethod = ['그룹장의 승인 필요', '자동 가입'];
     DynamicMap groupData = {};
     void createGroup() async {
-      GroupProvider.createOwnGroup(groupData).then((groupId) => toOtherPage(
+      GroupProvider().createOwnGroup(groupData).then((groupId) => toOtherPage(
           context: context, page: GroupCreateCompleted(groupId: groupId))());
     }
     // void datePicker() {

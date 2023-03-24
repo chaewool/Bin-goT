@@ -38,12 +38,12 @@ class _GroupMainState extends State<GroupMain> {
       ),
       body: SingleChildScrollView(
           child: FutureBuilder(
-        future: GroupProvider.readGroupDetail(widget.groupId),
+        future: GroupProvider().readGroupDetail(widget.groupId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final GroupDetailModel data = snapshot.data!;
             memberState = data.memberState;
-            ColWithPadding(
+            return ColWithPadding(
               vertical: 30,
               horizontal: 30,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -154,7 +154,7 @@ class _GroupRankState extends State<GroupRank> {
                     CustomText(content: '그룹 랭킹', fontSize: FontSize.titleSize),
               ),
               FutureBuilder(
-                future: GroupProvider.groupRank(widget.groupId),
+                future: GroupProvider().groupRank(widget.groupId),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return groupRankList(snapshot);

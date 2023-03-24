@@ -3,9 +3,8 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/box_container.dart';
-import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/search_bar.dart';
-import 'package:bin_got/widgets/text.dart';
+import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:flutter/material.dart';
 
 //* 메인 페이지
@@ -50,68 +49,11 @@ class _MainState extends State<Main> {
             children: [
               isSearchMode ? const SearchBar() : const SizedBox(),
               const SizedBox(height: 15),
-              FutureBuilder(
-                future: groups,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    var data = snapshot.data;
-                    if (data!.isNotEmpty) {
-                      return Column(
-                        children: [
-                          Expanded(child: myGroupList(data)),
-                        ],
-                      );
-                    } else {
-                      return Column(
-                        children: const [
-                          Center(
-                            child: CustomText(
-                              center: true,
-                              fontSize: FontSize.titleSize,
-                              content: '아직 가입된 그룹이 없어요.',
-                            ),
-                          ),
-                          Center(
-                            child: CustomText(
-                              center: true,
-                              fontSize: FontSize.titleSize,
-                              content: '그룹에 가입하거나',
-                            ),
-                          ),
-                          Center(
-                            child: CustomText(
-                              center: true,
-                              fontSize: FontSize.titleSize,
-                              content: '그룹을 생성해보세요.',
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              ),
+              const Expanded(child: MyTabBar()),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  ListView myGroupList(MyGroupList data) {
-    return ListView.separated(
-      itemCount: data.length,
-      itemBuilder: (context, index) {
-        var group = data[index];
-        return GroupListItem(
-          isSearchMode: false,
-          groupInfo: group,
-        );
-      },
-      separatorBuilder: (context, index) => const SizedBox(height: 20),
     );
   }
 }

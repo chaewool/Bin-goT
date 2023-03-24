@@ -9,7 +9,6 @@ import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/badge.dart';
 import 'package:bin_got/widgets/row_col.dart';
-import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +41,7 @@ class _MyPageState extends State<MyPage> {
       appBar: const MyPageAppBar(),
       body: Column(
         mainAxisSize: MainAxisSize.max,
-        children: [profile(context), const Expanded(child: MyPageTabBar())],
+        children: [profile(context)],
       ),
     );
   }

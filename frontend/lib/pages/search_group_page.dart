@@ -58,21 +58,7 @@ class _SearchGroupState extends State<SearchGroup> {
                         child: CustomText(
                           center: true,
                           fontSize: FontSize.titleSize,
-                          content: '조건에 맞는 그룹이 없어요.',
-                        ),
-                      ),
-                      Center(
-                        child: CustomText(
-                          center: true,
-                          fontSize: FontSize.titleSize,
-                          content: '다른 그룹을 검색하거나',
-                        ),
-                      ),
-                      Center(
-                        child: CustomText(
-                          center: true,
-                          fontSize: FontSize.titleSize,
-                          content: '그룹을 생성해보세요.',
+                          content: '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
                         ),
                       ),
                     ],

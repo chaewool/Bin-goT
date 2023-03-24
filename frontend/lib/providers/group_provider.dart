@@ -2,32 +2,32 @@ import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 
-//* group url
-String searchGroupUrl({
-  int? period,
-  String? keyword,
-  int? align,
-  int? filter,
-  required int startIndex,
-  required int cnt,
-  required int page,
-}) =>
-    '$groupUrl/search?period=$period&keyword=$keyword&align=$align&filter=$filter&start_index=$startIndex&cnt=$cnt&page=$page';
-
-const createGroupUrl = '$groupUrl/create';
-
-String groupDetailUrl(int groupId) => '$groupUrl/$groupId/';
-String joinGroupUrl(int groupId) => '${groupDetailUrl(groupId)}/join/';
-String grantMemberUrl(int groupId) => '${groupDetailUrl(groupId)}/grant/';
-String editGroupUrl(int groupId) => '${groupDetailUrl(groupId)}/update/';
-String deleteGroupUrl(int groupId) => '${groupDetailUrl(groupId)}/delete/';
-String exitGroupUrl(int groupId) => '${groupDetailUrl(groupId)}/resign/';
-String groupRankUrl(int groupId) => '${groupDetailUrl(groupId)}/rank/';
-
 //* group provider
 class GroupProvider with ApiProvider {
+  //* group url
+  String _searchGroupUrl({
+    int? period,
+    String? keyword,
+    int? align,
+    int? filter,
+    required int startIndex,
+    required int cnt,
+    required int page,
+  }) =>
+      '$groupUrl/search?period=$period&keyword=$keyword&align=$align&filter=$filter&start_index=$startIndex&cnt=$cnt&page=$page';
+
+  final _createGroupUrl = '$groupUrl/create/';
+  final _recommendGroupUrl = '$groupUrl/recommend/';
+  String _groupDetailUrl(int groupId) => '$groupUrl/$groupId/';
+  String _joinGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}/join/';
+  String _grantMemberUrl(int groupId) => '${_groupDetailUrl(groupId)}/grant/';
+  String _editGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}/update/';
+  String _deleteGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}/delete/';
+  String _exitGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}/resign/';
+  String _groupRankUrl(int groupId) => '${_groupDetailUrl(groupId)}/rank/';
+
   //* search
-  static Future<GroupList> searchGroupList({
+  Future<GroupList> searchGroupList({
     int? period,
     String? keyword,
     int? align,
@@ -36,7 +36,7 @@ class GroupProvider with ApiProvider {
     required int cnt,
     required int page,
   }) async {
-    final url = searchGroupUrl(
+    final url = _searchGroupUrl(
       period: period,
       keyword: keyword,
       align: align,
@@ -45,13 +45,11 @@ class GroupProvider with ApiProvider {
       cnt: cnt,
       page: page,
     );
-    GroupList groupList = [];
     try {
       final response = await dio.get(url);
       if (response.statusCode == 200) {
-        for (var group in response.data) {
-          groupList.add(GroupModel.fromJson(group));
-        }
+        GroupList groupList =
+            response.data.map<GroupModel>((json) => GroupModel.fromJson(json));
         return groupList;
       }
       throw Error();
@@ -61,9 +59,9 @@ class GroupProvider with ApiProvider {
   }
 
   //* detail
-  static Future<GroupDetailModel> readGroupDetail(int groupId) async {
+  Future<GroupDetailModel> readGroupDetail(int groupId) async {
     try {
-      final response = await dio.get(groupDetailUrl(groupId));
+      final response = await dio.get(_groupDetailUrl(groupId));
       if (response.statusCode == 200) {
         return GroupDetailModel.fromJson(response.data);
       }
@@ -73,15 +71,31 @@ class GroupProvider with ApiProvider {
     }
   }
 
+  //* recommend
+  Future<GroupList> recommendGroupList() async {
+    try {
+      final response = await dio.get(_recommendGroupUrl);
+      if (response.statusCode == 200) {
+        GroupList groupList =
+            response.data.map<GroupModel>((json) => GroupModel.fromJson(json));
+        return groupList;
+      }
+      throw Error();
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
+  }
+
   //* join
-  static FutureVoid joinGroup(int groupId) async {
-    ApiProvider.deliverApi(joinGroupUrl(groupId));
+  FutureVoid joinGroup(int groupId) async {
+    ApiProvider.deliverApi(_joinGroupUrl(groupId));
   }
 
   //* create
-  static FutureInt createOwnGroup(DynamicMap groupData) async {
+  FutureInt createOwnGroup(DynamicMap groupData) async {
     try {
-      final response = await dio.post(createGroupUrl, data: groupData);
+      final response = await dio.post(_createGroupUrl, data: groupData);
       if (response.statusCode == 200) {
         return response.data.groupId;
       }
@@ -92,29 +106,29 @@ class GroupProvider with ApiProvider {
   }
 
   //* join or forced exit
-  static FutureVoid grantThisMember(int groupId, DynamicMap grantData) async {
-    ApiProvider.createApi(url: grantMemberUrl(groupId), data: grantData);
+  FutureVoid grantThisMember(int groupId, DynamicMap grantData) async {
+    ApiProvider.createApi(url: _grantMemberUrl(groupId), data: grantData);
   }
 
   //* update
-  static FutureVoid editOwnGroup(int groupId, DynamicMap groupData) async {
-    ApiProvider.updateApi(url: editGroupUrl(groupId), data: groupData);
+  FutureVoid editOwnGroup(int groupId, DynamicMap groupData) async {
+    ApiProvider.updateApi(url: _editGroupUrl(groupId), data: groupData);
   }
 
   //* delete
-  static FutureVoid deleteOwnGroup(int groupId) async {
-    ApiProvider.deleteApi(deleteGroupUrl(groupId));
+  FutureVoid deleteOwnGroup(int groupId) async {
+    ApiProvider.deleteApi(_deleteGroupUrl(groupId));
   }
 
   //* exit
-  static FutureVoid exitThisGroup(int groupId) async {
-    ApiProvider.deleteApi(exitGroupUrl(groupId));
+  FutureVoid exitThisGroup(int groupId) async {
+    ApiProvider.deleteApi(_exitGroupUrl(groupId));
   }
 
   //* rank
-  static Future<RankList> groupRank(int groupId) async {
+  Future<RankList> groupRank(int groupId) async {
     try {
-      final response = await dio.get(groupRankUrl(groupId));
+      final response = await dio.get(_groupRankUrl(groupId));
       if (response.statusCode == 200) {
         RankList rankList = response.data.map<GroupRankModel>((json) {
           return GroupRankModel.fromJson(json);
