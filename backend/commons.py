@@ -31,8 +31,10 @@ def delete_image(url):
     )
     
 import redis
+from urllib.parse import quote
 
-conn_redis = redis.StrictRedis(host="bingot.xyz", port=6379, password=REDIS_PASSWORD, decode_responses=True)
+encoded_password = quote(REDIS_PASSWORD, safe="")
+conn_redis = redis.from_url("redis://:{}@bingot.xyz:6379/0".format(encoded_password), decode_responses=True)
 
 class RedisRanker:
     def __init__(self, key, is_ranker_reset=True):
