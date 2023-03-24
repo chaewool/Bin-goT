@@ -12,7 +12,7 @@ class GroupCreateSerializer(serializers.ModelSerializer):
 class GroupDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = '__all__'
+        exclude = ('id', 'size', 'password', 'period', 'is_public', 'users',)
 
 
 class GroupUpdateSerializer(serializers.ModelSerializer):
