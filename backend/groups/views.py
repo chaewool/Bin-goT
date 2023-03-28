@@ -121,6 +121,7 @@ class GroupUpdateView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         data = json.loads(request.data.get('data'))
+        update_img = request.data.get('update_img')
 
         if not data['groupname']:
             data['groupname'] = group.groupname
@@ -134,15 +135,18 @@ class GroupUpdateView(APIView):
         if user == group.leader:
             serializer = GroupUpdateSerializer(instance=group, data=data)
 
-            if serializer.is_valid(raise_exception=True):
-                img = request.FILES.get('img')    
+            if serializer.is_valid(raise_exception=True):        
                 url = 'groups' + '/' + str(group.id)
                 
-                if img != None:
-                    upload_image(url, img)
-                    serializer.save(has_img=True)
-                else:
-                    serializer.save()
+                if update_img:                
+                    img = request.FILES.get('img')
+                    
+                    if img != None:
+                        upload_image(url, img)
+                        serializer.save(has_img=True)
+                    else:
+                        delete_image(url)
+                        serializer.save(has_img=False)
                 
                 return Response(status=status.HTTP_200_OK)
         return Response(data={'message': '수정 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
