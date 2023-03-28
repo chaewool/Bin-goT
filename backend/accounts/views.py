@@ -32,6 +32,39 @@ class KakaoView(APIView):
         )
 
 
+def from_kaKao_token_get_service_token(access_token):
+    # 카카오 토큰으로 사용자 정보 가져오기 요청
+    kakao_token_api = 'https://kapi.kakao.com/v2/user/me'
+    headers = {"Authorization": f'Bearer ${access_token}'}
+
+    # 요청 검증 및 처리
+    user_info_response = requests.get(kakao_token_api, headers=headers).json()
+    kakao_id = user_info_response['id']
+    
+    logger.info(kakao_id)
+
+    # 제공받은 사용자 정보로 서비스 회원 여부 확인
+    # 회원이 아니라면 회원 가입 처리
+    # 확인이 끝나면 사용자 정보 반환
+    data = {}
+    
+    if User.objects.filter(kakao_id=kakao_id).exists():
+        data['is_login'] = True
+        user = User.objects.get(kakao_id=kakao_id)
+    else:
+        data['is_login'] = False
+        username = user_info_response['properties']['nickname']
+        user = User.objects.create(kakao_id=kakao_id, username=username)
+        badge = Badge.objects.get(id=1)
+        Achieve.objects.create(user=user, badge=badge)
+        
+    serializer = UserSerializer(user)
+    data.update(serializer.data)
+    
+    return data
+
+
+# Redirect(REST API) 방식
 class KaKaoCallBackView(APIView):
     permission_classes = [AllowAny]
     
@@ -45,40 +78,29 @@ class KaKaoCallBackView(APIView):
             'redirection_uri': 'https://bingot.xyz/api/accounts/kakao/callback',
             'code': auth_code
         }
-        
-        logger.info(auth_code)
 
         # 카카오 토큰 발급
         token_response = requests.post(kakao_token_api, data=data)
         access_token = token_response.json().get('access_token')
         
+        data = from_kaKao_token_get_service_token(access_token)
+            
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+# 기본(네이티브 앱) 방식
+class KaKaoNativeView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        access_token = request.POST.get('access_token')
+        
         logger.info(access_token)
         
-        # 카카오 로그인 완료, 카카오 토큰으로 사용자 정보 가져오기 요청
-        kakao_token_api = 'https://kapi.kakao.com/v2/user/me'
-        headers = {"Authorization": f'Bearer ${access_token}'}
-
-        # 요청 검증 및 처리
-        user_info_response = requests.get(kakao_token_api, headers=headers).json()
-        kakao_id = user_info_response['id']
-        
-        logger.info(kakao_id)
-
-        # 제공받은 사용자 정보로 서비스 회원 여부 확인
-        # 회원이 아니라면 회원 가입 처리
-        # 확인이 끝나면 사용자 정보 반환
-        if User.objects.filter(kakao_id=kakao_id).exists():
-            user = User.objects.get(kakao_id=kakao_id)
-        else:
-            username = user_info_response['properties']['nickname']
-            user = User.objects.create(kakao_id=kakao_id, username=username)
-            badge = Badge.objects.get(id=1)
-            Achieve.objects.create(user=user, badge=badge)
-        
-        serializer = UserSerializer(user)
+        data = from_kaKao_token_get_service_token(access_token)
             
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-
+        return Response(data=data, status=status.HTTP_200_OK)
+    
 
 class KaKaoUnlinkView(APIView):
     def delete(self, request):
