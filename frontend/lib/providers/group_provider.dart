@@ -1,4 +1,5 @@
 import 'package:bin_got/models/group_model.dart';
+import 'package:bin_got/models/user_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 
@@ -72,12 +73,12 @@ class GroupProvider with ApiProvider {
   }
 
   //* recommend
-  Future<GroupList> recommendGroupList() async {
+  Future<MyGroupList> recommendGroupList() async {
     try {
       final response = await dio.get(_recommendGroupUrl);
       if (response.statusCode == 200) {
-        GroupList groupList =
-            response.data.map<GroupModel>((json) => GroupModel.fromJson(json));
+        MyGroupList groupList = response.data
+            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json));
         return groupList;
       }
       throw Error();
@@ -107,12 +108,12 @@ class GroupProvider with ApiProvider {
 
   //* join or forced exit
   FutureVoid grantThisMember(int groupId, DynamicMap grantData) async {
-    ApiProvider.createApi(url: _grantMemberUrl(groupId), data: grantData);
+    ApiProvider.createApi(_grantMemberUrl(groupId), data: grantData);
   }
 
   //* update
   FutureVoid editOwnGroup(int groupId, DynamicMap groupData) async {
-    ApiProvider.updateApi(url: _editGroupUrl(groupId), data: groupData);
+    ApiProvider.updateApi(_editGroupUrl(groupId), data: groupData);
   }
 
   //* delete

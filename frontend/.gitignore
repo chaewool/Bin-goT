@@ -48,3 +48,4 @@ app.*.map.json
 /lib/widgets/date_picker_example.dart
 /lib/utilities/image_icon.dart
 .env
+/android/keystore/

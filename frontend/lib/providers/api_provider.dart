@@ -8,22 +8,14 @@ final baseUrl = dotenv.env['baseUrl'];
 final options = BaseOptions(baseUrl: baseUrl!);
 final dio = Dio(options);
 
-//* 사용자
-const accountUrl = '/accounts';
-const tokenUrl = '$accountUrl/token';
-const usernameUrl = '$accountUrl/username';
-const profileUrl = '$accountUrl/profile';
-const badgeUrl = '$accountUrl/badge';
-const kakaoUrl = '$accountUrl/kakao';
-
 //* 그룹
 const groupUrl = '/groups';
 
 //* Api 기본 틀
 class ApiProvider {
   //* create
-  static FutureDynamicMap _createApi(
-      {required String url, required DynamicMap data}) async {
+  static FutureDynamicMap _createApi(String url,
+      {required DynamicMap data}) async {
     try {
       final response = await dio.post(url, data: data);
       if (response.statusCode == 200) {
@@ -31,13 +23,14 @@ class ApiProvider {
       }
       throw Error();
     } catch (error) {
+      print(error);
       throw Error();
     }
   }
 
-  static FutureDynamicMap createApi(
-      {required String url, required DynamicMap data}) async {
-    return _createApi(url: url, data: data);
+  static FutureDynamicMap createApi(String url,
+      {required DynamicMap data}) async {
+    return _createApi(url, data: data);
   }
 
   //* data unnecessary
@@ -58,8 +51,7 @@ class ApiProvider {
   }
 
   //* update
-  static FutureVoid _updateApi(
-      {required String url, required DynamicMap data}) async {
+  static FutureVoid _updateApi(String url, {required DynamicMap data}) async {
     try {
       final response = await dio.put(url, data: data);
       if (response.statusCode == 200) {
@@ -71,9 +63,8 @@ class ApiProvider {
     }
   }
 
-  static FutureVoid updateApi(
-      {required String url, required DynamicMap data}) async {
-    _updateApi(url: url, data: data);
+  static FutureVoid updateApi(String url, {required DynamicMap data}) async {
+    _updateApi(url, data: data);
   }
 
   //* delete
