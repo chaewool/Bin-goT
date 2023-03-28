@@ -39,7 +39,7 @@ conn_redis = redis.from_url("redis://:{}@bingot.xyz:6379/0".format(encoded_passw
 class RedisRanker:
     def __init__(self, key, is_ranker_reset=True):
         self.conn_redis = conn_redis
-        self.key  = key
+        self.key = key
         if is_ranker_reset is True:
             self.conn_redis.delete(self.key)
 

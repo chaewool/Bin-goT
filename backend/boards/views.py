@@ -15,7 +15,7 @@ class BoardCreateView(APIView):
         user = request.user
         thumbnail = request.FILES.get('thumbnail')
         data = json.loads(request.data.get('data'))
-        group = Group.objects.get(id=data['group_id'])
+        group = Group.objects.get(id=data.get('group_id'))
         
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -55,7 +55,7 @@ class BoardDetailView(APIView):
             if item['finished']:
                 achieve += 1
         
-        data = {**serializer.data, 'acheive':achieve / board.group.size}
+        data = {**serializer.data, 'acheive':achieve / (board.group.size ** 2)}
         
         return Response(data=data, status=status.HTTP_200_OK)
 

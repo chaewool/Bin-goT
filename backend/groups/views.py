@@ -10,6 +10,7 @@ from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpda
 from .models import Group, Participate, Chat, Review
 from boards.models import Board, BoardItem
 
+
 class GroupCreateView(APIView):
     def post(self, request):
         user = request.user
