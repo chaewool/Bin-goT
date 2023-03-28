@@ -109,7 +109,12 @@ class GroupDetailView(APIView):
         rank = []
         for ranker_id in ranker.getTops(3):
             r = get_user_model.objects.get(id=ranker_id)
-            rank.append({'user_id': ranker_id, 'nickname': Participate.objects.get(group=group, user=r).nickname, 'achieve': ranker.getScore(ranker_id) / (group.size ** 2), 'board_id': Board.objects.get(group=group, user=user).id})
+            rank.append({
+                'user_id': ranker_id, 
+                'nickname': Participate.objects.get(group=group, user=r).rand_name, 
+                'achieve': ranker.getScore(ranker_id) / (group.size ** 2), 
+                'board_id': Board.objects.get(group=group, user=r).id
+                })
         
         data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank}
         
@@ -234,6 +239,30 @@ class GroupResignView(APIView):
         participate.delete()
         
         return Response(status=status.HTTP_200_OK)
+
+
+class GroupRankView(APIView):
+    def get(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        
+        if not Participate.objects.filter(user=user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        ranker = RedisRanker(group_id)
+        data = []
+        
+        for participate in Participate.objects.filter(group=group):
+            u = participate.user
+            data.append({
+                'user_id': u.id, 
+                'nickname': participate.rand_name, 
+                'achieve': ranker.getScore(str(u.id)) / (group.size ** 2), 
+                'board_id': Board.objects.get(group=group, user=u).id,
+                'rank': ranker.getRank(str(u.id))
+                })
+        
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class GroupChatCreateView(APIView):
