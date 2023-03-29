@@ -144,7 +144,7 @@ class GroupDetailView(APIView):
     def post(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        password = request.POST.get('password')
+        password = request.data.get('password')
         
         rand_name = user.username
         participate = Participate.objects.get(user=user, group=group)
@@ -261,8 +261,8 @@ class GroupGrantView(APIView):
     def post(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        applicant_id = request.POST.get('applicant_id')
-        grant = request.POST.get('grant')
+        applicant_id = request.data.get('applicant_id')
+        grant = request.data.get('grant')
 
         if group.leader == user:
             applicant = get_user_model().objects.get(id=applicant_id)
@@ -353,7 +353,7 @@ class GroupChatCreateView(APIView):
     def post(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        content = request.POST.get('content')
+        content = request.data.get('content')
         img = request.FILES.get('img')
         
         if not Participate.objects.filter(user=user, group=group).exists():
@@ -396,9 +396,9 @@ class GroupReviewCreateView(APIView):
     def post(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        board = Board.objects.get(id=request.POST.get('board_id'))
-        item = BoardItem.objects.get(id=request.POST.get('item_id'))
-        content = request.POST.get('content')
+        board = Board.objects.get(id=request.data.get('board_id'))
+        item = BoardItem.objects.get(id=request.data.get('item_id'))
+        content = request.data.get('content')
         img = request.FILES.get('img')
         
         if not Participate.objects.filter(user=user, group=group).exists():
@@ -427,7 +427,7 @@ class GroupReviewCheckView(APIView):
     def put(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        review = Review.objects.get(id=request.POST.get('review_id'))
+        review = Review.objects.get(id=request.data.get('review_id'))
         
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)

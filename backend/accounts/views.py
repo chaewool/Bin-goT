@@ -96,12 +96,7 @@ class KaKaoNativeView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        logger.info(request)
-        logger.info(request.data)
-        
         kakao_id = request.data.get('kakao_id')
-        
-        logger.info(kakao_id)
         
         data = from_kaKao_id_get_user_info(kakao_id)
             
@@ -117,7 +112,7 @@ class KaKaoUnlinkView(APIView):
 
 class UsernameCheckView(APIView):
     def post(self, request):
-        username = request.POST.get('username')
+        username = request.data.get('username')
         
         if User.objects.filter(username=username).exists():
             return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -127,7 +122,7 @@ class UsernameCheckView(APIView):
 class UsernameUpdateView(APIView):
     def post(self, request):
         user = request.user
-        username = request.POST.get('username')
+        username = request.data.get('username')
         
         if User.objects.filter(username=username).exists():
             return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -155,7 +150,7 @@ class BadgeListView(APIView):
 class BadgeUpdateView(APIView):
     def post(self, request):
         user = request.user
-        badge_id = request.POST.get('badge_id')
+        badge_id = request.data.get('badge_id')
         badge = Badge.objects.get(id=badge_id)
         
         if Achieve.objects.filter(user=user, badge=badge).exists():
@@ -169,9 +164,9 @@ class BadgeUpdateView(APIView):
 class NotificationUpdateView(APIView):
     def post(self, request):
         user = request.user
-        noti_rank = request.POST.get('noti_rank')
-        noti_chat = request.POST.get('noti_chat')
-        noti_due = request.POST.get('noti_due')
+        noti_rank = request.data.get('noti_rank')
+        noti_chat = request.data.get('noti_chat')
+        noti_due = request.data.get('noti_due')
         
         user.noti_rank = noti_rank
         user.noti_chat = noti_chat
