@@ -9,6 +9,72 @@ from commons import upload_image, delete_image, RedisRanker
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer, ChatListSerializer, ReviewListSerializer
 from .models import Group, Participate, Chat, Review
 from boards.models import Board, BoardItem
+from accounts.models import Badge, Achieve
+
+
+def check_cnt_groups(user):
+    if user.cnt_groups == 1:
+        badge = Badge.objects.get(id=2)
+        Achieve.objects.create(user=user, badge=badge)
+    elif user.cnt_groups == 3:
+        badge = Badge.objects.get(id=3)
+        Achieve.objects.create(user=user, badge=badge)
+    elif user.cnt_groups == 5:
+        badge = Badge.objects.get(id=4)
+        Achieve.objects.create(user=user, badge=badge)
+        
+    # user에게 알림 보내는 코드 추가 필요
+
+
+def check_cnt_boarditems_complete(group_id, review):
+    user = review.user
+    
+    review.item.finish = True
+    review.item.save()
+    
+    ranker = RedisRanker(group_id)
+    ranker.plusOne(str(review.user.id))
+    
+    user.cnt_boarditems_complete += 1
+    user.save()
+                
+    if user.cnt_boarditems_complete == 1:
+        badge = Badge.objects.get(id=8)
+        Achieve.objects.create(user=user, badge=badge)
+    elif user.cnt_boarditems_complete == 10:
+        badge = Badge.objects.get(id=9)
+        Achieve.objects.create(user=user, badge=badge)
+    elif user.cnt_boarditems_complete == 100:
+        badge = Badge.objects.get(id=10)
+        Achieve.objects.create(user=user, badge=badge) 
+           
+    # user에게 알림 보내는 코드 추가 필요
+    
+    board = Board.objects.get(user=user, group=review.group)
+    
+    cnt = 0
+    for item in board.items:
+        if item.finished:
+            cnt += 1
+    
+    if cnt == board.size ** 2:
+        board.finished = True
+        board.save()
+        
+        user.cnt_boards_complete += 1
+        user.save()
+              
+        if user.cnt_boards_complete == 1:
+            badge = Badge.objects.get(id=11)
+            Achieve.objects.create(user=user, badge=badge)
+        elif user.cnt_boards_complete == 12:
+            badge = Badge.objects.get(id=9)
+            Achieve.objects.create(user=user, badge=badge)
+        elif user.cnt_boards_complete == 100:
+            badge = Badge.objects.get(id=13)
+            Achieve.objects.create(user=user, badge=badge)
+            
+        # user에게 알림 보내는 코드 추가 필요
 
 
 class GroupCreateView(APIView):
@@ -65,6 +131,11 @@ class GroupCreateView(APIView):
             Participate.objects.create(user=user, group=group, is_banned=False, rand_name=rand_name)
         else:
             Participate.objects.create(user=user, group=group, is_banned=False)
+        
+        user.cnt_groups += 1
+        user.save()
+        
+        check_cnt_groups(user)
         
         return Response(data={'group_id': group.id}, status=status.HTTP_200_OK)
 
@@ -172,8 +243,15 @@ class GroupJoinView(APIView):
                         rand_name = f'익명의 참여자 {i + 1:0>2}'
                         break
                 Participate.objects.create(user=user, group=group, is_banned=False, rand_name=rand_name)
+                
+                user.cnt_groups += 1
+                user.save()
+                
+                check_cnt_groups(user)
             else:
                 Participate.objects.create(user=user, group=group, is_banned=True)
+                
+                # leader에게 알림 보내는 코드 추가 필요
             return Response(status=status.HTTP_200_OK)
         
         return Response(data={'message': '이미 가입한 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -195,6 +273,11 @@ class GroupGrantView(APIView):
             elif participate.is_banned and grant:
                 participate.is_banned = False
                 participate.save()
+                
+                applicant.cnt_groups += 1
+                applicant.save()
+                
+                check_cnt_groups(applicant)
             elif not participate.is_banned and not grant:
                 participate.is_banned = True
                 participate.save()
@@ -358,25 +441,19 @@ class GroupReviewCheckView(APIView):
         if review.item.finished:
             return Response(data={'message': '이미 완료된 항목입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        ranker = RedisRanker(group_id)
         
         # 횟수 측정 여부 확인
         if review.item.check:
             review.item.check_cnt += 1
             
             if review.item.check_cnt == review.item.check_goal:
-                review.item.finish = True
-                ranker.plusOne(str(user.id))
+                check_cnt_boarditems_complete(group_id, review)
+                
         else:    
-            review.item.finish = True
-            ranker.plusOne(str(user.id))
+            check_cnt_boarditems_complete(group_id, review)
         
         review.reviewed = True
         review.save()
-        
-        rank = ranker.getRank(str(user.id))
-        
-        print(rank)
         
         return Response(status=status.HTTP_200_OK)
 

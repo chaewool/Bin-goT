@@ -8,7 +8,21 @@ from commons import upload_image, delete_image
 from .models import Board
 from groups.models import Group, Participate
 from .serializers import BoardCreateSerializer, BoardItemCreateSerializer, BoardDetailSerializer
+from accounts.models import Badge, Achieve
 
+
+def check_cnt_boards(user):
+    if user.cnt_boards == 1:
+        badge = Badge.objects.get(id=5)
+        Achieve.objects.create(user=user, badge=badge)
+    elif user.cnt_boards == 3:
+        badge = Badge.objects.get(id=6)
+        Achieve.objects.create(user=user, badge=badge)
+    elif user.cnt_boards == 5:
+        badge = Badge.objects.get(id=7)
+        Achieve.objects.create(user=user, badge=badge)
+                      
+    # user에게 알림 보내는 코드 추가 필요
 
 class BoardCreateView(APIView):
     def post(self, request):
@@ -40,6 +54,11 @@ class BoardCreateView(APIView):
             upload_image(url, thumbnail)
             
             boarditem_serializer.save(board=board)
+            
+            user.cnt_boards += 1
+            user.save()
+            
+            check_cnt_boards(user)
         
             return Response(data={'board_id': board.id}, status=status.HTTP_200_OK)
     
