@@ -1,4 +1,4 @@
-import 'package:bin_got/providers/user_provider.dart';
+import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
@@ -22,7 +22,7 @@ class _MainState extends State<Main> {
   @override
   void initState() {
     super.initState();
-    groups = UserProvider.getMyGroups();
+    groups = UserInfoProvider.getMyGroups();
   }
 
   void changeSearchMode() {

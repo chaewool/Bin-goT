@@ -4,7 +4,6 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Intro extends StatefulWidget {
   const Intro({super.key});
@@ -14,19 +13,14 @@ class Intro extends StatefulWidget {
 }
 
 class _IntroState extends State<Intro> {
-  late SharedPreferences prefs;
   var showLogo = false;
   var showExplain = false;
   var showTitle = false;
 
-  Future initPrefs() async {
-    prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('token');
-  }
-
   void login() async {
     try {
-      final response = await UserProvider.login();
+      print(UserProvider.token());
+      // final response = await UserProvider.login();
     } catch (error) {
       showAlert(
           context: context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.');
@@ -36,7 +30,6 @@ class _IntroState extends State<Intro> {
   @override
   void initState() {
     super.initState();
-    initPrefs();
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         showLogo = true;

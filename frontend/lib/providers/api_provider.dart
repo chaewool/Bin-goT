@@ -3,9 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final baseUrl = dotenv.env['baseUrl'];
-// final options =
-//     BaseOptions(baseUrl: baseUrl!, headers: {'Authorization': 'JWT $token'});
-final options = BaseOptions(baseUrl: baseUrl!);
+BaseOptions options = BaseOptions(baseUrl: baseUrl!);
+
 final dio = Dio(options);
 
 //* 그룹

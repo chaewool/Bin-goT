@@ -1,5 +1,5 @@
 import 'package:bin_got/models/group_model.dart';
-import 'package:bin_got/models/user_model.dart';
+import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 

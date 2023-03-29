@@ -1,5 +1,5 @@
 import 'package:bin_got/models/group_model.dart';
-import 'package:bin_got/models/user_model.dart';
+import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/utilities/global_func.dart';

@@ -1,5 +1,5 @@
 import 'package:bin_got/providers/group_provider.dart';
-import 'package:bin_got/providers/user_provider.dart';
+import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -246,7 +246,7 @@ class _MyTabBarState extends State<MyTabBar> {
       listItems: [
         [
           FutureBuilder(
-            future: UserProvider.getMyGroups(),
+            future: UserInfoProvider.getMyGroups(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data!.isNotEmpty) {
