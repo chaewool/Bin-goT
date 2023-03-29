@@ -96,6 +96,9 @@ class KaKaoNativeView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
+        logger.info(request)
+        logger.info(request.POST)
+        
         kakao_id = request.POST.get('kakao_id')
         
         logger.info(kakao_id)
