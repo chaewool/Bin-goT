@@ -32,17 +32,7 @@ class KakaoView(APIView):
         )
 
 
-def from_kaKao_token_get_service_token(access_token):
-    # 카카오 토큰으로 사용자 정보 가져오기 요청
-    kakao_token_api = 'https://kapi.kakao.com/v2/user/me'
-    headers = {"Authorization": f'Bearer ${access_token}'}
-
-    # 요청 검증 및 처리
-    user_info_response = requests.get(kakao_token_api, headers=headers).json()
-    kakao_id = user_info_response['id']
-    
-    logger.info(kakao_id)
-
+def from_kaKao_id_get_user_info(kakao_id):
     # 제공받은 사용자 정보로 서비스 회원 여부 확인
     # 회원이 아니라면 회원 가입 처리
     # 확인이 끝나면 사용자 정보 반환
@@ -53,10 +43,15 @@ def from_kaKao_token_get_service_token(access_token):
         user = User.objects.get(kakao_id=kakao_id)
     else:
         data['is_login'] = False
-        username = user_info_response['properties']['nickname']
+        username = f'사용자 {kakao_id}'
         user = User.objects.create(kakao_id=kakao_id, username=username)
         badge = Badge.objects.get(id=1)
         Achieve.objects.create(user=user, badge=badge)
+
+    token = TokenObtainPairSerializer.get_token(user)
+    
+    data['refresh_token'] = str(token)
+    data['access_token'] = str(token.access_token)
         
     serializer = UserSerializer(user)
     data.update(serializer.data)
@@ -83,7 +78,15 @@ class KaKaoCallBackView(APIView):
         token_response = requests.post(kakao_token_api, data=data)
         access_token = token_response.json().get('access_token')
         
-        data = from_kaKao_token_get_service_token(access_token)
+        # 카카오 토큰으로 사용자 정보 가져오기 요청
+        kakao_token_api = 'https://kapi.kakao.com/v2/user/me'
+        headers = {"Authorization": f'Bearer ${access_token}'}
+
+        # 요청 검증 및 처리
+        user_info_response = requests.get(kakao_token_api, headers=headers).json()
+        kakao_id = user_info_response['id']
+        
+        data = from_kaKao_id_get_user_info(kakao_id)
             
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -93,11 +96,11 @@ class KaKaoNativeView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        access_token = request.POST.get('access_token')
+        kakao_id = request.POST.get('kakao_id')
         
-        logger.info(access_token)
+        logger.info(kakao_id)
         
-        data = from_kaKao_token_get_service_token(access_token)
+        data = from_kaKao_id_get_user_info(kakao_id)
             
         return Response(data=data, status=status.HTTP_200_OK)
     
@@ -107,20 +110,6 @@ class KaKaoUnlinkView(APIView):
         user = request.user
         user.delete()
         return Response(status=status.HTTP_200_OK)
-
-
-class TokenObtainView(APIView):
-    permission_classes = [AllowAny]
-    
-    def post(self, request):
-        # 사용자 정보로 서비스 토큰 발급
-        user = User.objects.get(id=request.POST.get('id'))
-        token = TokenObtainPairSerializer.get_token(user)
-        
-        return Response(data={
-            'refresh_token': str(token),
-            'access_token': str(token.access_token),
-        }, status=status.HTTP_200_OK)
 
 
 class UsernameCheckView(APIView):

@@ -10,7 +10,6 @@ urlpatterns = [
     path('kakao/callback/', views.KaKaoCallBackView.as_view(), name='kakao_callback'),
     path('kakao/native/', views.KaKaoNativeView.as_view(), name='kakao_native'),
     path('kakao/unlink/', views.KaKaoUnlinkView.as_view(), name='kakao_unlink'),
-    path('token/', views.TokenObtainView.as_view(), name='token_obtain'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     
