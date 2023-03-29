@@ -97,9 +97,9 @@ class KaKaoNativeView(APIView):
     
     def post(self, request):
         logger.info(request)
-        logger.info(request.POST)
+        logger.info(request.data)
         
-        kakao_id = request.POST.get('kakao_id')
+        kakao_id = request.data.get('kakao_id')
         
         logger.info(kakao_id)
         
