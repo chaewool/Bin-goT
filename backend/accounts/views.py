@@ -7,10 +7,13 @@ from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import requests
 import logging
+from datetime import date
 
 from bingot_settings import KAKAO_REST_API_KEY
-from .serializers import UserSerializer, BadgeSerializer, ProfileGroupSerializer, ProfileBoardSerializer
+from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
+from groups.models import Group
+from groups.serializers import GroupSearchSerializer
 
 
 User = get_user_model()
@@ -176,17 +179,23 @@ class NotificationUpdateView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class ProfileGroupsView(APIView):
+class MainView(APIView):
     def get(self, request):
         user = request.user
-        data = ProfileGroupSerializer(user.groups, many=True).data
+        groups = GroupSerializer(user.groups, many=True).data
+        boards = BoardSerializer(user.boards, many=True).data
+
+        if not groups:
+            recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
+            
+            groups = GroupSearchSerializer(recommends, many=True).data
+            groups = [d for d in groups if d['count'] < d['headcount']][:20]
         
-        return Response(data=data, status=status.HTTP_200_OK)
+        return Response(data={'groups': groups, 'boards': boards}, status=status.HTTP_200_OK)
 
 
-class ProfileBoardsView(APIView):
+class ProfileView(APIView):
     def get(self, request):
         user = request.user
-        data = ProfileBoardSerializer(user.boards, many=True).data
         
-        return Response(data=data, status=status.HTTP_200_OK)
+        return Response(data={'username': user.username, 'badge': user.badge}, status=status.HTTP_200_OK)

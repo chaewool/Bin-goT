@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     kakao_id = models.CharField(max_length=255, unique=True)
     username = models.CharField(max_length=20, unique=True)
-    profile = models.IntegerField(default=0)
+    badge = models.IntegerField(default=0)
     noti_rank = models.BooleanField(default=True)
     noti_due = models.BooleanField(default=True)
     noti_chat = models.BooleanField(default=True)

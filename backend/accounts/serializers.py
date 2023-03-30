@@ -9,7 +9,7 @@ from boards.models import Board
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'profile', 'noti_rank', 'noti_due', 'noti_chat', 'is_active', 'groups')
+        fields = ('noti_rank', 'noti_due', 'noti_chat')
 
 
 class BadgeSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class BadgeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProfileGroupSerializer(serializers.ModelSerializer):
+class GroupSerializer(serializers.ModelSerializer):
     count = serializers.SerializerMethodField('get_count')
     status = serializers.SerializerMethodField('get_status')
     
@@ -38,7 +38,7 @@ class ProfileGroupSerializer(serializers.ModelSerializer):
         fields = ('id', 'groupname', 'start', 'end', 'headcount', 'count', 'status')
 
 
-class ProfileBoardSerializer(serializers.ModelSerializer):
+class BoardSerializer(serializers.ModelSerializer):
     groupname = serializers.SerializerMethodField('get_groupname')
     start = serializers.SerializerMethodField('get_start')
     status = serializers.SerializerMethodField('get_status')
