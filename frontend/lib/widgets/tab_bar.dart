@@ -246,7 +246,7 @@ class _MyTabBarState extends State<MyTabBar> {
       listItems: [
         [
           FutureBuilder(
-            future: UserInfoProvider.getMyGroups(),
+            future: UserInfoProvider.getMainTabData(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data!.isNotEmpty) {

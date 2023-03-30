@@ -1,85 +1,100 @@
+import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final baseUrl = dotenv.env['baseUrl'];
-BaseOptions options = BaseOptions(baseUrl: baseUrl!);
+final dio = Dio(BaseOptions(baseUrl: baseUrl!));
 
-final dio = Dio(options);
-
-//* 그룹
-const groupUrl = '/groups';
-
-//* Api 기본 틀
+//* provider
 class ApiProvider {
+  //* public
+  static FutureDynamicMap createApi(String url,
+          {required DynamicMap data}) async =>
+      _createApi(url, data: data);
+
+  static FutureVoid deliverApi(String url) async => _deliverApi(url);
+
+  static FutureVoid updateApi(String url, {required DynamicMap data}) async =>
+      _updateApi(url, data: data);
+
+  static FutureVoid deleteApi(String url) async => _deleteApi(url);
+
+  //* private
   //* create
   static FutureDynamicMap _createApi(String url,
       {required DynamicMap data}) async {
     try {
-      final response = await dio.post(url, data: data);
-      if (response.statusCode == 200) {
-        return response.data;
+      final token = await UserProvider.token();
+      BaseOptions options = BaseOptions(
+          baseUrl: baseUrl!, headers: {'Authorization': 'JWT $token'});
+      final dioWithToken = Dio(options);
+      print(data);
+      final response = await dioWithToken.post(url, data: data);
+      print('response: $response');
+      switch (response.statusCode) {
+        case 200:
+          return response.data;
+        case 401:
+          UserProvider.tokenRefresh();
+          return {};
+        default:
+          throw Error();
       }
-      throw Error();
     } catch (error) {
       print(error);
       throw Error();
     }
   }
 
-  static FutureDynamicMap createApi(String url,
-      {required DynamicMap data}) async {
-    return _createApi(url, data: data);
-  }
-
   //* data unnecessary
   static FutureVoid _deliverApi(String url) async {
     try {
       final response = await dio.post(url);
-      if (response.statusCode == 200) {
-        return;
+      switch (response.statusCode) {
+        case 200:
+          return;
+        case 401:
+          return UserProvider.tokenRefresh();
+        default:
+          throw Error();
       }
-      throw Error();
     } catch (error) {
       throw Error();
     }
-  }
-
-  static FutureVoid deliverApi(String url) async {
-    return _deliverApi(url);
   }
 
   //* update
   static FutureVoid _updateApi(String url, {required DynamicMap data}) async {
     try {
       final response = await dio.put(url, data: data);
-      if (response.statusCode == 200) {
-        return;
+      switch (response.statusCode) {
+        case 200:
+          return;
+        case 401:
+          return UserProvider.tokenRefresh();
+        default:
+          throw Error();
       }
-      throw Error();
     } catch (error) {
       throw Error();
     }
-  }
-
-  static FutureVoid updateApi(String url, {required DynamicMap data}) async {
-    _updateApi(url, data: data);
   }
 
   //* delete
   static FutureVoid _deleteApi(String url) async {
     try {
       final response = await dio.delete(url);
-      if (response.statusCode == 200) {
-        return;
+      switch (response.statusCode) {
+        case 200:
+          return;
+        case 401:
+          return UserProvider.tokenRefresh();
+        default:
+          throw Error();
       }
-      throw Error();
     } catch (error) {
       throw Error();
     }
-  }
-
-  static FutureVoid deleteApi(String url) async {
-    _deleteApi(url);
   }
 }

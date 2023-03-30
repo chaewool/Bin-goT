@@ -1,6 +1,6 @@
+import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/search_bar.dart';
@@ -16,13 +16,13 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  late Future<MyGroupList> groups;
+  late Future<MainTabModel> groups;
   bool isSearchMode = false;
 
   @override
   void initState() {
     super.initState();
-    groups = UserInfoProvider.getMyGroups();
+    groups = UserInfoProvider.getMainTabData();
   }
 
   void changeSearchMode() {

@@ -1,7 +1,9 @@
+import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
@@ -16,34 +18,60 @@ class _IntroState extends State<Intro> {
   var showLogo = false;
   var showExplain = false;
   var showTitle = false;
+  var showLoginBtn = false;
+  var accessToken;
 
   void login() async {
     try {
-      print(UserProvider.token());
-      // final response = await UserProvider.login();
+      if (accessToken == null) {
+        UserProvider.login();
+      } else {
+        toOtherPage(context: context, page: const Main());
+      }
     } catch (error) {
       showAlert(
           context: context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.');
     }
   }
 
+  void verifyToken() async {
+    try {
+      accessToken = await UserProvider.token();
+      if (accessToken != null) {
+        UserProvider.confirmToken(accessToken);
+      }
+    } catch (error) {
+      setState(() {
+        accessToken = null;
+        showLoginBtn = true;
+      });
+      return;
+    }
+  }
+
+  void afterFewSec(int sec, ReturnVoid changeVar) {
+    Future.delayed(Duration(seconds: sec), () {
+      setState(changeVar);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        showLogo = true;
-      });
+    afterFewSec(1, () {
+      showLogo = true;
     });
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        showExplain = true;
-      });
+    afterFewSec(2, () {
+      showExplain = true;
     });
-    Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        showTitle = true;
-      });
+    afterFewSec(3, () {
+      showTitle = true;
+    });
+    verifyToken();
+    afterFewSec(4, () {
+      if (!showLoginBtn) {
+        toOtherPage(context: context, page: const Main())();
+      }
     });
   }
 
@@ -73,11 +101,12 @@ class _IntroState extends State<Intro> {
                       : const SizedBox(),
                 ],
               ),
-              GestureDetector(
-                onTap: login,
-                // onTap: toOtherPage(context: context, page: const Main()),
-                child: kakaoLogin,
-              ),
+              showLoginBtn
+                  ? GestureDetector(
+                      onTap: login,
+                      child: kakaoLogin,
+                    )
+                  : const SizedBox(),
             ],
           ),
         ),

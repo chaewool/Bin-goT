@@ -5,6 +5,8 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 
 //* group provider
 class GroupProvider with ApiProvider {
+  //* 그룹
+  static const groupUrl = '/groups';
   //* group url
   String _searchGroupUrl({
     int? period,

@@ -23,8 +23,11 @@ typedef FutureInt = Future<int>;
 typedef FutureDynamic = Future<dynamic>;
 typedef FutureDynamicMap = Future<DynamicMap>;
 typedef FutureVoid = Future<void>;
+typedef FutureBool = Future<bool>;
+typedef FutureStringNull = Future<String?>;
 
 //* group api
 typedef MyGroupList = List<MyGroupModel>;
+typedef MyBingoList = List<MyBingoModel>;
 typedef GroupList = List<GroupModel>;
 typedef RankList = List<GroupRankModel>;
