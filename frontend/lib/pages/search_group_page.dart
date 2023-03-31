@@ -1,13 +1,11 @@
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
-import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/select_box.dart';
-import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class SearchGroup extends StatefulWidget {
@@ -46,25 +44,25 @@ class _SearchGroupState extends State<SearchGroup> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 var data = snapshot.data;
-                if (data!.isNotEmpty) {
-                  return Column(
-                    children: [
-                      Expanded(child: myGroupList(data)),
-                    ],
-                  );
-                } else {
-                  return Column(
-                    children: const [
-                      Center(
-                        child: CustomText(
-                          center: true,
-                          fontSize: FontSize.titleSize,
-                          content: '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
-                        ),
-                      ),
-                    ],
-                  );
-                }
+                // if (data!.isNotEmpty) {
+                //   return Column(
+                //     children: [
+                //       Expanded(child: myGroupList(data)),
+                //     ],
+                //   );
+                // } else {
+                //   return Column(
+                //     children: const [
+                //       Center(
+                //         child: CustomText(
+                //           center: true,
+                //           fontSize: FontSize.titleSize,
+                //           content: '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
+                //         ),
+                //       ),
+                //     ],
+                //   );
+                // }
               }
               return const Center(
                 child: CircularProgressIndicator(),

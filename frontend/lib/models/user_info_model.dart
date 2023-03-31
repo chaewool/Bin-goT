@@ -2,16 +2,16 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 
 class MyGroupModel {
   final int id, headCount, count;
-  final String groupName, status;
-  final DateTime start, end;
+  final bool isPublic;
+  final String groupName, start, end;
   MyGroupModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         headCount = json['headcount'],
         count = json['count'],
+        isPublic = json['is_public'],
         groupName = json['groupname'],
         start = json['start'],
-        end = json['end'],
-        status = json['status'];
+        end = json['end'];
 }
 
 class MyBingoModel {

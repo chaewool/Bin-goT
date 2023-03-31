@@ -23,7 +23,7 @@ class GroupListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final difference = DateTime.now().difference(groupInfo.start);
+    // final difference = DateTime.now().difference(groupInfo.start);
     String groupMember = '(${groupInfo.count}/${groupInfo.headCount})';
     return CustomList(
       height: 70,
@@ -39,7 +39,7 @@ class GroupListItem extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomText(content: '${difference.inDays}'),
+              CustomText(content: groupInfo.start),
               const SizedBox(height: 5),
               isSearchMode
                   ? CustomText(

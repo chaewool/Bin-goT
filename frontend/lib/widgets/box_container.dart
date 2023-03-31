@@ -1,3 +1,4 @@
+import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -37,43 +38,21 @@ class ShowContentBox extends StatelessWidget {
 
 //* 갤러리형 빙고 목록
 class BingoGallery extends StatelessWidget {
-  final WidgetList bingoList;
-  const BingoGallery({super.key, required this.bingoList});
+  final MyBingoModel bingo;
+  const BingoGallery({super.key, required this.bingo});
 
   @override
   Widget build(BuildContext context) {
-    int bingoRows = bingoList.length ~/ 2;
-    return Column(
-      children: [
-        for (int i = 0; i < bingoRows; i += 1)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              for (int j = 0; j < 2; j += 1)
-                GestureDetector(
-                  onTap: toOtherPage(
-                    context: context,
-                    page: const BingoDetail(),
-                  ),
-                  child: bingoList[2 * i + j],
-                )
-            ],
-          ),
-        bingoList.length % 2 == 1
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: toOtherPage(
-                      context: context,
-                      page: const BingoDetail(),
-                    ),
-                    child: bingoList.last,
-                  )
-                ],
-              )
-            : const SizedBox(),
-      ],
+    return GestureDetector(
+      onTap: toOtherPage(
+        context: context,
+        page: const BingoDetail(),
+      ),
+      child: const CustomBoxContainer(
+        width: 150,
+        height: 200,
+        color: greenColor,
+      ),
     );
   }
 }

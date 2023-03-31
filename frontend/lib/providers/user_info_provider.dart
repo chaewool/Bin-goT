@@ -60,10 +60,12 @@ class UserInfoProvider {
         case 200:
           final data = response.data;
           if (data.isNotEmpty) {
-            MyGroupList myGroupList = data.groups
-                .map<MyGroupModel>((json) => MyGroupModel.fromJson(json));
-            MyBingoList myBingoList = data.boards
-                .map<MyGroupModel>((json) => MyGroupModel.fromJson(json));
+            MyGroupList myGroupList = data['groups']
+                .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
+                .toList();
+            MyBingoList myBingoList = data['boards']
+                .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
+                .toList();
             return MainTabModel.fromJson(
                 {'groups': myGroupList, 'boards': myBingoList});
           }

@@ -27,7 +27,7 @@ class GroupMain extends StatefulWidget {
 }
 
 class _GroupMainState extends State<GroupMain> {
-  late final memberState;
+  int memberState = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class _GroupMainState extends State<GroupMain> {
       ),
       body: SingleChildScrollView(
           child: FutureBuilder(
-        future: GroupProvider().readGroupDetail(widget.groupId),
+        future: GroupProvider().readGroupDetail(widget.groupId, ''),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final GroupDetailModel data = snapshot.data!;

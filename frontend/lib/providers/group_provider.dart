@@ -1,7 +1,9 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
+import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:dio/dio.dart';
 
 //* group provider
 class GroupProvider with ApiProvider {
@@ -62,14 +64,19 @@ class GroupProvider with ApiProvider {
   }
 
   //* detail
-  Future<GroupDetailModel> readGroupDetail(int groupId) async {
+  Future<GroupDetailModel> readGroupDetail(int groupId, String password) async {
     try {
-      final response = await dio.get(_groupDetailUrl(groupId));
+      final token = await UserProvider.token();
+      BaseOptions options = BaseOptions(
+          baseUrl: baseUrl!, headers: {'Authorization': 'JWT $token'});
+      final dioWithToken = Dio(options);
+      final response = await dioWithToken.get(_groupDetailUrl(groupId));
       if (response.statusCode == 200) {
         return GroupDetailModel.fromJson(response.data);
       }
       throw Error();
     } catch (error) {
+      print(error);
       throw Error();
     }
   }
