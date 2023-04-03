@@ -1,5 +1,4 @@
 import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -252,11 +251,23 @@ class _MyTabBarState extends State<MyTabBar> {
             future: tabData,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                final groups = snapshot.data!.groups;
-                if (groups.isNotEmpty) {
-                  return groupList(groups);
-                }
-                return emptyGroup();
+                final hasNotGroup = snapshot.data!.hasNotGroup;
+                return Column(
+                  children: [
+                    hasNotGroup
+                        ? Column(children: const [
+                            CustomText(
+                              center: true,
+                              fontSize: FontSize.titleSize,
+                              content:
+                                  '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                            ),
+                            CustomText(content: '추천그룹'),
+                          ])
+                        : const SizedBox(),
+                    groupList(snapshot.data!.groups, hasNotGroup)
+                  ],
+                );
               }
               return const CustomText(content: '그룹 정보를 불러오는 중입니다');
             },
@@ -271,7 +282,11 @@ class _MyTabBarState extends State<MyTabBar> {
                 if (bingos.isNotEmpty) {
                   return bingoList(bingos);
                 }
-                return emptyGroup();
+                return const CustomText(
+                  center: true,
+                  fontSize: FontSize.titleSize,
+                  content: '아직 생성한 빙고가 없어요.\n그룹 내에서\n빙고를 생성해보세요.',
+                );
               }
               return const CustomText(content: '빙고 정보를 불러오는 중입니다');
             },
@@ -296,7 +311,7 @@ class _MyTabBarState extends State<MyTabBar> {
         });
   }
 
-  Widget groupList(MyGroupList groups) {
+  Widget groupList(MyGroupList groups, bool isSearchMode) {
     if (idxList[0][2] == 0) {
       return ListView.builder(
           shrinkWrap: true,
@@ -304,7 +319,7 @@ class _MyTabBarState extends State<MyTabBar> {
           itemBuilder: (context, index) {
             var group = groups[index];
             return GroupListItem(
-              isSearchMode: false,
+              isSearchMode: isSearchMode,
               groupInfo: group,
             );
           });
@@ -312,49 +327,49 @@ class _MyTabBarState extends State<MyTabBar> {
     return const DatePicker();
   }
 
-  Column emptyGroup() {
-    return Column(
-      children: [
-        const Center(
-          child: CustomText(
-            center: true,
-            fontSize: FontSize.titleSize,
-            content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-          ),
-        ),
-        Center(
-          child: FutureBuilder(
-            future: GroupProvider().recommendGroupList(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data!.isNotEmpty) {
-                  return ColWithPadding(
-                    children: [
-                      const CustomText(content: '추천 그룹'),
-                      ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            var group = snapshot.data![index];
-                            return GroupListItem(
-                              isSearchMode: false,
-                              groupInfo: group,
-                            );
-                          })
-                    ],
-                  );
-                }
-                return const CustomText(
-                  content: '추천 그룹을 불러올 수 없습니다.\n 직접 그룹을 만들어보세요',
-                );
-              }
-              return const CircularProgressIndicator();
-            },
-          ),
-        )
-      ],
-    );
-  }
+  // Column emptyGroup() {
+  //   return Column(
+  //     children: [
+  //       const Center(
+  //         child: CustomText(
+  //           center: true,
+  //           fontSize: FontSize.titleSize,
+  //           content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+  //         ),
+  //       ),
+  //       Center(
+  //         child: FutureBuilder(
+  //           future: GroupProvider().recommendGroupList(),
+  //           builder: (context, snapshot) {
+  //             if (snapshot.hasData) {
+  //               if (snapshot.data!.isNotEmpty) {
+  //                 return ColWithPadding(
+  //                   children: [
+  //                     const CustomText(content: '추천 그룹'),
+  //                     ListView.builder(
+  //                         shrinkWrap: true,
+  //                         itemCount: snapshot.data!.length,
+  //                         itemBuilder: (context, index) {
+  //                           var group = snapshot.data![index];
+  //                           return GroupListItem(
+  //                             isSearchMode: false,
+  //                             groupInfo: group,
+  //                           );
+  //                         })
+  //                   ],
+  //                 );
+  //               }
+  //               return const CustomText(
+  //                 content: '추천 그룹을 불러올 수 없습니다.\n 직접 그룹을 만들어보세요',
+  //               );
+  //             }
+  //             return const CircularProgressIndicator();
+  //           },
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
 }
 
 //* tab bar 기본 틀

@@ -2,16 +2,18 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 
 class MyGroupModel {
   final int id, headCount, count;
-  final bool isPublic;
-  final String groupName, start, end;
+  final int? status;
+  final bool? isPublic;
+  final String name, start, end;
   MyGroupModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         headCount = json['headcount'],
         count = json['count'],
         isPublic = json['is_public'],
-        groupName = json['groupname'],
+        name = json['groupname'],
         start = json['start'],
-        end = json['end'];
+        end = json['end'],
+        status = json['status'];
 }
 
 class MyBingoModel {
@@ -28,29 +30,9 @@ class MyBingoModel {
 class MainTabModel {
   final MyGroupList groups;
   final MyBingoList bingos;
+  final bool hasNotGroup;
   MainTabModel.fromJson(Map<String, dynamic> json)
       : groups = json['groups'],
-        bingos = json['boards'];
+        bingos = json['boards'],
+        hasNotGroup = json['is_recommended'];
 }
-
-class MyBadgeModel {
-  final int id;
-  final bool hasBadge;
-  final String badgeName, badgeCond;
-  MyBadgeModel.fromJson(DynamicMap json)
-      : id = json['id'],
-        hasBadge = json['has_badge'],
-        badgeName = json['badgename'],
-        badgeCond = json['badge_cond'];
-}
-
-// class ApplyBadgeModel {
-//   final bool success;
-//   ApplyBadgeModel.fromJson(Map<String, dynamic> json) : success = json['success'];
-// }
-
-// class ApplyNotiModel {
-//   final bool success;
-//   ApplyNotiModel.fromJson(Map<String, dynamic> json) : success = json['success'];
-// }
-

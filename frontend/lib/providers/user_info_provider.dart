@@ -59,25 +59,35 @@ class UserInfoProvider {
       switch (response.statusCode) {
         case 200:
           final data = response.data;
+          print(data);
           if (data.isNotEmpty) {
+            print('isNot');
             MyGroupList myGroupList = data['groups']
                 .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
                 .toList();
             MyBingoList myBingoList = data['boards']
                 .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
                 .toList();
-            return MainTabModel.fromJson(
-                {'groups': myGroupList, 'boards': myBingoList});
+            print(data);
+            bool hasNotGroup = data['is_recommended'];
+            return MainTabModel.fromJson({
+              'groups': myGroupList,
+              'boards': myBingoList,
+              'hasNotGroup': hasNotGroup
+            });
           }
-          return MainTabModel.fromJson({'groups': [], 'boards': []});
+          return MainTabModel.fromJson(
+              {'groups': [], 'boards': [], 'hasNotGroup': true});
         case 401:
           UserProvider.tokenRefresh();
-          return MainTabModel.fromJson({'groups': [], 'boards': []});
+          return MainTabModel.fromJson(
+              {'groups': [], 'boards': [], 'hasNotGroup': true});
         default:
           throw Error();
       }
     } catch (error) {
       print(error);
+      // UserProvider.logout();
       throw Error();
     }
   }

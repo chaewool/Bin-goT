@@ -32,7 +32,7 @@ class GroupProvider with ApiProvider {
   String _groupRankUrl(int groupId) => '${_groupDetailUrl(groupId)}/rank/';
 
   //* search
-  Future<GroupList> searchGroupList({
+  Future<MyGroupList> searchGroupList({
     int? period,
     String? keyword,
     int? align,
@@ -53,8 +53,8 @@ class GroupProvider with ApiProvider {
     try {
       final response = await dio.get(url);
       if (response.statusCode == 200) {
-        GroupList groupList =
-            response.data.map<GroupModel>((json) => GroupModel.fromJson(json));
+        MyGroupList groupList = response.data
+            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json));
         return groupList;
       }
       throw Error();
@@ -73,22 +73,6 @@ class GroupProvider with ApiProvider {
       final response = await dioWithToken.get(_groupDetailUrl(groupId));
       if (response.statusCode == 200) {
         return GroupDetailModel.fromJson(response.data);
-      }
-      throw Error();
-    } catch (error) {
-      print(error);
-      throw Error();
-    }
-  }
-
-  //* recommend
-  Future<MyGroupList> recommendGroupList() async {
-    try {
-      final response = await dio.get(_recommendGroupUrl);
-      if (response.statusCode == 200) {
-        MyGroupList groupList = response.data
-            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json));
-        return groupList;
       }
       throw Error();
     } catch (error) {

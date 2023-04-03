@@ -1,18 +1,18 @@
 import 'package:bin_got/utilities/type_def_utils.dart';
 
-class GroupModel {
-  final int groupId, headCount, count;
-  final String groupName, start, end;
-  final bool isPublic;
-  GroupModel.fromJson(DynamicMap json)
-      : groupId = json['id'],
-        headCount = json['headcount'],
-        count = json['count'],
-        groupName = json['group_name'],
-        start = json['start'],
-        end = json['end'],
-        isPublic = json['is_public'];
-}
+// class GroupModel {
+//   final int id, headCount, count;
+//   final String name, start, end;
+//   final bool isPublic;
+//   GroupModel.fromJson(DynamicMap json)
+//       : id = json['id'],
+//         headCount = json['headcount'],
+//         count = json['count'],
+//         name = json['group_name'],
+//         start = json['start'],
+//         end = json['end'],
+//         isPublic = json['is_public'];
+// }
 
 class GroupRankModel {
   final int userId, achieve, bingoId;

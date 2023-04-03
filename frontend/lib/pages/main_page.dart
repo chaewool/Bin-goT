@@ -1,5 +1,7 @@
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
+import 'package:bin_got/providers/user_provider.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/box_container.dart';
@@ -49,6 +51,10 @@ class _MainState extends State<Main> {
             children: [
               isSearchMode ? const SearchBar() : const SizedBox(),
               const SizedBox(height: 15),
+              GestureDetector(
+                onTap: () => UserProvider.logout(),
+                child: kakaoLogin,
+              ),
               const Expanded(child: MyTabBar()),
             ],
           ),

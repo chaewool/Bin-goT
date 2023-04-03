@@ -116,7 +116,8 @@ class UserProvider {
   //* logout
   static void _logout() {
     try {
-      storage.deleteAll();
+      const storage2 = FlutterSecureStorage();
+      storage2.deleteAll();
     } catch (error) {
       throw Error();
     }

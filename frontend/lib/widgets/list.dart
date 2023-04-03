@@ -35,7 +35,7 @@ class GroupListItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          CustomText(content: groupInfo.groupName),
+          CustomText(content: groupInfo.name),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

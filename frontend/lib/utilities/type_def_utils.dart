@@ -29,5 +29,5 @@ typedef FutureStringNull = Future<String?>;
 //* group api
 typedef MyGroupList = List<MyGroupModel>;
 typedef MyBingoList = List<MyBingoModel>;
-typedef GroupList = List<GroupModel>;
+// typedef GroupList = List<GroupModel>;
 typedef RankList = List<GroupRankModel>;
