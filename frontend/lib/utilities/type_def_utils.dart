@@ -13,6 +13,7 @@ typedef BoxShadowList = List<BoxShadow>;
 typedef ImageList = List<Image>;
 typedef BoolList = List<bool>;
 typedef IconDataList = List<IconData>;
+typedef StringMap = Map<String, String>;
 
 //* api
 typedef DynamicMap = Map<String, dynamic>;

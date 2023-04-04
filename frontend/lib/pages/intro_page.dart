@@ -1,4 +1,5 @@
 import 'package:bin_got/pages/main_page.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
@@ -6,6 +7,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Intro extends StatefulWidget {
   const Intro({super.key});
@@ -23,11 +25,9 @@ class _IntroState extends State<Intro> {
 
   void login() async {
     try {
-      if (accessToken == null) {
-        UserProvider.login();
-      } else {
-        toOtherPage(context: context, page: const Main());
-      }
+      accessToken ?? await UserProvider().login();
+      if (!mounted) return;
+      toOtherPage(context: context, page: const Main());
     } catch (error) {
       showAlert(
           context: context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.');
@@ -36,10 +36,11 @@ class _IntroState extends State<Intro> {
 
   void verifyToken() async {
     try {
-      accessToken = await UserProvider.token();
+      accessToken = context.read<AuthProvider>().token;
       if (accessToken != null) {
-        UserProvider.confirmToken(accessToken);
+        await UserProvider().confirmToken(accessToken);
       }
+      showLoginBtn = true;
     } catch (error) {
       setState(() {
         accessToken = null;

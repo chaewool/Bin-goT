@@ -110,6 +110,3 @@ ReturnVoid showAlert({
 ReturnVoid showModal({required BuildContext context, required Widget page}) {
   return () => showDialog(context: context, builder: (context) => page);
 }
-
-//* 변수
-var token;

@@ -1,4 +1,5 @@
 import 'package:bin_got/models/user_info_model.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -13,6 +14,7 @@ import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //* 빙고 생성 탭
 class BingoTabBar extends StatefulWidget {
@@ -223,7 +225,8 @@ class _MyTabBarState extends State<MyTabBar> {
     super.initState();
     presentOptions = buttonOptions[0];
     presentIdx = 0;
-    tabData = UserInfoProvider.getMainTabData();
+    tabData =
+        UserInfoProvider().getMainTabData(context.read<AuthProvider>().token!);
   }
 
   @override

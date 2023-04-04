@@ -1,7 +1,9 @@
 import 'package:bin_got/pages/intro_page.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,12 +17,16 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      // home: const GroupMain(),
-      home: const Intro(),
-      // home: const BingoForm(),
-      theme: ThemeData(
-        fontFamily: 'RIDIBatang',
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => StateProvider()),
+      ],
+      child: MaterialApp(
+        home: const Intro(),
+        theme: ThemeData(
+          fontFamily: 'RIDIBatang',
+        ),
       ),
     );
   }
