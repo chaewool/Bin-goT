@@ -460,6 +460,7 @@ class GroupReviewCheckView(APIView):
 
 class GroupSearchView(APIView):
     def get(self, request):
+        user = request.user
         period = request.GET.get('period')
         keyword = request.GET.get('keyword')
         order = request.GET.get('order')
@@ -487,6 +488,6 @@ class GroupSearchView(APIView):
 
         groups = groups.order_by(order)[(page - 1) * cnt: page * cnt]
         data = GroupSearchSerializer(groups, many=True).data
-        data = [d for d in data if d['count'] < d['headcount']]
+        data = [d for d in data if d['count'] < d['headcount'] and not Participate.objects.filter(group=d.id, user=user).exists()]
         
         return Response(data=data, status=status.HTTP_200_OK)
