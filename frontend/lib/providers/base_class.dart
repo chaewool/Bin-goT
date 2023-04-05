@@ -1,11 +1,12 @@
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //* dio
-class DioClass {
+class DioClass extends AuthProvider {
   static final _baseUrl = dotenv.env['baseUrl'];
   Dio dio = Dio(BaseOptions(baseUrl: _baseUrl!));
-  Dio dioWithToken(String token) => Dio(
+  Dio dioWithToken() => Dio(
         BaseOptions(
           baseUrl: _baseUrl!,
           headers: {'Authorization': 'JWT $token'},
@@ -14,7 +15,7 @@ class DioClass {
 }
 
 //* url
-class UrlClass {
+class UrlClass extends DioClass {
   //! account
   static const _accountUrl = '/accounts';
   static const _tokenUrl = '$_accountUrl/token';

@@ -43,10 +43,9 @@ class ExitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return isIconType
-        ? IconButton(
-            onPressed: toBack(context: context), icon: CustomIcon(icon: icon))
+        ? IconButton(onPressed: toBack(context), icon: CustomIcon(icon: icon))
         : OutlinedButton(
-            onPressed: toBack(context: context),
+            onPressed: toBack(context),
             child: CustomText(
               content: buttonText,
               fontSize: FontSize.smallSize,

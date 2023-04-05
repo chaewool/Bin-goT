@@ -32,7 +32,7 @@ class BottomBar extends StatelessWidget {
                   icon: Center(
                     child: CustomIconButton(
                       onPressed: toOtherPage(
-                        context: context,
+                        context,
                         page: nextPages[i],
                       ),
                       icon: bottomBarIcons[i],
@@ -50,7 +50,7 @@ class BottomBar extends StatelessWidget {
               child: CustomButton(
                 content: '가입 신청하기',
                 onPressed: showAlert(
-                  context: context,
+                  context,
                   title: '가입 신청',
                   content: '가입 신청되었습니다.',
                   hasCancel: false,
@@ -73,7 +73,7 @@ class FormBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          CustomButton(onPressed: toBack(context: context), content: '취소'),
+          CustomButton(onPressed: toBack(context), content: '취소'),
           CustomButton(
             onPressed: createGroup,
             content: '완료',

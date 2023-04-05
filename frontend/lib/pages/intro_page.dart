@@ -5,6 +5,7 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,29 +22,38 @@ class _IntroState extends State<Intro> {
   var showExplain = false;
   var showTitle = false;
   var showLoginBtn = false;
-  var accessToken;
 
   void login() async {
     try {
-      accessToken ?? await UserProvider().login();
+      final data = await UserProvider().login();
       if (!mounted) return;
-      toOtherPage(context: context, page: const Main());
+      setTokens(context, data['access_token'], data['refresh_token']);
+      setNoti(
+        context,
+        rank: data['noti_rank'],
+        due: data['noti_due'],
+        chat: data['noti_chat'],
+      );
+      if (data['is_login']) {
+        toOtherPage(context, page: const Main())();
+      } else {
+        showModal(context, page: const InputModal(title: '닉네임 설정'));
+      }
     } catch (error) {
-      showAlert(
-          context: context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.');
+      showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.');
     }
   }
 
   void verifyToken() async {
     try {
-      accessToken = context.read<AuthProvider>().token;
-      if (accessToken != null) {
-        await UserProvider().confirmToken(accessToken);
+      final result = await UserProvider().confirmToken();
+      if (result.isNotEmpty) {
+        if (!mounted) return;
+        setToken(context, result['token']);
+        showLoginBtn = true;
       }
-      showLoginBtn = true;
     } catch (error) {
       setState(() {
-        accessToken = null;
         showLoginBtn = true;
       });
       return;
@@ -59,6 +69,7 @@ class _IntroState extends State<Intro> {
   @override
   void initState() {
     super.initState();
+    context.read<AuthProvider>().initVar();
     afterFewSec(1, () {
       showLogo = true;
     });
@@ -71,7 +82,7 @@ class _IntroState extends State<Intro> {
     verifyToken();
     afterFewSec(4, () {
       if (!showLoginBtn) {
-        toOtherPage(context: context, page: const Main())();
+        toOtherPage(context, page: const Main())();
       }
     });
   }

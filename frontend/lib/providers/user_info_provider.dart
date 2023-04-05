@@ -4,31 +4,30 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 
 class UserInfoProvider extends ApiProvider {
   //* public
-  void checkName(String name, String token) async => _checkName(name, token);
-  void changeName(String name, String token) async => _changeName(name, token);
-  Future<MainTabModel> getMainTabData(String token) async =>
-      _getMainTabData(token);
+  void checkName(String name) async => _checkName(name);
+  void changeName(String name) async => _changeName(name);
+  Future<MainTabModel> getMainTabData() async => _getMainTabData();
 
   //* private
-  void _checkName(String name, String token) async {
+  void _checkName(String name) async {
     try {
-      createApi(checkNameUrl, data: {'username': name}, token: token);
+      createApi(checkNameUrl, data: {'username': name});
     } catch (error) {
       throw Error();
     }
   }
 
-  void _changeName(String name, String token) async {
+  void _changeName(String name) async {
     try {
-      createApi(changeNameUrl, data: {'username': name}, token: token);
+      createApi(changeNameUrl, data: {'username': name});
     } catch (error) {
       throw Error();
     }
   }
 
-  Future<MainTabModel> _getMainTabData(String token) async {
+  Future<MainTabModel> _getMainTabData() async {
     try {
-      final response = await dioWithToken(token).get(mainTabUrl);
+      final response = await dioWithToken().get(mainTabUrl);
       switch (response.statusCode) {
         case 200:
           final data = response.data;

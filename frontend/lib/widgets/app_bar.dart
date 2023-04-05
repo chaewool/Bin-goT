@@ -85,11 +85,11 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
             : const SizedBox(),
         IconButtonInRow(
           icon: settingsIcon,
-          onPressed: toOtherPage(context: context, page: const MyPage()),
+          onPressed: toOtherPage(context, page: const MyPage()),
         ),
         IconButtonInRow(
           onPressed: toOtherPage(
-            context: context,
+            context,
             page: const GroupForm(),
           ),
           icon: createGroupIcon,
@@ -121,8 +121,7 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
               isAdmin
                   ? IconButtonInRow(
                       icon: settingsIcon,
-                      onPressed: toOtherPage(
-                          context: context, page: const GroupAdmin()))
+                      onPressed: toOtherPage(context, page: const GroupAdmin()))
                   : const SizedBox(),
               isAdmin || isMember
                   ? IconButtonInRow(icon: shareIcon, onPressed: () {})
@@ -130,8 +129,7 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
               isAdmin || isMember
                   ? IconButtonInRow(
                       icon: exitIcon,
-                      onPressed: showAlert(
-                          context: context,
+                      onPressed: showAlert(context,
                           title: '그룹 탈퇴 확인',
                           content: '정말 그룹을 탈퇴하시겠습니까?',
                           onPressed: () {}))
@@ -156,11 +154,11 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
       actions: [
         IconButtonInRow(
             icon: editIcon,
-            onPressed: toOtherPage(context: context, page: const GroupForm())),
+            onPressed: toOtherPage(context, page: const GroupForm())),
         IconButtonInRow(
             icon: deleteIcon,
             onPressed: showAlert(
-              context: context,
+              context,
               title: '그룹 삭제',
               content: '그룹을 정말 삭제하시겠습니까?',
               onPressed: () {},
@@ -210,20 +208,17 @@ class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
       actions: [
         IconButtonInRow(
           onPressed: showModal(
-            context: context,
+            context,
             page: const NotificationModal(),
           ),
           icon: bellIcon,
         ),
         IconButtonInRow(
-            onPressed: toOtherPage(context: context, page: const Help()),
+            onPressed: toOtherPage(context, page: const Help()),
             icon: helpIcon),
         IconButtonInRow(
-          onPressed: showAlert(
-              title: '로그아웃 확인',
-              context: context,
-              content: '로그아웃하시겠습니까?',
-              onPressed: () {}),
+          onPressed: showAlert(context,
+              title: '로그아웃 확인', content: '로그아웃하시겠습니까?', onPressed: () {}),
           icon: exitIcon,
         ),
         const SizedBox(width: 10)

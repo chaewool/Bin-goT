@@ -45,7 +45,7 @@ class BingoGallery extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: toOtherPage(
-        context: context,
+        context,
         page: const BingoDetail(),
       ),
       child: const CustomBoxContainer(

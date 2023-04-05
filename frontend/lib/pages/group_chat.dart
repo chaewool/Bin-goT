@@ -47,7 +47,7 @@ class _GroupChatState extends State<GroupChat> {
       child: CustomBoxContainer(
         onTap: needAuth
             ? showAlert(
-                context: context,
+                context,
                 title: '인증 확인',
                 content: '이 인증이 유효한가요?',
               )

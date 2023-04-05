@@ -63,7 +63,7 @@ class InputDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: showModal(context: context, page: const DateModal()),
+      onTap: showModal(context, page: const DateModal()),
       child: CustomInput(
         explain: explain,
         enabled: false,

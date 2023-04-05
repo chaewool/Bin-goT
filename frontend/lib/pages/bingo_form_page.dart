@@ -115,8 +115,7 @@ class _BingoFormState extends State<BingoForm> {
             flex: 1,
             child: Center(
               child: CustomButton(
-                onPressed:
-                    toOtherPage(context: context, page: const BingoDetail()),
+                onPressed: toOtherPage(context, page: const BingoDetail()),
                 content: '완료',
                 fontSize: FontSize.textSize,
               ),

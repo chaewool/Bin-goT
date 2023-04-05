@@ -32,8 +32,8 @@ class _GroupFormState extends State<GroupForm> {
     const StringList joinMethod = ['그룹장의 승인 필요', '자동 가입'];
     DynamicMap groupData = {};
     void createGroup() async {
-      GroupProvider().createOwnGroup(groupData).then((groupId) => toOtherPage(
-          context: context, page: GroupCreateCompleted(groupId: groupId))());
+      GroupProvider().createOwnGroup(groupData).then((groupId) =>
+          toOtherPage(context, page: GroupCreateCompleted(groupId: groupId))());
     }
     // void datePicker() {
     // }
@@ -65,7 +65,7 @@ class _GroupFormState extends State<GroupForm> {
               const CustomInput(explain: '그룹 설명을 입력하세요', needMore: true),
               const CustomInput(explain: '그룹 규칙을 입력하세요', needMore: true),
               GestureDetector(
-                onTap: showModal(context: context, page: const ImageModal()),
+                onTap: showModal(context, page: const ImageModal()),
                 child: const CustomInput(
                   explain: '그룹 이미지를 선택하세요',
                   needMore: true,
@@ -142,7 +142,9 @@ class GroupCreateCompleted extends StatelessWidget {
           CustomButton(
             content: '생성된 그룹으로 가기',
             onPressed: toOtherPage(
-                context: context, page: GroupMain(groupId: groupId)),
+              context,
+              page: GroupMain(groupId: groupId),
+            ),
           )
         ],
       ),

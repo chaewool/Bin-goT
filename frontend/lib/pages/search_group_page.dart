@@ -21,7 +21,7 @@ class _SearchGroupState extends State<SearchGroup> {
   @override
   void initState() {
     super.initState();
-    groups = UserInfoProvider.getMainTabData();
+    groups = UserInfoProvider().getMainTabData();
   }
 
   @override

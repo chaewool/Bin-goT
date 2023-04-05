@@ -29,7 +29,7 @@ class GroupListItem extends StatelessWidget {
       height: 70,
       boxShadow: [shadowWithOpacity],
       onTap: toOtherPage(
-        context: context,
+        context,
         page: GroupMain(groupId: groupInfo.id),
       ),
       child: Row(
@@ -70,9 +70,7 @@ class RankListItem extends StatelessWidget {
     return CustomList(
       height: 70,
       boxShadow: const [defaultShadow],
-      onTap: isMember
-          ? toOtherPage(context: context, page: const BingoDetail())
-          : null,
+      onTap: isMember ? toOtherPage(context, page: const BingoDetail()) : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -183,7 +181,7 @@ class BingoList extends StatelessWidget {
     return CustomList(
       height: 70,
       boxShadow: const [defaultShadow],
-      onTap: toOtherPage(context: context, page: const BingoDetail()),
+      onTap: toOtherPage(context, page: const BingoDetail()),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: const [

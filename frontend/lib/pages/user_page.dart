@@ -52,8 +52,7 @@ class _MyPageState extends State<MyPage> {
       horizontal: 40,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomBadge(
-            onTap: showModal(context: context, page: const SelectBadgeModal())),
+        CustomBadge(onTap: showModal(context, page: const SelectBadgeModal())),
         Row(
           children: isEditMode
               ? [

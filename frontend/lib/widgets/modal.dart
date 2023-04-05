@@ -36,26 +36,28 @@ class _BingoModalState extends State<BingoModal> {
       if (toRight) {
         if (widget.index < widget.cnt - 1) {
           return () {
-            toBack(context: context)();
+            toBack(context)();
             showModal(
-                context: context,
-                page: BingoModal(
-                  isDetail: widget.isDetail,
-                  index: widget.index + 1,
-                  cnt: widget.cnt,
-                ))();
+              context,
+              page: BingoModal(
+                isDetail: widget.isDetail,
+                index: widget.index + 1,
+                cnt: widget.cnt,
+              ),
+            )();
           };
         }
       } else if (0 < widget.index) {
         return () {
-          toBack(context: context)();
+          toBack(context)();
           showModal(
-              context: context,
-              page: BingoModal(
-                isDetail: widget.isDetail,
-                index: widget.index - 1,
-                cnt: widget.cnt,
-              ))();
+            context,
+            page: BingoModal(
+              isDetail: widget.isDetail,
+              index: widget.index - 1,
+              cnt: widget.cnt,
+            ),
+          )();
         };
       }
       return () {};
@@ -74,7 +76,7 @@ class _BingoModalState extends State<BingoModal> {
           ? null
           : CustomButton(
               content: '저장 후 닫기',
-              onPressed: toBack(context: context),
+              onPressed: toBack(context),
             ),
       children: [
         Column(
@@ -203,8 +205,7 @@ class CustomAlert extends StatelessWidget {
       title: CustomText(content: title),
       content: CustomText(content: content),
       actions: [
-        CustomButton(
-            onPressed: onPressed ?? toBack(context: context), content: '확인'),
+        CustomButton(onPressed: onPressed ?? toBack(context), content: '확인'),
         hasCancel
             ? const ExitButton(isIconType: false, buttonText: '취소')
             : const SizedBox(),
@@ -240,39 +241,36 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(
-        title: '배지 선택',
-        onPressed: toBack(context: context),
-        children: [
-          for (int i = 0; i < 4; i += 1)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (int j = 0; j < 3; j += 1)
-                  ColWithPadding(
-                    vertical: 8,
-                    horizontal: 8,
-                    children: [
-                      CustomBadge(
-                        onTap: () => selectBadge(3 * i + j),
-                        boxShadow: 3 * i + j == badgeIdx
-                            ? [
-                                const BoxShadow(
-                                    blurRadius: 3,
-                                    spreadRadius: 3,
-                                    color: blueColor)
-                              ]
-                            : null,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: CustomText(content: '배지명'),
-                      )
-                    ],
+    return CustomModal(title: '배지 선택', onPressed: toBack(context), children: [
+      for (int i = 0; i < 4; i += 1)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (int j = 0; j < 3; j += 1)
+              ColWithPadding(
+                vertical: 8,
+                horizontal: 8,
+                children: [
+                  CustomBadge(
+                    onTap: () => selectBadge(3 * i + j),
+                    boxShadow: 3 * i + j == badgeIdx
+                        ? [
+                            const BoxShadow(
+                                blurRadius: 3,
+                                spreadRadius: 3,
+                                color: blueColor)
+                          ]
+                        : null,
                   ),
-              ],
-            ),
-        ]);
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CustomText(content: '배지명'),
+                  )
+                ],
+              ),
+          ],
+        ),
+    ]);
   }
 }
 
@@ -315,7 +313,7 @@ class CustomModal extends StatelessWidget {
                   additionalButton!,
                   hasConfirm
                       ? CustomButton(
-                          onPressed: onPressed ?? toBack(context: context),
+                          onPressed: onPressed ?? toBack(context),
                           content: buttonText,
                         )
                       : const SizedBox(),
@@ -324,7 +322,7 @@ class CustomModal extends StatelessWidget {
               : [
                   hasConfirm
                       ? CustomButton(
-                          onPressed: onPressed ?? toBack(context: context),
+                          onPressed: onPressed ?? toBack(context),
                           content: buttonText,
                         )
                       : const SizedBox(),
@@ -394,5 +392,21 @@ class _NotificationModalState extends State<NotificationModal> {
           )
       ],
     );
+  }
+}
+
+//* 입력창이 있는 모달
+class InputModal extends StatelessWidget {
+  final String title;
+  const InputModal({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomModal(title: title, children: const [
+      CustomInput(
+        explain: '닉네임을 입력해주세요',
+        maxLength: 10,
+      ),
+    ]);
   }
 }

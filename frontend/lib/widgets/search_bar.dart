@@ -39,8 +39,7 @@ class SearchBar extends StatelessWidget {
             children: [
               const SelectBox(selectList: period, width: 150, height: 50),
               CustomButton(
-                onPressed:
-                    toOtherPage(context: context, page: const SearchGroup()),
+                onPressed: toOtherPage(context, page: const SearchGroup()),
                 content: '검색',
               ),
             ],

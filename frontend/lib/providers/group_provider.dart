@@ -40,7 +40,7 @@ class GroupProvider extends ApiProvider {
   //* detail
   Future<GroupDetailModel> readGroupDetail(int groupId, String password) async {
     try {
-      final response = await dioWithToken.get(groupDetailUrl(groupId));
+      final response = await dioWithToken().get(groupDetailUrl(groupId));
       if (response.statusCode == 200) {
         return GroupDetailModel.fromJson(response.data);
       }

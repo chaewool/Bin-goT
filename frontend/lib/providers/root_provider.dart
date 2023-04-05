@@ -18,7 +18,7 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   void _setRefresh(String? newRefresh) => _refresh = newRefresh;
   void _storeValue(String key, String? value) {
     const storage = FlutterSecureStorage();
-    storage.write(key: 'token', value: value);
+    storage.write(key: key, value: value);
   }
 
   dynamic _readStorage() async {
@@ -36,13 +36,13 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
     }
   }
 
-  void setStoreToken(String newToken) {
+  void setStoreToken(String? newToken) {
     _setToken(newToken);
     _storeValue('token', newToken);
     notifyListeners();
   }
 
-  void setStoreRefresh(String newRefresh) {
+  void setStoreRefresh(String? newRefresh) {
     _setRefresh(newRefresh);
     _storeValue('refresh', newRefresh);
     notifyListeners();
@@ -52,28 +52,36 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
 class StateProvider extends ChangeNotifier {
   bool? _rankNoti, _dueNoti, _chatNoti;
 
-  void _storeBool(String key, bool value) async {
+  void _storeBool(String key, bool? value) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(key, value);
+    if (value != null) {
+      await prefs.setBool(key, value);
+    } else {
+      prefs.remove(key);
+    }
   }
 
-  void _setRank(bool newRank) => _rankNoti = newRank;
-  void _setDue(bool newDue) => _dueNoti = newDue;
-  void _setChat(bool newChat) => _chatNoti = newChat;
+  bool? get rankNoti => _rankNoti;
+  bool? get dueNoti => _dueNoti;
+  bool? get chatNoti => _chatNoti;
 
-  void setStoreRank(bool newRank) {
+  void _setRank(bool? newRank) => _rankNoti = newRank;
+  void _setDue(bool? newDue) => _dueNoti = newDue;
+  void _setChat(bool? newChat) => _chatNoti = newChat;
+
+  void setStoreRank(bool? newRank) {
     _setRank(newRank);
     _storeBool('rank', newRank);
     notifyListeners();
   }
 
-  void setStoreDue(bool newDue) {
+  void setStoreDue(bool? newDue) {
     _setDue(newDue);
     _storeBool('due', newDue);
     notifyListeners();
   }
 
-  void setStoreChat(bool newChat) {
+  void setStoreChat(bool? newChat) {
     _setChat(newChat);
     _storeBool('chat', newChat);
     notifyListeners();

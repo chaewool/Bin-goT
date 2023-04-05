@@ -46,8 +46,7 @@ class BingoDetail extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButtonInRow(
-                  onPressed:
-                      toOtherPage(context: context, page: const BingoForm()),
+                  onPressed: toOtherPage(context, page: const BingoForm()),
                   icon: editIcon,
                 ),
                 IconButtonInRow(

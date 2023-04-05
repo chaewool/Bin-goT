@@ -118,8 +118,8 @@ class _DatePickerState extends State<DatePicker> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CustomButton(onPressed: toBack(context: context), content: '취소'),
-            CustomButton(onPressed: toBack(context: context), content: '완료')
+            CustomButton(onPressed: toBack(context), content: '취소'),
+            CustomButton(onPressed: toBack(context), content: '완료')
           ],
         )
       ],

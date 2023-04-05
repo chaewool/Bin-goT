@@ -53,7 +53,7 @@ class _GroupMainState extends State<GroupMain> {
                 data.memberState != 0
                     ? CustomButton(
                         onPressed: toOtherPage(
-                          context: context,
+                          context,
                           page: data.bingoId != 0
                               ? const BingoDetail()
                               : const BingoForm(),
@@ -89,11 +89,12 @@ class _GroupMainState extends State<GroupMain> {
               TextButton(
                 onPressed: memberState != 0
                     ? toOtherPage(
-                        context: context,
+                        context,
                         page: GroupRank(
                           groupId: widget.groupId,
                           isMember: memberState != 0,
-                        ))
+                        ),
+                      )
                     : null,
                 child: const CustomText(
                   content: '전체보기',

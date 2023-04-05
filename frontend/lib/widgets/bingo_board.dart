@@ -135,7 +135,7 @@ class EachBingo extends StatelessWidget {
     return CustomBoxContainer(
       onLongPress: () {},
       onTap: showModal(
-        context: context,
+        context,
         page: BingoModal(
           index: index,
           cnt: cnt,
