@@ -184,14 +184,17 @@ class MainView(APIView):
         user = request.user
         groups = GroupSerializer(user.groups, many=True).data
         boards = BoardSerializer(user.boards, many=True).data
+        is_recommend = False
 
         if not groups:
             recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
             
             groups = GroupSearchSerializer(recommends, many=True).data
             groups = [d for d in groups if d['count'] < d['headcount']][:20]
+
+            is_recommend = True
         
-        return Response(data={'groups': groups, 'boards': boards}, status=status.HTTP_200_OK)
+        return Response(data={'groups': groups, 'boards': boards, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
 
 
 class ProfileView(APIView):
