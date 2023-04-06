@@ -14,7 +14,9 @@ class UserProvider extends ApiProvider {
   //* login
   FutureDynamicMap _login() async {
     //* 카카오톡 설치 여부 확인
+    print('in');
     if (await isKakaoTalkInstalled()) {
+      print('installed');
       try {
         return _kakaoLogin(true);
       } catch (error) {
@@ -36,9 +38,11 @@ class UserProvider extends ApiProvider {
   //* verify token
   FutureDynamicMap _confirmToken() async {
     try {
+      print('$token, $refresh');
+      if (token == null || token == '') return {};
       print('토큰 유효성 검사');
-      if (token == null) return {};
       final data = await createApi(verifyTokenUrl, data: {'token': token});
+      print('tokenData: $data');
       if (data.isNotEmpty) {
         final result = await tokenRefresh();
         return {'token': result['access']};
@@ -67,19 +71,19 @@ class UserProvider extends ApiProvider {
         await UserApi.instance.loginWithKakaoAccount();
       }
       User user = await UserApi.instance.me();
-      final json = await createApi(
+      final json = await dio.post(
         serviceTokenUrl,
         data: {'kakao_id': user.id},
       );
       // final data = ServiceTokenModel.fromJson(json);
-      return json;
+      return json.data;
     } catch (error) {
       // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
       // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
       if (error is PlatformException && error.code == 'CANCELED') {
         return {};
       }
-      print(error);
+      print('kakao login: $error');
       throw Error();
     }
   }

@@ -1,4 +1,5 @@
 import 'package:bin_got/pages/main_page.dart';
+import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -26,6 +27,7 @@ class _IntroState extends State<Intro> {
   void login() async {
     try {
       final data = await UserProvider().login();
+      print('data: $data');
       if (!mounted) return;
       setTokens(context, data['access_token'], data['refresh_token']);
       setNoti(
@@ -46,10 +48,12 @@ class _IntroState extends State<Intro> {
 
   void verifyToken() async {
     try {
+      await context.read<AuthProvider>().initVar();
       final result = await UserProvider().confirmToken();
       if (result.isNotEmpty) {
         if (!mounted) return;
         setToken(context, result['token']);
+      } else {
         showLoginBtn = true;
       }
     } catch (error) {
@@ -69,7 +73,7 @@ class _IntroState extends State<Intro> {
   @override
   void initState() {
     super.initState();
-    context.read<AuthProvider>().initVar();
+
     afterFewSec(1, () {
       showLogo = true;
     });
@@ -82,7 +86,7 @@ class _IntroState extends State<Intro> {
     verifyToken();
     afterFewSec(4, () {
       if (!showLoginBtn) {
-        toOtherPage(context, page: const Main())();
+        toOtherPage(context, page: const MyPage())();
       }
     });
   }

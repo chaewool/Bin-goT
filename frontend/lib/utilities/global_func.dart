@@ -100,6 +100,7 @@ ReturnVoid showAlert(
 }) {
   return () => showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => CustomAlert(
             title: title,
             content: content,
@@ -110,16 +111,18 @@ ReturnVoid showAlert(
 
 //* modal 띄우기
 ReturnVoid showModal(BuildContext context, {required Widget page}) {
-  return () => showDialog(context: context, builder: (context) => page);
+  return () => showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => page,
+      );
 }
 
 //*
 String? getToken(BuildContext context) => context.read<AuthProvider>().token;
 
-void setToken(BuildContext context, String? newToken) {
-  final auth = context.read<AuthProvider>();
-  auth.setStoreToken(newToken);
-}
+void setToken(BuildContext context, String? newToken) =>
+    context.read<AuthProvider>().setStoreToken(newToken);
 
 void setTokens(BuildContext context, String? newToken, String? newRefresh) {
   final auth = context.read<AuthProvider>();

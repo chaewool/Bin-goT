@@ -30,6 +30,7 @@ class UserInfoProvider extends ApiProvider {
       final response = await dioWithToken().get(mainTabUrl);
       switch (response.statusCode) {
         case 200:
+          print(response);
           final data = response.data;
           print(data);
           if (data.isNotEmpty) {

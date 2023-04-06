@@ -1,9 +1,10 @@
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
-  String? _token, _refresh;
+  static String? _token, _refresh;
 
   String? get token => _token;
   String? get refresh => _refresh;
@@ -27,13 +28,15 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
     return userInfo;
   }
 
-  void initVar() {
-    final userInfo = _readStorage();
+  FutureBool initVar() async {
+    final userInfo = await _readStorage();
+    print('initVar: $userInfo');
     if (userInfo != null) {
       _setToken(userInfo!['token']);
       _setRefresh(userInfo!['refresh']);
       notifyListeners();
     }
+    return true;
   }
 
   void setStoreToken(String? newToken) {

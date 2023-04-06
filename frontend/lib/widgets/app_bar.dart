@@ -213,14 +213,14 @@ class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
           ),
           icon: bellIcon,
         ),
-        IconButtonInRow(
-            onPressed: toOtherPage(context, page: const Help()),
-            icon: helpIcon),
-        IconButtonInRow(
-          onPressed: showAlert(context,
-              title: '로그아웃 확인', content: '로그아웃하시겠습니까?', onPressed: () {}),
-          icon: exitIcon,
-        ),
+        // IconButtonInRow(
+        //     onPressed: toOtherPage(context, page: const Help()),
+        //     icon: helpIcon),
+        // IconButtonInRow(
+        //   onPressed: showAlert(context,
+        //       title: '로그아웃 확인', content: '로그아웃하시겠습니까?', onPressed: () {}),
+        //   icon: exitIcon,
+        // ),
         const SizedBox(width: 10)
       ],
     );

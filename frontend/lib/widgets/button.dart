@@ -115,11 +115,12 @@ class CustomTextButton extends StatelessWidget {
   final String content;
   final FontSize fontSize;
   final ReturnVoid onTap;
-  const CustomTextButton(
-      {super.key,
-      required this.content,
-      required this.fontSize,
-      required this.onTap});
+  const CustomTextButton({
+    super.key,
+    required this.content,
+    required this.onTap,
+    this.fontSize = FontSize.textSize,
+  });
 
   @override
   Widget build(BuildContext context) {

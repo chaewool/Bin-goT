@@ -405,7 +405,7 @@ class InputModal extends StatelessWidget {
     return CustomModal(title: title, children: const [
       CustomInput(
         explain: '닉네임을 입력해주세요',
-        maxLength: 10,
+        maxLength: 20,
       ),
     ]);
   }
