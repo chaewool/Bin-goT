@@ -8,14 +8,15 @@ class CustomText extends StatelessWidget {
   final bool center;
   final String font;
   final Color color;
-  const CustomText({
-    super.key,
-    required this.content,
-    this.fontSize = FontSize.textSize,
-    this.center = false,
-    this.font = 'RIDIBatang',
-    this.color = blackColor,
-  });
+  final double? height;
+  const CustomText(
+      {super.key,
+      required this.content,
+      this.fontSize = FontSize.textSize,
+      this.center = false,
+      this.font = 'RIDIBatang',
+      this.color = blackColor,
+      this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +26,7 @@ class CustomText extends StatelessWidget {
         fontSize: convertedFontSize(fontSize),
         color: color,
         fontFamily: font,
+        height: height,
       ),
       textAlign: center ? TextAlign.center : null,
     );

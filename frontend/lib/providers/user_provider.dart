@@ -38,7 +38,7 @@ class UserProvider extends ApiProvider {
   //* verify token
   FutureDynamicMap _confirmToken() async {
     try {
-      print('$token, $refresh');
+      print('confirm token function $token, $refresh');
       if (token == null || token == '') return {};
       print('토큰 유효성 검사');
       final data = await createApi(verifyTokenUrl, data: {'token': token});

@@ -30,36 +30,31 @@ class UserInfoProvider extends ApiProvider {
       final response = await dioWithToken().get(mainTabUrl);
       switch (response.statusCode) {
         case 200:
-          print(response);
           final data = response.data;
-          print(data);
           if (data.isNotEmpty) {
-            print('isNot');
             MyGroupList myGroupList = data['groups']
                 .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
                 .toList();
             MyBingoList myBingoList = data['boards']
                 .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
                 .toList();
-            print(data);
-            bool hasNotGroup = data['is_recommended'];
+            bool hasNotGroup = data['is_recommend'];
             return MainTabModel.fromJson({
               'groups': myGroupList,
               'boards': myBingoList,
-              'hasNotGroup': hasNotGroup
+              'is_recommend': hasNotGroup
             });
           }
           return MainTabModel.fromJson(
-              {'groups': [], 'boards': [], 'hasNotGroup': true});
+              {'groups': [], 'boards': [], 'is_recommend': true});
         case 401:
-          tokenRefresh();
-          return MainTabModel.fromJson(
-              {'groups': [], 'boards': [], 'hasNotGroup': true});
+          await tokenRefresh();
+          return _getMainTabData();
         default:
           throw Error();
       }
     } catch (error) {
-      print(error);
+      print('mainTabError: $error');
       // UserProvider.logout();
       throw Error();
     }

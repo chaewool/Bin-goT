@@ -9,23 +9,25 @@ class GroupProvider extends ApiProvider {
   Future<MyGroupList> searchGroupList({
     int? period,
     String? keyword,
-    int? align,
+    int? order,
     int? filter,
-    required int startIndex,
+    required int public,
     required int cnt,
     required int page,
   }) async {
-    final url = searchGroupUrl(
-      period: period,
-      keyword: keyword,
-      align: align,
-      filter: filter,
-      startIndex: startIndex,
-      cnt: cnt,
-      page: page,
-    );
     try {
-      final response = await dio.get(url);
+      final response = await dioWithToken().get(
+        searchGroupUrl,
+        queryParameters: {
+          'period': period,
+          'keyword': keyword,
+          'order': order,
+          'filter': filter,
+          'public': public,
+          'cnt': cnt,
+          'page': page,
+        },
+      );
       if (response.statusCode == 200) {
         MyGroupList groupList = response.data
             .map<MyGroupModel>((json) => MyGroupModel.fromJson(json));
@@ -40,7 +42,10 @@ class GroupProvider extends ApiProvider {
   //* detail
   Future<GroupDetailModel> readGroupDetail(int groupId, String password) async {
     try {
-      final response = await dioWithToken().get(groupDetailUrl(groupId));
+      print('groupId: $groupId, password: $password');
+      final response = await dioWithToken()
+          .post(groupDetailUrl(groupId), data: {'password': password});
+      print('response: $response');
       if (response.statusCode == 200) {
         return GroupDetailModel.fromJson(response.data);
       }

@@ -34,5 +34,5 @@ class MainTabModel {
   MainTabModel.fromJson(Map<String, dynamic> json)
       : groups = json['groups'],
         bingos = json['boards'],
-        hasNotGroup = json['is_recommended'];
+        hasNotGroup = json['is_recommend'];
 }

@@ -46,24 +46,41 @@ class _GroupFormState extends State<GroupForm> {
             vertical: 40,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: CustomText(
+                  content: '그룹 생성',
+                  center: true,
+                  fontSize: FontSize.titleSize,
+                ),
+              ),
+              const CustomText(content: '그룹명 *'),
               const CustomInput(explain: '그룹명을 입력하세요'),
+              const CustomText(content: '참여인원 *'),
               const CustomInput(explain: '참여인원', onlyNum: true),
+              const CustomText(content: '기간 *'),
               const InputDate(explain: '기간'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: const [
+                  CustomText(content: '빙고 크기 *'),
                   SelectBox(selectList: bingoSize, width: 60, height: 50),
-                  SelectBox(selectList: joinMethod, width: 150, height: 50),
                 ],
               ),
+              const CustomText(content: '그룹 가입 시 자동 승인 여부 *'),
+              const SelectBox(selectList: joinMethod, width: 150, height: 50),
               CustomCheckBox(
-                label: '공개 여부',
+                label: '공개 여부 *',
                 value: true,
                 onChange: (p0) {},
               ),
-              const CustomInput(explain: '그룹 가입 시 비밀번호'),
-              const CustomInput(explain: '그룹 설명을 입력하세요', needMore: true),
-              const CustomInput(explain: '그룹 규칙을 입력하세요', needMore: true),
+              const CustomText(content: '그룹 가입 시 비밀번호 *'),
+              const CustomInput(explain: '비밀번호'),
+              const CustomText(content: '그룹 설명'),
+              const CustomInput(needMore: true),
+              const CustomText(content: '그룹 규칙'),
+              const CustomInput(needMore: true),
+              const CustomText(content: '그룹 배경'),
               GestureDetector(
                 onTap: showModal(context, page: const ImageModal()),
                 child: const CustomInput(
@@ -81,19 +98,19 @@ class _GroupFormState extends State<GroupForm> {
 
 //* 그룹 생성 완료 페이지
 class GroupCreateCompleted extends StatelessWidget {
-  final bool isPrivate;
+  final bool isPublic;
   final String password;
   final int groupId;
   const GroupCreateCompleted({
     super.key,
-    this.isPrivate = false,
+    this.isPublic = true,
     this.password = '',
     required this.groupId,
   });
 
   @override
   Widget build(BuildContext context) {
-    String privateInvitation = isPrivate ? '비밀번호 : $password' : '';
+    String privateInvitation = isPublic ? '' : '비밀번호 : $password';
     String message =
         'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요\n $privateInvitation';
     void copyText() {
@@ -123,6 +140,7 @@ class GroupCreateCompleted extends StatelessWidget {
               child: CustomText(
                 content: message,
                 center: true,
+                height: 1.7,
               ),
             ),
           ),
@@ -143,7 +161,10 @@ class GroupCreateCompleted extends StatelessWidget {
             content: '생성된 그룹으로 가기',
             onPressed: toOtherPage(
               context,
-              page: GroupMain(groupId: groupId),
+              page: GroupMain(
+                groupId: groupId,
+                isPublic: isPublic,
+              ),
             ),
           )
         ],

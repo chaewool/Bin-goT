@@ -14,13 +14,7 @@ class ApiProvider extends UrlClass {
 
   FutureVoid deleteApi(String url) async => _deleteApi(url);
 
-  FutureDynamicMap tokenRefresh() async {
-    try {
-      return _tokenRefresh();
-    } catch (error) {
-      throw Error();
-    }
-  }
+  FutureDynamicMap tokenRefresh() async => _tokenRefresh();
 
   //* private
   //* refresh token
@@ -32,7 +26,7 @@ class ApiProvider extends UrlClass {
         refreshTokenUrl,
         data: {'refresh': refresh},
       );
-      return {...tokenData, 'refresh': refresh};
+      return tokenData;
     } catch (error) {
       print(error);
       throw Error();
@@ -43,11 +37,13 @@ class ApiProvider extends UrlClass {
   FutureDynamicMap _createApi(String url, {required DynamicMap data}) async {
     try {
       final response = await dioWithToken().post(url, data: data);
-      print('create response: $response');
+      print('create: $response');
+      // print('create response: $response');
       switch (response.statusCode) {
         case 200:
           return response.data;
         case 401:
+          print('들어옴');
           tokenRefresh();
           return {};
         default:

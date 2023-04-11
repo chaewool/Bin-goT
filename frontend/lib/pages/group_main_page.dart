@@ -10,6 +10,7 @@ import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/list.dart';
+import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -17,9 +18,11 @@ import 'package:flutter/material.dart';
 
 class GroupMain extends StatefulWidget {
   final int groupId;
+  final bool isPublic;
   const GroupMain({
     super.key,
     required this.groupId,
+    required this.isPublic,
   });
 
   @override
@@ -27,6 +30,14 @@ class GroupMain extends StatefulWidget {
 }
 
 class _GroupMainState extends State<GroupMain> {
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.isPublic) {
+      showModal(context, page: const InputModal(title: '비밀번호 입력'))();
+    }
+  }
+
   int memberState = 0;
 
   @override

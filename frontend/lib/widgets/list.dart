@@ -23,14 +23,27 @@ class GroupListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final difference = DateTime.now().difference(groupInfo.start);
+    String showedDif() {
+      final difference =
+          DateTime.now().difference(DateTime.parse(groupInfo.start)).inDays;
+      if (difference < 0) {
+        return 'D - ${-difference}';
+      } else if (difference > 0) {
+        return 'D + $difference';
+      }
+      return 'D-Day';
+    }
+
     String groupMember = '(${groupInfo.count}/${groupInfo.headCount})';
     return CustomList(
       height: 70,
       boxShadow: [shadowWithOpacity],
       onTap: toOtherPage(
         context,
-        page: GroupMain(groupId: groupInfo.id),
+        page: GroupMain(
+          groupId: groupInfo.id,
+          isPublic: groupInfo.isPublic!,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -39,11 +52,13 @@ class GroupListItem extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomText(content: groupInfo.start),
+              CustomText(content: showedDif()),
               const SizedBox(height: 5),
               isSearchMode
                   ? CustomText(
-                      content: groupMember, fontSize: FontSize.smallSize)
+                      content: groupMember,
+                      fontSize: FontSize.smallSize,
+                    )
                   : const SizedBox(),
             ],
           )

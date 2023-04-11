@@ -48,16 +48,7 @@ class UrlClass extends DioClass {
   static const _groupUrl = '/groups';
 
   //* search
-  String _searchGroupUrl({
-    int? period,
-    String? keyword,
-    int? align,
-    int? filter,
-    required int startIndex,
-    required int cnt,
-    required int page,
-  }) =>
-      '$_groupUrl/search?period=$period&keyword=$keyword&align=$align&filter=$filter&start_index=$startIndex&cnt=$cnt&page=$page';
+  final String _searchGroupUrl = '$_groupUrl/search';
 
   //* CRUD
   final _createGroupUrl = '$_groupUrl/create/';
@@ -80,24 +71,7 @@ class UrlClass extends DioClass {
   String get refreshTokenUrl => _refreshTokenUrl;
 
   //* group
-  String searchGroupUrl({
-    int? period,
-    String? keyword,
-    int? align,
-    int? filter,
-    required int startIndex,
-    required int cnt,
-    required int page,
-  }) =>
-      _searchGroupUrl(
-        period: period,
-        keyword: keyword,
-        align: align,
-        filter: filter,
-        startIndex: startIndex,
-        cnt: cnt,
-        page: page,
-      );
+  String get searchGroupUrl => _searchGroupUrl;
   String get createGroupUrl => _createGroupUrl;
   String groupDetailUrl(int groupId) => _groupDetailUrl(groupId);
   String joinGroupUrl(int groupId) => _joinGroupUrl(groupId);

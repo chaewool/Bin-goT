@@ -258,11 +258,17 @@ class _MyTabBarState extends State<MyTabBar> {
                         ? Column(children: const [
                             CustomText(
                               center: true,
-                              fontSize: FontSize.titleSize,
                               content:
                                   '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                              height: 1.7,
                             ),
-                            CustomText(content: '추천그룹'),
+                            SizedBox(
+                              height: 70,
+                            ),
+                            CustomText(
+                              content: '추천그룹',
+                              fontSize: FontSize.titleSize,
+                            ),
                           ])
                         : const SizedBox(),
                     groupList(snapshot.data!.groups, hasNotGroup)
@@ -284,7 +290,7 @@ class _MyTabBarState extends State<MyTabBar> {
                 }
                 return const CustomText(
                   center: true,
-                  fontSize: FontSize.titleSize,
+                  height: 1.7,
                   content: '아직 생성한 빙고가 없어요.\n그룹 내에서\n빙고를 생성해보세요.',
                 );
               }

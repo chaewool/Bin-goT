@@ -1,5 +1,4 @@
 import 'package:bin_got/pages/main_page.dart';
-import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -86,7 +85,7 @@ class _IntroState extends State<Intro> {
     verifyToken();
     afterFewSec(4, () {
       if (!showLoginBtn) {
-        toOtherPage(context, page: const MyPage())();
+        toOtherPage(context, page: const Main())();
       }
     });
   }
