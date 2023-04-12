@@ -141,13 +141,13 @@ class GroupCreateView(APIView):
 
 
 class GroupDetailView(APIView):
-    def post(self, request, group_id):
+    def get(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        password = request.data.get('password')
+        password = request.GET.get('password')
         
         rand_name = user.username
-        participate = Participate.objects.get(user=user, group=group)
+        participate = Participate.objects.filter(user=user, group=group)
         board_id = 0
         
         if Board.objects.filter(user=user, group=group).exists():
@@ -155,6 +155,8 @@ class GroupDetailView(APIView):
         
         # 그룹 가입 여부 확인
         if participate:
+            participate = participate[0]
+            
             # 강제 탈퇴 여부 확인
             if participate.is_banned:
                 return Response(data={'message': '탈퇴 처리된 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
