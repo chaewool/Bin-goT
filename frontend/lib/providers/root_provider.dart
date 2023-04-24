@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+//* token, user data
 class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   static String? _token, _refresh;
 
@@ -52,7 +53,8 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   }
 }
 
-class StateProvider extends ChangeNotifier {
+//* notification
+class NotiProvider extends ChangeNotifier {
   bool? _rankNoti, _dueNoti, _chatNoti;
 
   void _storeBool(String key, bool? value) async {
@@ -89,4 +91,42 @@ class StateProvider extends ChangeNotifier {
     _storeBool('chat', newChat);
     notifyListeners();
   }
+}
+
+class GroupDataProvider extends ChangeNotifier {
+  final Map<String, dynamic> _groupData = {
+    'groupName': '',
+    'start': '',
+    'end': '',
+    'size': 0,
+    'isPublic': true,
+    'password': '',
+    'description': '',
+    'rule': '',
+    'needAuth': true,
+    'headcount': 0
+  };
+
+  Map<String, dynamic> get groupData => _groupData;
+  void _changeData(String key, dynamic value) {
+    _groupData[key] = value;
+  }
+
+  void _initData() {
+    _groupData.forEach((key, value) {
+      switch (value.runtimeType) {
+        case String:
+          _groupData[key] = '';
+          break;
+        case int:
+          _groupData[key] = 0;
+          break;
+        default:
+          _groupData[key] = true;
+      }
+    });
+  }
+
+  void changeData(String key, dynamic value) => _changeData(key, value);
+  void initData() => _initData();
 }

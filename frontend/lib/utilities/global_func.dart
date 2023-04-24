@@ -131,7 +131,7 @@ void setTokens(BuildContext context, String? newToken, String? newRefresh) {
 }
 
 void setNoti(BuildContext context, {bool? rank, bool? due, bool? chat}) {
-  final noti = context.read<StateProvider>();
+  final noti = context.read<NotiProvider>();
   noti.setStoreRank(rank);
   noti.setStoreDue(due);
   noti.setStoreChat(chat);

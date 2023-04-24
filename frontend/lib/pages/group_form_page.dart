@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -13,8 +16,11 @@ import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/select_box.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 //* 그룹 생성/수정 페이지
 class GroupForm extends StatefulWidget {
@@ -26,15 +32,53 @@ class GroupForm extends StatefulWidget {
 }
 
 class _GroupFormState extends State<GroupForm> {
+  XFile? selectedImage;
+  bool isChecked = true;
+  final StringList bingoSize = ['N * N', '2 * 2', '3 * 3', '4 * 4', '5 * 5'];
+  final StringList joinMethod = ['그룹장의 승인 필요', '자동 가입'];
+  void createGroup() async {
+    final groupData = context.read<GroupDataProvider>().groupData;
+    if (groupData['groupName'].length < 3) {
+      showAlert(context, title: '그룹명 오류', content: '그룹명을 3자 이상으로 입력해주세요.')();
+    } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
+      showAlert(context,
+          title: '인원 수 오류', content: '인원 수는 1명 이상 30명 이하로 입력해주세요.')();
+    } else if (!groupData['isPublic'] && groupData['password'].length < 4) {
+      showAlert(context,
+          title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
+    } else {
+      GroupProvider()
+          .createOwnGroup(FormData.fromMap({
+            'data': groupData,
+            'img': selectedImage,
+          }))
+          .then((groupId) => toOtherPage(context,
+              page: GroupCreateCompleted(
+                groupId: groupId,
+                password: groupData['password'],
+              ))());
+    }
+  }
+
+  void imagePicker() async {
+    final ImagePicker picker = ImagePicker();
+    final localImage = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 50,
+    );
+    setState(() {
+      selectedImage = localImage;
+    });
+  }
+
+  void deleteImage() {
+    setState(() {
+      selectedImage = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    const StringList bingoSize = ['N * N', '2 * 2', '3 * 3', '4 * 4', '5 * 5'];
-    const StringList joinMethod = ['그룹장의 승인 필요', '자동 가입'];
-    DynamicMap groupData = {};
-    void createGroup() async {
-      GroupProvider().createOwnGroup(groupData).then((groupId) =>
-          toOtherPage(context, page: GroupCreateCompleted(groupId: groupId))());
-    }
     // void datePicker() {
     // }
 
@@ -44,7 +88,7 @@ class _GroupFormState extends State<GroupForm> {
           child: ColWithPadding(
             horizontal: 30,
             vertical: 40,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
@@ -54,40 +98,69 @@ class _GroupFormState extends State<GroupForm> {
                   fontSize: FontSize.titleSize,
                 ),
               ),
-              const CustomText(content: '그룹명 *'),
-              const CustomInput(explain: '그룹명을 입력하세요'),
-              const CustomText(content: '참여인원 *'),
-              const CustomInput(explain: '참여인원', onlyNum: true),
-              const CustomText(content: '기간 *'),
-              const InputDate(explain: '기간'),
+              const CustomInput(title: '그룹명 *', explain: '그룹명을 입력하세요'),
+              const CustomInput(
+                  title: '참여인원 *', explain: '참여인원', onlyNum: true),
+              const InputDate(title: '기간 *', explain: '기간'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
-                  CustomText(content: '빙고 크기 *'),
+                children: [
+                  const CustomText(content: '빙고 크기 *'),
                   SelectBox(selectList: bingoSize, width: 60, height: 50),
                 ],
               ),
               const CustomText(content: '그룹 가입 시 자동 승인 여부 *'),
-              const SelectBox(selectList: joinMethod, width: 150, height: 50),
+              SelectBox(selectList: joinMethod, width: 150, height: 50),
               CustomCheckBox(
                 label: '공개 여부 *',
-                value: true,
-                onChange: (p0) {},
+                value: isChecked,
+                onChange: (value) {
+                  setState(() {
+                    isChecked = !isChecked;
+                  });
+                },
               ),
-              const CustomText(content: '그룹 가입 시 비밀번호 *'),
-              const CustomInput(explain: '비밀번호'),
-              const CustomText(content: '그룹 설명'),
-              const CustomInput(needMore: true),
-              const CustomText(content: '그룹 규칙'),
-              const CustomInput(needMore: true),
+              !isChecked
+                  ? Column(
+                      children: const [
+                        CustomInput(
+                          title: '그룹 가입 시 비밀번호 *',
+                          explain: '비밀번호',
+                          maxLength: 20,
+                        ),
+                      ],
+                    )
+                  : const SizedBox(),
+              const CustomInput(
+                title: '그룹 설명',
+                needMore: true,
+                maxLength: 1000,
+              ),
+              const CustomInput(
+                title: '그룹 규칙',
+                needMore: true,
+                maxLength: 1000,
+              ),
               const CustomText(content: '그룹 배경'),
               GestureDetector(
-                onTap: showModal(context, page: const ImageModal()),
-                child: const CustomInput(
-                  explain: '그룹 이미지를 선택하세요',
-                  needMore: true,
-                  enabled: false,
-                ),
+                onTap: showModal(context,
+                    page: ImageModal(
+                      image: selectedImage,
+                      imagePicker: imagePicker,
+                      deleteImage: deleteImage,
+                    )),
+                child: selectedImage == null
+                    ? const CustomInput(
+                        explain: '그룹 이미지를 선택하세요',
+                        needMore: true,
+                        enabled: false,
+                      )
+                    : CustomBoxContainer(
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: FileImage(File(selectedImage!.path)),
+                        ),
+                      ),
               ),
             ],
           ),

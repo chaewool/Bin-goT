@@ -17,13 +17,6 @@ class CustomCheckBox extends StatefulWidget {
 }
 
 class _CustomCheckBox extends State<CustomCheckBox> {
-  // bool isChecked = false;
-  // void changeChecked(bool? value) {
-  //   setState(() {
-  //     isChecked = value!;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

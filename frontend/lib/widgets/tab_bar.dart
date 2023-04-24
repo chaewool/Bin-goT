@@ -1,5 +1,7 @@
 import 'package:bin_got/models/user_info_model.dart';
+import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -255,19 +257,24 @@ class _MyTabBarState extends State<MyTabBar> {
                 return Column(
                   children: [
                     hasNotGroup
-                        ? Column(children: const [
-                            CustomText(
+                        ? Column(children: [
+                            const CustomText(
                               center: true,
                               content:
                                   '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
                               height: 1.7,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 70,
                             ),
-                            CustomText(
-                              content: '추천그룹',
-                              fontSize: FontSize.titleSize,
+                            GestureDetector(
+                              onTap: toOtherPage(context,
+                                  page: const GroupMain(
+                                      groupId: 1, isPublic: true)),
+                              child: const CustomText(
+                                content: '추천그룹',
+                                fontSize: FontSize.titleSize,
+                              ),
                             ),
                           ])
                         : const SizedBox(),

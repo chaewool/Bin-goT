@@ -147,22 +147,23 @@ class DateModal extends StatelessWidget {
 }
 
 //* 이미지
-class ImageModal extends StatelessWidget {
-  const ImageModal({super.key});
+class ImageModal extends StatefulWidget {
+  final XFile? image;
+  final ReturnVoid imagePicker, deleteImage;
+  const ImageModal({
+    super.key,
+    required this.image,
+    required this.imagePicker,
+    required this.deleteImage,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    XFile? selectImage;
-    void imagePicker() async {
-      final ImagePicker picker = ImagePicker();
-      selectImage = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxHeight: 100,
-        maxWidth: 100,
-        imageQuality: 50,
-      );
-    }
+  State<ImageModal> createState() => _ImageModalState();
+}
 
+class _ImageModalState extends State<ImageModal> {
+  @override
+  Widget build(BuildContext context) {
     return CustomModal(title: '그룹 이미지 선택', hasConfirm: false, children: [
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
@@ -170,16 +171,21 @@ class ImageModal extends StatelessWidget {
           width: 100,
           height: 100,
           borderColor: blackColor,
-          image: selectImage != null
+          image: widget.image != null
               ? DecorationImage(
-                  fit: BoxFit.cover, image: FileImage(File(selectImage!.path)))
-              : null,
-          child: selectImage == null
-              ? CustomIconButton(
-                  icon: addIcon,
-                  onPressed: imagePicker,
+                  fit: BoxFit.cover,
+                  image: FileImage(File(widget.image!.path)),
                 )
               : null,
+          child: widget.image == null
+              ? CustomIconButton(
+                  icon: addIcon,
+                  onPressed: widget.imagePicker,
+                )
+              : CustomIconButton(
+                  onPressed: widget.deleteImage,
+                  icon: closeIcon,
+                ),
         ),
       ),
     ]);

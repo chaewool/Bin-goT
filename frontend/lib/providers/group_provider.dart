@@ -2,6 +2,7 @@ import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:dio/dio.dart';
 
 //* group provider
 class GroupProvider extends ApiProvider {
@@ -43,12 +44,14 @@ class GroupProvider extends ApiProvider {
   Future<GroupDetailModel> readGroupDetail(int groupId, String password) async {
     try {
       print('groupId: $groupId, password: $password');
-      final response = await dioWithToken()
-          .post(groupDetailUrl(groupId), data: {'password': password});
+      print(groupDetailUrl(groupId));
+      final response = await createApi(groupDetailUrl(groupId),
+          data: {'password': password});
+
       print('response: $response');
-      if (response.statusCode == 200) {
-        return GroupDetailModel.fromJson(response.data);
-      }
+      // if (response.statusCode == 200) {
+      //   return GroupDetailModel.fromJson(response.data);
+      // }
       throw Error();
     } catch (error) {
       print(error);
@@ -62,7 +65,7 @@ class GroupProvider extends ApiProvider {
   }
 
   //* create
-  FutureInt createOwnGroup(DynamicMap groupData) async {
+  FutureInt createOwnGroup(FormData groupData) async {
     try {
       final response = await dio.post(createGroupUrl, data: groupData);
       if (response.statusCode == 200) {

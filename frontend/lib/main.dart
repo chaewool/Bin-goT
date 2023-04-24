@@ -20,7 +20,8 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => StateProvider()),
+        ChangeNotifierProvider(create: (_) => NotiProvider()),
+        ChangeNotifierProvider(create: (_) => GroupDataProvider()),
       ],
       child: MaterialApp(
         home: const Intro(),
