@@ -67,7 +67,9 @@ class GroupProvider extends ApiProvider {
   //* create
   FutureInt createOwnGroup(FormData groupData) async {
     try {
-      final response = await dio.post(createGroupUrl, data: groupData);
+      final dioWithForm = dioWithToken();
+      dioWithForm.options.contentType = 'multipart/form-data';
+      final response = await dioWithForm.post(createGroupUrl, data: groupData);
       if (response.statusCode == 200) {
         return response.data.groupId;
       }

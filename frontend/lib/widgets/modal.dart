@@ -7,7 +7,6 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
-import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/badge.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
@@ -137,14 +136,14 @@ class _BingoModalState extends State<BingoModal> {
 }
 
 //* 날짜
-class DateModal extends StatelessWidget {
-  const DateModal({super.key});
+// class DateModal extends StatelessWidget {
+//   const DateModal({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Dialog(child: DatePicker());
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Dialog(child: DatePicker());
+//   }
+// }
 
 //* 이미지
 class ImageModal extends StatefulWidget {

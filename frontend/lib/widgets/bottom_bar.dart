@@ -1,4 +1,4 @@
-import 'package:bin_got/pages/group_chat.dart';
+import 'package:bin_got/pages/group_chat_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/utilities/global_func.dart';

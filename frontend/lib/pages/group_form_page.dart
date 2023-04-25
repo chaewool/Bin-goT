@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bin_got/pages/group_main_page.dart';
@@ -49,8 +50,8 @@ class _GroupFormState extends State<GroupForm> {
     } else {
       GroupProvider()
           .createOwnGroup(FormData.fromMap({
-            'data': groupData,
-            'img': selectedImage,
+            'data': json.encode(groupData),
+            'file': selectedImage,
           }))
           .then((groupId) => toOtherPage(context,
               page: GroupCreateCompleted(
@@ -88,7 +89,7 @@ class _GroupFormState extends State<GroupForm> {
           child: ColWithPadding(
             horizontal: 30,
             vertical: 40,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),

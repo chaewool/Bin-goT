@@ -46,6 +46,7 @@ app.*.map.json
 # private information
 /lib/providers/api_list.dart
 /lib/widgets/date_picker_example.dart
+/lib/widgets/sample_view.dart
 /lib/utilities/image_icon.dart
 .env
 /android/keystore/
