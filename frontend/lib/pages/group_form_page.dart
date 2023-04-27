@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
-import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -21,7 +20,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
 //* 그룹 생성/수정 페이지
 class GroupForm extends StatefulWidget {
@@ -33,12 +31,33 @@ class GroupForm extends StatefulWidget {
 }
 
 class _GroupFormState extends State<GroupForm> {
+  final StringList bingoSize = ['2 * 2', '3 * 3', '4 * 4', '5 * 5'];
+  final StringList joinMethod = ['그룹장의 승인 필요', '자동 가입'];
+
   XFile? selectedImage;
   bool isChecked = true;
-  final StringList bingoSize = ['N * N', '2 * 2', '3 * 3', '4 * 4', '5 * 5'];
-  final StringList joinMethod = ['그룹장의 승인 필요', '자동 가입'];
+  final Map<String, dynamic> groupData = {
+    'groupName': '',
+    'start': '',
+    'end': '',
+    'size': 0,
+    'isPublic': true,
+    'password': '',
+    'description': '',
+    'rule': '',
+    'needAuth': true,
+    'headCount': 0
+  };
+
+  void Function(dynamic) setGroupData(BuildContext context, String key) {
+    return (value) => groupData[key] = value;
+  }
+
+  // void changeSelected(String key, dynamic value) {
+  //   setGroupData(context, key)(value);
+  // }
+
   void createGroup() async {
-    final groupData = context.read<GroupDataProvider>().groupData;
     if (groupData['groupName'].length < 3) {
       showAlert(context, title: '그룹명 오류', content: '그룹명을 3자 이상으로 입력해주세요.')();
     } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
@@ -50,14 +69,18 @@ class _GroupFormState extends State<GroupForm> {
     } else {
       GroupProvider()
           .createOwnGroup(FormData.fromMap({
-            'data': json.encode(groupData),
-            'file': selectedImage,
-          }))
-          .then((groupId) => toOtherPage(context,
-              page: GroupCreateCompleted(
-                groupId: groupId,
-                password: groupData['password'],
-              ))());
+        'data': json.encode(groupData),
+        'img': selectedImage,
+      }))
+          .then((groupId) {
+        toOtherPage(
+          context,
+          page: GroupCreateCompleted(
+            groupId: groupId,
+            password: groupData['password'],
+          ),
+        )();
+      });
     }
   }
 
@@ -78,11 +101,17 @@ class _GroupFormState extends State<GroupForm> {
     });
   }
 
+  String selectedDate() {
+    final start = groupData['start'];
+    final end = groupData['end'];
+    if (start != '' && end != '') {
+      return '$start ~ $end';
+    }
+    return '기간을 선택해주세요';
+  }
+
   @override
   Widget build(BuildContext context) {
-    // void datePicker() {
-    // }
-
     return Scaffold(
         resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
@@ -99,62 +128,90 @@ class _GroupFormState extends State<GroupForm> {
                   fontSize: FontSize.titleSize,
                 ),
               ),
-              const CustomInput(title: '그룹명 *', explain: '그룹명을 입력하세요'),
-              const CustomInput(
-                  title: '참여인원 *', explain: '참여인원', onlyNum: true),
-              const InputDate(title: '기간 *', explain: '기간'),
+              CustomInput(
+                title: '그룹명 *',
+                explain: '그룹명을 입력하세요',
+                setValue: setGroupData(context, 'groupName'),
+              ),
+              CustomInput(
+                title: '참여인원 *',
+                explain: '참여인원',
+                onlyNum: true,
+                setValue: setGroupData(context, 'headCount'),
+              ),
+              InputDate(
+                title: '기간 *',
+                explain: selectedDate(),
+                onSubmit: setGroupData,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   const CustomText(content: '빙고 크기 *'),
-                  SelectBox(selectList: bingoSize, width: 60, height: 50),
+                  SelectBox(
+                    selectList: bingoSize,
+                    valueList: const [2, 3, 4, 5],
+                    width: 60,
+                    height: 50,
+                    setValue: setGroupData(context, 'size'),
+                  ),
                 ],
               ),
               const CustomText(content: '그룹 가입 시 자동 승인 여부 *'),
-              SelectBox(selectList: joinMethod, width: 150, height: 50),
+              SelectBox(
+                selectList: joinMethod,
+                valueList: const [true, false],
+                width: 150,
+                height: 50,
+                setValue: setGroupData(context, 'needAuth'),
+              ),
               CustomCheckBox(
                 label: '공개 여부 *',
                 value: isChecked,
-                onChange: (value) {
+                onChange: (_) {
                   setState(() {
                     isChecked = !isChecked;
                   });
+                  setGroupData(context, 'isPublic')(isChecked);
                 },
               ),
               !isChecked
-                  ? Column(
-                      children: const [
-                        CustomInput(
-                          title: '그룹 가입 시 비밀번호 *',
-                          explain: '비밀번호',
-                          maxLength: 20,
-                        ),
-                      ],
+                  ? CustomInput(
+                      title: '그룹 가입 시 비밀번호 *',
+                      explain: '비밀번호',
+                      maxLength: 20,
+                      setValue: setGroupData(context, 'headCount'),
                     )
                   : const SizedBox(),
-              const CustomInput(
+              CustomInput(
                 title: '그룹 설명',
                 needMore: true,
                 maxLength: 1000,
+                setValue: setGroupData(context, 'description'),
               ),
-              const CustomInput(
+              CustomInput(
                 title: '그룹 규칙',
                 needMore: true,
                 maxLength: 1000,
+                setValue: setGroupData(context, 'rule'),
               ),
               const CustomText(content: '그룹 배경'),
               GestureDetector(
-                onTap: showModal(context,
-                    page: ImageModal(
-                      image: selectedImage,
-                      imagePicker: imagePicker,
-                      deleteImage: deleteImage,
-                    )),
+                onTap: showModal(
+                  context,
+                  page: ImageModal(
+                    image: selectedImage,
+                    imagePicker: imagePicker,
+                    deleteImage: deleteImage,
+                  ),
+                ),
                 child: selectedImage == null
-                    ? const CustomInput(
-                        explain: '그룹 이미지를 선택하세요',
-                        needMore: true,
-                        enabled: false,
+                    ? const CustomBoxContainer(
+                        borderColor: greyColor,
+                        hasRoundEdge: false,
+                        width: 270,
+                        height: 150,
+                        child: CustomText(content: '이미지를 선택해주세요'),
                       )
                     : CustomBoxContainer(
                         image: DecorationImage(

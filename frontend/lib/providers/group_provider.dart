@@ -45,13 +45,22 @@ class GroupProvider extends ApiProvider {
     try {
       print('groupId: $groupId, password: $password');
       print(groupDetailUrl(groupId));
-      final response = await createApi(groupDetailUrl(groupId),
-          data: {'password': password});
-
+      final response = await dioWithToken().get(
+        groupDetailUrl(groupId),
+        queryParameters: {'password': password},
+      );
       print('response: $response');
-      // if (response.statusCode == 200) {
-      //   return GroupDetailModel.fromJson(response.data);
-      // }
+      switch (response.statusCode) {
+        case 200:
+          return GroupDetailModel.fromJson(response.data);
+        case 401:
+          //* 토큰 리프레시
+          final token = await tokenRefresh();
+          break;
+        default:
+          throw Error();
+      }
+
       throw Error();
     } catch (error) {
       print(error);

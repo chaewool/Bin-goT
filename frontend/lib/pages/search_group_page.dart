@@ -33,10 +33,16 @@ class _SearchGroupState extends State<SearchGroup> {
       body: SingleChildScrollView(
         child: Column(children: [
           const SearchBar(),
-          const RowWithPadding(
+          RowWithPadding(
             horizontal: 25,
             children: [
-              SelectBox(selectList: dateFilter, width: 100, height: 50),
+              SelectBox(
+                selectList: dateFilter,
+                valueList: const [],
+                width: 100,
+                height: 50,
+                setValue: (p0) {},
+              ),
             ],
           ),
           FutureBuilder(

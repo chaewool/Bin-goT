@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-class CustomInput extends StatelessWidget {
+class CustomInput extends StatefulWidget {
   final String? explain;
   final bool needMore, onlyNum, enabled;
   final double? width, height;
@@ -15,48 +15,79 @@ class CustomInput extends StatelessWidget {
   final FontSize fontSize;
   final int? maxLength;
   final String title;
+  final void Function(dynamic) setValue;
 
-  const CustomInput({
-    super.key,
-    this.explain,
-    this.needMore = false,
-    this.onlyNum = false,
-    this.enabled = true,
-    this.width,
-    this.height,
-    this.filled = false,
-    this.filledColor = whiteColor,
-    this.fontSize = FontSize.smallSize,
-    this.maxLength,
-    this.title = '',
-  });
+  const CustomInput(
+      {super.key,
+      this.explain,
+      this.needMore = false,
+      this.onlyNum = false,
+      this.enabled = true,
+      this.width,
+      this.height,
+      this.filled = false,
+      this.filledColor = whiteColor,
+      this.fontSize = FontSize.smallSize,
+      this.maxLength,
+      this.title = '',
+      required this.setValue});
+
+  @override
+  State<CustomInput> createState() => _CustomInputState();
+}
+
+class _CustomInputState extends State<CustomInput> {
+  FocusNode inputFocus = FocusNode();
+  String inputValue = '';
+  @override
+  void initState() {
+    super.initState();
+    focusListener();
+  }
+
+  void focusListener() {
+    inputFocus.addListener(() {
+      if (!inputFocus.hasFocus) {
+        widget.setValue(inputValue);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CustomText(content: title),
+        CustomText(content: widget.title),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           child: SizedBox(
-            width: width,
-            height: height,
+            width: widget.width,
+            height: widget.height,
             child: TextField(
               decoration: InputDecoration(
-                filled: filled,
-                fillColor: filledColor,
+                filled: widget.filled,
+                fillColor: widget.filledColor,
                 border: const OutlineInputBorder(),
-                hintText: explain,
+                hintText: widget.explain,
               ),
-              maxLength: maxLength,
-              style: TextStyle(fontSize: convertedFontSize(fontSize)),
-              maxLines: needMore ? 7 : 1,
-              keyboardType: onlyNum ? TextInputType.number : null,
-              inputFormatters:
-                  onlyNum ? [FilteringTextInputFormatter.digitsOnly] : null,
-              enabled: enabled,
+              maxLength: widget.maxLength,
+              style: TextStyle(fontSize: convertedFontSize(widget.fontSize)),
+              maxLines: widget.needMore ? 7 : 1,
+              keyboardType: widget.onlyNum ? TextInputType.number : null,
+              inputFormatters: widget.onlyNum
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
+              enabled: widget.enabled,
               textAlign: TextAlign.start,
               textAlignVertical: TextAlignVertical.center,
+              onChanged: (value) {
+                setState(() {
+                  inputValue = value;
+                });
+              },
+              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              textInputAction: TextInputAction.next,
+              focusNode: inputFocus,
             ),
           ),
         ),
@@ -67,10 +98,12 @@ class CustomInput extends StatelessWidget {
 
 class InputDate extends StatelessWidget {
   final String explain, title;
+  final Function(BuildContext, String) onSubmit;
   const InputDate({
     super.key,
     required this.explain,
     required this.title,
+    required this.onSubmit,
   });
 
   @override
@@ -86,6 +119,22 @@ class InputDate extends StatelessWidget {
             child: SfDateRangePicker(
               minDate: now,
               maxDate: now.add(const Duration(days: 365)),
+              enablePastDates: false,
+              showActionButtons: true,
+              selectionMode: DateRangePickerSelectionMode.range,
+              onCancel: toBack(context),
+              onSubmit: (pickedDate) {
+                final start = (pickedDate as PickerDateRange)
+                    .startDate
+                    ?.toString()
+                    .split(' ')[0];
+                final end = pickedDate.endDate?.toString().split(' ')[0];
+                if (start != null && end != null) {
+                  onSubmit(context, 'start')(start);
+                  onSubmit(context, 'end')(end);
+                  toBack(context)();
+                }
+              },
             ),
           ),
         ),
@@ -118,6 +167,7 @@ class InputDate extends StatelessWidget {
         child: CustomInput(
           explain: explain,
           enabled: false,
+          setValue: (value) {},
         ),
       ),
     ]);

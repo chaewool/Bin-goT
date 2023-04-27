@@ -82,10 +82,11 @@ class _BingoModalState extends State<BingoModal> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             CustomText(content: '${widget.index + 1}/${widget.cnt}'),
-            const CustomInput(
+            CustomInput(
               width: 200,
               height: 50,
               explain: '제목',
+              setValue: (p0) {},
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -98,6 +99,7 @@ class _BingoModalState extends State<BingoModal> {
                   height: 200,
                   enabled: !widget.isDetail,
                   fontSize: FontSize.textSize,
+                  setValue: (p0) {},
                 ),
                 CustomIconButton(onPressed: moveBingo(true), icon: rightIcon)
               ],
@@ -111,12 +113,13 @@ class _BingoModalState extends State<BingoModal> {
                   value: isChecked,
                 ),
                 isChecked
-                    ? const CustomBoxContainer(
+                    ? CustomBoxContainer(
                         child: CustomInput(
                           width: 100,
                           height: 40,
                           onlyNum: true,
                           explain: '숫자 입력',
+                          setValue: (p0) {},
                         ),
                       )
                     : const SizedBox(),
@@ -407,10 +410,11 @@ class InputModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(title: title, children: const [
+    return CustomModal(title: title, children: [
       CustomInput(
         explain: '닉네임을 입력해주세요',
         maxLength: 20,
+        setValue: (p0) {},
       ),
     ]);
   }

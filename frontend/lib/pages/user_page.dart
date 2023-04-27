@@ -1,3 +1,4 @@
+import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -159,9 +160,10 @@ class _MyPageState extends State<MyPage> {
         Row(
           children: isEditMode
               ? [
-                  const CustomInput(
+                  CustomInput(
                     width: 150,
                     height: 30,
+                    setValue: (p0) {},
                   ),
                   IconButtonInRow(
                     icon: confirmIcon,
@@ -205,7 +207,7 @@ class Help extends StatelessWidget {
     StringList questionList = [
       '그룹은 어떻게 만드나요?',
       '빙고는 어떻게 생성하나요?',
-      '그룹 초대는 어떻게 하나요?'
+      '그룹 초대는 어떻게 하나요?',
     ];
     StringList answerList = ['이렇게 만듭니다', '저렇게 생성합니다', '그렇게 합니다'];
     return Scaffold(
@@ -220,6 +222,16 @@ class Help extends StatelessWidget {
               question: 'Q. ${questionList[i]}',
               answer: 'A. ${answerList[i]}',
             ),
+          CustomButton(
+            onPressed: showModal(
+              context,
+              page: CustomModal(
+                children: const [CustomText(content: '정말 탈퇴하시겠어요?')],
+                onPressed: () async => await UserProvider().exitService(),
+              ),
+            ),
+            content: '회원 탈퇴',
+          )
         ],
       )),
     );

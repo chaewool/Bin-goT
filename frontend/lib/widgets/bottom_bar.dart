@@ -97,11 +97,12 @@ class GroupChatBottomBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Flexible(child: CustomIconButton(onPressed: () {}, icon: addIcon)),
-          const Flexible(
+          Flexible(
             flex: 5,
             child: CustomInput(
               filled: true,
               explain: '내용을 입력하세요',
+              setValue: (p0) {},
             ),
           ),
           Flexible(child: CustomIconButton(onPressed: () {}, icon: sendIcon)),

@@ -81,9 +81,12 @@ class _BingoFormState extends State<BingoForm> {
         horizontal: 10,
         vertical: 5,
         children: [
-          const Flexible(
+          Flexible(
             flex: 2,
-            child: CustomInput(explain: '빙고 이름'),
+            child: CustomInput(
+              explain: '빙고 이름',
+              setValue: (p0) {},
+            ),
           ),
           Flexible(
             flex: 6,

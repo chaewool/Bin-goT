@@ -1,4 +1,8 @@
+import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 // const List<String> period = <String>[
@@ -13,48 +17,40 @@ const StringList sort = <String>['모집 중', '전체'];
 
 const StringList publicFilter = <String>['공개', '비공개', '전체'];
 
-class SelectBox extends StatefulWidget {
-  final StringList selectList;
+class SelectBox extends StatelessWidget {
   final double width, height;
-  const SelectBox(
-      {super.key,
-      required this.selectList,
-      required this.width,
-      required this.height});
+  final void Function(dynamic) setValue;
+  final dynamic value;
+  final String selected;
 
-  @override
-  State<SelectBox> createState() => _SelectBox();
-}
-
-class _SelectBox extends State<SelectBox> {
-  late String dropdownValue;
-  @override
-  void initState() {
-    super.initState();
-    dropdownValue = widget.selectList.first;
-  }
+  const SelectBox({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.setValue,
+    required this.selected,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.width,
-      height: widget.height,
-      child: DropdownButton<String>(
-        value: dropdownValue,
-        icon: const Icon(Icons.arrow_drop_down),
-        elevation: 16,
-        style: const TextStyle(color: Colors.black),
-        onChanged: (String? value) {
-          setState(() {
-            dropdownValue = value!;
-          });
-        },
-        items: widget.selectList.map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
+    return CustomBoxContainer(
+      onTap: setValue(selected),
+      width: width,
+      height: height,
+      color: whiteColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CustomText(
+              content: value,
+              fontSize: FontSize.smallSize,
+            ),
+            const CustomIcon(icon: toDownIcon)
+          ],
+        ),
       ),
     );
   }

@@ -37,7 +37,13 @@ class SearchBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const SelectBox(selectList: period, width: 150, height: 50),
+              SelectBox(
+                selectList: period,
+                valueList: const [],
+                width: 150,
+                height: 50,
+                setValue: (p0) {},
+              ),
               CustomButton(
                 onPressed: toOtherPage(context, page: const SearchGroup()),
                 content: '검색',
