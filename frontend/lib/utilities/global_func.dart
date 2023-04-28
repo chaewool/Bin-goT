@@ -10,8 +10,8 @@ import 'package:provider/provider.dart';
 //* 공유 템플릿
 final FeedTemplate defaultFeed = FeedTemplate(
   content: Content(
-    title: '딸기 치즈 케익',
-    description: '#케익 #딸기 #삼평동 #카페 #분위기 #소개팅',
+    title: 'Bin:goT 그룹 초대 메시지',
+    description: '그룹 초대가 왔어요!!',
     imageUrl: Uri.parse(
         'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
     link: Link(
@@ -19,7 +19,7 @@ final FeedTemplate defaultFeed = FeedTemplate(
         mobileWebUrl: Uri.parse('https://developers.kakao.com')),
   ),
   itemContent: ItemContent(
-    profileText: 'Kakao',
+    profileText: '그룹 이름',
     profileImageUrl: Uri.parse(
         'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
     titleImageUrl: Uri.parse(
@@ -55,6 +55,15 @@ final FeedTemplate defaultFeed = FeedTemplate(
   ],
 );
 
+final TextTemplate defaultText = TextTemplate(
+  text:
+      '카카오톡 공유는 카카오 플랫폼 서비스의 대표 기능으로써 사용자의 모바일 기기에 설치된 카카오 플랫폼과 연동하여 다양한 기능을 실행할 수 있습니다.\n현재 이용할 수 있는 카카오톡 공유는 다음과 같습니다.\n카카오톡링크\n카카오톡을 실행하여 사용자가 선택한 채팅방으로 메시지를 전송합니다.\n카카오스토리링크\n카카오스토리 글쓰기 화면으로 연결합니다.',
+  link: Link(
+    webUrl: Uri.parse('https: //developers.kakao.com'),
+    mobileWebUrl: Uri.parse('https: //developers.kakao.com'),
+  ),
+);
+
 //* 공유
 void shareToFriends() async {
   bool isKakaoTalkSharingAvailable =
@@ -62,7 +71,7 @@ void shareToFriends() async {
 
   if (isKakaoTalkSharingAvailable) {
     try {
-      Uri uri = await ShareClient.instance.shareDefault(template: defaultFeed);
+      Uri uri = await ShareClient.instance.shareDefault(template: defaultText);
       await ShareClient.instance.launchKakaoTalk(uri);
       print('카카오톡 공유 완료');
     } catch (error) {
@@ -71,7 +80,7 @@ void shareToFriends() async {
   } else {
     try {
       Uri shareUrl =
-          await WebSharerClient.instance.makeDefaultUrl(template: defaultFeed);
+          await WebSharerClient.instance.makeDefaultUrl(template: defaultText);
       await launchBrowserTab(shareUrl, popupOpen: true);
     } catch (error) {
       print('카카오톡 공유 실패 $error');

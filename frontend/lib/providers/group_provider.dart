@@ -76,14 +76,18 @@ class GroupProvider extends ApiProvider {
   //* create
   FutureInt createOwnGroup(FormData groupData) async {
     try {
-      final dioWithForm = dioWithToken();
-      dioWithForm.options.contentType = 'multipart/form-data';
-      final response = await dioWithForm.post(createGroupUrl, data: groupData);
+      print(groupData);
+      // final dioWithForm = dioWithToken();
+      // dioWithForm.options.contentType  = 'multipart/form-data';
+      final response =
+          await dioWithToken().post(createGroupUrl, data: groupData);
+      print(response);
       if (response.statusCode == 200) {
         return response.data.groupId;
       }
       throw Error();
     } catch (error) {
+      print(error);
       throw Error();
     }
   }
@@ -94,8 +98,22 @@ class GroupProvider extends ApiProvider {
   }
 
   //* update
-  FutureVoid editOwnGroup(int groupId, DynamicMap groupData) async {
-    updateApi(editGroupUrl(groupId), data: groupData);
+  FutureVoid editOwnGroup(int groupId, FormData groupData) async {
+    try {
+      print(groupData);
+      // final dioWithForm = dioWithToken();
+      // dioWithForm.options.contentType  = 'multipart/form-data';
+      final response =
+          await dioWithToken().put(editGroupUrl(groupId), data: groupData);
+      print(response);
+      if (response.statusCode == 200) {
+        return response.data.groupId;
+      }
+      throw Error();
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
   }
 
   //* delete

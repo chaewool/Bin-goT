@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:bin_got/pages/group_main_page.dart';
@@ -14,7 +13,6 @@ import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
-import 'package:bin_got/widgets/select_box.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -36,18 +34,28 @@ class _GroupFormState extends State<GroupForm> {
 
   XFile? selectedImage;
   bool isChecked = true;
-  final Map<String, dynamic> groupData = {
-    'groupName': '',
-    'start': '',
-    'end': '',
-    'size': 0,
-    'isPublic': true,
-    'password': '',
-    'description': '',
-    'rule': '',
-    'needAuth': true,
-    'headCount': 0
-  };
+  @override
+  void initState() {
+    super.initState();
+    if (widget.groupId == null) {
+      groupData = {
+        'groupname': '',
+        'start': '',
+        'end': '',
+        'size': 2, // 0
+        'is_public': true,
+        'password': '',
+        'description': '',
+        'rule': '',
+        'need_auth': false, // true
+        'headcount': 0
+      };
+    } else {
+      groupData = {};
+    }
+  }
+
+  late final Map<String, dynamic> groupData;
 
   void Function(dynamic) setGroupData(BuildContext context, String key) {
     return (value) => groupData[key] = value;
@@ -57,19 +65,21 @@ class _GroupFormState extends State<GroupForm> {
   //   setGroupData(context, key)(value);
   // }
 
-  void createGroup() async {
-    if (groupData['groupName'].length < 3) {
+  void createOrUpdate() async {
+    groupData['headcount'] = int.parse(groupData['headcount']);
+    if (groupData['groupname'].length < 3) {
       showAlert(context, title: '그룹명 오류', content: '그룹명을 3자 이상으로 입력해주세요.')();
     } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
       showAlert(context,
           title: '인원 수 오류', content: '인원 수는 1명 이상 30명 이하로 입력해주세요.')();
-    } else if (!groupData['isPublic'] && groupData['password'].length < 4) {
+    } else if (!groupData['is_public'] && groupData['password'].length < 4) {
       showAlert(context,
           title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
-    } else {
+    } else if (widget.groupId == null) {
+      print(groupData);
       GroupProvider()
           .createOwnGroup(FormData.fromMap({
-        'data': json.encode(groupData),
+        'data': groupData,
         'img': selectedImage,
       }))
           .then((groupId) {
@@ -80,6 +90,18 @@ class _GroupFormState extends State<GroupForm> {
             password: groupData['password'],
           ),
         )();
+      });
+    } else {
+      print(groupData);
+      GroupProvider()
+          .editOwnGroup(
+              widget.groupId!,
+              FormData.fromMap({
+                'data': groupData,
+                'img': selectedImage,
+              }))
+          .then((groupId) {
+        toBack(context)();
       });
     }
   }
@@ -131,13 +153,13 @@ class _GroupFormState extends State<GroupForm> {
               CustomInput(
                 title: '그룹명 *',
                 explain: '그룹명을 입력하세요',
-                setValue: setGroupData(context, 'groupName'),
+                setValue: setGroupData(context, 'groupname'),
               ),
               CustomInput(
                 title: '참여인원 *',
                 explain: '참여인원',
                 onlyNum: true,
-                setValue: setGroupData(context, 'headCount'),
+                setValue: setGroupData(context, 'headcount'),
               ),
               InputDate(
                 title: '기간 *',
@@ -146,25 +168,25 @@ class _GroupFormState extends State<GroupForm> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const CustomText(content: '빙고 크기 *'),
-                  SelectBox(
-                    selectList: bingoSize,
-                    valueList: const [2, 3, 4, 5],
-                    width: 60,
-                    height: 50,
-                    setValue: setGroupData(context, 'size'),
-                  ),
+                children: const [
+                  CustomText(content: '빙고 크기 *'),
+                  // SelectBox(
+                  //   selectList: bingoSize,
+                  //   valueList: const [2, 3, 4, 5],
+                  //   width: 60,
+                  //   height: 50,
+                  //   setValue: setGroupData(context, 'size'),
+                  // ),
                 ],
               ),
               const CustomText(content: '그룹 가입 시 자동 승인 여부 *'),
-              SelectBox(
-                selectList: joinMethod,
-                valueList: const [true, false],
-                width: 150,
-                height: 50,
-                setValue: setGroupData(context, 'needAuth'),
-              ),
+              // SelectBox(
+              //   selectList: joinMethod,
+              //   valueList: const [true, false],
+              //   width: 150,
+              //   height: 50,
+              //   setValue: setGroupData(context, 'needAuth'),
+              // ),
               CustomCheckBox(
                 label: '공개 여부 *',
                 value: isChecked,
@@ -172,7 +194,7 @@ class _GroupFormState extends State<GroupForm> {
                   setState(() {
                     isChecked = !isChecked;
                   });
-                  setGroupData(context, 'isPublic')(isChecked);
+                  setGroupData(context, 'is_public')(isChecked);
                 },
               ),
               !isChecked
@@ -180,7 +202,7 @@ class _GroupFormState extends State<GroupForm> {
                       title: '그룹 가입 시 비밀번호 *',
                       explain: '비밀번호',
                       maxLength: 20,
-                      setValue: setGroupData(context, 'headCount'),
+                      setValue: setGroupData(context, 'password'),
                     )
                   : const SizedBox(),
               CustomInput(
@@ -223,7 +245,7 @@ class _GroupFormState extends State<GroupForm> {
             ],
           ),
         ),
-        bottomNavigationBar: FormBottomBar(createGroup: createGroup));
+        bottomNavigationBar: FormBottomBar(createOrUpdate: createOrUpdate));
   }
 }
 

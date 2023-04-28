@@ -63,8 +63,8 @@ class BottomBar extends StatelessWidget {
 
 //* 그룹 생성 페이지 하단 버튼
 class FormBottomBar extends StatelessWidget {
-  final ReturnVoid createGroup;
-  const FormBottomBar({super.key, required this.createGroup});
+  final ReturnVoid createOrUpdate;
+  const FormBottomBar({super.key, required this.createOrUpdate});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class FormBottomBar extends StatelessWidget {
         children: [
           CustomButton(onPressed: toBack(context), content: '취소'),
           CustomButton(
-            onPressed: createGroup,
+            onPressed: createOrUpdate,
             content: '완료',
           )
         ],

@@ -91,7 +91,7 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
         IconButtonInRow(
           onPressed: toOtherPage(
             context,
-            page: const GroupForm(),
+            page: GroupForm(),
           ),
           icon: createGroupIcon,
         )
@@ -154,8 +154,7 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
     return AppBarWithBack(
       actions: [
         IconButtonInRow(
-            icon: editIcon,
-            onPressed: toOtherPage(context, page: const GroupForm())),
+            icon: editIcon, onPressed: toOtherPage(context, page: GroupForm())),
         IconButtonInRow(
             icon: deleteIcon,
             onPressed: showAlert(

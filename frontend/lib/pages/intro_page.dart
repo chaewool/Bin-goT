@@ -1,3 +1,4 @@
+import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
@@ -85,7 +86,7 @@ class _IntroState extends State<Intro> {
     verifyToken();
     afterFewSec(4, () {
       if (!showLoginBtn) {
-        toOtherPage(context, page: const Main())();
+        toOtherPage(context, page: const GroupCreateCompleted(groupId: 3))();
       }
     });
   }
