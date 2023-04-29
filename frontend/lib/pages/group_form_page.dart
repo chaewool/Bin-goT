@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/group_create_completed.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
@@ -11,12 +11,11 @@ import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/input.dart';
-import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
+import 'package:bin_got/widgets/select_box.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 //* 그룹 생성/수정 페이지
@@ -29,11 +28,22 @@ class GroupForm extends StatefulWidget {
 }
 
 class _GroupFormState extends State<GroupForm> {
-  final StringList bingoSize = ['2 * 2', '3 * 3', '4 * 4', '5 * 5'];
-  final StringList joinMethod = ['그룹장의 승인 필요', '자동 가입'];
+  //* select box
+  final labelList = ['빙고 크기 *', '그룹 가입 시 자동 승인 여부'];
+  final printedValues = [
+    ['2 * 2', '3 * 3', '4 * 4', '5 * 5'],
+    ['그룹장의 승인 필요', '자동 가입']
+  ];
+  final convertedValues = [
+    [2, 3, 4, 5],
+    [true, false]
+  ];
+  final List<dynamic> selectedIndex = [0, 0];
 
   XFile? selectedImage;
   bool isChecked = true;
+  BoolList showList = [false, false];
+
   @override
   void initState() {
     super.initState();
@@ -42,12 +52,12 @@ class _GroupFormState extends State<GroupForm> {
         'groupname': '',
         'start': '',
         'end': '',
-        'size': 2, // 0
+        'size': 0, // 0
         'is_public': true,
         'password': '',
         'description': '',
         'rule': '',
-        'need_auth': false, // true
+        'need_auth': true, // true
         'headcount': 0
       };
     } else {
@@ -61,12 +71,34 @@ class _GroupFormState extends State<GroupForm> {
     return (value) => groupData[key] = value;
   }
 
-  // void changeSelected(String key, dynamic value) {
-  //   setGroupData(context, key)(value);
-  // }
+  void changeShowState(int index) {
+    print(index);
+    print(showList);
+    setState(() {
+      if (!showList[index]) {
+        showList[index] = true;
+      } else {
+        showList[index] = false;
+      }
+    });
+  }
+
+  void changeSelected({
+    required int index,
+    required int listItemIndex,
+    required String key,
+  }) {
+    setState(() {
+      selectedIndex[index] = listItemIndex;
+      changeShowState(index);
+      setGroupData(context, key)(convertedValues[index][listItemIndex]);
+    });
+  }
 
   void createOrUpdate() async {
-    groupData['headcount'] = int.parse(groupData['headcount']);
+    if (groupData['headcount'].runtimeType != int) {
+      groupData['headcount'] = int.parse(groupData['headcount']);
+    }
     if (groupData['groupname'].length < 3) {
       showAlert(context, title: '그룹명 오류', content: '그룹명을 3자 이상으로 입력해주세요.')();
     } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
@@ -166,27 +198,31 @@ class _GroupFormState extends State<GroupForm> {
                 explain: selectedDate(),
                 onSubmit: setGroupData,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
-                  CustomText(content: '빙고 크기 *'),
-                  // SelectBox(
-                  //   selectList: bingoSize,
-                  //   valueList: const [2, 3, 4, 5],
-                  //   width: 60,
-                  //   height: 50,
-                  //   setValue: setGroupData(context, 'size'),
-                  // ),
-                ],
-              ),
-              const CustomText(content: '그룹 가입 시 자동 승인 여부 *'),
-              // SelectBox(
-              //   selectList: joinMethod,
-              //   valueList: const [true, false],
-              //   width: 150,
-              //   height: 50,
-              //   setValue: setGroupData(context, 'needAuth'),
-              // ),
+              for (int i = 0; i < 2; i += 1)
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    CustomText(content: labelList[i]),
+                    Stack(
+                      children: [
+                        SelectBox(
+                          value: printedValues[i][selectedIndex[i]],
+                          width: 60,
+                          height: 50,
+                          onTap: () => changeShowState(i),
+                        ),
+                        showList[i]
+                            ? sortList(
+                                listItems: printedValues[i],
+                                valueItems: convertedValues[i],
+                                index: i,
+                                key: i == 0 ? 'size' : 'need_auth',
+                              )
+                            : const SizedBox(),
+                      ],
+                    )
+                  ],
+                ),
               CustomCheckBox(
                 label: '공개 여부 *',
                 value: isChecked,
@@ -218,110 +254,82 @@ class _GroupFormState extends State<GroupForm> {
                 setValue: setGroupData(context, 'rule'),
               ),
               const CustomText(content: '그룹 배경'),
-              GestureDetector(
-                onTap: showModal(
-                  context,
-                  page: ImageModal(
-                    image: selectedImage,
-                    imagePicker: imagePicker,
-                    deleteImage: deleteImage,
-                  ),
-                ),
-                child: selectedImage == null
-                    ? const CustomBoxContainer(
-                        borderColor: greyColor,
-                        hasRoundEdge: false,
-                        width: 270,
-                        height: 150,
-                        child: CustomText(content: '이미지를 선택해주세요'),
-                      )
-                    : CustomBoxContainer(
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: FileImage(File(selectedImage!.path)),
-                        ),
-                      ),
-              ),
+              groupImage(),
             ],
           ),
         ),
         bottomNavigationBar: FormBottomBar(createOrUpdate: createOrUpdate));
   }
-}
 
-//* 그룹 생성 완료 페이지
-class GroupCreateCompleted extends StatelessWidget {
-  final bool isPublic;
-  final String password;
-  final int groupId;
-  const GroupCreateCompleted({
-    super.key,
-    this.isPublic = true,
-    this.password = '',
-    required this.groupId,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    String privateInvitation = isPublic ? '' : '비밀번호 : $password';
-    String message =
-        'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요\n $privateInvitation';
-    void copyText() {
-      Clipboard.setData(ClipboardData(text: message));
-    }
-
-    return Scaffold(
-      body: ColWithPadding(
-        vertical: 60,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+  Padding sortList({
+    required List listItems,
+    required List valueItems,
+    required int index,
+    required String key,
+  }) {
+    final length = listItems.length;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const CustomText(
-            content: '그룹이\n생성되었습니다',
-            fontSize: FontSize.titleSize,
-            center: true,
-          ),
-          const CustomText(
-            content: '친구들을\n초대해보세요',
-            fontSize: FontSize.largeSize,
-            center: true,
-          ),
           CustomBoxContainer(
-            width: 200,
-            height: 200,
-            borderColor: blackColor,
-            child: Center(
-              child: CustomText(
-                content: message,
-                center: true,
-                height: 1.7,
-              ),
+            hasRoundEdge: false,
+            width: 150,
+            color: whiteColor,
+            boxShadow: const [defaultShadow],
+            child: Column(
+              children: [
+                for (int i = 0; i < length; i += 1)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: CustomBoxContainer(
+                      onTap: () => changeSelected(
+                        index: index,
+                        listItemIndex: i,
+                        key: key,
+                      ),
+                      width: 150,
+                      child: Center(
+                        child: CustomText(
+                          content: listItems[i],
+                          fontSize: FontSize.smallSize,
+                        ),
+                      ),
+                    ),
+                  )
+              ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const IconButtonInRow(
-                onPressed: shareToFriends,
-                icon: shareIcon,
-              ),
-              IconButtonInRow(
-                onPressed: copyText,
-                icon: copyIcon,
-              ),
-            ],
-          ),
-          CustomButton(
-            content: '생성된 그룹으로 가기',
-            onPressed: toOtherPage(
-              context,
-              page: GroupMain(
-                groupId: groupId,
-                isPublic: isPublic,
-              ),
-            ),
-          )
         ],
       ),
     );
+  }
+
+  CustomBoxContainer groupImage() {
+    return selectedImage == null
+        ? CustomBoxContainer(
+            onTap: imagePicker,
+            borderColor: greyColor,
+            hasRoundEdge: false,
+            width: 270,
+            height: 150,
+            child: CustomIconButton(
+              icon: addIcon,
+              onPressed: imagePicker,
+              color: greyColor,
+            ),
+          )
+        : CustomBoxContainer(
+            onTap: imagePicker,
+            image: DecorationImage(
+              fit: BoxFit.fill,
+              image: FileImage(File(selectedImage!.path)),
+            ),
+            child: CustomIconButton(
+              onPressed: deleteImage,
+              icon: closeIcon,
+            ),
+          );
   }
 }

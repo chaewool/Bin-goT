@@ -1,3 +1,4 @@
+import 'package:bin_got/providers/base_class.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
@@ -55,14 +56,15 @@ final FeedTemplate defaultFeed = FeedTemplate(
   ],
 );
 
-final TextTemplate defaultText = TextTemplate(
-  text:
-      '카카오톡 공유는 카카오 플랫폼 서비스의 대표 기능으로써 사용자의 모바일 기기에 설치된 카카오 플랫폼과 연동하여 다양한 기능을 실행할 수 있습니다.\n현재 이용할 수 있는 카카오톡 공유는 다음과 같습니다.\n카카오톡링크\n카카오톡을 실행하여 사용자가 선택한 채팅방으로 메시지를 전송합니다.\n카카오스토리링크\n카카오스토리 글쓰기 화면으로 연결합니다.',
-  link: Link(
-    webUrl: Uri.parse('https: //developers.kakao.com'),
-    mobileWebUrl: Uri.parse('https: //developers.kakao.com'),
-  ),
-);
+TextTemplate defaultText() {
+  return TextTemplate(
+    text: 'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요',
+    link: Link(
+      webUrl: Uri.parse(UrlClass().groupDetailUrl(3)),
+      mobileWebUrl: Uri.parse(UrlClass().groupDetailUrl(3)),
+    ),
+  );
+}
 
 //* 공유
 void shareToFriends() async {
@@ -71,7 +73,8 @@ void shareToFriends() async {
 
   if (isKakaoTalkSharingAvailable) {
     try {
-      Uri uri = await ShareClient.instance.shareDefault(template: defaultText);
+      Uri uri =
+          await ShareClient.instance.shareDefault(template: defaultText());
       await ShareClient.instance.launchKakaoTalk(uri);
       print('카카오톡 공유 완료');
     } catch (error) {
@@ -79,8 +82,8 @@ void shareToFriends() async {
     }
   } else {
     try {
-      Uri shareUrl =
-          await WebSharerClient.instance.makeDefaultUrl(template: defaultText);
+      Uri shareUrl = await WebSharerClient.instance
+          .makeDefaultUrl(template: defaultText());
       await launchBrowserTab(shareUrl, popupOpen: true);
     } catch (error) {
       print('카카오톡 공유 실패 $error');

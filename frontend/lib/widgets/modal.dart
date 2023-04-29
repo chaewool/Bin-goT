@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -12,7 +10,6 @@ import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 //* 빙고
 class BingoModal extends StatefulWidget {
@@ -149,50 +146,50 @@ class _BingoModalState extends State<BingoModal> {
 // }
 
 //* 이미지
-class ImageModal extends StatefulWidget {
-  final XFile? image;
-  final ReturnVoid imagePicker, deleteImage;
-  const ImageModal({
-    super.key,
-    required this.image,
-    required this.imagePicker,
-    required this.deleteImage,
-  });
+// class ImageModal extends StatefulWidget {
+//   final XFile? image;
+//   final ReturnVoid imagePicker, deleteImage;
+//   const ImageModal({
+//     super.key,
+//     required this.image,
+//     required this.imagePicker,
+//     required this.deleteImage,
+//   });
 
-  @override
-  State<ImageModal> createState() => _ImageModalState();
-}
+//   @override
+//   State<ImageModal> createState() => _ImageModalState();
+// }
 
-class _ImageModalState extends State<ImageModal> {
-  @override
-  Widget build(BuildContext context) {
-    return CustomModal(title: '그룹 이미지 선택', hasConfirm: false, children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: CustomBoxContainer(
-          width: 100,
-          height: 100,
-          borderColor: blackColor,
-          image: widget.image != null
-              ? DecorationImage(
-                  fit: BoxFit.cover,
-                  image: FileImage(File(widget.image!.path)),
-                )
-              : null,
-          child: widget.image == null
-              ? CustomIconButton(
-                  icon: addIcon,
-                  onPressed: widget.imagePicker,
-                )
-              : CustomIconButton(
-                  onPressed: widget.deleteImage,
-                  icon: closeIcon,
-                ),
-        ),
-      ),
-    ]);
-  }
-}
+// class _ImageModalState extends State<ImageModal> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return CustomModal(title: '그룹 이미지 선택', hasConfirm: false, children: [
+//       Padding(
+//         padding: const EdgeInsets.symmetric(vertical: 20),
+//         child: CustomBoxContainer(
+//           width: 100,
+//           height: 100,
+//           borderColor: blackColor,
+//           image: widget.image != null
+//               ? DecorationImage(
+//                   fit: BoxFit.cover,
+//                   image: FileImage(File(widget.image!.path)),
+//                 )
+//               : null,
+//           child: widget.image == null
+//               ? CustomIconButton(
+//                   icon: addIcon,
+//                   onPressed: widget.imagePicker,
+//                 )
+//               : CustomIconButton(
+//                   onPressed: widget.deleteImage,
+//                   icon: closeIcon,
+//                 ),
+//         ),
+//       ),
+//     ]);
+//   }
+// }
 
 //* alert 기본
 class CustomAlert extends StatelessWidget {
