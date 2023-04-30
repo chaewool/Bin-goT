@@ -14,9 +14,14 @@ class GroupCreateSerializer(serializers.ModelSerializer):
 
 
 class GroupDetailSerializer(serializers.ModelSerializer):
+    count = serializers.SerializerMethodField('get_count')
+    
+    def get_count(self, obj):
+        return obj.users.count()
+
     class Meta:
         model = Group
-        exclude = ('id', 'size', 'password', 'period', 'is_public', 'users',)
+        exclude = ('id', 'size', 'password', 'period', 'is_public', 'users')
 
 
 class GroupUpdateSerializer(serializers.ModelSerializer):

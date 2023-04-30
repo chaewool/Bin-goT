@@ -4,12 +4,16 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 from datetime import datetime, date
 import json
+import logging
 
 from commons import upload_image, delete_image, RedisRanker
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer, ChatListSerializer, ReviewListSerializer
 from .models import Group, Participate, Chat, Review
 from boards.models import Board, BoardItem
 from accounts.models import Badge, Achieve
+
+
+logger = logging.getLogger('accounts')
 
 
 def check_cnt_groups(user):
@@ -79,6 +83,9 @@ def check_cnt_boarditems_complete(group_id, review):
 
 class GroupCreateView(APIView):
     def post(self, request):
+        logger.info(f'전달 받은 이미지: {request.FILES.get("img")}')
+        logger.info(f'전달 받은 데이터: {request.data.get("data")}')
+        
         user = request.user
         img = request.FILES.get('img')
         data = json.loads(request.data.get('data'))
@@ -110,6 +117,8 @@ class GroupCreateView(APIView):
         else:
             period = 0
         
+        logger.info(f'정제된 데이터: {data}')
+        
         serializer = GroupCreateSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             if img != None:
@@ -121,6 +130,8 @@ class GroupCreateView(APIView):
             else:
                 group = serializer.save(leader=user, period=period, has_img=False)
         
+        logger.info(f'직렬화 및 그룹 저장 완료: {group}')
+
         if is_public:
             num = [x.rand_name for x in Participate.objects.filter(group=group)]
             rand_name = f'익명의 참여자 {len(num) + 1:0>2}'
@@ -136,6 +147,8 @@ class GroupCreateView(APIView):
         user.save()
         
         check_cnt_groups(user)
+
+        logger.info(f'참여 관계 생성 및 사용자 정보 갱신 완료: {user}')
         
         return Response(data={'group_id': group.id}, status=status.HTTP_200_OK)
 

@@ -13,6 +13,7 @@ from bingot_settings import KAKAO_REST_API_KEY
 from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
 from groups.models import Group
+from boards.models import Board
 from groups.serializers import GroupSearchSerializer
 
 
@@ -193,6 +194,12 @@ class MainView(APIView):
             groups = [d for d in groups if d['count'] < d['headcount']][:20]
 
             is_recommend = True
+        else:
+            for group in groups:
+                if Board.objects.filter(user=user, group=group['id']).exists():
+                    group['has_board'] = True
+                else:
+                    group['has_board'] = False
         
         return Response(data={'groups': groups, 'boards': boards, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
 
