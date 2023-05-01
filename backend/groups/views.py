@@ -84,7 +84,7 @@ def check_cnt_boarditems_complete(group_id, review):
 class GroupCreateView(APIView):
     def post(self, request):
         logger.info(f'전달 받은 이미지: {request.FILES.get("img")}')
-        logger.info(f'전달 받은 데이터: {request.data.get("data")}')
+        logger.info(f'전달 받은 이미지: {type(request.FILES.get("img"))}')
         
         user = request.user
         img = request.FILES.get('img')
@@ -117,8 +117,6 @@ class GroupCreateView(APIView):
         else:
             period = 0
         
-        logger.info(f'정제된 데이터: {data}')
-        
         serializer = GroupCreateSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             if img != None:
@@ -129,8 +127,6 @@ class GroupCreateView(APIView):
                 upload_image(url, img)
             else:
                 group = serializer.save(leader=user, period=period, has_img=False)
-        
-        logger.info(f'직렬화 및 그룹 저장 완료: {group}')
 
         if is_public:
             num = [x.rand_name for x in Participate.objects.filter(group=group)]
@@ -147,8 +143,6 @@ class GroupCreateView(APIView):
         user.save()
         
         check_cnt_groups(user)
-
-        logger.info(f'참여 관계 생성 및 사용자 정보 갱신 완료: {user}')
         
         return Response(data={'group_id': group.id}, status=status.HTTP_200_OK)
 
