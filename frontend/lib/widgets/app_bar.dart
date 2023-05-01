@@ -91,7 +91,7 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
         IconButtonInRow(
           onPressed: toOtherPage(
             context,
-            page: GroupForm(),
+            page: const GroupForm(),
           ),
           icon: createGroupIcon,
         )
@@ -106,11 +106,13 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
 //* group main
 class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
   final bool onlyBack, isMember, isAdmin;
+  final int groupId;
   const GroupAppBar({
     super.key,
     this.onlyBack = false,
     this.isMember = false,
     this.isAdmin = false,
+    required this.groupId,
   });
 
   @override
@@ -122,7 +124,10 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
               isAdmin
                   ? IconButtonInRow(
                       icon: settingsIcon,
-                      onPressed: toOtherPage(context, page: const GroupAdmin()))
+                      onPressed: toOtherPage(context,
+                          page: GroupAdmin(
+                            groupId: groupId,
+                          )))
                   : const SizedBox(),
               isAdmin || isMember
                   ? IconButtonInRow(icon: shareIcon, onPressed: () {})
@@ -151,17 +156,19 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    void onDeleteAction() {}
     return AppBarWithBack(
       actions: [
         IconButtonInRow(
-            icon: editIcon, onPressed: toOtherPage(context, page: GroupForm())),
+            icon: editIcon,
+            onPressed: toOtherPage(context, page: const GroupForm())),
         IconButtonInRow(
             icon: deleteIcon,
             onPressed: showAlert(
               context,
               title: '그룹 삭제',
               content: '그룹을 정말 삭제하시겠습니까?',
-              onPressed: () {},
+              onPressed: onDeleteAction,
             )),
       ],
     );

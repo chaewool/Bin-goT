@@ -1,6 +1,7 @@
 import 'package:bin_got/pages/group_chat_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/pages/user_page.dart';
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -12,9 +13,11 @@ import 'package:flutter/material.dart';
 
 //* 그룹에서의 하단 바
 class BottomBar extends StatelessWidget {
+  final int groupId;
   final bool isMember;
   const BottomBar({
     super.key,
+    required this.groupId,
     required this.isMember,
   });
 
@@ -22,6 +25,26 @@ class BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     const IconDataList bottomBarIcons = [homeIcon, myPageIcon, chatIcon];
     const WidgetList nextPages = [Main(), MyPage(), GroupChat()];
+    void joinGroup() async {
+      try {
+        await GroupProvider().joinGroup(groupId);
+        if (!context.mounted) return;
+        showAlert(
+          context,
+          title: '가입 신청',
+          content: '가입 신청되었습니다.',
+          hasCancel: false,
+        )();
+      } catch (error) {
+        showAlert(
+          context,
+          title: '가입 오류',
+          content: '오류가 발생해 가입이 되지 않았습니다.',
+          hasCancel: false,
+        )();
+      }
+    }
+
     return isMember
         ? BottomNavigationBar(
             showSelectedLabels: false,
@@ -49,12 +72,7 @@ class BottomBar extends StatelessWidget {
               height: 50,
               child: CustomButton(
                 content: '가입 신청하기',
-                onPressed: showAlert(
-                  context,
-                  title: '가입 신청',
-                  content: '가입 신청되었습니다.',
-                  hasCancel: false,
-                ),
+                onPressed: joinGroup,
               ),
             ),
           );

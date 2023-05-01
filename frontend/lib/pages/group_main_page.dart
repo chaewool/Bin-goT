@@ -2,6 +2,8 @@ import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
+import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -15,6 +17,7 @@ import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GroupMain extends StatefulWidget {
   final int groupId;
@@ -33,8 +36,36 @@ class _GroupMainState extends State<GroupMain> {
   @override
   void initState() {
     super.initState();
+    if (getToken(context) != null) {
+      verifyToken();
+    } else {
+      showModal(context,
+          page: const CustomAlert(title: '로그인 확인', content: '로그인이 필요합니다'))();
+    }
+
     if (!widget.isPublic) {
       showModal(context, page: const InputModal(title: '비밀번호 입력'))();
+    }
+  }
+
+  void verifyToken() async {
+    try {
+      await context.read<AuthProvider>().initVar();
+      final result = await UserProvider().confirmToken();
+      if (result.isNotEmpty) {
+        if (!mounted) return;
+        setToken(context, result['token']);
+      } else {
+        if (!mounted) return;
+        showModal(context,
+            page: const CustomAlert(title: '로그인 확인', content: '로그인이 필요합니다'))();
+      }
+    } catch (error) {
+      setState(() {
+        showModal(context,
+            page: const CustomAlert(title: '로그인 확인', content: '로그인이 필요합니다'))();
+      });
+      return;
     }
   }
 
@@ -43,9 +74,11 @@ class _GroupMainState extends State<GroupMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(50),
-        child: GroupAppBar(),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(50),
+        child: GroupAppBar(
+          groupId: widget.groupId,
+        ),
       ),
       body: SingleChildScrollView(
           child: FutureBuilder(
@@ -82,7 +115,10 @@ class _GroupMainState extends State<GroupMain> {
           return const Center(child: CustomText(content: '정보를 불러오는 중입니다'));
         },
       )),
-      bottomNavigationBar: BottomBar(isMember: memberState != 0),
+      bottomNavigationBar: BottomBar(
+        isMember: memberState != 0,
+        groupId: widget.groupId,
+      ),
     );
   }
 
@@ -154,7 +190,10 @@ class _GroupRankState extends State<GroupRank> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const GroupAppBar(onlyBack: true),
+      appBar: GroupAppBar(
+        onlyBack: true,
+        groupId: widget.groupId,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
         child: SingleChildScrollView(
@@ -180,7 +219,10 @@ class _GroupRankState extends State<GroupRank> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomBar(isMember: true),
+      bottomNavigationBar: BottomBar(
+        isMember: true,
+        groupId: widget.groupId,
+      ),
     );
   }
 
@@ -202,15 +244,20 @@ class _GroupRankState extends State<GroupRank> {
 
 //* 그룹 관리 페이지
 class GroupAdmin extends StatelessWidget {
-  const GroupAdmin({super.key});
+  final int groupId;
+  const GroupAdmin({
+    super.key,
+    required this.groupId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: AdminAppBar(),
-      body: GroupAdminTabBar(),
+    return Scaffold(
+      appBar: const AdminAppBar(),
+      body: const GroupAdminTabBar(),
       bottomNavigationBar: BottomBar(
         isMember: true,
+        groupId: groupId,
       ),
     );
   }

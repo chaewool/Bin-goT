@@ -24,60 +24,64 @@ class BingoDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const BingoDetailAppBar(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Flexible(
+        appBar: const BingoDetailAppBar(),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(
+                flex: 2,
+                child:
+                    CustomText(content: title, fontSize: FontSize.titleSize)),
+            Flexible(
               flex: 2,
-              child: CustomText(content: title, fontSize: FontSize.titleSize)),
-          Flexible(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child:
-                  CustomText(content: nickname, fontSize: FontSize.smallSize),
-            ),
-          ),
-          Flexible(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButtonInRow(
-                  onPressed: toOtherPage(context, page: const BingoForm()),
-                  icon: editIcon,
-                ),
-                IconButtonInRow(
-                  onPressed: () {},
-                  icon: deleteIcon,
-                ),
-                const SizedBox(width: 20)
-              ],
-            ),
-          ),
-          Flexible(
-            flex: 6,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: BingoBoard(
-                gap: 1,
-                eachColor: eachColor,
-                isDetail: true,
-                bingoSize: 3,
-                font: font,
-                checkIcon: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child:
+                    CustomText(content: nickname, fontSize: FontSize.smallSize),
               ),
             ),
-          ),
-          Flexible(
-              flex: 2,
-              child: CustomText(
-                  content: '달성률 : $achieve%', fontSize: FontSize.largeSize))
-        ],
-      ),
-      bottomNavigationBar: const BottomBar(isMember: true),
-    );
+            Flexible(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButtonInRow(
+                    onPressed: toOtherPage(context, page: const BingoForm()),
+                    icon: editIcon,
+                  ),
+                  IconButtonInRow(
+                    onPressed: () {},
+                    icon: deleteIcon,
+                  ),
+                  const SizedBox(width: 20)
+                ],
+              ),
+            ),
+            Flexible(
+              flex: 6,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: BingoBoard(
+                  gap: 1,
+                  eachColor: eachColor,
+                  isDetail: true,
+                  bingoSize: 3,
+                  font: font,
+                  checkIcon: 0,
+                ),
+              ),
+            ),
+            Flexible(
+                flex: 2,
+                child: CustomText(
+                    content: '달성률 : $achieve%', fontSize: FontSize.largeSize))
+          ],
+        ),
+        bottomNavigationBar: const BottomBar(
+          isMember: true,
+          groupId: 1,
+        ) // 수정 필요,
+        );
   }
 }

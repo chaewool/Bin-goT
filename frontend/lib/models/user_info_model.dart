@@ -2,14 +2,14 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 
 class MyGroupModel {
   final int id, headCount, count;
-  final int? status;
-  final bool? isPublic;
-  final String name, start, end;
+  final bool? isPublic, hasBingo;
+  final String name, start, end, status;
   MyGroupModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         headCount = json['headcount'],
         count = json['count'],
         isPublic = json['is_public'],
+        hasBingo = json['has_board'],
         name = json['groupname'],
         start = json['start'],
         end = json['end'],

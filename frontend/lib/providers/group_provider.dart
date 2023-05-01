@@ -69,21 +69,18 @@ class GroupProvider extends ApiProvider {
   }
 
   //* join
-  FutureVoid joinGroup(int groupId) async {
-    deliverApi(joinGroupUrl(groupId));
-  }
+  FutureDynamicMap joinGroup(int groupId) async =>
+      deliverApi(joinGroupUrl(groupId));
 
   //* create
   FutureInt createOwnGroup(FormData groupData) async {
     try {
-      print(groupData);
-      // final dioWithForm = dioWithToken();
-      // dioWithForm.options.contentType  = 'multipart/form-data';
-      final response =
-          await dioWithToken().post(createGroupUrl, data: groupData);
+      final dioWithForm = dioWithToken();
+      dioWithForm.options.contentType = 'multipart/form-data';
+      final response = await dioWithForm.post(createGroupUrl, data: groupData);
       print(response);
       if (response.statusCode == 200) {
-        return response.data.groupId;
+        return response.data['group_id'];
       }
       throw Error();
     } catch (error) {

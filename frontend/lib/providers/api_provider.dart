@@ -7,7 +7,7 @@ class ApiProvider extends UrlClass {
   FutureDynamicMap createApi(String url, {required DynamicMap data}) async =>
       _createApi(url, data: data);
 
-  FutureVoid deliverApi(String url) async => _deliverApi(url);
+  FutureDynamicMap deliverApi(String url) async => _deliverApi(url);
 
   FutureVoid updateApi(String url, {required DynamicMap data}) async =>
       _updateApi(url, data: data);

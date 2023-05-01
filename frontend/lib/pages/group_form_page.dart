@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bin_got/pages/group_create_completed.dart';
@@ -17,6 +18,7 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http_parser/http_parser.dart';
 
 //* 그룹 생성/수정 페이지
 class GroupForm extends StatefulWidget {
@@ -108,11 +110,13 @@ class _GroupFormState extends State<GroupForm> {
       showAlert(context,
           title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
     } else if (widget.groupId == null) {
-      print(groupData);
       GroupProvider()
           .createOwnGroup(FormData.fromMap({
-        'data': groupData,
-        'img': selectedImage,
+        'data': jsonEncode(groupData),
+        'img': selectedImage != null
+            ? MultipartFile.fromFileSync(selectedImage!.path,
+                contentType: MediaType('image', 'jpg'))
+            : null,
       }))
           .then((groupId) {
         toOtherPage(
