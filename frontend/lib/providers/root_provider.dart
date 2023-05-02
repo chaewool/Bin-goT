@@ -92,3 +92,25 @@ class NotiProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+//* group data
+class GlobalGroupProvider extends ChangeNotifier {
+  int? _count;
+  String? _start;
+
+  int? get count => _count;
+  String? get start => _start;
+
+  void _setCount(int newVal) => _count = newVal;
+  void _setStart(String newVal) => _start = newVal;
+
+  void setCount(int newVal) {
+    _setCount(newVal);
+    notifyListeners();
+  }
+
+  void setStart(String newVal) {
+    _setStart(newVal);
+    notifyListeners();
+  }
+}

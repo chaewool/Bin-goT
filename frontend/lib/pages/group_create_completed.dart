@@ -52,6 +52,7 @@ class GroupCreateCompleted extends StatelessWidget {
             child: Center(
               child: CustomText(
                 content: message,
+                fontSize: FontSize.smallSize,
                 center: true,
                 height: 1.7,
               ),
@@ -60,8 +61,11 @@ class GroupCreateCompleted extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const IconButtonInRow(
-                onPressed: shareToFriends,
+              IconButtonInRow(
+                onPressed: () => shareToFriends(
+                  groupId: groupId,
+                  password: password,
+                ),
                 icon: shareIcon,
               ),
               IconButtonInRow(

@@ -17,15 +17,18 @@ import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 class GroupMain extends StatefulWidget {
   final int groupId;
   final bool isPublic;
+  final String password;
   const GroupMain({
     super.key,
     required this.groupId,
     required this.isPublic,
+    this.password = '',
   });
 
   @override
@@ -48,6 +51,8 @@ class _GroupMainState extends State<GroupMain> {
     }
   }
 
+  int memberState = 0;
+
   void verifyToken() async {
     try {
       await context.read<AuthProvider>().initVar();
@@ -69,8 +74,6 @@ class _GroupMainState extends State<GroupMain> {
     }
   }
 
-  int memberState = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,20 +81,36 @@ class _GroupMainState extends State<GroupMain> {
         preferredSize: const Size.fromHeight(50),
         child: GroupAppBar(
           groupId: widget.groupId,
+          isMember: memberState != 0,
+          isAdmin: memberState == 2,
         ),
       ),
       body: SingleChildScrollView(
           child: FutureBuilder(
-        future: GroupProvider().readGroupDetail(widget.groupId, ''),
+        future: GroupProvider().readGroupDetail(
+          widget.groupId,
+          widget.password,
+        ),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final GroupDetailModel data = snapshot.data!;
-            memberState = data.memberState;
+            if (memberState != data.memberState) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  memberState = data.memberState;
+                });
+              });
+            }
+            // setMemberState(data.memberState);
             return ColWithPadding(
               vertical: 30,
               horizontal: 30,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                data.hasImage
+                    ? Image.network(
+                        '${dotenv.env['fileUrl']}/groups/${widget.groupId}')
+                    : const SizedBox(),
                 groupHeader(data),
                 const SizedBox(height: 20),
                 data.memberState != 0
@@ -150,12 +169,12 @@ class _GroupMainState extends State<GroupMain> {
               )
             ],
           ),
-          for (int i = 0; i < 3; i += 1)
-            RankListItem(
-              rank: i + 1,
-              rankListItem: data.rank,
-              isMember: memberState != 0,
-            ),
+          // for (int i = 0; i < 3; i += 1)
+          //   RankListItem(
+          //     rank: i + 1,
+          //     rankListItem: data.rank,
+          //     isMember: memberState != 0,
+          //   ),
         ],
       ),
     );
@@ -253,7 +272,9 @@ class GroupAdmin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AdminAppBar(),
+      appBar: AdminAppBar(
+        groupId: groupId,
+      ),
       body: const GroupAdminTabBar(),
       bottomNavigationBar: BottomBar(
         isMember: true,

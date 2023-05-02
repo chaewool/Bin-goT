@@ -8,6 +8,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
@@ -35,35 +36,43 @@ class GroupListItem extends StatelessWidget {
     }
 
     String groupMember = '(${groupInfo.count}/${groupInfo.headCount})';
-    return CustomList(
-      height: 70,
-      boxShadow: [shadowWithOpacity],
-      onTap: toOtherPage(
-        context,
-        page: GroupMain(
-          groupId: groupInfo.id,
-          isPublic: groupInfo.isPublic!,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomText(content: groupInfo.name),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return Stack(
+      alignment: AlignmentDirectional.topEnd,
+      children: [
+        CustomList(
+          height: 70,
+          boxShadow: [shadowWithOpacity],
+          onTap: toOtherPage(
+            context,
+            page: GroupMain(
+              groupId: groupInfo.id,
+              isPublic: groupInfo.isPublic ?? true,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomText(content: showedDif()),
-              const SizedBox(height: 5),
-              isSearchMode
-                  ? CustomText(
-                      content: groupMember,
-                      fontSize: FontSize.smallSize,
-                    )
-                  : const SizedBox(),
+              CustomText(content: groupInfo.name),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomText(content: showedDif()),
+                  const SizedBox(height: 5),
+                  isSearchMode
+                      ? CustomText(
+                          content: groupMember,
+                          fontSize: FontSize.smallSize,
+                        )
+                      : const SizedBox(),
+                ],
+              )
             ],
-          )
-        ],
-      ),
+          ),
+        ),
+        groupInfo.hasBingo == false
+            ? const CustomIcon(icon: alertIcon)
+            : const SizedBox(),
+      ],
     );
   }
 }

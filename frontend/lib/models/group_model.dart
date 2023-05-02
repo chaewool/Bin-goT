@@ -25,12 +25,11 @@ class GroupRankModel {
 }
 
 class GroupDetailModel {
-  final int headCount, count, bingoSize, memberState, bingoId, isLeader;
-  final String groupName, password, nickname;
+  final int headCount, count, bingoSize, memberState, bingoId;
+  final String groupName, nickname, start, end;
   final String? description, rule;
-  final DateTime start, end;
-  final bool isPublic, hasImage, needAuth;
-  final GroupRankModel rank;
+  final bool hasImage, needAuth;
+  // final GroupRankModel rank;
   GroupDetailModel.fromJson(DynamicMap json)
 
       // : id = json['id'],
@@ -42,15 +41,12 @@ class GroupDetailModel {
         count = json['count'],
         start = json['start'],
         end = json['end'],
-        isPublic = json['is_public'],
         description = json['description'],
         rule = json['rule'],
         hasImage = json['has_img'],
-        password = json['password'],
         needAuth = json['need_auth'],
-        memberState = json['is_participant'],
-        isLeader = json['leader'],
-        rank = json['rank'];
+        memberState = json['is_participant'];
+  // rank = json['rank'],
 }
 
 class ChatDetailModel {

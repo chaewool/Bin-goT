@@ -7,7 +7,6 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/date_picker.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/list.dart';
@@ -249,41 +248,43 @@ class _MyTabBarState extends State<MyTabBar> {
       ),
       listItems: [
         [
-          FutureBuilder(
-            future: tabData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final hasNotGroup = snapshot.data!.hasNotGroup;
-                return Column(
-                  children: [
-                    hasNotGroup
-                        ? Column(children: [
-                            const CustomText(
-                              center: true,
-                              content:
-                                  '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                              height: 1.7,
-                            ),
-                            const SizedBox(
-                              height: 70,
-                            ),
-                            GestureDetector(
-                              onTap: toOtherPage(context,
-                                  page: const GroupMain(
-                                      groupId: 1, isPublic: true)),
-                              child: const CustomText(
-                                content: '추천그룹',
-                                fontSize: FontSize.titleSize,
+          SingleChildScrollView(
+            child: FutureBuilder(
+              future: tabData,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final hasNotGroup = snapshot.data!.hasNotGroup;
+                  return Column(
+                    children: [
+                      hasNotGroup
+                          ? Column(children: [
+                              const CustomText(
+                                center: true,
+                                content:
+                                    '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                                height: 1.7,
                               ),
-                            ),
-                          ])
-                        : const SizedBox(),
-                    groupList(snapshot.data!.groups, hasNotGroup)
-                  ],
-                );
-              }
-              return const CustomText(content: '그룹 정보를 불러오는 중입니다');
-            },
+                              const SizedBox(
+                                height: 70,
+                              ),
+                              GestureDetector(
+                                onTap: toOtherPage(context,
+                                    page: const GroupMain(
+                                        groupId: 1, isPublic: true)),
+                                child: const CustomText(
+                                  content: '추천그룹',
+                                  fontSize: FontSize.titleSize,
+                                ),
+                              ),
+                            ])
+                          : const SizedBox(),
+                      groupList(snapshot.data!.groups, hasNotGroup)
+                    ],
+                  );
+                }
+                return const CustomText(content: '그룹 정보를 불러오는 중입니다');
+              },
+            ),
           )
         ],
         [

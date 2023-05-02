@@ -1,4 +1,3 @@
-import 'package:bin_got/providers/base_class.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
@@ -9,72 +8,31 @@ import 'package:provider/provider.dart';
 //* 함수
 
 //* 공유 템플릿
-final FeedTemplate defaultFeed = FeedTemplate(
-  content: Content(
-    title: 'Bin:goT 그룹 초대 메시지',
-    description: '그룹 초대가 왔어요!!',
-    imageUrl: Uri.parse(
-        'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-    link: Link(
-        webUrl: Uri.parse('https://developers.kakao.com'),
-        mobileWebUrl: Uri.parse('https://developers.kakao.com')),
-  ),
-  itemContent: ItemContent(
-    profileText: '그룹 이름',
-    profileImageUrl: Uri.parse(
-        'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-    titleImageUrl: Uri.parse(
-        'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-    titleImageText: 'Cheese cake',
-    titleImageCategory: 'cake',
-    items: [
-      ItemInfo(item: 'cake1', itemOp: '1000원'),
-      ItemInfo(item: 'cake2', itemOp: '2000원'),
-      ItemInfo(item: 'cake3', itemOp: '3000원'),
-      ItemInfo(item: 'cake4', itemOp: '4000원'),
-      ItemInfo(item: 'cake5', itemOp: '5000원')
-    ],
-    sum: 'total',
-    sumOp: '15000원',
-  ),
-  social: Social(likeCount: 286, commentCount: 45, sharedCount: 845),
-  buttons: [
-    Button(
-      title: '웹으로 보기',
-      link: Link(
-        webUrl: Uri.parse('https: //developers.kakao.com'),
-        mobileWebUrl: Uri.parse('https: //developers.kakao.com'),
-      ),
-    ),
-    Button(
-      title: '앱으로보기',
-      link: Link(
-        androidExecutionParams: {'key1': 'value1', 'key2': 'value2'},
-        iosExecutionParams: {'key1': 'value1', 'key2': 'value2'},
-      ),
-    ),
-  ],
-);
-
-TextTemplate defaultText() {
+TextTemplate defaultText({
+  required int groupId,
+  String? password,
+}) {
   return TextTemplate(
     text: 'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요',
     link: Link(
-      webUrl: Uri.parse(UrlClass().groupDetailUrl(3)),
-      mobileWebUrl: Uri.parse(UrlClass().groupDetailUrl(3)),
+      webUrl: Uri.parse(''),
+      mobileWebUrl: Uri.parse(''),
     ),
   );
 }
 
 //* 공유
-void shareToFriends() async {
+void shareToFriends({required int groupId, String? password}) async {
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
 
   if (isKakaoTalkSharingAvailable) {
     try {
-      Uri uri =
-          await ShareClient.instance.shareDefault(template: defaultText());
+      Uri uri = await ShareClient.instance.shareDefault(
+          template: defaultText(
+        groupId: groupId,
+        password: password,
+      ));
       await ShareClient.instance.launchKakaoTalk(uri);
       print('카카오톡 공유 완료');
     } catch (error) {
@@ -82,8 +40,11 @@ void shareToFriends() async {
     }
   } else {
     try {
-      Uri shareUrl = await WebSharerClient.instance
-          .makeDefaultUrl(template: defaultText());
+      Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
+          template: defaultText(
+        groupId: groupId,
+        password: password,
+      ));
       await launchBrowserTab(shareUrl, popupOpen: true);
     } catch (error) {
       print('카카오톡 공유 실패 $error');
