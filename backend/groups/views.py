@@ -83,8 +83,6 @@ def check_cnt_boarditems_complete(group_id, review):
 
 class GroupCreateView(APIView):
     def post(self, request):
-        logger.info(f'전달 받은 이미지: {request.FILES.get("img").content_type}')
-        
         user = request.user
         img = request.FILES.get('img')
         data = json.loads(request.data.get('data'))
