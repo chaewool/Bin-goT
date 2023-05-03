@@ -1,27 +1,33 @@
-import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/providers/user_info_provider.dart';
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/search_bar.dart';
-import 'package:bin_got/widgets/select_box.dart';
 import 'package:flutter/material.dart';
 
 class SearchGroup extends StatefulWidget {
-  const SearchGroup({super.key});
+  final int public;
+  const SearchGroup({
+    super.key,
+    required this.public,
+  });
 
   @override
   State<SearchGroup> createState() => _SearchGroupState();
 }
 
 class _SearchGroupState extends State<SearchGroup> {
-  late Future<MainTabModel> groups;
+  late Future<MyGroupList> groups;
 
   @override
   void initState() {
     super.initState();
-    groups = UserInfoProvider().getMainTabData();
+    groups = GroupProvider().searchGroupList(
+      public: widget.public,
+      cnt: 10,
+      page: 1,
+    );
   }
 
   @override

@@ -58,7 +58,7 @@ class ApiProvider extends UrlClass {
   //* data unnecessary
   FutureDynamicMap _deliverApi(String url) async {
     try {
-      final response = await dio.post(url);
+      final response = await dioWithToken().post(url);
       switch (response.statusCode) {
         case 200:
           return {};
@@ -75,7 +75,7 @@ class ApiProvider extends UrlClass {
   //* update
   FutureDynamicMap _updateApi(String url, {required DynamicMap data}) async {
     try {
-      final response = await dio.put(url, data: data);
+      final response = await dioWithToken().put(url, data: data);
       switch (response.statusCode) {
         case 200:
           return {};
@@ -92,7 +92,7 @@ class ApiProvider extends UrlClass {
   //* delete
   FutureDynamicMap _deleteApi(String url) async {
     try {
-      final response = await dio.delete(url);
+      final response = await dioWithToken().delete(url);
       switch (response.statusCode) {
         case 200:
           return {};

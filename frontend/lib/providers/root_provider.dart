@@ -55,7 +55,7 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
 
 //* notification
 class NotiProvider extends ChangeNotifier {
-  bool? _rankNoti, _dueNoti, _chatNoti;
+  static bool? _rankNoti, _dueNoti, _chatNoti;
 
   void _storeBool(String key, bool? value) async {
     final prefs = await SharedPreferences.getInstance();
@@ -95,14 +95,22 @@ class NotiProvider extends ChangeNotifier {
 
 //* group data
 class GlobalGroupProvider extends ChangeNotifier {
-  int? _count;
-  String? _start;
+  static int? _count, _headCount;
+  static String? _start, _groupName, _description, _rule;
 
   int? get count => _count;
+  int? get headCount => _headCount;
   String? get start => _start;
+  String? get groupName => _groupName;
+  String? get description => _description;
+  String? get rule => _rule;
 
   void _setCount(int newVal) => _count = newVal;
   void _setStart(String newVal) => _start = newVal;
+  void _setHeadCount(int newVal) => _headCount = newVal;
+  void _setGroupName(String newVal) => _groupName = newVal;
+  void _setDescription(String newVal) => _description = newVal;
+  void _setRule(String newVal) => _rule = newVal;
 
   void setCount(int newVal) {
     _setCount(newVal);
@@ -113,4 +121,34 @@ class GlobalGroupProvider extends ChangeNotifier {
     _setStart(newVal);
     notifyListeners();
   }
+
+  void setHeadCount(int newVal) {
+    _setHeadCount(newVal);
+    notifyListeners();
+  }
+
+  void setGroupName(String newVal) {
+    _setGroupName(newVal);
+    notifyListeners();
+  }
+
+  void setDescription(String newVal) {
+    _setDescription(newVal);
+    notifyListeners();
+  }
+
+  void setRule(String newVal) {
+    _setRule(newVal);
+    notifyListeners();
+  }
+
+  // void initVar() {
+  //   _setCount(0);
+  //   _setStart('');
+  //   _setHeadCount(0);
+  //   _setGroupName('');
+  //   _setDescription('');
+  //   _setRule('');
+  //   notifyListeners();
+  // }
 }

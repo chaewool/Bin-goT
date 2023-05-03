@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bin_got/pages/group_create_completed.dart';
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -19,6 +20,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 
 //* 그룹 생성/수정 페이지
 class GroupForm extends StatefulWidget {
@@ -45,6 +48,7 @@ class _GroupFormState extends State<GroupForm> {
   XFile? selectedImage;
   bool isChecked = true;
   BoolList showList = [false, false];
+  bool isImageUpdated = false;
 
   @override
   void initState() {
@@ -94,6 +98,9 @@ class _GroupFormState extends State<GroupForm> {
       selectedIndex[index] = listItemIndex;
       changeShowState(index);
       setGroupData(context, key)(convertedValues[index][listItemIndex]);
+      if (widget.groupId != null) {
+        isImageUpdated = true;
+      }
     });
   }
 
@@ -134,7 +141,9 @@ class _GroupFormState extends State<GroupForm> {
               widget.groupId!,
               FormData.fromMap({
                 'data': groupData,
-                'img': selectedImage,
+                'img': widget.groupId == null || isImageUpdated
+                    ? selectedImage
+                    : null,
               }))
           .then((groupId) {
         toBack(context)();
@@ -156,6 +165,9 @@ class _GroupFormState extends State<GroupForm> {
   void deleteImage() {
     setState(() {
       selectedImage = null;
+      if (widget.groupId != null) {
+        isImageUpdated = true;
+      }
     });
   }
 
@@ -190,54 +202,63 @@ class _GroupFormState extends State<GroupForm> {
                 title: '그룹명 *',
                 explain: '그룹명을 입력하세요',
                 setValue: setGroupData(context, 'groupname'),
+                inputValue: context.read<GlobalGroupProvider>().groupName,
               ),
               CustomInput(
                 title: '참여인원 *',
                 explain: '참여인원',
                 onlyNum: true,
                 setValue: setGroupData(context, 'headcount'),
+                inputValue:
+                    context.read<GlobalGroupProvider>().headCount.toString(),
               ),
-              InputDate(
-                title: '기간 *',
-                explain: selectedDate(),
-                onSubmit: setGroupData,
-              ),
-              for (int i = 0; i < 2; i += 1)
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    CustomText(content: labelList[i]),
-                    Stack(
-                      children: [
-                        SelectBox(
-                          value: printedValues[i][selectedIndex[i]],
-                          width: 60,
-                          height: 50,
-                          onTap: () => changeShowState(i),
-                        ),
-                        showList[i]
-                            ? sortList(
-                                listItems: printedValues[i],
-                                valueItems: convertedValues[i],
-                                index: i,
-                                key: i == 0 ? 'size' : 'need_auth',
-                              )
-                            : const SizedBox(),
-                      ],
+              widget.groupId == null
+                  ? InputDate(
+                      title: '기간 *',
+                      explain: selectedDate(),
+                      onSubmit: setGroupData,
                     )
-                  ],
-                ),
-              CustomCheckBox(
-                label: '공개 여부 *',
-                value: isChecked,
-                onChange: (_) {
-                  setState(() {
-                    isChecked = !isChecked;
-                  });
-                  setGroupData(context, 'is_public')(isChecked);
-                },
-              ),
-              !isChecked
+                  : const SizedBox(),
+              for (int i = 0; i < 2; i += 1)
+                widget.groupId == null
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CustomText(content: labelList[i]),
+                          Stack(
+                            children: [
+                              SelectBox(
+                                value: printedValues[i][selectedIndex[i]],
+                                width: 60,
+                                height: 50,
+                                onTap: () => changeShowState(i),
+                              ),
+                              showList[i]
+                                  ? sortList(
+                                      listItems: printedValues[i],
+                                      valueItems: convertedValues[i],
+                                      index: i,
+                                      key: i == 0 ? 'size' : 'need_auth',
+                                    )
+                                  : const SizedBox(),
+                            ],
+                          )
+                        ],
+                      )
+                    : const SizedBox(),
+              widget.groupId == null
+                  ? CustomCheckBox(
+                      label: '공개 여부 *',
+                      value: isChecked,
+                      onChange: (_) {
+                        setState(() {
+                          isChecked = !isChecked;
+                        });
+                        setGroupData(context, 'is_public')(isChecked);
+                      },
+                    )
+                  : const SizedBox(),
+              widget.groupId == null && !isChecked
                   ? CustomInput(
                       title: '그룹 가입 시 비밀번호 *',
                       explain: '비밀번호',
@@ -250,12 +271,14 @@ class _GroupFormState extends State<GroupForm> {
                 needMore: true,
                 maxLength: 1000,
                 setValue: setGroupData(context, 'description'),
+                inputValue: context.read<GlobalGroupProvider>().description,
               ),
               CustomInput(
                 title: '그룹 규칙',
                 needMore: true,
                 maxLength: 1000,
                 setValue: setGroupData(context, 'rule'),
+                inputValue: context.read<GlobalGroupProvider>().rule,
               ),
               const CustomText(content: '그룹 배경'),
               groupImage(),
@@ -324,16 +347,21 @@ class _GroupFormState extends State<GroupForm> {
               color: greyColor,
             ),
           )
-        : CustomBoxContainer(
-            onTap: imagePicker,
-            image: DecorationImage(
-              fit: BoxFit.fill,
-              image: FileImage(File(selectedImage!.path)),
-            ),
-            child: CustomIconButton(
-              onPressed: deleteImage,
-              icon: closeIcon,
-            ),
-          );
+        : widget.groupId == null
+            ? CustomBoxContainer(
+                onTap: imagePicker,
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: FileImage(File(selectedImage!.path)),
+                ),
+                child: CustomIconButton(
+                  onPressed: deleteImage,
+                  icon: closeIcon,
+                ),
+              )
+            : CustomBoxContainer(
+                child: Image.network(
+                    '${dotenv.env['fileUrl']}/groups/${widget.groupId}'),
+              );
   }
 }

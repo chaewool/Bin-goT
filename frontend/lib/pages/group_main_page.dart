@@ -62,14 +62,16 @@ class _GroupMainState extends State<GroupMain> {
         setToken(context, result['token']);
       } else {
         if (!mounted) return;
-        showModal(context,
-            page: const CustomAlert(title: '로그인 확인', content: '로그인이 필요합니다'))();
+        throw Error();
       }
     } catch (error) {
-      setState(() {
-        showModal(context,
-            page: const CustomAlert(title: '로그인 확인', content: '로그인이 필요합니다'))();
-      });
+      showModal(context,
+          page: const CustomAlert(
+            title: '로그인 확인',
+            content: '로그인이 필요합니다',
+          ))();
+      // setState(() {
+      // });
       return;
     }
   }
@@ -101,6 +103,16 @@ class _GroupMainState extends State<GroupMain> {
                 });
               });
             }
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.read<GlobalGroupProvider>().setStart(data.start);
+              context.read<GlobalGroupProvider>().setCount(data.count);
+              context.read<GlobalGroupProvider>().setHeadCount(data.headCount);
+              context
+                  .read<GlobalGroupProvider>()
+                  .setDescription(data.description ?? '');
+              context.read<GlobalGroupProvider>().setRule(data.rule ?? '');
+              context.read<GlobalGroupProvider>().setGroupName(data.groupName);
+            });
             // setMemberState(data.memberState);
             return ColWithPadding(
               vertical: 30,

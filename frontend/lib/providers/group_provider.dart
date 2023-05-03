@@ -114,14 +114,12 @@ class GroupProvider extends ApiProvider {
   }
 
   //* delete
-  FutureVoid deleteOwnGroup(int groupId) async {
-    deleteApi(deleteGroupUrl(groupId));
-  }
+  FutureVoid deleteOwnGroup(int groupId) async =>
+      deleteApi(deleteGroupUrl(groupId));
 
   //* exit
-  FutureVoid exitThisGroup(int groupId) async {
-    deleteApi(exitGroupUrl(groupId));
-  }
+  FutureVoid exitThisGroup(int groupId) async =>
+      deleteApi(exitGroupUrl(groupId));
 
   //* rank
   Future<RankList> groupRank(int groupId) async {

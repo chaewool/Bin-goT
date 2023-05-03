@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CustomInput extends StatefulWidget {
-  final String? explain;
+  final String? explain, inputValue;
   final bool needMore, onlyNum, enabled;
   final double? width, height;
   final bool filled;
@@ -17,20 +17,22 @@ class CustomInput extends StatefulWidget {
   final String title;
   final void Function(dynamic) setValue;
 
-  const CustomInput(
-      {super.key,
-      this.explain,
-      this.needMore = false,
-      this.onlyNum = false,
-      this.enabled = true,
-      this.width,
-      this.height,
-      this.filled = false,
-      this.filledColor = whiteColor,
-      this.fontSize = FontSize.smallSize,
-      this.maxLength,
-      this.title = '',
-      required this.setValue});
+  const CustomInput({
+    super.key,
+    this.explain,
+    this.needMore = false,
+    this.onlyNum = false,
+    this.enabled = true,
+    this.width,
+    this.height,
+    this.filled = false,
+    this.filledColor = whiteColor,
+    this.fontSize = FontSize.smallSize,
+    this.maxLength,
+    this.title = '',
+    required this.setValue,
+    this.inputValue,
+  });
 
   @override
   State<CustomInput> createState() => _CustomInputState();
@@ -43,6 +45,7 @@ class _CustomInputState extends State<CustomInput> {
   void initState() {
     super.initState();
     focusListener();
+    print('inputValue : $inputValue');
   }
 
   void focusListener() {
@@ -64,6 +67,7 @@ class _CustomInputState extends State<CustomInput> {
             width: widget.width,
             height: widget.height,
             child: TextField(
+              controller: TextEditingController(text: inputValue),
               decoration: InputDecoration(
                 filled: widget.filled,
                 fillColor: widget.filledColor,

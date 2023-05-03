@@ -5,7 +5,6 @@ import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/row_col.dart';
-import 'package:bin_got/widgets/select_box.dart';
 import 'package:flutter/material.dart';
 
 class SearchBar extends StatelessWidget {
@@ -46,7 +45,10 @@ class SearchBar extends StatelessWidget {
               //   setValue: (p0) {},
               // ),
               CustomButton(
-                onPressed: toOtherPage(context, page: const SearchGroup()),
+                onPressed: toOtherPage(context,
+                    page: const SearchGroup(
+                      public: 0,
+                    )),
                 content: '검색',
               ),
             ],
