@@ -273,19 +273,23 @@ class GroupGrantView(APIView):
         if group.leader == user:
             applicant = get_user_model().objects.get(id=applicant_id)
             participate = Participate.objects.filter(user=applicant, group=group)
+            
+            if participate.is_banned == 0:
+                return Response(data={'message': '이미 승인 완료된 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if participate.is_banned == 2:
+                return Response(data={'message': '이미 승인 거부되었거나 강제 탈퇴된 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            if participate.is_banned and not grant:
-                pass
-            elif participate.is_banned and grant:
-                participate.is_banned = False
+            if grant:
+                participate.is_banned = 0
                 participate.save()
                 
                 applicant.cnt_groups += 1
                 applicant.save()
                 
                 check_cnt_groups(applicant)
-            elif not participate.is_banned and not grant:
-                participate.is_banned = True
+            else:
+                participate.is_banned = 2
                 participate.save()
 
             return Response(status=status.HTTP_200_OK)
@@ -467,6 +471,36 @@ class GroupReviewCheckView(APIView):
         review.save()
         
         return Response(status=status.HTTP_200_OK)
+
+
+class GroupAdminView(APIView):
+    def get(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        
+        if not Participate.objects.filter(user=user, group=group).exists() or user != group.leader:
+            return Response(data={'message': '권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        applicants = []
+        members = []
+        
+        for participate in Participate.objects.filter(group=group):
+            if participate.is_banned == 1:
+                applicants.append({
+                    'id': participate.user.id,
+                    'username': participate.user.username,
+                    'board_id': Board.objects.get(user=user, group=group).id
+                    })
+            elif participate.is_banned == 0:
+                members.append({
+                    'id': participate.user.id,
+                    'username': participate.user.username,
+                    'board_id': Board.objects.get(user=user, group=group).id
+                    })
+        
+        data = {'applicants': applicants, 'members': members, 'need_auth': group.need_auth}
+        
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class GroupSearchView(APIView):

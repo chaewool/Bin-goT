@@ -21,5 +21,7 @@ urlpatterns = [
     path('<int:group_id>/review/create/', views.GroupReviewCreateView.as_view(), name='group_review_create'),
     path('<int:group_id>/review/check/', views.GroupReviewCheckView.as_view(), name='group_review_check'),
     
+    path('<int:group_id>/admin/', views.GroupAdminView.as_view(), name='group_admin'),
+    
     path('search/', views.GroupSearchView.as_view(), name='group_search'),
 ]

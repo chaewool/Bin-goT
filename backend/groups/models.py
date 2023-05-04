@@ -25,7 +25,7 @@ class Group(models.Model):
 class Participate(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    is_banned = models.BooleanField()
+    is_banned = models.IntegerField(default=0) # 0은 승인 완료, 1은 승인 대기, 2는 승인 거절/강퇴
     rand_name = models.CharField(max_length=20, null=True)
     
     def __str__(self) -> str:
