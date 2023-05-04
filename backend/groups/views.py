@@ -132,9 +132,9 @@ class GroupCreateView(APIView):
                 if str(num[i][-2:]) != f'{i + 1:0>2}':
                     rand_name = f'익명의 참여자 {i + 1:0>2}'
                     break
-            Participate.objects.create(user=user, group=group, is_banned=False, rand_name=rand_name)
+            Participate.objects.create(user=user, group=group, is_banned=0, rand_name=rand_name)
         else:
-            Participate.objects.create(user=user, group=group, is_banned=False)
+            Participate.objects.create(user=user, group=group, is_banned=0)
         
         user.cnt_groups += 1
         user.save()
@@ -248,18 +248,21 @@ class GroupJoinView(APIView):
                     if str(num[i][-2:]) != f'{i + 1:0>2}':
                         rand_name = f'익명의 참여자 {i + 1:0>2}'
                         break
-                Participate.objects.create(user=user, group=group, is_banned=False, rand_name=rand_name)
+                Participate.objects.create(user=user, group=group, is_banned=0, rand_name=rand_name)
                 
                 user.cnt_groups += 1
                 user.save()
                 
                 check_cnt_groups(user)
             else:
-                Participate.objects.create(user=user, group=group, is_banned=True)
+                Participate.objects.create(user=user, group=group, is_banned=1)
                 
                 # leader에게 알림 보내는 코드 추가 필요
             return Response(status=status.HTTP_200_OK)
         
+        else:
+            if Participate.objects.get(user=user, group=group).is_banned == 2:
+                return Response(data={'message': '이미 승인 거부되었거나 강제 탈퇴된 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data={'message': '이미 가입한 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -329,6 +332,9 @@ class GroupResignView(APIView):
         
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 탈퇴할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user == group.leader:
+            return Response(data={'message': '그룹장은 탈퇴할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         participate.delete()
         
