@@ -6,3 +6,11 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 COPY . .
 CMD ["gunicorn", "bingot.wsgi", "--bind", "0.0.0.0:8080"]
+
+# for django-crontab
+# 권한 설정
+RUN chmod -R 777 ./
+RUN apt-get update
+
+# cron 설치 및 로그 파일 생성
+RUN apt-get install -y cron && touch ./files/log/cron.log

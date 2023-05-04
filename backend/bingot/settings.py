@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'django_crontab',
 
     # django apps
     'django.contrib.admin',
@@ -225,3 +226,10 @@ LOGGING = {
         },
     },
 }
+
+
+# crontab
+
+CRONJOBS = [
+    ('0 0 * * *', 'groups.cron.every_day', '>> ./files/log/cron.log'),
+]

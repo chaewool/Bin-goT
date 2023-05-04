@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  _build_image:
+    image: main_image
+    build: ./backend
+
+  backend:
+    image: main_image
+    restart: always
+    command: python manage.py runserver
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env
+    depends_on:
+      - _build_image
+
+  cron:
+    image: main_image
+    restart: always
+    command: bash -c "service cron start && python manage.py crontab add && tail -f /dev/null"
+    depends_on:
+      - backend
