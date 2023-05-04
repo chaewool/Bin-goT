@@ -1,5 +1,6 @@
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CustomInput extends StatefulWidget {
-  final String? explain, inputValue;
+  final String? explain, initialValue;
   final bool needMore, onlyNum, enabled;
   final double? width, height;
   final bool filled;
@@ -31,7 +32,7 @@ class CustomInput extends StatefulWidget {
     this.maxLength,
     this.title = '',
     required this.setValue,
-    this.inputValue,
+    this.initialValue,
   });
 
   @override
@@ -40,18 +41,19 @@ class CustomInput extends StatefulWidget {
 
 class _CustomInputState extends State<CustomInput> {
   FocusNode inputFocus = FocusNode();
-  String inputValue = '';
+  StringMap inputValue = {'value': ''};
   @override
   void initState() {
     super.initState();
     focusListener();
-    print('inputValue : $inputValue');
+    print('initialValue : ${widget.initialValue}');
+    inputValue['value'] = widget.initialValue ?? '';
   }
 
   void focusListener() {
     inputFocus.addListener(() {
       if (!inputFocus.hasFocus) {
-        widget.setValue(inputValue);
+        widget.setValue(inputValue['value']);
       }
     });
   }
@@ -67,7 +69,7 @@ class _CustomInputState extends State<CustomInput> {
             width: widget.width,
             height: widget.height,
             child: TextField(
-              controller: TextEditingController(text: inputValue),
+              controller: TextEditingController(text: inputValue['value']),
               decoration: InputDecoration(
                 filled: widget.filled,
                 fillColor: widget.filledColor,
@@ -85,9 +87,7 @@ class _CustomInputState extends State<CustomInput> {
               textAlign: TextAlign.start,
               textAlignVertical: TextAlignVertical.center,
               onChanged: (value) {
-                setState(() {
-                  inputValue = value;
-                });
+                inputValue['value'] = value;
               },
               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
               textInputAction: TextInputAction.next,

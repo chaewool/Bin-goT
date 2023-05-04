@@ -15,10 +15,12 @@ import 'package:flutter/material.dart';
 class BottomBar extends StatelessWidget {
   final int groupId;
   final bool isMember;
+  final bool? needAuth;
   const BottomBar({
     super.key,
     required this.groupId,
     required this.isMember,
+    this.needAuth,
   });
 
   @override
@@ -29,12 +31,19 @@ class BottomBar extends StatelessWidget {
       try {
         await GroupProvider().joinGroup(groupId);
         if (!context.mounted) return;
+        if (needAuth == true) {
+          toBack(context)();
+        }
         showAlert(
           context,
           title: '가입 신청',
-          content: '가입 신청되었습니다.',
+          content:
+              needAuth == true ? '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.' : '가입되었습니다.',
           hasCancel: false,
         )();
+        if (needAuth == false) {
+          //* 새로고침
+        }
       } catch (error) {
         showAlert(
           context,

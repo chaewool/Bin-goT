@@ -97,6 +97,7 @@ class NotiProvider extends ChangeNotifier {
 class GlobalGroupProvider extends ChangeNotifier {
   static int? _count, _headCount;
   static String? _start, _groupName, _description, _rule;
+  static bool? _hasImage;
 
   int? get count => _count;
   int? get headCount => _headCount;
@@ -104,6 +105,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   String? get groupName => _groupName;
   String? get description => _description;
   String? get rule => _rule;
+  bool? get hasImage => _hasImage;
 
   void _setCount(int newVal) => _count = newVal;
   void _setStart(String newVal) => _start = newVal;
@@ -111,6 +113,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   void _setGroupName(String newVal) => _groupName = newVal;
   void _setDescription(String newVal) => _description = newVal;
   void _setRule(String newVal) => _rule = newVal;
+  void _setHasImage(bool newVal) => _hasImage = newVal;
 
   void setCount(int newVal) {
     _setCount(newVal);
@@ -139,6 +142,11 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void setRule(String newVal) {
     _setRule(newVal);
+    notifyListeners();
+  }
+
+  void setHasImage(bool newVal) {
+    _setHasImage(newVal);
     notifyListeners();
   }
 

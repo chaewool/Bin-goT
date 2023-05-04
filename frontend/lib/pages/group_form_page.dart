@@ -202,15 +202,17 @@ class _GroupFormState extends State<GroupForm> {
                 title: '그룹명 *',
                 explain: '그룹명을 입력하세요',
                 setValue: setGroupData(context, 'groupname'),
-                inputValue: context.read<GlobalGroupProvider>().groupName,
+                initialValue: widget.groupId != null
+                    ? context.read<GlobalGroupProvider>().groupName
+                    : null,
               ),
               CustomInput(
                 title: '참여인원 *',
                 explain: '참여인원',
                 onlyNum: true,
                 setValue: setGroupData(context, 'headcount'),
-                inputValue:
-                    context.read<GlobalGroupProvider>().headCount.toString(),
+                initialValue:
+                    context.read<GlobalGroupProvider>().headCount?.toString(),
               ),
               widget.groupId == null
                   ? InputDate(
@@ -271,14 +273,14 @@ class _GroupFormState extends State<GroupForm> {
                 needMore: true,
                 maxLength: 1000,
                 setValue: setGroupData(context, 'description'),
-                inputValue: context.read<GlobalGroupProvider>().description,
+                initialValue: context.read<GlobalGroupProvider>().description,
               ),
               CustomInput(
                 title: '그룹 규칙',
                 needMore: true,
                 maxLength: 1000,
                 setValue: setGroupData(context, 'rule'),
-                inputValue: context.read<GlobalGroupProvider>().rule,
+                initialValue: context.read<GlobalGroupProvider>().rule,
               ),
               const CustomText(content: '그룹 배경'),
               groupImage(),

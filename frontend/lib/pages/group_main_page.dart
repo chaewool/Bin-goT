@@ -52,6 +52,7 @@ class _GroupMainState extends State<GroupMain> {
   }
 
   int memberState = 0;
+  bool needAuth = true;
 
   void verifyToken() async {
     try {
@@ -103,6 +104,14 @@ class _GroupMainState extends State<GroupMain> {
                 });
               });
             }
+            if (needAuth != data.needAuth) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  needAuth = data.needAuth;
+                });
+              });
+            }
+
             WidgetsBinding.instance.addPostFrameCallback((_) {
               context.read<GlobalGroupProvider>().setStart(data.start);
               context.read<GlobalGroupProvider>().setCount(data.count);
@@ -112,6 +121,9 @@ class _GroupMainState extends State<GroupMain> {
                   .setDescription(data.description ?? '');
               context.read<GlobalGroupProvider>().setRule(data.rule ?? '');
               context.read<GlobalGroupProvider>().setGroupName(data.groupName);
+              // setState(() {
+              //   needAuth = data.needAuth;
+              // });
             });
             // setMemberState(data.memberState);
             return ColWithPadding(
@@ -149,6 +161,7 @@ class _GroupMainState extends State<GroupMain> {
       bottomNavigationBar: BottomBar(
         isMember: memberState != 0,
         groupId: widget.groupId,
+        needAuth: needAuth,
       ),
     );
   }

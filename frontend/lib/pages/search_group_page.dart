@@ -19,6 +19,9 @@ class SearchGroup extends StatefulWidget {
 
 class _SearchGroupState extends State<SearchGroup> {
   late Future<MyGroupList> groups;
+  StringMap keyword = {'value': ''};
+  int order = 0;
+  int? period, filter;
 
   @override
   void initState() {
@@ -27,6 +30,10 @@ class _SearchGroupState extends State<SearchGroup> {
       public: widget.public,
       cnt: 10,
       page: 1,
+      keyword: keyword['value'],
+      order: order,
+      period: period,
+      filter: filter,
     );
   }
 
