@@ -301,7 +301,7 @@ class GroupDeleteView(APIView):
         if user != group.leader:
             return Response(data={'message': '삭제 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if date.today() > group.start:
+        if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 삭제할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if len(Participate.objects.filter(group=group)) > 1:
@@ -323,10 +323,15 @@ class GroupResignView(APIView):
         if not participate:
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if date.today() > group.start:
+        if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 탈퇴할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         participate.delete()
+        
+        if len(Participate.objects.filter(group=group)) < 1:
+            url = 'groups' + '/' + str(group.id)
+            delete_image(url)
+            group.delete()
         
         return Response(status=status.HTTP_200_OK)
 
