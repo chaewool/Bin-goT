@@ -68,6 +68,7 @@ class _GroupFormState extends State<GroupForm> {
       };
     } else {
       groupData = {};
+      isImageUpdated = true;
     }
   }
 
@@ -78,28 +79,11 @@ class _GroupFormState extends State<GroupForm> {
   }
 
   void changeShowState(int index) {
-    print(index);
-    print(showList);
     setState(() {
       if (!showList[index]) {
         showList[index] = true;
       } else {
         showList[index] = false;
-      }
-    });
-  }
-
-  void changeSelected({
-    required int index,
-    required int listItemIndex,
-    required String key,
-  }) {
-    setState(() {
-      selectedIndex[index] = listItemIndex;
-      changeShowState(index);
-      setGroupData(context, key)(convertedValues[index][listItemIndex]);
-      if (widget.groupId != null) {
-        isImageUpdated = true;
       }
     });
   }
@@ -159,6 +143,7 @@ class _GroupFormState extends State<GroupForm> {
     );
     setState(() {
       selectedImage = localImage;
+      isImageUpdated = true;
     });
   }
 
@@ -236,12 +221,19 @@ class _GroupFormState extends State<GroupForm> {
                                 onTap: () => changeShowState(i),
                               ),
                               showList[i]
-                                  ? sortList(
+                                  ? SelectBoxContainer(
                                       listItems: printedValues[i],
                                       valueItems: convertedValues[i],
                                       index: i,
-                                      key: i == 0 ? 'size' : 'need_auth',
-                                    )
+                                      mapKey: i == 0 ? 'size' : 'need_auth',
+                                      changeShowState: () => changeShowState(i),
+                                      changeIdx: (key, idx) {
+                                        setState(() {
+                                          selectedIndex[i] = idx;
+                                        });
+                                        setGroupData(context, key)(
+                                            convertedValues[i][idx]);
+                                      })
                                   : const SizedBox(),
                             ],
                           )
@@ -288,51 +280,6 @@ class _GroupFormState extends State<GroupForm> {
           ),
         ),
         bottomNavigationBar: FormBottomBar(createOrUpdate: createOrUpdate));
-  }
-
-  Padding sortList({
-    required List listItems,
-    required List valueItems,
-    required int index,
-    required String key,
-  }) {
-    final length = listItems.length;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          CustomBoxContainer(
-            hasRoundEdge: false,
-            width: 150,
-            color: whiteColor,
-            boxShadow: const [defaultShadow],
-            child: Column(
-              children: [
-                for (int i = 0; i < length; i += 1)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: CustomBoxContainer(
-                      onTap: () => changeSelected(
-                        index: index,
-                        listItemIndex: i,
-                        key: key,
-                      ),
-                      width: 150,
-                      child: Center(
-                        child: CustomText(
-                          content: listItems[i],
-                          fontSize: FontSize.smallSize,
-                        ),
-                      ),
-                    ),
-                  )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   CustomBoxContainer groupImage() {

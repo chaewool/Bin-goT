@@ -7,10 +7,16 @@ import 'package:bin_got/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 
 class SearchGroup extends StatefulWidget {
-  final int public;
+  final int public, order, page, cnt, period;
+  final String? keyword;
   const SearchGroup({
     super.key,
     required this.public,
+    this.page = 1,
+    this.order = 0,
+    required this.cnt,
+    required this.period,
+    this.keyword,
   });
 
   @override
@@ -18,22 +24,26 @@ class SearchGroup extends StatefulWidget {
 }
 
 class _SearchGroupState extends State<SearchGroup> {
+  final StringList sort = <String>['모집 중', '전체'];
+
+  final StringList publicFilter = <String>['공개', '비공개', '전체'];
   late Future<MyGroupList> groups;
   StringMap keyword = {'value': ''};
-  int order = 0;
-  int? period, filter;
 
   @override
   void initState() {
     super.initState();
+    if (widget.keyword != null) {
+      keyword['value'] = widget.keyword!;
+    }
+    print(widget.keyword);
     groups = GroupProvider().searchGroupList(
+      keyword: widget.keyword,
       public: widget.public,
-      cnt: 10,
-      page: 1,
-      keyword: keyword['value'],
-      order: order,
-      period: period,
-      filter: filter,
+      cnt: widget.cnt,
+      page: widget.page,
+      order: widget.order,
+      period: widget.period,
     );
   }
 

@@ -14,6 +14,25 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 //         isPublic = json['is_public'];
 // }
 
+class GroupMemberModel {
+  final int id, bingoId;
+  final String username;
+  GroupMemberModel.fromJson(DynamicMap json)
+      : id = json['id'],
+        bingoId = json['board_id'],
+        username = json['username'];
+}
+
+class GroupAdminTabModel {
+  final GroupMemberList applicants;
+  final GroupMemberList members;
+  final bool needAuth;
+  GroupAdminTabModel.fromJson(DynamicMap json)
+      : applicants = json['applicants'],
+        members = json['members'],
+        needAuth = json['need_auth'];
+}
+
 class GroupRankModel {
   final int userId, achieve, bingoId;
   final String nickname;
@@ -25,7 +44,8 @@ class GroupRankModel {
 }
 
 class GroupDetailModel {
-  final int headCount, count, bingoSize, memberState, bingoId;
+  final int headCount, count, bingoSize, memberState;
+  final int? bingoId;
   final String groupName, nickname, start, end;
   final String? description, rule;
   final bool hasImage, needAuth;

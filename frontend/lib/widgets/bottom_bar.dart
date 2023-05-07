@@ -1,7 +1,8 @@
+import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/pages/group_chat_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/pages/user_page.dart';
-import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -10,6 +11,7 @@ import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //* 그룹에서의 하단 바
 class BottomBar extends StatelessWidget {
@@ -27,32 +29,6 @@ class BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     const IconDataList bottomBarIcons = [homeIcon, myPageIcon, chatIcon];
     const WidgetList nextPages = [Main(), MyPage(), GroupChat()];
-    void joinGroup() async {
-      try {
-        await GroupProvider().joinGroup(groupId);
-        if (!context.mounted) return;
-        if (needAuth == true) {
-          toBack(context)();
-        }
-        showAlert(
-          context,
-          title: '가입 신청',
-          content:
-              needAuth == true ? '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.' : '가입되었습니다.',
-          hasCancel: false,
-        )();
-        if (needAuth == false) {
-          //* 새로고침
-        }
-      } catch (error) {
-        showAlert(
-          context,
-          title: '가입 오류',
-          content: '오류가 발생해 가입이 되지 않았습니다.',
-          hasCancel: false,
-        )();
-      }
-    }
 
     return isMember
         ? BottomNavigationBar(
@@ -80,8 +56,14 @@ class BottomBar extends StatelessWidget {
             child: SizedBox(
               height: 50,
               child: CustomButton(
-                content: '가입 신청하기',
-                onPressed: joinGroup,
+                content: '빙고 만들고 가입${needAuth == true ? ' 신청' : ''}하기',
+                onPressed: toOtherPage(
+                  context,
+                  page: BingoForm(
+                    bingoSize: context.read<GlobalGroupProvider>().bingoSize!,
+                    needAuth: needAuth!,
+                  ),
+                ),
               ),
             ),
           );

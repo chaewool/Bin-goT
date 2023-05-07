@@ -1,3 +1,4 @@
+import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -95,60 +96,84 @@ class NotiProvider extends ChangeNotifier {
 
 //* group data
 class GlobalGroupProvider extends ChangeNotifier {
-  static int? _count, _headCount;
-  static String? _start, _groupName, _description, _rule;
-  static bool? _hasImage;
+  static late GroupDetailModel _data;
+  static int? _groupId;
+  // static int? _count, _headCount, _groupId;
+  // static String? _start, _groupName, _description, _rule;
+  // static bool? _hasImage;
+  // static bool? _needAuth;
 
-  int? get count => _count;
-  int? get headCount => _headCount;
-  String? get start => _start;
-  String? get groupName => _groupName;
-  String? get description => _description;
-  String? get rule => _rule;
-  bool? get hasImage => _hasImage;
+  int? get count => _data.count;
+  int? get headCount => _data.headCount;
+  int? get groupId => _groupId;
+  String? get start => _data.start;
+  String? get groupName => _data.groupName;
+  String? get description => _data.description;
+  String? get rule => _data.rule;
+  bool? get hasImage => _data.hasImage;
+  int? get bingoSize => _data.bingoSize;
+  // bool? get needAuth => _needAuth;
+  void _setData(GroupDetailModel detailModel) => _data = detailModel;
 
-  void _setCount(int newVal) => _count = newVal;
-  void _setStart(String newVal) => _start = newVal;
-  void _setHeadCount(int newVal) => _headCount = newVal;
-  void _setGroupName(String newVal) => _groupName = newVal;
-  void _setDescription(String newVal) => _description = newVal;
-  void _setRule(String newVal) => _rule = newVal;
-  void _setHasImage(bool newVal) => _hasImage = newVal;
+  // void _setCount(int newVal) => _count = newVal;
+  // void _setStart(String newVal) => _start = newVal;
+  // void _setHeadCount(int newVal) => _headCount = newVal;
+  // void _setGroupName(String newVal) => _groupName = newVal;
+  // void _setDescription(String newVal) => _description = newVal;
+  // void _setRule(String newVal) => _rule = newVal;
+  // void _setHasImage(bool newVal) => _hasImage = newVal;
+  void _setGroupId(int newVal) => _groupId = newVal;
+  // void _setNeedAuth(bool newVal) => _needAuth = newVal;
 
-  void setCount(int newVal) {
-    _setCount(newVal);
+  void setData(GroupDetailModel detailModel) {
+    _setData(detailModel);
     notifyListeners();
   }
 
-  void setStart(String newVal) {
-    _setStart(newVal);
+  // void setCount(int newVal) {
+  //   _setCount(newVal);
+  //   notifyListeners();
+  // }
+
+  // void setStart(String newVal) {
+  //   _setStart(newVal);
+  //   notifyListeners();
+  // }
+
+  // void setHeadCount(int newVal) {
+  //   _setHeadCount(newVal);
+  //   notifyListeners();
+  // }
+
+  // void setGroupName(String newVal) {
+  //   _setGroupName(newVal);
+  //   notifyListeners();
+  // }
+
+  // void setDescription(String newVal) {
+  //   _setDescription(newVal);
+  //   notifyListeners();
+  // }
+
+  // void setRule(String newVal) {
+  //   _setRule(newVal);
+  //   notifyListeners();
+  // }
+
+  // void setHasImage(bool newVal) {
+  //   _setHasImage(newVal);
+  //   notifyListeners();
+  // }
+
+  void setGroupId(int newVal) {
+    _setGroupId(newVal);
     notifyListeners();
   }
 
-  void setHeadCount(int newVal) {
-    _setHeadCount(newVal);
-    notifyListeners();
-  }
-
-  void setGroupName(String newVal) {
-    _setGroupName(newVal);
-    notifyListeners();
-  }
-
-  void setDescription(String newVal) {
-    _setDescription(newVal);
-    notifyListeners();
-  }
-
-  void setRule(String newVal) {
-    _setRule(newVal);
-    notifyListeners();
-  }
-
-  void setHasImage(bool newVal) {
-    _setHasImage(newVal);
-    notifyListeners();
-  }
+  // void setNeedAuth(bool newVal) {
+  //   _setNeedAuth(newVal);
+  //   notifyListeners();
+  // }
 
   // void initVar() {
   //   _setCount(0);

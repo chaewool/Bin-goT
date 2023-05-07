@@ -109,3 +109,6 @@ void setNoti(BuildContext context, {bool? rank, bool? due, bool? chat}) {
   noti.setStoreDue(due);
   noti.setStoreChat(chat);
 }
+
+int? getGroupId(BuildContext context) =>
+    context.read<GlobalGroupProvider>().groupId;

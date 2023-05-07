@@ -11,22 +11,46 @@ class GroupProvider extends ApiProvider {
     int? period,
     String? keyword,
     int? order,
-    int? filter,
+    required int public,
+    required int cnt,
+    required int page,
+  }) =>
+      _searchGroupList(
+        period: period,
+        keyword: keyword,
+        order: order,
+        public: public,
+        cnt: cnt,
+        page: page,
+      );
+
+  Future<MyGroupList> _searchGroupList({
+    int? period,
+    String? keyword,
+    int? order,
     required int public,
     required int cnt,
     required int page,
   }) async {
     try {
+      // print(searchGroupUrl);
+      // print('${{
+      //   'period': period,
+      //   'keyword': keyword,
+      //   'order': order,
+      //   'public': public,
+      //   'cnt': cnt,
+      //   'page': page,
+      // }}');
       final response = await dioWithToken().get(
         searchGroupUrl,
         queryParameters: {
-          'period': period,
+          'period': 1,
           'keyword': keyword,
           'order': order,
-          'filter': filter,
           'public': public,
-          'cnt': cnt,
           'page': page,
+          'cnt': cnt,
         },
       );
       if (response.statusCode == 200) {
@@ -91,16 +115,13 @@ class GroupProvider extends ApiProvider {
   }
 
   //* join or forced exit
-  FutureVoid grantThisMember(int groupId, DynamicMap grantData) async {
-    createApi(grantMemberUrl(groupId), data: grantData);
-  }
+  FutureVoid grantThisMember(int groupId, DynamicMap grantData) async =>
+      createApi(grantMemberUrl(groupId), data: grantData);
 
   //* update
   FutureVoid editOwnGroup(int groupId, FormData groupData) async {
     try {
       print(groupData);
-      // final dioWithForm = dioWithToken();
-      // dioWithForm.options.contentType  = 'multipart/form-data';
       final response =
           await dioWithToken().put(editGroupUrl(groupId), data: groupData);
       print(response);
@@ -134,6 +155,47 @@ class GroupProvider extends ApiProvider {
       }
       throw Error();
     } catch (error) {
+      throw Error();
+    }
+  }
+
+  //* group members
+  Future<GroupAdminTabModel> getAdminTabData(int groupId) =>
+      _getAdminTabData(groupId);
+  Future<GroupAdminTabModel> _getAdminTabData(int groupId) async {
+    try {
+      print(getMembersUrl(groupId));
+      final response = await dioWithToken().get(getMembersUrl(groupId));
+      switch (response.statusCode) {
+        case 200:
+          final data = response.data;
+          if (data.isNotEmpty) {
+            GroupMemberModel applicants = data['applicants']
+                .map<GroupMemberModel>(
+                    (json) => GroupMemberModel.fromJson(json))
+                .toList();
+            MyBingoList members = data['members']
+                .map<GroupMemberModel>(
+                    (json) => GroupMemberModel.fromJson(json))
+                .toList();
+            bool needAuth = data['need_auth'];
+            return GroupAdminTabModel.fromJson({
+              'applicants': applicants,
+              'members': members,
+              'need_auth': needAuth,
+            });
+          }
+          return GroupAdminTabModel.fromJson({
+            'applicants': [],
+            'members': [],
+            'need_auth': false,
+          });
+        default:
+          throw Error();
+      }
+    } catch (error) {
+      print('mainTabError: $error');
+      // UserProvider.logout();
       throw Error();
     }
   }

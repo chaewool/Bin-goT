@@ -1,3 +1,4 @@
+import 'package:bin_got/models/bingo_model.dart';
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:dio/dio.dart';
@@ -32,3 +33,5 @@ typedef MyGroupList = List<MyGroupModel>;
 typedef MyBingoList = List<MyBingoModel>;
 // typedef GroupList = List<GroupModel>;
 typedef RankList = List<GroupRankModel>;
+typedef GroupMemberList = List<GroupMemberModel>;
+typedef BingoItemList = List<BingoItemModel>;

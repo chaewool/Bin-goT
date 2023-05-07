@@ -1,10 +1,13 @@
+import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/accordian.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/icon.dart';
@@ -140,31 +143,105 @@ class _BingoTabBarState extends State<BingoTabBar> {
 }
 
 //* 그룹 관리 탭
-class GroupAdminTabBar extends StatelessWidget {
-  const GroupAdminTabBar({super.key});
+class GroupAdminTabBar extends StatefulWidget {
+  final int groupId;
+  const GroupAdminTabBar({super.key, required this.groupId});
+
+  @override
+  State<GroupAdminTabBar> createState() => _GroupAdminTabBarState();
+}
+
+class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
+  late Future<GroupAdminTabModel> tabData;
+  int presentIdx = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    tabData = GroupProvider().getAdminTabData(widget.groupId);
+  }
+
+  void changeTab(int index) {
+    if (presentIdx != index) {
+      setState(() {
+        presentIdx = index;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return CustomTextTabBar(
-      tabTitles: const ['가입 신청', '참여자'],
-      listItems: [
-        [
-          for (int i = 0; i < 10; i += 1)
-            MemberList(
-              image: halfLogo,
-              isMember: false,
-              nickname: '조코링링링',
-            )
-        ],
-        [
-          for (int i = 0; i < 7; i += 1)
-            MemberList(
-              image: halfLogo,
-              isMember: true,
-              nickname: '조코링링링',
+    return Expanded(
+      child: CustomTextTabBar(
+        tabTitles: const ['가입 신청', '참여자'],
+        onChange: changeTab,
+        listItems: [
+          [
+            SingleChildScrollView(
+              child: FutureBuilder(
+                future: tabData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final needAuth = snapshot.data!.needAuth;
+                    final applicants = snapshot.data!.applicants;
+                    print('needAuth: $needAuth');
+                    return Column(
+                      children: [
+                        needAuth
+                            ? ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: applicants.length,
+                                itemBuilder: (context, index) {
+                                  var applicant = applicants[index];
+                                  return MemberList(
+                                    id: applicant.id,
+                                    bingoId: applicant.bingoId,
+                                    nickname: applicant.username,
+                                    isMember: false,
+                                  );
+                                },
+                              )
+                            : const CustomText(content: '자동 가입 그룹입니다.'),
+                      ],
+                    );
+                  }
+                  return const CustomText(content: '정보를 불러오는 중입니다');
+                },
+              ),
             ),
+          ],
+          [
+            SingleChildScrollView(
+              child: FutureBuilder(
+                future: tabData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final members = snapshot.data!.members;
+                    return Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: members.length,
+                          itemBuilder: (context, index) {
+                            var member = members[index];
+                            return MemberList(
+                              id: member.id,
+                              bingoId: member.bingoId,
+                              nickname: member.username,
+                              isMember: true,
+                            );
+                          },
+                        )
+                      ],
+                    );
+                  }
+                  return const CustomText(content: '정보를 불러오는 중입니다');
+                },
+              ),
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }

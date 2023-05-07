@@ -53,14 +53,23 @@ class UrlClass extends DioClass {
   //* CRUD
   final _createGroupUrl = '$_groupUrl/create/';
   String _groupDetailUrl(int groupId) => '$_groupUrl/$groupId/';
-  String _editGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}/update/';
-  String _deleteGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}/delete/';
+  String _editGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}update/';
+  String _deleteGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}delete/';
 
   //* member
-  String _joinGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}/join/';
-  String _grantMemberUrl(int groupId) => '${_groupDetailUrl(groupId)}/grant/';
-  String _exitGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}/resign/';
-  String _groupRankUrl(int groupId) => '${_groupDetailUrl(groupId)}/rank/';
+  String _joinGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}join/';
+  String _grantMemberUrl(int groupId) => '${_groupDetailUrl(groupId)}grant/';
+  String _exitGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}resign/';
+  String _groupRankUrl(int groupId) => '${_groupDetailUrl(groupId)}rank/';
+  String _getMembersUrl(int groupId) => '${_groupDetailUrl(groupId)}admin/';
+
+  //! bingo
+  static const _bingoUrl = '/boards';
+  //* CRUD
+  final _createBingoUrl = '$_bingoUrl/create/';
+  String _bingoDetailUrl(int bingoId) => '$_bingoUrl/$bingoId/';
+  String _editBingoUrl(int groupId) => '${_bingoDetailUrl(groupId)}update/';
+  String _deleteBingoUrl(int groupId) => '${_bingoDetailUrl(groupId)}delete/';
 
   //! getter
 
@@ -80,6 +89,13 @@ class UrlClass extends DioClass {
   String deleteGroupUrl(int groupId) => _deleteGroupUrl(groupId);
   String exitGroupUrl(int groupId) => _exitGroupUrl(groupId);
   String groupRankUrl(int groupId) => _groupRankUrl(groupId);
+  String getMembersUrl(int groupId) => _getMembersUrl(groupId);
+
+  //* bingo
+  String get createBingoUrl => _createBingoUrl;
+  String bingoDetailUrl(int bingoId) => _bingoDetailUrl(bingoId);
+  String editBingoUrl(int bingoId) => _editBingoUrl(bingoId);
+  String deleteBingoUrl(int bingoId) => _deleteBingoUrl(bingoId);
 
   //* username
   String get checkNameUrl => _checkNameUrl;

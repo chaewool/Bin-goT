@@ -1,20 +1,18 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/pages/bingo_form_page.dart';
+import 'package:bin_got/pages/group_rank_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
-import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -52,6 +50,7 @@ class _GroupMainState extends State<GroupMain> {
   }
 
   int memberState = 0;
+  int size = 0;
   bool needAuth = true;
 
   void verifyToken() async {
@@ -111,16 +110,16 @@ class _GroupMainState extends State<GroupMain> {
                 });
               });
             }
+            if (size != data.bingoSize) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  size = data.bingoSize;
+                });
+              });
+            }
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.read<GlobalGroupProvider>().setStart(data.start);
-              context.read<GlobalGroupProvider>().setCount(data.count);
-              context.read<GlobalGroupProvider>().setHeadCount(data.headCount);
-              context
-                  .read<GlobalGroupProvider>()
-                  .setDescription(data.description ?? '');
-              context.read<GlobalGroupProvider>().setRule(data.rule ?? '');
-              context.read<GlobalGroupProvider>().setGroupName(data.groupName);
+              context.read<GlobalGroupProvider>().setData(data);
               // setState(() {
               //   needAuth = data.needAuth;
               // });
@@ -142,8 +141,11 @@ class _GroupMainState extends State<GroupMain> {
                         onPressed: toOtherPage(
                           context,
                           page: data.bingoId != 0
-                              ? const BingoDetail()
-                              : const BingoForm(),
+                              ? BingoDetail(bingoId: data.bingoId!)
+                              : BingoForm(
+                                  bingoSize: data.bingoSize,
+                                  needAuth: data.needAuth,
+                                ),
                         ),
                         content: data.bingoId != 0 ? '내 빙고 보기' : '내 빙고 만들기',
                       )
@@ -159,10 +161,9 @@ class _GroupMainState extends State<GroupMain> {
         },
       )),
       bottomNavigationBar: BottomBar(
-        isMember: memberState != 0,
-        groupId: widget.groupId,
-        needAuth: needAuth,
-      ),
+          isMember: memberState != 0,
+          groupId: widget.groupId,
+          needAuth: needAuth),
     );
   }
 
@@ -216,95 +217,6 @@ class _GroupMainState extends State<GroupMain> {
         ),
         CustomText(content: '${data.start} ~ ${data.end}'),
       ],
-    );
-  }
-}
-
-//* 그룹 내 달성률 랭킹
-class GroupRank extends StatefulWidget {
-  final int groupId;
-  final bool isMember;
-  const GroupRank({required this.groupId, required this.isMember, super.key});
-
-  @override
-  State<GroupRank> createState() => _GroupRankState();
-}
-
-class _GroupRankState extends State<GroupRank> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: GroupAppBar(
-        onlyBack: true,
-        groupId: widget.groupId,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child:
-                    CustomText(content: '그룹 랭킹', fontSize: FontSize.titleSize),
-              ),
-              FutureBuilder(
-                future: GroupProvider().groupRank(widget.groupId),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return groupRankList(snapshot);
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              )
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomBar(
-        isMember: true,
-        groupId: widget.groupId,
-      ),
-    );
-  }
-
-  ListView groupRankList(AsyncSnapshot<RankList> snapshot) {
-    return ListView.separated(
-      itemBuilder: (context, index) {
-        var rankListItem = snapshot.data![index];
-        return RankListItem(
-          rank: index + 1,
-          rankListItem: rankListItem,
-          isMember: widget.isMember,
-        );
-      },
-      separatorBuilder: (context, index) => const SizedBox(height: 20),
-      itemCount: snapshot.data!.length,
-    );
-  }
-}
-
-//* 그룹 관리 페이지
-class GroupAdmin extends StatelessWidget {
-  final int groupId;
-  const GroupAdmin({
-    super.key,
-    required this.groupId,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AdminAppBar(
-        groupId: groupId,
-      ),
-      body: const GroupAdminTabBar(),
-      bottomNavigationBar: BottomBar(
-        isMember: true,
-        groupId: groupId,
-      ),
     );
   }
 }

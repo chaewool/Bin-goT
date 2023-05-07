@@ -1,4 +1,4 @@
-import 'package:bin_got/providers/base_class.dart';
+import 'package:bin_got/providers/base_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 
 //* provider

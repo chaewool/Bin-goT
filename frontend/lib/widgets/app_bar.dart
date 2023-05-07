@@ -1,5 +1,5 @@
+import 'package:bin_got/pages/group_admin_page.dart';
 import 'package:bin_got/pages/group_form_page.dart';
-import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/providers/group_provider.dart';

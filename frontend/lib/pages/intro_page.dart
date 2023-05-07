@@ -85,10 +85,7 @@ class _IntroState extends State<Intro> {
     verifyToken();
     afterFewSec(4, () {
       if (!showLoginBtn) {
-        toOtherPage(context,
-            page: const Main(
-                // groupId: 3,
-                ))();
+        toOtherPage(context, page: const Main())();
       }
     });
   }

@@ -1,4 +1,3 @@
-
 // class ServiceTokenModel {
 //   final String accessToken, refreshToken;
 //   final bool alreadyMember, notiRank, notiDue, notiChat;

@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 class BingoBoard extends StatefulWidget {
   final bool isDetail, hasRoundEdge, hasBorder;
   final int bingoSize, gap, checkIcon;
-  final String font;
+  final int font;
   final String? background;
   final Color eachColor;
   const BingoBoard({
@@ -81,7 +81,7 @@ class _BingoBoardState extends State<BingoBoard> {
                             index: widget.bingoSize * i + j,
                             cnt: widget.bingoSize * widget.bingoSize,
                             hasBorder: widget.hasBorder,
-                            font: widget.font,
+                            font: matchFont[widget.font],
                             checkIcon: widget.checkIcon,
                           ),
                         ),
