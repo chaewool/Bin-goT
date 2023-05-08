@@ -2,7 +2,6 @@ import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/pages/group_chat_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/pages/user_page.dart';
-import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -11,11 +10,11 @@ import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 //* 그룹에서의 하단 바
 class BottomBar extends StatelessWidget {
   final int groupId;
+  final int? size;
   final bool isMember;
   final bool? needAuth;
   const BottomBar({
@@ -23,6 +22,7 @@ class BottomBar extends StatelessWidget {
     required this.groupId,
     required this.isMember,
     this.needAuth,
+    this.size,
   });
 
   @override
@@ -60,7 +60,7 @@ class BottomBar extends StatelessWidget {
                 onPressed: toOtherPage(
                   context,
                   page: BingoForm(
-                    bingoSize: context.read<GlobalGroupProvider>().bingoSize!,
+                    bingoSize: size!,
                     needAuth: needAuth!,
                   ),
                 ),

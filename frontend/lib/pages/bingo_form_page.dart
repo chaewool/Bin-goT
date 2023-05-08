@@ -4,7 +4,6 @@ import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
-import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
@@ -38,13 +37,13 @@ class _BingoFormState extends State<BingoForm> {
   final DynamicMap bingoData = {
     'group_id': 0,
     'title': '',
-    'background': 1,
+    'background': null,
     'is_black': false,
-    'has_border': true,
-    'has_round_edge': true,
+    'has_border': false,
+    'has_round_edge': false,
     'around_kan': 0,
     'complete_icon': 0,
-    'font': 1,
+    'font': 0,
     'items': [],
   };
   @override
@@ -53,62 +52,51 @@ class _BingoFormState extends State<BingoForm> {
     bingoData['group_id'] = getGroupId(context);
   }
 
-  int font = 0;
-  int? backgroundIdx;
-  List<dynamic> selected = [
-    null,
-    [false, false, false, 0],
-    0,
-    0,
-  ];
-
-  void changeOption(int i) {
-    selected[1][i] = !selected[1][i];
+  void changeBackground(int i) {
+    if (bingoData['background'] == i) {
+      bingoData['background'] = null;
+    } else {
+      bingoData['background'] = i;
+    }
   }
 
-  void changeFont(int newFont) {
-    font = newFont;
+  ReturnVoid setOption(String key, dynamic value) {
+    return () => bingoData[key] = value;
   }
 
-  void changeBackground(int newIdx) {
-    backgroundIdx = backgroundIdx != newIdx ? newIdx : null;
-  }
-
-  void changeCheck(int newIdx) {
-    selected[3] = newIdx;
-  }
-
-  void changeSelected(int tabIndex, int i) {
-    setState(() {
-      switch (tabIndex) {
-        case 0:
-          selected[tabIndex] = i;
-          changeBackground(i);
-          break;
-        case 1:
-          switch (i) {
-            case 3:
-              selected[tabIndex][i] += selected[tabIndex][i] < 2 ? 1 : -2;
-              break;
-            default:
-              changeOption(i);
-              break;
-          }
-          break;
-        case 2:
-          selected[tabIndex] = i;
-          changeFont(i);
-          break;
-        default:
-          changeCheck(i);
-          break;
-      }
-    });
+  void changeData(int tabIndex, int i) {
+    switch (tabIndex) {
+      case 0:
+        changeBackground(i);
+        break;
+      case 1:
+        final keyList = ['has_round_edge', 'has_border', 'is_black'];
+        switch (i) {
+          case 3:
+            bingoData['around_kan'] += bingoData['around_kan'] < 2 ? 1 : -2;
+            break;
+          default:
+            bingoData[keyList[i]] = !bingoData[keyList[i]];
+            break;
+        }
+        break;
+      case 2:
+        setOption('font', i);
+        break;
+      default:
+        setOption('complete_icon', i);
+        break;
+    }
   }
 
   void createOrEditBingo() async {
     await BingoProvider()
         .createOwnBingo(FormData.fromMap({'data': bingoData, 'thumbnail': ''}));
+    if (!mounted) return;
+    toOtherPage(context,
+        page: BingoDetail(
+          bingoId: widget.bingoId!,
+        ))();
   }
 
   void bingoToThumb() async {
@@ -166,7 +154,7 @@ class _BingoFormState extends State<BingoForm> {
             flex: 2,
             child: CustomInput(
               explain: '빙고 이름',
-              setValue: (p0) {},
+              setValue: (value) => bingoData['title'] = value,
             ),
           ),
           Flexible(
@@ -176,17 +164,7 @@ class _BingoFormState extends State<BingoForm> {
               child: RepaintBoundary(
                 key: globalKey,
                 child: BingoBoard(
-                  gap: selected[1][3],
-                  hasRoundEdge: selected[1][0],
-                  eachColor: selected[1][2] ? blackColor : whiteColor,
-                  hasBorder: selected[1][1],
-                  isDetail: false,
-                  bingoSize: widget.bingoSize,
-                  font: font,
-                  background: backgroundIdx != null
-                      ? backgroundList[backgroundIdx!]
-                      : null,
-                  checkIcon: selected[3],
+                  data: bingoData,
                 ),
               ),
             ),
@@ -194,18 +172,15 @@ class _BingoFormState extends State<BingoForm> {
           Flexible(
             flex: 4,
             child: BingoTabBar(
-              selected: selected,
-              changeSelected: changeSelected,
+              data: bingoData,
+              changeData: changeData,
             ),
           ),
           Flexible(
             flex: 1,
             child: Center(
               child: CustomButton(
-                onPressed: toOtherPage(context,
-                    page: BingoDetail(
-                      bingoId: widget.bingoId!,
-                    )),
+                onPressed: createOrEditBingo,
                 content: '완료',
                 fontSize: FontSize.textSize,
               ),

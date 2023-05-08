@@ -20,10 +20,9 @@ import 'package:flutter/material.dart';
 
 //* 빙고 생성 탭
 class BingoTabBar extends StatefulWidget {
-  final List<dynamic> selected;
-  final void Function(int tabIndex, int i) changeSelected;
-  const BingoTabBar(
-      {super.key, required this.selected, required this.changeSelected});
+  final DynamicMap data;
+  final void Function(int tabIndex, int i) changeData;
+  const BingoTabBar({super.key, required this.data, required this.changeData});
 
   @override
   State<BingoTabBar> createState() => _BingoTabBarState();
@@ -54,10 +53,11 @@ class _BingoTabBarState extends State<BingoTabBar> {
       children: [
         for (int i = 2 * page; i < 2 * page + 2; i += 1)
           GestureDetector(
-            onTap: () => widget.changeSelected(0, i),
+            onTap: () => widget.changeData(0, i),
             child: ModifiedImage(
               image: backgroundList[i],
-              boxShadow: widget.selected[0] == i ? [selectedShadow] : null,
+              boxShadow:
+                  widget.data['background'] == i ? [selectedShadow] : null,
             ),
           ),
       ],
@@ -67,29 +67,31 @@ class _BingoTabBarState extends State<BingoTabBar> {
   //* 빙고칸 & font 변경
   Column optionOrFontTab(int index) {
     StringList gapList = ['좁은', '보통', '넓은'];
-    String convertedColor() => widget.selected[1][2] ? '흰색' : '검은색';
+    String convertedColor() => widget.data['is_black'] ? '흰색' : '검은색';
     String presentGap(int i) => gapList[i];
 
     StringList optionList = [
       '둥근 모서리 적용',
       '테두리 적용',
       '${convertedColor()}으로 변경',
-      '${presentGap(widget.selected[1][3])} 간격'
+      '${presentGap(widget.data['around_kan'])} 간격'
     ];
     BoxShadowList applyBoxShadow(int i, int j) {
-      int elementIdx = 2 * i + j;
-      if (index == 1) {
-        // return [defaultShadow];
-        if (elementIdx == 3) {
-          return [defaultShadow];
-        }
-        return widget.selected[index][elementIdx]
-            ? const [selectedShadow]
-            : const [defaultShadow];
-      }
-      return widget.selected[index] != elementIdx
-          ? const [defaultShadow]
-          : const [selectedShadow];
+      return [defaultShadow];
+      // final elementIdx = 2 * i + j;
+      // final keyList = ['has_round_edge', 'has_border', 'is_black'];
+      // switch (index) {
+      //   case 1:
+      //     return widget.data['background'] == j
+      //         ? const [selectedShadow]
+      //         : const [defaultShadow];
+      //   case 3:
+      //     return [defaultShadow];
+      //   default:
+      //     return widget.data[index] != elementIdx
+      //         ? const [defaultShadow]
+      //         : const [selectedShadow];
+      // }
     }
 
     return Column(
@@ -102,7 +104,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
             children: [
               for (int j = 0; j < 2; j += 1)
                 CustomBoxContainer(
-                  onTap: () => widget.changeSelected(index, 2 * i + j),
+                  onTap: () => widget.changeData(index, 2 * i + j),
                   width: 150,
                   height: 40,
                   boxShadow: applyBoxShadow(i, j),
@@ -130,10 +132,11 @@ class _BingoTabBarState extends State<BingoTabBar> {
           children: [
             for (int i = 0; i < 3; i += 1)
               CustomIconButton(
-                onPressed: () => widget.changeSelected(3, i),
+                onPressed: () => widget.changeData(3, i),
                 icon: iconList[i],
                 size: 70,
-                color: i == widget.selected[3] ? greenColor : blackColor,
+                color:
+                    i == widget.data['complete_icon'] ? greenColor : blackColor,
               ),
           ],
         ),

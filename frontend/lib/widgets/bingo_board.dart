@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/modal.dart';
@@ -11,22 +12,24 @@ import 'package:flutter/material.dart';
 
 //* 빙고판
 class BingoBoard extends StatefulWidget {
-  final bool isDetail, hasRoundEdge, hasBorder;
-  final int bingoSize, gap, checkIcon;
-  final int font;
-  final String? background;
-  final Color eachColor;
+  final DynamicMap data;
+  // final bool isDetail, hasRoundEdge, hasBorder;
+  // final int bingoSize, gap, checkIcon;
+  // final int font;
+  // final String? background;
+  // final Color eachColor;
   const BingoBoard({
     super.key,
-    this.background,
-    required this.bingoSize,
-    required this.font,
-    required this.gap,
-    required this.isDetail,
-    required this.eachColor,
-    required this.checkIcon,
-    this.hasRoundEdge = false,
-    this.hasBorder = false,
+    required this.data,
+    // this.background,
+    // required this.bingoSize,
+    // required this.font,
+    // required this.gap,
+    // required this.isDetail,
+    // required this.eachColor,
+    // required this.checkIcon,
+    // required this.hasRoundEdge,
+    // required this.hasBorder,
   });
 
   @override
@@ -34,10 +37,26 @@ class BingoBoard extends StatefulWidget {
 }
 
 class _BingoBoardState extends State<BingoBoard> {
+  late final int size, font, gap, checkIcon;
+  late final bool hasBorder, isBlack, hasRoundEdge;
+  late final int? background;
+  @override
+  void initState() {
+    super.initState();
+    gap = widget.data['around_kan'];
+    size = widget.data['bingoSize'];
+    font = widget.data['font'];
+    hasBorder = widget.data['has_border'];
+    isBlack = widget.data['is_black'];
+    hasRoundEdge = widget.data['has_round_edge'];
+    checkIcon = widget.data['complete_icon'];
+    background = widget.data['background'];
+  }
+
   @override
   Widget build(BuildContext context) {
     double applyGap() {
-      switch (widget.gap) {
+      switch (gap) {
         case 0:
           return 0;
         case 1:
@@ -54,11 +73,11 @@ class _BingoBoardState extends State<BingoBoard> {
         Flexible(
           flex: 3,
           fit: FlexFit.tight,
-          child: widget.background != null
+          child: background != null
               ? CustomBoxContainer(
                   hasRoundEdge: false,
                   image: DecorationImage(
-                    image: AssetImage(widget.background!),
+                    image: AssetImage(backgroundList[background!]),
                     fit: BoxFit.fill,
                   ),
                 )
@@ -66,23 +85,23 @@ class _BingoBoardState extends State<BingoBoard> {
         ),
         Column(
           children: [
-            for (int i = 0; i < widget.bingoSize; i += 1)
+            for (int i = 0; i < size; i += 1)
               Flexible(
                 child: Row(
                   children: [
-                    for (int j = 0; j < widget.bingoSize; j += 1)
+                    for (int j = 0; j < size; j += 1)
                       Flexible(
                         child: Padding(
                           padding: EdgeInsets.all(applyGap()),
                           child: EachBingo(
-                            hasRoundEdge: widget.hasRoundEdge,
-                            eachColor: widget.eachColor,
-                            isDetail: widget.isDetail,
-                            index: widget.bingoSize * i + j,
-                            cnt: widget.bingoSize * widget.bingoSize,
-                            hasBorder: widget.hasBorder,
-                            font: matchFont[widget.font],
-                            checkIcon: widget.checkIcon,
+                            hasRoundEdge: hasRoundEdge,
+                            eachColor: isBlack ? blackColor : whiteColor,
+                            hasBorder: hasBorder,
+                            isDetail: false,
+                            font: matchFont[font],
+                            index: size * i + j,
+                            cnt: size * size,
+                            checkIcon: checkIcon,
                           ),
                         ),
                       )

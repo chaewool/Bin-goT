@@ -91,6 +91,8 @@ class BingoDetail extends StatelessWidget {
                             context.read<GlobalGroupProvider>().bingoSize!,
                         font: data.font,
                         checkIcon: 0,
+                        hasRoundEdge: false,
+                        hasBorder: false,
                       ),
                     ),
                   ),

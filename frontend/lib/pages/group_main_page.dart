@@ -161,9 +161,11 @@ class _GroupMainState extends State<GroupMain> {
         },
       )),
       bottomNavigationBar: BottomBar(
-          isMember: memberState != 0,
-          groupId: widget.groupId,
-          needAuth: needAuth),
+        isMember: memberState != 0,
+        groupId: widget.groupId,
+        needAuth: needAuth,
+        size: size,
+      ),
     );
   }
 

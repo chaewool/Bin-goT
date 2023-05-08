@@ -96,22 +96,22 @@ class NotiProvider extends ChangeNotifier {
 
 //* group data
 class GlobalGroupProvider extends ChangeNotifier {
-  static late GroupDetailModel _data;
+  static GroupDetailModel? _data;
   static int? _groupId;
   // static int? _count, _headCount, _groupId;
   // static String? _start, _groupName, _description, _rule;
   // static bool? _hasImage;
   // static bool? _needAuth;
 
-  int? get count => _data.count;
-  int? get headCount => _data.headCount;
+  int? get count => _data?.count;
+  int? get headCount => _data?.headCount;
   int? get groupId => _groupId;
-  String? get start => _data.start;
-  String? get groupName => _data.groupName;
-  String? get description => _data.description;
-  String? get rule => _data.rule;
-  bool? get hasImage => _data.hasImage;
-  int? get bingoSize => _data.bingoSize;
+  String? get start => _data?.start;
+  String? get groupName => _data?.groupName;
+  String? get description => _data?.description;
+  String? get rule => _data?.rule;
+  bool? get hasImage => _data?.hasImage;
+  int? get bingoSize => _data?.bingoSize;
   // bool? get needAuth => _needAuth;
   void _setData(GroupDetailModel detailModel) => _data = detailModel;
 
