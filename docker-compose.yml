@@ -3,19 +3,23 @@ version: "3"
 services:
   _build_image:
     image: main_image
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
 
   backend:
     image: main_image
+    container_name: backimg
     restart: always
     command: python manage.py runserver
     ports:
-      - 8000:8000
+      - 8080:8080
     depends_on:
       - _build_image
 
   cron:
     image: main_image
+    container_name: backimg_cron
     restart: always
     command: bash -c "service cron start && python manage.py crontab add && tail -f /dev/null"
     depends_on:
