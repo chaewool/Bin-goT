@@ -39,19 +39,17 @@ class _MainState extends State<Main> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainBar(onPressed: changeSearchMode),
-      body: SingleChildScrollView(
-        child: CustomBoxContainer(
-          height: MediaQuery.of(context).size.height,
-          color: backgroundColor,
-          hasRoundEdge: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              isSearchMode ? const SearchBar() : const SizedBox(),
-              const SizedBox(height: 15),
-              const Expanded(child: MyTabBar()),
-            ],
-          ),
+      body: CustomBoxContainer(
+        height: MediaQuery.of(context).size.height,
+        color: backgroundColor,
+        hasRoundEdge: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            isSearchMode ? const SearchBar() : const SizedBox(),
+            const SizedBox(height: 15),
+            const Expanded(child: MyTabBar()),
+          ],
         ),
       ),
     );

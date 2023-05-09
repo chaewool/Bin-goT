@@ -39,7 +39,7 @@ class _BingoFormState extends State<BingoForm> {
     'title': '',
     'background': null,
     'is_black': false,
-    'has_border': false,
+    'has_border': true,
     'has_round_edge': false,
     'around_kan': 0,
     'complete_icon': 0,
@@ -53,45 +53,52 @@ class _BingoFormState extends State<BingoForm> {
   }
 
   void changeBackground(int i) {
-    if (bingoData['background'] == i) {
-      bingoData['background'] = null;
-    } else {
-      bingoData['background'] = i;
-    }
+    setState(() {
+      if (bingoData['background'] == i) {
+        bingoData['background'] = null;
+      } else {
+        bingoData['background'] = i;
+      }
+    });
   }
 
-  ReturnVoid setOption(String key, dynamic value) {
-    return () => bingoData[key] = value;
+  void setOption(String key, dynamic value) {
+    bingoData[key] = value;
   }
 
   void changeData(int tabIndex, int i) {
-    switch (tabIndex) {
-      case 0:
-        changeBackground(i);
-        break;
-      case 1:
-        final keyList = ['has_round_edge', 'has_border', 'is_black'];
-        switch (i) {
-          case 3:
-            bingoData['around_kan'] += bingoData['around_kan'] < 2 ? 1 : -2;
-            break;
-          default:
-            bingoData[keyList[i]] = !bingoData[keyList[i]];
-            break;
-        }
-        break;
-      case 2:
-        setOption('font', i);
-        break;
-      default:
-        setOption('complete_icon', i);
-        break;
-    }
+    print('$tabIndex $i');
+    print(bingoData);
+    setState(() {
+      switch (tabIndex) {
+        case 0:
+          changeBackground(i);
+          break;
+        case 1:
+          final keyList = ['has_round_edge', 'has_border', 'is_black'];
+          switch (i) {
+            case 3:
+              bingoData['around_kan'] += bingoData['around_kan'] < 2 ? 1 : -2;
+              break;
+            default:
+              bingoData[keyList[i]] = !bingoData[keyList[i]];
+              break;
+          }
+          break;
+        case 2:
+          setOption('font', i);
+          break;
+        default:
+          setOption('complete_icon', i);
+          break;
+      }
+    });
   }
 
   void createOrEditBingo() async {
-    await BingoProvider()
-        .createOwnBingo(FormData.fromMap({'data': bingoData, 'thumbnail': ''}));
+    await bingoToThumb();
+    await BingoProvider().createOwnBingo(
+        FormData.fromMap({'data': bingoData, 'thumbnail': thumbnail}));
     if (!mounted) return;
     toOtherPage(context,
         page: BingoDetail(
@@ -99,7 +106,7 @@ class _BingoFormState extends State<BingoForm> {
         ))();
   }
 
-  void bingoToThumb() async {
+  FutureBool bingoToThumb() async {
     print('시작');
     var renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject is RenderRepaintBoundary) {
@@ -111,12 +118,13 @@ class _BingoFormState extends State<BingoForm> {
         print(thumbnail);
       });
     }
+    return true;
   }
 
   void joinGroup() async {
     try {
       await GroupProvider().joinGroup(getGroupId(context)!);
-      if (!context.mounted) return;
+      if (!mounted) return;
       if (widget.needAuth == true) {
         toBack(context)();
       }
@@ -164,8 +172,10 @@ class _BingoFormState extends State<BingoForm> {
               child: RepaintBoundary(
                 key: globalKey,
                 child: BingoBoard(
-                  data: bingoData,
-                ),
+                    data: bingoData,
+                    size: widget.bingoSize,
+                    isDetail: false,
+                    changeData: changeData),
               ),
             ),
           ),

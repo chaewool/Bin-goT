@@ -50,7 +50,7 @@ class _GroupMainState extends State<GroupMain> {
   }
 
   int memberState = 0;
-  int size = 0;
+  int size = 3;
   bool needAuth = true;
 
   void verifyToken() async {

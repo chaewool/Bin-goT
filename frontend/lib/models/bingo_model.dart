@@ -24,11 +24,6 @@ class BingoFormModel {
   final bool isMine;
   final List items;
   final File thumbnail;
-  // stickers;
-
-  // 아래 부분 items의 원소
-  // int itemId, content, checkGoal;
-  // bool check,;
 
   BingoFormModel.fromJson(Map<dynamic, dynamic> json)
       : background = json['background'],

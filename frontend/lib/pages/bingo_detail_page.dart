@@ -22,9 +22,32 @@ class BingoDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int groupId = 0;
+    GlobalKey globalKey = GlobalKey();
+
     void deleteBingo() {
       final start = context.read<GlobalGroupProvider>().start;
       if (start != '') {}
+    }
+
+    Map<String, dynamic> bingoToMap(BingoDetailModel bingoDetail) {
+      final Map<String, dynamic> bingoDetailMap = {};
+      bingoDetailMap['group_id'] = bingoDetail.groupId;
+      bingoDetailMap['author_id'] = bingoDetail.authorId;
+      bingoDetailMap['achieve'] = bingoDetail.achieve;
+      bingoDetailMap['title'] = bingoDetail.title;
+      bingoDetailMap['is_black'] = bingoDetail.hasBlackBox;
+      bingoDetailMap['has_round_edge'] = bingoDetail.hasRoundEdge;
+      bingoDetailMap['background'] = bingoDetail.background;
+      bingoDetailMap['has_boarder'] = bingoDetail.hasBoarder;
+      bingoDetailMap['around_kan'] = bingoDetail.gap;
+      bingoDetailMap['complete_icon'] = bingoDetail.completeIcon;
+      bingoDetailMap['font'] = bingoDetail.font;
+      bingoDetailMap['items'] = bingoDetail.items;
+
+      groupId = bingoDetail.groupId;
+
+      return bingoDetailMap;
     }
 
     return Scaffold(
@@ -39,11 +62,12 @@ class BingoDetail extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Flexible(
-                      flex: 2,
-                      child: CustomText(
-                        content: data.title,
-                        fontSize: FontSize.titleSize,
-                      )),
+                    flex: 2,
+                    child: CustomText(
+                      content: data.title,
+                      fontSize: FontSize.titleSize,
+                    ),
+                  ),
                   Flexible(
                     flex: 2,
                     child: Padding(
@@ -78,40 +102,36 @@ class BingoDetail extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Flexible(
+                  Flexible(
                     flex: 6,
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: SizedBox(),
-                      // BingoBoard(
-                      //   data: data,
-                      //   gap: data.gap,
-                      //   eachColor:
-                      //       data.hasBlackBox == true ? blackColor : whiteColor,
-                      //   isDetail: true,
-                      //   bingoSize:
-                      //       context.read<GlobalGroupProvider>().bingoSize!,
-                      //   font: data.font,
-                      //   checkIcon: 0,
-                      //   hasRoundEdge: false,
-                      //   hasBorder: false,
-                      // ),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: RepaintBoundary(
+                        key: globalKey,
+                        child: BingoBoard(
+                          data: bingoToMap(data),
+                          size: context.read<GlobalGroupProvider>().bingoSize!,
+                          isDetail: true,
+                        ),
+                      ),
                     ),
                   ),
                   Flexible(
-                      flex: 2,
-                      child: CustomText(
-                          content: '달성률 : ${data.achieve}%',
-                          fontSize: FontSize.largeSize))
+                    flex: 2,
+                    child: CustomText(
+                      content: '달성률 : ${data.achieve}%',
+                      fontSize: FontSize.largeSize,
+                    ),
+                  )
                 ],
               );
             }
             return const Center(child: CustomText(content: '정보를 불러오는 중입니다'));
           },
         ),
-        bottomNavigationBar: const BottomBar(
+        bottomNavigationBar: BottomBar(
           isMember: true,
-          groupId: 1,
+          groupId: groupId,
         ) // 수정 필요,
         );
   }

@@ -77,21 +77,18 @@ class _BingoTabBarState extends State<BingoTabBar> {
       '${presentGap(widget.data['around_kan'])} 간격'
     ];
     BoxShadowList applyBoxShadow(int i, int j) {
-      return [defaultShadow];
-      // final elementIdx = 2 * i + j;
-      // final keyList = ['has_round_edge', 'has_border', 'is_black'];
-      // switch (index) {
-      //   case 1:
-      //     return widget.data['background'] == j
-      //         ? const [selectedShadow]
-      //         : const [defaultShadow];
-      //   case 3:
-      //     return [defaultShadow];
-      //   default:
-      //     return widget.data[index] != elementIdx
-      //         ? const [defaultShadow]
-      //         : const [selectedShadow];
-      // }
+      final elementIdx = 2 * i + j;
+      switch (index) {
+        case 1:
+          final keyList = ['has_round_edge', 'has_border'];
+          return i == 0 && widget.data[keyList[j]]
+              ? [selectedShadow]
+              : [defaultShadow];
+        default:
+          return widget.data['font'] != elementIdx
+              ? const [defaultShadow]
+              : const [selectedShadow];
+      }
     }
 
     return Column(

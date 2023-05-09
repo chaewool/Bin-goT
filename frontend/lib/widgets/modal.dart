@@ -15,48 +15,44 @@ import 'package:flutter/material.dart';
 class BingoModal extends StatefulWidget {
   final bool isDetail;
   final int index, cnt;
-  const BingoModal(
-      {super.key,
-      required this.index,
-      required this.cnt,
-      required this.isDetail});
+  final List<dynamic>? items;
+  const BingoModal({
+    super.key,
+    required this.index,
+    required this.cnt,
+    required this.isDetail,
+    this.items,
+  });
 
   @override
   State<BingoModal> createState() => _BingoModalState();
 }
 
 class _BingoModalState extends State<BingoModal> {
+  late int newIdx;
+  late DynamicMap item;
+  @override
+  void initState() {
+    super.initState();
+    newIdx = widget.index;
+  }
+
   @override
   Widget build(BuildContext context) {
-    ReturnVoid moveBingo(bool toRight) {
+    void moveBingo(bool toRight) {
       if (toRight) {
-        if (widget.index < widget.cnt - 1) {
-          return () {
-            toBack(context)();
-            showModal(
-              context,
-              page: BingoModal(
-                isDetail: widget.isDetail,
-                index: widget.index + 1,
-                cnt: widget.cnt,
-              ),
-            )();
-          };
+        if (newIdx < widget.cnt - 1) {
+          setState(() {
+            newIdx += 1;
+            item = widget.items![newIdx];
+          });
         }
-      } else if (0 < widget.index) {
-        return () {
-          toBack(context)();
-          showModal(
-            context,
-            page: BingoModal(
-              isDetail: widget.isDetail,
-              index: widget.index - 1,
-              cnt: widget.cnt,
-            ),
-          )();
-        };
+      } else if (newIdx > 0) {
+        setState(() {
+          newIdx -= 1;
+          item = widget.items![newIdx];
+        });
       }
-      return () {};
     }
 
     bool isChecked = false;
@@ -78,17 +74,23 @@ class _BingoModalState extends State<BingoModal> {
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            CustomText(content: '${widget.index + 1}/${widget.cnt}'),
+            CustomText(content: '${newIdx + 1}/${widget.cnt}'),
             CustomInput(
               width: 200,
               height: 50,
               explain: '제목',
               setValue: (p0) {},
+              initialValue: widget.isDetail ? item[newIdx]['title'] : null,
+              enabled: !widget.isDetail,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                CustomIconButton(onPressed: moveBingo(false), icon: leftIcon),
+                CustomIconButton(
+                  onPressed: () => moveBingo(false),
+                  icon: leftIcon,
+                  size: 50,
+                ),
                 CustomInput(
                   explain: '이루고 싶은 목표를 설정해주세요',
                   needMore: true,
@@ -96,9 +98,15 @@ class _BingoModalState extends State<BingoModal> {
                   height: 200,
                   enabled: !widget.isDetail,
                   fontSize: FontSize.textSize,
+                  initialValue:
+                      widget.isDetail ? item[newIdx]['content'] : null,
                   setValue: (p0) {},
                 ),
-                CustomIconButton(onPressed: moveBingo(true), icon: rightIcon)
+                CustomIconButton(
+                  onPressed: () => moveBingo(true),
+                  icon: rightIcon,
+                  size: 50,
+                )
               ],
             ),
             Row(
