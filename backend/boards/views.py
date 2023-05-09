@@ -74,7 +74,7 @@ class BoardDetailView(APIView):
             if item['finished']:
                 achieve += 1
         
-        data = {**serializer.data, 'acheive':achieve / (board.group.size ** 2)}
+        data = {**serializer.data, 'username': board.user.username, 'acheive': achieve / (board.group.size ** 2)}
         
         return Response(data=data, status=status.HTTP_200_OK)
 

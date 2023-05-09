@@ -9,7 +9,7 @@ from boards.models import Board
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('noti_rank', 'noti_due', 'noti_chat')
+        fields = ('noti_rank', 'noti_due', 'noti_chat', 'id')
 
 
 class BadgeSerializer(serializers.ModelSerializer):
