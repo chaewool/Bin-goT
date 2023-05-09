@@ -78,22 +78,24 @@ class BingoDetail extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Flexible(
+                  const Flexible(
                     flex: 6,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: BingoBoard(
-                        gap: data.gap,
-                        eachColor:
-                            data.hasBlackBox == true ? blackColor : whiteColor,
-                        isDetail: true,
-                        bingoSize:
-                            context.read<GlobalGroupProvider>().bingoSize!,
-                        font: data.font,
-                        checkIcon: 0,
-                        hasRoundEdge: false,
-                        hasBorder: false,
-                      ),
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: SizedBox(),
+                      // BingoBoard(
+                      //   data: data,
+                      //   gap: data.gap,
+                      //   eachColor:
+                      //       data.hasBlackBox == true ? blackColor : whiteColor,
+                      //   isDetail: true,
+                      //   bingoSize:
+                      //       context.read<GlobalGroupProvider>().bingoSize!,
+                      //   font: data.font,
+                      //   checkIcon: 0,
+                      //   hasRoundEdge: false,
+                      //   hasBorder: false,
+                      // ),
                     ),
                   ),
                   Flexible(
