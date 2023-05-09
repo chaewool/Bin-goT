@@ -11,7 +11,7 @@ services:
     image: main_image
     container_name: backimg
     restart: always
-    command: python manage.py runserver
+    command: python manage.py runserver 0.0.0.0:8080
     ports:
       - 8080:8080
     depends_on:
