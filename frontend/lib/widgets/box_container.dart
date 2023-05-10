@@ -1,3 +1,4 @@
+import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -18,7 +19,7 @@ class ShowContentBox extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(content: contentTitle, fontSize: FontSize.textSize),
+          CustomText(content: contentTitle),
           const SizedBox(height: 20),
           CustomBoxContainer(
             width: 300,
@@ -26,7 +27,7 @@ class ShowContentBox extends StatelessWidget {
             borderColor: greyColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              child: CustomText(content: content, fontSize: FontSize.textSize),
+              child: CustomText(content: content),
             ),
           )
         ],
@@ -37,43 +38,23 @@ class ShowContentBox extends StatelessWidget {
 
 //* 갤러리형 빙고 목록
 class BingoGallery extends StatelessWidget {
-  final WidgetList bingoList;
-  const BingoGallery({super.key, required this.bingoList});
+  final MyBingoModel bingo;
+  const BingoGallery({super.key, required this.bingo});
 
   @override
   Widget build(BuildContext context) {
-    int bingoRows = bingoList.length ~/ 2;
-    return Column(
-      children: [
-        for (int i = 0; i < bingoRows; i += 1)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              for (int j = 0; j < 2; j += 1)
-                GestureDetector(
-                  onTap: toOtherPage(
-                    context: context,
-                    page: const BingoDetail(),
-                  ),
-                  child: bingoList[2 * i + j],
-                )
-            ],
-          ),
-        bingoList.length % 2 == 1
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: toOtherPage(
-                      context: context,
-                      page: const BingoDetail(),
-                    ),
-                    child: bingoList.last,
-                  )
-                ],
-              )
-            : const SizedBox(),
-      ],
+    return GestureDetector(
+      onTap: toOtherPage(
+        context,
+        page: BingoDetail(
+          bingoId: bingo.id,
+        ),
+      ),
+      child: const CustomBoxContainer(
+        width: 150,
+        height: 200,
+        color: greenColor,
+      ),
     );
   }
 }
@@ -86,6 +67,8 @@ class CustomBoxContainer extends StatelessWidget {
   final BoxShadowList? boxShadow;
   final double? width, height;
   final Widget? child;
+  final DecorationImage? image;
+  final ReturnVoid? onTap, onLongPress;
   const CustomBoxContainer({
     super.key,
     this.hasRoundEdge = true,
@@ -94,20 +77,29 @@ class CustomBoxContainer extends StatelessWidget {
     this.boxShadow,
     this.width,
     this.height,
+    this.image,
     this.child,
+    this.onTap,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
+    return GestureDetector(
+      onLongPress: onLongPress,
+      onTap: onTap,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
           borderRadius: hasRoundEdge ? BorderRadius.circular(10) : null,
           color: color,
           boxShadow: boxShadow,
-          border: borderColor != null ? Border.all(color: borderColor!) : null),
-      child: child,
+          border: borderColor != null ? Border.all(color: borderColor!) : null,
+          image: image,
+        ),
+        child: child,
+      ),
     );
   }
 }

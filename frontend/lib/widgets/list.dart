@@ -1,56 +1,90 @@
-import 'package:bin_got/pages/bingo_detail_page.dart';
+import 'package:bin_got/models/group_model.dart';
+import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 //* 그룹 목록
-class GroupList extends StatelessWidget {
+class GroupListItem extends StatelessWidget {
   final bool isSearchMode;
-  const GroupList({super.key, required this.isSearchMode});
+  final MyGroupModel groupInfo;
+  const GroupListItem({
+    super.key,
+    required this.isSearchMode,
+    required this.groupInfo,
+  });
 
   @override
   Widget build(BuildContext context) {
-    const String count = '(5/10)';
-    return CustomList(
-        height: 70,
-        boxShadow: [shadowWithOpacity],
-        onTap: toOtherPage(context: context, page: const GroupMain()),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const CustomText(content: '미라클 모닝', fontSize: FontSize.textSize),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CustomText(content: 'D-day', fontSize: FontSize.textSize),
-                const SizedBox(height: 5),
-                isSearchMode
-                    ? const CustomText(
-                        content: count, fontSize: FontSize.smallSize)
-                    : const SizedBox(),
-              ],
-            )
-          ],
-        ));
+    String showedDif() {
+      final difference =
+          DateTime.now().difference(DateTime.parse(groupInfo.start)).inDays;
+      if (difference < 0) {
+        return 'D - ${-difference}';
+      } else if (difference > 0) {
+        return 'D + $difference';
+      }
+      return 'D-Day';
+    }
+
+    String groupMember = '(${groupInfo.count}/${groupInfo.headCount})';
+    return Stack(
+      alignment: AlignmentDirectional.topEnd,
+      children: [
+        CustomList(
+          height: 70,
+          boxShadow: [shadowWithOpacity],
+          onTap: toOtherPage(
+            context,
+            page: GroupMain(
+              groupId: groupInfo.id,
+              isPublic: groupInfo.isPublic ?? true,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(content: groupInfo.name),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomText(content: showedDif()),
+                  const SizedBox(height: 5),
+                  isSearchMode
+                      ? CustomText(
+                          content: groupMember,
+                          fontSize: FontSize.smallSize,
+                        )
+                      : const SizedBox(),
+                ],
+              )
+            ],
+          ),
+        ),
+        groupInfo.hasBingo == false
+            ? const CustomIcon(icon: alertIcon)
+            : const SizedBox(),
+      ],
+    );
   }
 }
 
 //* 순위 목록
-class RankList extends StatelessWidget {
-  final int rank, achievement;
-  final String nickname;
+class RankListItem extends StatelessWidget {
+  final int rank;
+  final GroupRankModel rankListItem;
   final bool isMember;
-  const RankList({
+  const RankListItem({
     super.key,
     required this.rank,
-    required this.nickname,
-    required this.achievement,
-    this.isMember = true,
+    required this.rankListItem,
+    required this.isMember,
   });
 
   @override
@@ -58,9 +92,8 @@ class RankList extends StatelessWidget {
     return CustomList(
       height: 70,
       boxShadow: const [defaultShadow],
-      onTap: isMember
-          ? toOtherPage(context: context, page: const BingoDetail())
-          : null,
+      onTap: () {},
+      // isMember ? toOtherPage(context, page: const BingoDetail()) : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -74,57 +107,7 @@ class RankList extends StatelessWidget {
           ),
           const SizedBox(width: 30),
           CustomText(
-              content: '$nickname / $achievement%',
-              fontSize: FontSize.textSize),
-        ],
-      ),
-    );
-  }
-}
-
-//* group admin
-class MemberList extends StatelessWidget {
-  final Image image;
-  final String nickname;
-  final bool isMember;
-  const MemberList(
-      {super.key,
-      required this.image,
-      required this.nickname,
-      required this.isMember});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomList(
-      height: 70,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle, border: Border.all(color: greyColor)),
-            child: image,
-          ),
-          CustomText(content: nickname, fontSize: FontSize.textSize),
-          Row(
-            children: [
-              isMember
-                  ? const SizedBox()
-                  : IconButtonInRow(
-                      icon: confirmIcon,
-                      onPressed: () {},
-                      color: greenColor,
-                    ),
-              IconButtonInRow(
-                icon: closeIcon,
-                onPressed: () {},
-                color: isMember ? blackColor : redColor,
-              ),
-            ],
-          )
+              content: '${rankListItem.nickname} / ${rankListItem.achieve}%'),
         ],
       ),
     );
@@ -149,19 +132,14 @@ class CustomList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      child: GestureDetector(
+      child: CustomBoxContainer(
         onTap: onTap,
-        child: Container(
-          height: height,
-          width: width,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: boxShadow,
-              color: whiteColor),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: child,
-          ),
+        height: height,
+        width: width,
+        boxShadow: boxShadow,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: child,
         ),
       ),
     );
@@ -169,23 +147,23 @@ class CustomList extends StatelessWidget {
 }
 
 //* 빙고 목록
-class BingoList extends StatelessWidget {
-  const BingoList({super.key});
+// class BingoList extends StatelessWidget {
+//   const BingoList({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return CustomList(
-      height: 70,
-      boxShadow: const [defaultShadow],
-      onTap: toOtherPage(context: context, page: const BingoDetail()),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
-          CustomText(content: '빙고 이름', fontSize: FontSize.textSize),
-          CustomText(content: '그룹 이름', fontSize: FontSize.textSize),
-          CustomText(content: 'D-day', fontSize: FontSize.textSize),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return CustomList(
+//       height: 70,
+//       boxShadow: const [defaultShadow],
+//       onTap: toOtherPage(context, page: const BingoDetail()),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: const [
+//           CustomText(content: '빙고 이름'),
+//           CustomText(content: '그룹 이름'),
+//           CustomText(content: 'D-day'),
+//         ],
+//       ),
+//     );
+//   }
+// }

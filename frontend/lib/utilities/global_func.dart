@@ -1,62 +1,38 @@
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:flutter/material.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk_share.dart';
+import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
+import 'package:provider/provider.dart';
 
-final FeedTemplate defaultFeed = FeedTemplate(
-  content: Content(
-    title: '딸기 치즈 케익',
-    description: '#케익 #딸기 #삼평동 #카페 #분위기 #소개팅',
-    imageUrl: Uri.parse(
-        'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
+//* 함수
+
+//* 공유 템플릿
+TextTemplate defaultText({
+  required int groupId,
+  String? password,
+}) {
+  return TextTemplate(
+    text: 'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요',
     link: Link(
-        webUrl: Uri.parse('https://developers.kakao.com'),
-        mobileWebUrl: Uri.parse('https://developers.kakao.com')),
-  ),
-  itemContent: ItemContent(
-    profileText: 'Kakao',
-    profileImageUrl: Uri.parse(
-        'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-    titleImageUrl: Uri.parse(
-        'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-    titleImageText: 'Cheese cake',
-    titleImageCategory: 'cake',
-    items: [
-      ItemInfo(item: 'cake1', itemOp: '1000원'),
-      ItemInfo(item: 'cake2', itemOp: '2000원'),
-      ItemInfo(item: 'cake3', itemOp: '3000원'),
-      ItemInfo(item: 'cake4', itemOp: '4000원'),
-      ItemInfo(item: 'cake5', itemOp: '5000원')
-    ],
-    sum: 'total',
-    sumOp: '15000원',
-  ),
-  social: Social(likeCount: 286, commentCount: 45, sharedCount: 845),
-  buttons: [
-    Button(
-      title: '웹으로 보기',
-      link: Link(
-        webUrl: Uri.parse('https: //developers.kakao.com'),
-        mobileWebUrl: Uri.parse('https: //developers.kakao.com'),
-      ),
+      webUrl: Uri.parse(''),
+      mobileWebUrl: Uri.parse(''),
     ),
-    Button(
-      title: '앱으로보기',
-      link: Link(
-        androidExecutionParams: {'key1': 'value1', 'key2': 'value2'},
-        iosExecutionParams: {'key1': 'value1', 'key2': 'value2'},
-      ),
-    ),
-  ],
-);
+  );
+}
 
-void shareToFriends() async {
+//* 공유
+void shareToFriends({required int groupId, String? password}) async {
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
 
   if (isKakaoTalkSharingAvailable) {
     try {
-      Uri uri = await ShareClient.instance.shareDefault(template: defaultFeed);
+      Uri uri = await ShareClient.instance.shareDefault(
+          template: defaultText(
+        groupId: groupId,
+        password: password,
+      ));
       await ShareClient.instance.launchKakaoTalk(uri);
       print('카카오톡 공유 완료');
     } catch (error) {
@@ -64,8 +40,11 @@ void shareToFriends() async {
     }
   } else {
     try {
-      Uri shareUrl =
-          await WebSharerClient.instance.makeDefaultUrl(template: defaultFeed);
+      Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
+          template: defaultText(
+        groupId: groupId,
+        password: password,
+      ));
       await launchBrowserTab(shareUrl, popupOpen: true);
     } catch (error) {
       print('카카오톡 공유 실패 $error');
@@ -73,17 +52,20 @@ void shareToFriends() async {
   }
 }
 
-ReturnVoid toOtherPage({required BuildContext context, required Widget page}) {
+//* 페이지 이동
+ReturnVoid toOtherPage(BuildContext context, {required Widget page}) {
   return () =>
       Navigator.push(context, MaterialPageRoute(builder: (context) => page));
 }
 
-ReturnVoid toBack({required BuildContext context}) {
+//* 뒤로 가기
+ReturnVoid toBack(BuildContext context) {
   return () => Navigator.pop(context);
 }
 
-ReturnVoid showAlert({
-  required BuildContext context,
+//* alert 띄우기
+ReturnVoid showAlert(
+  BuildContext context, {
   required String title,
   required String content,
   ReturnVoid? onPressed,
@@ -91,6 +73,7 @@ ReturnVoid showAlert({
 }) {
   return () => showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => CustomAlert(
             title: title,
             content: content,
@@ -99,6 +82,33 @@ ReturnVoid showAlert({
           ));
 }
 
-ReturnVoid showModal({required BuildContext context, required Widget page}) {
-  return () => showDialog(context: context, builder: (context) => page);
+//* modal 띄우기
+ReturnVoid showModal(BuildContext context, {required Widget page}) {
+  return () => showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => page,
+      );
 }
+
+//*
+String? getToken(BuildContext context) => context.read<AuthProvider>().token;
+
+void setToken(BuildContext context, String? newToken) =>
+    context.read<AuthProvider>().setStoreToken(newToken);
+
+void setTokens(BuildContext context, String? newToken, String? newRefresh) {
+  final auth = context.read<AuthProvider>();
+  auth.setStoreToken(newToken);
+  auth.setStoreRefresh(newRefresh);
+}
+
+void setNoti(BuildContext context, {bool? rank, bool? due, bool? chat}) {
+  final noti = context.read<NotiProvider>();
+  noti.setStoreRank(rank);
+  noti.setStoreDue(due);
+  noti.setStoreChat(chat);
+}
+
+int? getGroupId(BuildContext context) =>
+    context.read<GlobalGroupProvider>().groupId;
