@@ -1,8 +1,10 @@
+import 'package:bin_got/models/user_info_model.dart';
+import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/box_container.dart';
-import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/search_bar.dart';
+import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:flutter/material.dart';
 
 //* 메인 페이지
@@ -14,7 +16,15 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
+  late Future<MainTabModel> groups;
   bool isSearchMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    groups = UserInfoProvider().getMainTabData();
+  }
+
   void changeSearchMode() {
     setState(() {
       if (isSearchMode) {
@@ -29,19 +39,19 @@ class _MainState extends State<Main> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainBar(onPressed: changeSearchMode),
-      body: SingleChildScrollView(
-          child: CustomBoxContainer(
+      body: CustomBoxContainer(
+        height: MediaQuery.of(context).size.height,
         color: backgroundColor,
         hasRoundEdge: false,
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           children: [
             isSearchMode ? const SearchBar() : const SizedBox(),
             const SizedBox(height: 15),
-            for (int i = 0; i < 10; i += 1)
-              const GroupList(isSearchMode: false),
+            const Expanded(child: MyTabBar()),
           ],
         ),
-      )),
+      ),
     );
   }
 }

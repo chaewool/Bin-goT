@@ -6,6 +6,7 @@ import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
+//* 기본 버튼
 class CustomButton extends StatelessWidget {
   final ReturnVoid onPressed;
   final String content;
@@ -14,7 +15,7 @@ class CustomButton extends StatelessWidget {
       {super.key,
       required this.onPressed,
       required this.content,
-      this.fontSize = FontSize.textSize});
+      this.fontSize = FontSize.smallSize});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,7 @@ class CustomButton extends StatelessWidget {
   }
 }
 
+//* 닫기, 취소, 나가기 버튼
 class ExitButton extends StatelessWidget {
   final bool isIconType;
   final IconData icon;
@@ -41,13 +43,17 @@ class ExitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return isIconType
-        ? IconButton(
-            onPressed: toBack(context: context), icon: CustomIcon(icon: icon))
+        ? IconButton(onPressed: toBack(context), icon: CustomIcon(icon: icon))
         : OutlinedButton(
-            onPressed: toBack(context: context), child: Text(buttonText));
+            onPressed: toBack(context),
+            child: CustomText(
+              content: buttonText,
+              fontSize: FontSize.smallSize,
+            ));
   }
 }
 
+//* 아이콘 버튼
 class CustomIconButton extends StatelessWidget {
   final IconData icon;
   final ReturnVoid onPressed;
@@ -71,10 +77,12 @@ class CustomIconButton extends StatelessWidget {
       ),
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(),
+      iconSize: size,
     );
   }
 }
 
+//* 아이콘 버튼에 padding 추가
 class IconButtonInRow extends StatelessWidget {
   final IconData icon;
   final ReturnVoid onPressed;
@@ -102,15 +110,17 @@ class IconButtonInRow extends StatelessWidget {
   }
 }
 
+//* 텍스트 버튼
 class CustomTextButton extends StatelessWidget {
   final String content;
   final FontSize fontSize;
   final ReturnVoid onTap;
-  const CustomTextButton(
-      {super.key,
-      required this.content,
-      required this.fontSize,
-      required this.onTap});
+  const CustomTextButton({
+    super.key,
+    required this.content,
+    required this.onTap,
+    this.fontSize = FontSize.textSize,
+  });
 
   @override
   Widget build(BuildContext context) {

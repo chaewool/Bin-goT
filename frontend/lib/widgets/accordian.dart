@@ -1,9 +1,13 @@
+import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class EachAccordion extends StatefulWidget {
-  final String question, answer;
+  final Widget question, answer;
   const EachAccordion(
       {super.key, required this.question, required this.answer});
 
@@ -22,18 +26,12 @@ class _EachAccordionState extends State<EachAccordion> {
           ExpansionPanel(
             canTapOnHeader: true,
             headerBuilder: (context, isExpended) => Center(
-              child: CustomText(
-                content: widget.question,
-                fontSize: FontSize.textSize,
-              ),
+              child: widget.question,
             ),
             body: Padding(
               padding: const EdgeInsets.only(bottom: 15),
               child: Center(
-                child: CustomText(
-                  content: widget.answer,
-                  fontSize: FontSize.textSize,
-                ),
+                child: widget.answer,
               ),
             ),
             isExpanded: accordianState,
@@ -45,6 +43,72 @@ class _EachAccordionState extends State<EachAccordion> {
           });
         },
       ),
+    );
+  }
+}
+
+//* group admin
+class MemberList extends StatelessWidget {
+  final int id, bingoId;
+  final String nickname;
+  final bool isMember;
+  const MemberList({
+    super.key,
+    required this.id,
+    required this.nickname,
+    required this.isMember,
+    required this.bingoId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    void manageMember(bool grant) async {
+      try {
+        await GroupProvider().grantThisMember(
+          getGroupId(context)!,
+          {'target_id': id, 'grant': grant},
+        );
+      } catch (error) {
+        showAlert(context,
+            title: '요청 실패', content: '오류가 발생해 요청한 작업이 처리되지 않았습니다.')();
+      }
+    }
+
+    return EachAccordion(
+      question: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: greyColor),
+            ),
+            child: halfLogo,
+          ),
+          CustomText(content: nickname),
+          Row(
+            children: [
+              isMember
+                  ? const SizedBox()
+                  : IconButtonInRow(
+                      icon: confirmIcon,
+                      onPressed: () => manageMember(true),
+                      color: greenColor,
+                    ),
+              IconButtonInRow(
+                icon: closeIcon,
+                onPressed: () => manageMember(false),
+                color: isMember ? blackColor : redColor,
+              ),
+            ],
+          )
+        ],
+      ),
+      answer: const SizedBox(),
+      // Image.network('${dotenv.env['fileUrl']}/bingos/$bingoId'),
     );
   }
 }

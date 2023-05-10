@@ -1,16 +1,18 @@
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
-// logo
+//* logo
 var halfLogo = Image.asset(
   'assets/logos/bin_got_logo_1x.png',
   scale: 4,
 );
+//* login
 var kakaoLogin = Image.asset(
   'assets/images/kakao_login_button.png',
   scale: 1.4,
 );
 
-// icon
+//* icon
 const searchIcon = Icons.search_rounded;
 const myPageIcon = Icons.person;
 const createGroupIcon = Icons.add_circle_outline_outlined;
@@ -33,3 +35,29 @@ const chatIcon = Icons.chat;
 const bellIcon = Icons.notifications_none;
 const helpIcon = Icons.help_outline;
 const saveIcon = Icons.save;
+const sendIcon = Icons.send;
+const circleIcon = Icons.circle_outlined;
+const alertIcon = Icons.add_circle_outline;
+
+const leftIcon = Icons.chevron_left_rounded;
+const rightIcon = Icons.chevron_right_rounded;
+const downIcon = Icons.arrow_drop_down;
+
+final iconList = [confirmIcon, closeIcon, circleIcon];
+
+//* background image
+var iceBall = 'assets/images/aaron-burden.jpg';
+var plant = 'assets/images/annie-spratt.jpg';
+var milkyway = 'assets/images/greg-rakozy.jpg';
+var wall = 'assets/images/joe-woods.jpg';
+var gradation = 'assets/images/luke-chesser.jpg';
+var daySky = 'assets/images/resul-mentes.jpg';
+
+StringList backgroundList = [
+  iceBall,
+  plant,
+  milkyway,
+  wall,
+  gradation,
+  daySky,
+];
