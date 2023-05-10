@@ -491,17 +491,24 @@ class GroupAdminView(APIView):
         members = []
         
         for participate in Participate.objects.filter(group=group):
+            board = Board.objects.filter(user=user, group=group)
+            
+            if board:
+                board_id = board[0].id
+            else:
+                board_id = -1
+            
             if participate.is_banned == 1:
                 applicants.append({
                     'id': participate.user.id,
                     'username': participate.user.username,
-                    'board_id': Board.objects.get(user=user, group=group).id
+                    'board_id': board_id
                     })
             elif participate.is_banned == 0:
                 members.append({
                     'id': participate.user.id,
                     'username': participate.user.username,
-                    'board_id': Board.objects.get(user=user, group=group).id
+                    'board_id': board_id
                     })
         
         data = {'applicants': applicants, 'members': members, 'need_auth': group.need_auth}
