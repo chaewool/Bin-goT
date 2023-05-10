@@ -19,8 +19,7 @@ class MyGroupModel {
 
 class MyBingoModel {
   final int id;
-  final String groupName, status;
-  final DateTime start;
+  final String groupName, status, start;
   MyBingoModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         groupName = json['groupname'],
