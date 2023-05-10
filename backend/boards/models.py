@@ -1,27 +1,32 @@
 from django.db import models
 from django.conf import settings
-from groups.models import Group
+
 
 class Board(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    title = models.CharField(max_length=20, unique=True, null=False)
-    background = models.IntegerField(null=False)
-    color_text = models.CharField(max_length=6, null=False)
-    color_line = models.CharField(max_length=6, null=False)
-    line_style = models.IntegerField(null=False)
-    font = models.IntegerField(null=False)
+    group = models.ForeignKey('groups.Group', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='boards')
+    title = models.CharField(max_length=20)
+    background = models.IntegerField(default=0)
+    is_black = models.BooleanField(default=False)
+    has_border = models.BooleanField(default=False)
+    has_round_edge = models.BooleanField(default=False)
+    around_kan = models.IntegerField(default=0)
+    complete_icon = models.IntegerField(default=0)
+    font = models.IntegerField()
 
     def __str__(self) -> str:
         return f'{self.group} - {self.user} : {self.title}'
 
+
 class BoardItem(models.Model):
-    board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    content = models.CharField(max_length=100, null=False)
-    check = models.BooleanField(null=False)
-    check_goal = models.IntegerField()
-    check_cnt = models.IntegerField()
-    finished = models.BooleanField(null=False, default=False)
+    board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='items')
+    item_id = models.IntegerField(default=0)
+    title = models.CharField(max_length=20, )
+    content = models.CharField(max_length=100, )
+    check = models.BooleanField() # 횟수 측정 여부
+    check_goal = models.IntegerField(null=True) # 목표 횟수
+    check_cnt = models.IntegerField(null=True) # 현재까지 수행한 횟수
+    finished = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'{self.board} - {self.item_id}'

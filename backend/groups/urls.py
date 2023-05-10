@@ -13,5 +13,15 @@ urlpatterns = [
     path('<int:group_id>/grant/', views.GroupGrantView.as_view(), name='group_grant'),
     path('<int:group_id>/resign/', views.GroupResignView.as_view(), name='group_resign'),
     
+    path('<int:group_id>/rank/', views.GroupRankView.as_view(), name='group_rank'),
+    
+    path('<int:group_id>/chat/create/', views.GroupChatCreateView.as_view(), name='group_chat_create'),
+    path('<int:group_id>/chat/list/', views.GroupChatListView.as_view(), name='group_chat_list'),
+
+    path('<int:group_id>/review/create/', views.GroupReviewCreateView.as_view(), name='group_review_create'),
+    path('<int:group_id>/review/check/', views.GroupReviewCheckView.as_view(), name='group_review_check'),
+    
+    path('<int:group_id>/admin/', views.GroupAdminView.as_view(), name='group_admin'),
+    
     path('search/', views.GroupSearchView.as_view(), name='group_search'),
 ]

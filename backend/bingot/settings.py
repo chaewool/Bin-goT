@@ -43,13 +43,13 @@ INSTALLED_APPS = [
     'accounts',
     'groups',
     'boards',
-    'articles',
 
     # third party apps
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'django_crontab',
 
     # django apps
     'django.contrib.admin',
@@ -162,8 +162,7 @@ CORS_ALLOWED_ORIGINS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        # 'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -171,8 +170,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=6),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'TOKEN_USER_CLASS': 'user.User',
@@ -227,3 +226,10 @@ LOGGING = {
         },
     },
 }
+
+
+# crontab
+
+CRONJOBS = [
+    ('0 0 * * *', 'groups.cron.every_day', '>> ./files/log/cron.log'),
+]

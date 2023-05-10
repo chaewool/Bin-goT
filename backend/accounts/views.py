@@ -7,15 +7,19 @@ from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import requests
 import logging
+from datetime import date
 
 from bingot_settings import KAKAO_REST_API_KEY
-from commons import SUCCESS, FAIL
-from .serializers import UserSerializer, BadgeSerializer, ProfileGroupSerializer
+from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
+from groups.models import Group
+from boards.models import Board
+from groups.serializers import GroupSearchSerializer
 
 
 User = get_user_model()
 logger = logging.getLogger('accounts')
+
 
 class KakaoView(APIView):
     permission_classes = [AllowAny]
@@ -31,6 +35,35 @@ class KakaoView(APIView):
             f'{kakao_auth_api}&client_id={app_key}&redirect_uri={redirect_uri}'
         )
 
+
+def from_kaKao_id_get_user_info(kakao_id):
+    # 제공받은 사용자 정보로 서비스 회원 여부 확인
+    # 회원이 아니라면 회원 가입 처리
+    # 확인이 끝나면 사용자 정보 반환
+    data = {}
+    
+    if User.objects.filter(kakao_id=kakao_id).exists():
+        data['is_login'] = True
+        user = User.objects.get(kakao_id=kakao_id)
+    else:
+        data['is_login'] = False
+        username = f'사용자 {kakao_id}'
+        user = User.objects.create(kakao_id=kakao_id, username=username)
+        badge = Badge.objects.get(id=1)
+        Achieve.objects.create(user=user, badge=badge)
+
+    token = TokenObtainPairSerializer.get_token(user)
+    
+    data['refresh_token'] = str(token)
+    data['access_token'] = str(token.access_token)
+        
+    serializer = UserSerializer(user)
+    data.update(serializer.data)
+    
+    return data
+
+
+# Redirect(REST API) 방식
 class KaKaoCallBackView(APIView):
     permission_classes = [AllowAny]
     
@@ -49,72 +82,59 @@ class KaKaoCallBackView(APIView):
         token_response = requests.post(kakao_token_api, data=data)
         access_token = token_response.json().get('access_token')
         
-        # 카카오 로그인 완료, 카카오 토큰으로 사용자 정보 가져오기 요청
+        # 카카오 토큰으로 사용자 정보 가져오기 요청
         kakao_token_api = 'https://kapi.kakao.com/v2/user/me'
         headers = {"Authorization": f'Bearer ${access_token}'}
 
         # 요청 검증 및 처리
         user_info_response = requests.get(kakao_token_api, headers=headers).json()
         kakao_id = user_info_response['id']
-
-        # 제공받은 사용자 정보로 서비스 회원 여부 확인
-        # 회원이 아니라면 회원 가입 처리
-        # 확인이 끝나면 사용자 정보 반환
-        if User.objects.filter(kakao_id=kakao_id).exists():
-            user = User.objects.get(kakao_id=kakao_id)
-        else:
-            username = user_info_response['properties']['nickname']
-            user = User.objects.create(kakao_id=kakao_id, username=username)
-            badge = Badge.objects.get(id=1)
-            Achieve.objects.create(user=user, badge=badge)
         
-        serializer = UserSerializer(user)
+        data = from_kaKao_id_get_user_info(kakao_id)
             
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=data, status=status.HTTP_200_OK)
 
+
+# 기본(네이티브 앱) 방식
+class KaKaoNativeView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        kakao_id = request.data.get('kakao_id')
+        
+        data = from_kaKao_id_get_user_info(kakao_id)
+            
+        return Response(data=data, status=status.HTTP_200_OK)
+    
 
 class KaKaoUnlinkView(APIView):
     def delete(self, request):
         user = request.user
         user.delete()
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
-
-
-class TokenObtainView(APIView):
-    permission_classes = [AllowAny]
-    
-    def post(self, request):
-        # 사용자 정보로 서비스 토큰 발급
-        user = User.objects.get(id=request.POST.get('id'))
-        token = TokenObtainPairSerializer.get_token(user)
-        
-        return Response(data={
-            'refresh_token': str(token),
-            'access_token': str(token.access_token),
-        }, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 class UsernameCheckView(APIView):
     def post(self, request):
-        username = request.POST.get('username')
+        username = request.data.get('username')
         
         if User.objects.filter(username=username).exists():
-            return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+            return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_200_OK)
     
     
 class UsernameUpdateView(APIView):
     def post(self, request):
         user = request.user
-        username = request.POST.get('username')
+        username = request.data.get('username')
         
         if User.objects.filter(username=username).exists():
-            return Response(data=FAIL, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         user.username = username
         user.save()
         
-        return Response(data=SUCCESS, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
     
     
 class BadgeListView(APIView):
@@ -134,35 +154,58 @@ class BadgeListView(APIView):
 class BadgeUpdateView(APIView):
     def post(self, request):
         user = request.user
-        badge_id = request.POST.get('badge_id')
+        badge_id = request.data.get('badge_id')
         badge = Badge.objects.get(id=badge_id)
         
         if Achieve.objects.filter(user=user, badge=badge).exists():
             user.profile = badge_id
             user.save()
             
-            return Response(SUCCESS, status=status.HTTP_200_OK)
-        return Response(FAIL, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
+        return Response(data={'message': '보유하지 않은 배지입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
     
 class NotificationUpdateView(APIView):
     def post(self, request):
         user = request.user
-        noti_rank = request.POST.get('noti_rank')
-        noti_chat = request.POST.get('noti_chat')
-        noti_due = request.POST.get('noti_due')
+        noti_rank = request.data.get('noti_rank')
+        noti_chat = request.data.get('noti_chat')
+        noti_due = request.data.get('noti_due')
         
         user.noti_rank = noti_rank
         user.noti_chat = noti_chat
         user.noti_due = noti_due
         user.save()
             
-        return Response(SUCCESS, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
-class ProfileGroupsView(APIView):
+class MainView(APIView):
     def get(self, request):
         user = request.user
-        data = ProfileGroupSerializer(user.groups, many=True).data
+        groups = GroupSerializer(user.groups, many=True).data
+        boards = BoardSerializer(user.boards, many=True).data
+        is_recommend = False
+
+        if not groups:
+            recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
+            
+            groups = GroupSearchSerializer(recommends, many=True).data
+            groups = [d for d in groups if d['count'] < d['headcount']][:20]
+
+            is_recommend = True
+        else:
+            for group in groups:
+                if Board.objects.filter(user=user, group=group['id']).exists():
+                    group['has_board'] = True
+                else:
+                    group['has_board'] = False
         
-        return Response(data=data, status=status.HTTP_200_OK)
+        return Response(data={'groups': groups, 'boards': boards, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
+
+
+class ProfileView(APIView):
+    def get(self, request):
+        user = request.user
+        
+        return Response(data={'username': user.username, 'badge': user.badge}, status=status.HTTP_200_OK)
