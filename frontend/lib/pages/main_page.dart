@@ -2,7 +2,7 @@ import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:flutter/material.dart';

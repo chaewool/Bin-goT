@@ -6,7 +6,7 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +82,7 @@ class FormBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          CustomButton(onPressed: toBack(context), content: '취소'),
+          CustomButton(onPressed: () => toBack(context), content: '취소'),
           CustomButton(
             onPressed: createOrUpdate,
             content: '완료',

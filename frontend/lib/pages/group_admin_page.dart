@@ -1,7 +1,7 @@
 //* 그룹 관리 페이지
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:flutter/material.dart';
 

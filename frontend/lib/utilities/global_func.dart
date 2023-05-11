@@ -1,4 +1,6 @@
 import 'package:bin_got/providers/root_provider.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
+import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:flutter/material.dart';
@@ -59,9 +61,7 @@ ReturnVoid toOtherPage(BuildContext context, {required Widget page}) {
 }
 
 //* 뒤로 가기
-ReturnVoid toBack(BuildContext context) {
-  return () => Navigator.pop(context);
-}
+void toBack(BuildContext context) => Navigator.pop(context);
 
 //* alert 띄우기
 ReturnVoid showAlert(
@@ -91,7 +91,7 @@ ReturnVoid showModal(BuildContext context, {required Widget page}) {
       );
 }
 
-//*
+//* token
 String? getToken(BuildContext context) => context.read<AuthProvider>().token;
 
 void setToken(BuildContext context, String? newToken) =>
@@ -103,12 +103,77 @@ void setTokens(BuildContext context, String? newToken, String? newRefresh) {
   auth.setStoreRefresh(newRefresh);
 }
 
-void setNoti(BuildContext context, {bool? rank, bool? due, bool? chat}) {
+//* id
+int? getId(BuildContext context) => context.read<AuthProvider>().id;
+
+//* notifications
+void setNoti(
+  BuildContext context, {
+  required bool rank,
+  required int due,
+  required bool chat,
+}) {
   final noti = context.read<NotiProvider>();
   noti.setStoreRank(rank);
   noti.setStoreDue(due);
   noti.setStoreChat(chat);
 }
 
+//* group data
 int? getGroupId(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupId;
+
+int? getBingoSize(BuildContext context) =>
+    context.read<GlobalGroupProvider>().bingoSize;
+
+// void setGroupData(BuildContext context) =>
+//     context.read<GlobalGroupProvider>().setData();
+
+//* bingo data
+
+//* function
+void changeBingoData(BuildContext context, int tabIndex, int i) =>
+    context.read<GlobalBingoProvider>().changeData(tabIndex, i);
+
+void setOption(BuildContext context, String key, dynamic value) =>
+    context.read<GlobalBingoProvider>().setOption(key, value);
+
+void setBingoData(BuildContext context, DynamicMap data) =>
+    context.read<GlobalBingoProvider>().setData(data);
+
+void setItem(BuildContext context, int index, DynamicMap item) =>
+    context.read<GlobalBingoProvider>().setItem(index, item);
+
+//* var
+DynamicMap getBingoData(BuildContext context) =>
+    context.read<GlobalBingoProvider>().data;
+
+String? getTitle(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().title;
+
+int? getBackground(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().background;
+
+bool getHasBlackBox(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().hasBlackBox;
+
+bool getHasRoundEdge(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().hasRoundEdge;
+
+bool getHasBorder(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().hasBorder;
+
+int? getGap(BuildContext context) => context.watch<GlobalBingoProvider>().gap;
+
+int? getFont(BuildContext context) => context.watch<GlobalBingoProvider>().font;
+
+int? getCheckIcon(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().checkIcon;
+
+DynamicMapList getItems(BuildContext context) =>
+    context.read<GlobalBingoProvider>().items;
+
+String getStringFont(BuildContext context) => matchFont[getFont(context)!];
+
+IconData getCheckIconData(BuildContext context) =>
+    iconList[getCheckIcon(context)!];

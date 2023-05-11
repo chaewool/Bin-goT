@@ -9,7 +9,7 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/input.dart';
@@ -130,7 +130,7 @@ class _GroupFormState extends State<GroupForm> {
                     : null,
               }))
           .then((groupId) {
-        toBack(context)();
+        toBack(context);
       });
     }
   }

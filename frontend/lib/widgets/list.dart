@@ -5,7 +5,7 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -97,12 +97,7 @@ class RankListItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Container(
-            width: 50,
-            height: 50,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle, border: Border.all(color: greyColor)),
+          CircleContainer(
             child: CustomText(content: '$rank', fontSize: FontSize.largeSize),
           ),
           const SizedBox(width: 30),
@@ -120,13 +115,14 @@ class CustomList extends StatelessWidget {
   final Widget child;
   final ReturnVoid? onTap;
   final BoxShadowList? boxShadow;
-  const CustomList(
-      {super.key,
-      this.height,
-      this.width,
-      required this.child,
-      this.onTap,
-      this.boxShadow});
+  const CustomList({
+    super.key,
+    this.height,
+    this.width,
+    required this.child,
+    this.onTap,
+    this.boxShadow,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -36,19 +36,13 @@ class ApiProvider extends UrlClass {
   //* create
   FutureDynamicMap _createApi(String url, {required DynamicMap data}) async {
     try {
+      print(data);
       final response = await dioWithToken().post(url, data: data);
       print('create: $response');
-      // print('create response: $response');
-      switch (response.statusCode) {
-        case 200:
-          return response.data;
-        case 401:
-          print('들어옴');
-          tokenRefresh();
-          return {};
-        default:
-          throw Error();
+      if (response.statusCode == 200) {
+        return response.data;
       }
+      throw Error();
     } catch (error) {
       print('createError: $error');
       throw Error();

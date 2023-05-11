@@ -1,9 +1,8 @@
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/widgets/badge.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -57,14 +56,17 @@ class _GroupChatState extends State<GroupChat> {
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             children: [
-              const RowWithPadding(
+              RowWithPadding(
                 vertical: 5,
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: CustomBadge(radius: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: CircleContainer(
+                      radius: 20,
+                      child: halfLogo,
+                    ),
                   ),
-                  CustomText(
+                  const CustomText(
                     content: '조코조코링링링',
                     fontSize: FontSize.smallSize,
                   ),

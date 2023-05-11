@@ -9,7 +9,7 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
@@ -120,6 +120,7 @@ class _GroupMainState extends State<GroupMain> {
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
               context.read<GlobalGroupProvider>().setData(data);
+              context.read<GlobalGroupProvider>().setGroupId(widget.groupId);
               // setState(() {
               //   needAuth = data.needAuth;
               // });

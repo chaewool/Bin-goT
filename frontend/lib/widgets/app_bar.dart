@@ -148,15 +148,24 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
               isAdmin
                   ? IconButtonInRow(
                       icon: settingsIcon,
-                      onPressed: toOtherPage(context,
-                          page: GroupAdmin(
-                            groupId: groupId,
-                          )))
+                      onPressed: toOtherPage(
+                        context,
+                        page: GroupAdmin(
+                          groupId: groupId,
+                        ),
+                      ),
+                    )
                   : const SizedBox(),
               isAdmin || isMember
-                  ? IconButtonInRow(icon: shareIcon, onPressed: () {})
+                  ? IconButtonInRow(
+                      icon: shareIcon,
+                      onPressed: () => shareToFriends(
+                        groupId: groupId,
+                        password: '',
+                      ),
+                    )
                   : const SizedBox(),
-              isAdmin || isMember
+              isMember && !isAdmin
                   ? IconButtonInRow(
                       icon: exitIcon,
                       onPressed: showAlert(
@@ -164,7 +173,8 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
                         title: '그룹 탈퇴 확인',
                         content: '정말 그룹을 탈퇴하시겠습니까?',
                         onPressed: exitThisGroup,
-                      ))
+                      ),
+                    )
                   : const SizedBox(),
             ],
     );

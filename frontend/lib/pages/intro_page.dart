@@ -35,6 +35,7 @@ class _IntroState extends State<Intro> {
         due: data['noti_due'],
         chat: data['noti_chat'],
       );
+      context.read<AuthProvider>().setStoreId(data['id']);
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
@@ -63,6 +64,10 @@ class _IntroState extends State<Intro> {
     }
   }
 
+  void initNoti() async {
+    await context.read<NotiProvider>().initNoti();
+  }
+
   void afterFewSec(int sec, ReturnVoid changeVar) {
     Future.delayed(Duration(seconds: sec), () {
       setState(changeVar);
@@ -83,6 +88,7 @@ class _IntroState extends State<Intro> {
       showTitle = true;
     });
     verifyToken();
+    initNoti();
     afterFewSec(4, () {
       if (!showLoginBtn) {
         toOtherPage(context, page: const Main())();

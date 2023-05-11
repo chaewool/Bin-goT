@@ -61,7 +61,7 @@ class BingoGallery extends StatelessWidget {
 
 //* Box Container 기본 틀
 class CustomBoxContainer extends StatelessWidget {
-  final bool hasRoundEdge;
+  final bool hasRoundEdge, center;
   final Color? borderColor;
   final Color color;
   final BoxShadowList? boxShadow;
@@ -81,6 +81,7 @@ class CustomBoxContainer extends StatelessWidget {
     this.child,
     this.onTap,
     this.onLongPress,
+    this.center = false,
   });
 
   @override
@@ -91,12 +92,49 @@ class CustomBoxContainer extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
+        alignment: center ? Alignment.center : null,
         decoration: BoxDecoration(
           borderRadius: hasRoundEdge ? BorderRadius.circular(10) : null,
           color: color,
           boxShadow: boxShadow,
           border: borderColor != null ? Border.all(color: borderColor!) : null,
           image: image,
+        ),
+        child: child,
+      ),
+    );
+  }
+}
+
+//* 원 모양 Container
+class CircleContainer extends StatelessWidget {
+  final double radius;
+  final Widget child;
+  final bool center;
+  final List<BoxShadow>? boxShadow;
+  final ReturnVoid? onTap;
+
+  const CircleContainer({
+    super.key,
+    this.radius = 25,
+    required this.child,
+    this.center = true,
+    this.boxShadow,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: radius * 2,
+        height: radius * 2,
+        alignment: center ? Alignment.center : null,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: greyColor),
+          boxShadow: boxShadow,
         ),
         child: child,
       ),

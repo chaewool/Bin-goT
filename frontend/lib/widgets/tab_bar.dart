@@ -8,7 +8,7 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/accordian.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/image.dart';
@@ -20,9 +20,7 @@ import 'package:flutter/material.dart';
 
 //* 빙고 생성 탭
 class BingoTabBar extends StatefulWidget {
-  final DynamicMap data;
-  final void Function(int tabIndex, int i) changeData;
-  const BingoTabBar({super.key, required this.data, required this.changeData});
+  const BingoTabBar({super.key});
 
   @override
   State<BingoTabBar> createState() => _BingoTabBarState();
@@ -53,11 +51,10 @@ class _BingoTabBarState extends State<BingoTabBar> {
       children: [
         for (int i = 2 * page; i < 2 * page + 2; i += 1)
           GestureDetector(
-            onTap: () => widget.changeData(0, i),
+            onTap: () => changeBingoData(context, 0, i),
             child: ModifiedImage(
               image: backgroundList[i],
-              boxShadow:
-                  widget.data['background'] == i ? [selectedShadow] : null,
+              boxShadow: getBackground(context) == i ? [selectedShadow] : null,
             ),
           ),
       ],
@@ -67,25 +64,24 @@ class _BingoTabBarState extends State<BingoTabBar> {
   //* 빙고칸 & font 변경
   Column optionOrFontTab(int index) {
     StringList gapList = ['좁은', '보통', '넓은'];
-    String convertedColor() => widget.data['is_black'] ? '흰색' : '검은색';
-    String presentGap(int i) => gapList[i];
 
     StringList optionList = [
       '둥근 모서리 적용',
       '테두리 적용',
-      '${convertedColor()}으로 변경',
-      '${presentGap(widget.data['around_kan'])} 간격'
+      '${getHasBlackBox(context) ? '흰색' : '검은색'}으로 변경',
+      '${gapList[getGap(context)!]} 간격'
     ];
+
     BoxShadowList applyBoxShadow(int i, int j) {
       final elementIdx = 2 * i + j;
       switch (index) {
         case 1:
           final keyList = ['has_round_edge', 'has_border'];
-          return i == 0 && widget.data[keyList[j]]
+          return i == 0 && getBingoData(context)[keyList[j]]
               ? [selectedShadow]
               : [defaultShadow];
         default:
-          return widget.data['font'] != elementIdx
+          return getFont(context) != elementIdx
               ? const [defaultShadow]
               : const [selectedShadow];
       }
@@ -101,7 +97,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
             children: [
               for (int j = 0; j < 2; j += 1)
                 CustomBoxContainer(
-                  onTap: () => widget.changeData(index, 2 * i + j),
+                  onTap: () => changeBingoData(context, index, 2 * i + j),
                   width: 150,
                   height: 40,
                   boxShadow: applyBoxShadow(i, j),
@@ -129,11 +125,10 @@ class _BingoTabBarState extends State<BingoTabBar> {
           children: [
             for (int i = 0; i < 3; i += 1)
               CustomIconButton(
-                onPressed: () => widget.changeData(3, i),
+                onPressed: () => changeBingoData(context, 3, i),
                 icon: iconList[i],
                 size: 70,
-                color:
-                    i == widget.data['complete_icon'] ? greenColor : blackColor,
+                color: i == getCheckIcon(context) ? greenColor : blackColor,
               ),
           ],
         ),
@@ -145,7 +140,10 @@ class _BingoTabBarState extends State<BingoTabBar> {
 //* 그룹 관리 탭
 class GroupAdminTabBar extends StatefulWidget {
   final int groupId;
-  const GroupAdminTabBar({super.key, required this.groupId});
+  const GroupAdminTabBar({
+    super.key,
+    required this.groupId,
+  });
 
   @override
   State<GroupAdminTabBar> createState() => _GroupAdminTabBarState();
@@ -184,22 +182,32 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
                   if (snapshot.hasData) {
                     final needAuth = snapshot.data!.needAuth;
                     final applicants = snapshot.data!.applicants;
-                    print('needAuth: $needAuth');
                     return Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         needAuth
-                            ? ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: applicants.length,
-                                itemBuilder: (context, index) {
-                                  var applicant = applicants[index];
-                                  return MemberList(
-                                    id: applicant.id,
-                                    bingoId: applicant.bingoId,
-                                    nickname: applicant.username,
-                                    isMember: false,
-                                  );
-                                },
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                child: ListView.separated(
+                                  shrinkWrap: true,
+                                  itemCount: applicants.length,
+                                  itemBuilder: (context, index) {
+                                    var applicant = applicants[index];
+                                    return MemberList(
+                                      id: applicant.id,
+                                      bingoId: applicant.bingoId,
+                                      nickname: applicant.username,
+                                      isMember: false,
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(
+                                    height: 10,
+                                  ),
+                                ),
                               )
                             : const CustomText(content: '자동 가입 그룹입니다.'),
                       ],

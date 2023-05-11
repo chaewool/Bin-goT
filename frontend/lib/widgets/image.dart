@@ -1,5 +1,5 @@
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:flutter/material.dart';
 
 class ModifiedImage extends StatelessWidget {

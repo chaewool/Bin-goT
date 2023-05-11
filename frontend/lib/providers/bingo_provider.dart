@@ -1,11 +1,14 @@
-import 'package:bin_got/models/bingo_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:dio/dio.dart';
 
 class BingoProvider extends ApiProvider {
+  //* public
+  Future<DynamicMap> readBingoDetail(int bingoId) => _readBingoDetail(bingoId);
+  FutureInt createOwnBingo(FormData bingoData) => _createOwnBingo(bingoData);
+
   //* detail
-  Future<BingoDetailModel> readBingoDetail(int bingoId) async {
+  Future<DynamicMap> _readBingoDetail(int bingoId) async {
     try {
       final response = await dioWithToken().get(
         bingoDetailUrl(bingoId),
@@ -13,7 +16,8 @@ class BingoProvider extends ApiProvider {
       print('response: $response');
       switch (response.statusCode) {
         case 200:
-          return BingoDetailModel.fromJson(response.data);
+          return response.data;
+        // return BingoDetailModel.fromJson(response.data);
         default:
           throw Error();
       }
@@ -24,7 +28,7 @@ class BingoProvider extends ApiProvider {
   }
 
   //* create
-  FutureInt createOwnBingo(FormData bingoData) async {
+  FutureInt _createOwnBingo(FormData bingoData) async {
     try {
       final dioWithForm = dioWithToken();
       dioWithForm.options.contentType = 'multipart/form-data';

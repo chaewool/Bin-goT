@@ -1,16 +1,19 @@
 import 'package:bin_got/pages/help_page.dart';
+import 'package:bin_got/pages/intro_page.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
-import 'package:bin_got/widgets/badge.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //* 마이페이지 메인
 class MyPage extends StatefulWidget {
@@ -23,11 +26,6 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   late bool isEditMode;
-  void changeEditMode() {
-    setState(() {
-      isEditMode = !isEditMode;
-    });
-  }
 
   StringList notificationList = [
     '진행률/랭킹 알림',
@@ -41,27 +39,46 @@ class _MyPageState extends State<MyPage> {
     ['ON', 'OFF'],
     ['ON', 'OFF']
   ];
-  IntList idxList = [0, 0, 0, 0];
+  List optionList = [];
+
+  void changeEditMode() {
+    setState(() {
+      isEditMode = !isEditMode;
+    });
+  }
+
   void changeIdx(int i) {
-    if (i != 1) {
-      setState(() {
-        idxList[i] = 1 - idxList[i];
-      });
-    } else if (idxList[i] < 3) {
-      setState(() {
-        idxList[i] += 1;
-      });
-    } else {
-      setState(() {
-        idxList[i] = 0;
-      });
-    }
+    setState(() {
+      final noti = context.read<NotiProvider>();
+      if (i == 1) {
+        optionList[i] += 1;
+        noti.setStoreDue(optionList[i]);
+      } else {
+        optionList[i] = !optionList[i];
+        if (i == 0) {
+          noti.setStoreRank(optionList[i]);
+        } else if (i == 2) {
+          noti.setStoreChat(optionList[i]);
+        }
+      }
+    });
+  }
+
+  void logout() {
+    context.read<AuthProvider>().deleteVar();
+    context.read<NotiProvider>().deleteVar();
+    toOtherPage(context, page: const Intro())();
   }
 
   @override
   void initState() {
     super.initState();
     isEditMode = false;
+    final noti = context.read<NotiProvider>();
+    optionList.add(noti.rankNoti);
+    optionList.add(noti.dueNoti);
+    optionList.add(noti.chatNoti);
+    optionList.add(true);
   }
 
   @override
@@ -94,7 +111,11 @@ class _MyPageState extends State<MyPage> {
                       Flexible(
                         flex: 2,
                         child: CustomButton(
-                          content: notificationOptions[i][idxList[i]],
+                          content: notificationOptions[i][i == 1
+                              ? optionList[i]
+                              : optionList[i]
+                                  ? 0
+                                  : 1],
                           onPressed: () => changeIdx(i),
                         ),
                       ),
@@ -137,7 +158,7 @@ class _MyPageState extends State<MyPage> {
             child: CustomTextButton(
               content: '로그아웃',
               onTap: showAlert(context,
-                  title: '로그아웃 확인', content: '로그아웃하시겠습니까?', onPressed: () {}),
+                  title: '로그아웃 확인', content: '로그아웃하시겠습니까?', onPressed: logout),
             ),
           ),
           const Flexible(
@@ -155,7 +176,10 @@ class _MyPageState extends State<MyPage> {
       horizontal: 40,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomBadge(onTap: showModal(context, page: const SelectBadgeModal())),
+        CircleContainer(
+          onTap: showModal(context, page: const SelectBadgeModal()),
+          child: halfLogo,
+        ),
         Row(
           children: isEditMode
               ? [
@@ -189,7 +213,7 @@ class _MyPageState extends State<MyPage> {
                     onPressed: changeEditMode,
                     icon: editIcon,
                     size: 20,
-                  )
+                  ),
                 ],
         ),
       ],

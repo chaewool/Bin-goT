@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -15,6 +16,7 @@ import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 
 class BingoForm extends StatefulWidget {
   final int bingoSize;
@@ -34,71 +36,19 @@ class BingoForm extends StatefulWidget {
 class _BingoFormState extends State<BingoForm> {
   GlobalKey globalKey = GlobalKey();
   var thumbnail;
-  final DynamicMap bingoData = {
-    'group_id': 0,
-    'title': '',
-    'background': null,
-    'is_black': false,
-    'has_border': true,
-    'has_round_edge': false,
-    'around_kan': 0,
-    'complete_icon': 0,
-    'font': 0,
-    'items': [],
-  };
   @override
   void initState() {
     super.initState();
-    bingoData['group_id'] = getGroupId(context);
-  }
-
-  void changeBackground(int i) {
-    setState(() {
-      if (bingoData['background'] == i) {
-        bingoData['background'] = null;
-      } else {
-        bingoData['background'] = i;
-      }
-    });
-  }
-
-  void setOption(String key, dynamic value) {
-    bingoData[key] = value;
-  }
-
-  void changeData(int tabIndex, int i) {
-    print('$tabIndex $i');
-    print(bingoData);
-    setState(() {
-      switch (tabIndex) {
-        case 0:
-          changeBackground(i);
-          break;
-        case 1:
-          final keyList = ['has_round_edge', 'has_border', 'is_black'];
-          switch (i) {
-            case 3:
-              bingoData['around_kan'] += bingoData['around_kan'] < 2 ? 1 : -2;
-              break;
-            default:
-              bingoData[keyList[i]] = !bingoData[keyList[i]];
-              break;
-          }
-          break;
-        case 2:
-          setOption('font', i);
-          break;
-        default:
-          setOption('complete_icon', i);
-          break;
-      }
-    });
+    setOption(context, 'group_id', getGroupId(context)!);
   }
 
   void createOrEditBingo() async {
     await bingoToThumb();
-    await BingoProvider().createOwnBingo(
-        FormData.fromMap({'data': bingoData, 'thumbnail': thumbnail}));
+    if (!mounted) return;
+    await BingoProvider().createOwnBingo(FormData.fromMap({
+      'data': context.read<GlobalBingoProvider>().data,
+      'thumbnail': thumbnail
+    }));
     if (!mounted) return;
     toOtherPage(context,
         page: BingoDetail(
@@ -126,7 +76,7 @@ class _BingoFormState extends State<BingoForm> {
       await GroupProvider().joinGroup(getGroupId(context)!);
       if (!mounted) return;
       if (widget.needAuth == true) {
-        toBack(context)();
+        toBack(context);
       }
       showAlert(
         context,
@@ -162,7 +112,7 @@ class _BingoFormState extends State<BingoForm> {
             flex: 2,
             child: CustomInput(
               explain: '빙고 이름',
-              setValue: (value) => bingoData['title'] = value,
+              setValue: (value) => setOption(context, 'title', value),
             ),
           ),
           Flexible(
@@ -171,20 +121,15 @@ class _BingoFormState extends State<BingoForm> {
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               child: RepaintBoundary(
                 key: globalKey,
-                child: BingoBoard(
-                    data: bingoData,
-                    size: widget.bingoSize,
-                    isDetail: false,
-                    changeData: changeData),
+                child: const BingoBoard(
+                  isDetail: false,
+                ),
               ),
             ),
           ),
-          Flexible(
+          const Flexible(
             flex: 4,
-            child: BingoTabBar(
-              data: bingoData,
-              changeData: changeData,
-            ),
+            child: BingoTabBar(),
           ),
           Flexible(
             flex: 1,

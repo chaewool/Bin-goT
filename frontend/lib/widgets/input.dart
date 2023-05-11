@@ -1,7 +1,7 @@
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -126,7 +126,7 @@ class InputDate extends StatelessWidget {
               enablePastDates: false,
               showActionButtons: true,
               selectionMode: DateRangePickerSelectionMode.range,
-              onCancel: toBack(context),
+              onCancel: () => toBack(context),
               onSubmit: (pickedDate) {
                 final start = (pickedDate as PickerDateRange)
                     .startDate
@@ -136,7 +136,7 @@ class InputDate extends StatelessWidget {
                 if (start != null && end != null) {
                   onSubmit(context, 'start')(start);
                   onSubmit(context, 'end')(end);
-                  toBack(context)();
+                  toBack(context);
                 }
               },
             ),

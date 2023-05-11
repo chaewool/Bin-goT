@@ -170,11 +170,11 @@ class GroupProvider extends ApiProvider {
         case 200:
           final data = response.data;
           if (data.isNotEmpty) {
-            GroupMemberModel applicants = data['applicants']
+            GroupMemberList applicants = data['applicants']
                 .map<GroupMemberModel>(
                     (json) => GroupMemberModel.fromJson(json))
                 .toList();
-            MyBingoList members = data['members']
+            GroupMemberList members = data['members']
                 .map<GroupMemberModel>(
                     (json) => GroupMemberModel.fromJson(json))
                 .toList();
