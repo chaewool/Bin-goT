@@ -168,9 +168,9 @@ class BadgeUpdateView(APIView):
 class NotificationUpdateView(APIView):
     def post(self, request):
         user = request.user
-        noti_rank = request.data.get('noti_rank')
-        noti_chat = request.data.get('noti_chat')
-        noti_due = request.data.get('noti_due')
+        noti_rank = True if request.data.get('noti_rank') == 'True' else False
+        noti_chat = True if request.data.get('noti_chat') == 'True' else False
+        noti_due = True if request.data.get('noti_due') == 'True' else False
         
         user.noti_rank = noti_rank
         user.noti_chat = noti_chat

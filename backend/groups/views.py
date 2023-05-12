@@ -204,7 +204,7 @@ class GroupUpdateView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         data = json.loads(request.data.get('data'))
-        update_img = request.data.get('update_img')
+        update_img = True if request.data.get('update_img') == 'True' else False
 
         if not data['groupname']:
             data['groupname'] = group.groupname
@@ -270,19 +270,22 @@ class GroupGrantView(APIView):
     def post(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        applicant_id = request.data.get('applicant_id')
-        grant = request.data.get('grant')
+        target_id = request.data.get('target_id')
+        grant = True if request.data.get('grant') == 'True' else False
 
         if group.leader == user:
-            applicant = get_user_model().objects.get(id=applicant_id)
-            participate = Participate.objects.filter(user=applicant, group=group)
+            applicant = get_user_model().objects.get(id=target_id)
+            participate = Participate.objects.get(user=applicant, group=group)
             
-            if participate.is_banned == 0:
-                return Response(data={'message': '이미 승인 완료된 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            if user == applicant:
+                return Response(data={'message': '잘못된 접근입니다.'}, status=status.HTTP_400_BAD_REQUEST)
             
             if participate.is_banned == 2:
                 return Response(data={'message': '이미 승인 거부되었거나 강제 탈퇴된 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
+            
+            if participate.is_banned == 0 and grant:
+                return Response(data={'message': '이미 승인된 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            
             if grant:
                 participate.is_banned = 0
                 participate.save()
