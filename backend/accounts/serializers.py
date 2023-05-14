@@ -4,7 +4,6 @@ from datetime import date
 
 from .models import Badge
 from groups.models import Group
-from boards.models import Board
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
