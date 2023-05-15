@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -103,21 +101,6 @@ class EachBingo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color convertedColor() => getHasBlackBox(context) ? whiteColor : blackColor;
-    String modifiedTitle() {
-      final bingoTitle = getTitle(context);
-      if (bingoTitle == null) return '빙고칸 제목';
-      final int length = bingoTitle.length;
-      if (length < 4) {
-        return bingoTitle;
-      }
-      final end = min(6, length);
-      var result =
-          '${bingoTitle.substring(0, 3)}\n${bingoTitle.substring(3, end)}';
-      if (length >= 6) {
-        result += '...';
-      }
-      return result;
-    }
 
     return CustomBoxContainer(
       onLongPress: () {},
@@ -136,18 +119,22 @@ class EachBingo extends StatelessWidget {
         child: Stack(
           children: [
             Center(
-              child: CustomText(
-                color: convertedColor(),
-                content: modifiedTitle(),
-                font: getStringFont(context),
-                center: true,
+              child: Expanded(
+                child: CustomText(
+                  color: convertedColor(),
+                  content: getItemTitle(context, index) ?? '빙고칸 제목',
+                  font: getStringFont(context),
+                  center: true,
+                ),
               ),
             ),
             Center(
-              child: CustomIcon(
-                icon: getCheckIconData(context),
-                size: 80,
-                color: convertedColor(),
+              child: Expanded(
+                child: CustomIcon(
+                  icon: getCheckIconData(context),
+                  size: 80,
+                  color: convertedColor(),
+                ),
               ),
             ),
           ],

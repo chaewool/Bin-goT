@@ -144,6 +144,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   bool? get hasImage => _data?.hasImage;
   int? get bingoSize => _data?.bingoSize;
   bool? get needAuth => _data?.needAuth;
+
   void _setData(GroupDetailModel detailModel) => _data = detailModel;
 
   // void _setCount(int newVal) => _count = newVal;
@@ -235,7 +236,7 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   //* getter
   DynamicMap get data => _data;
-  int? get groupId => _data['group_id'];
+  int? get groupId => _data['group'];
   String? get title => _data['title'];
   int? get background => _data['background'];
   bool get hasBlackBox => _data['is_black'];
@@ -244,11 +245,13 @@ class GlobalBingoProvider extends ChangeNotifier {
   int? get gap => _data['around_kan'];
   int? get checkIcon => _data['complete_icon'];
   int? get font => _data['font'];
-  DynamicMapList get items => _data['items'];
+  List get items => _data['items'];
   int? get bingoId => _bingoId;
 
   //* private
-  void _setData(DynamicMap newData) => _data = newData;
+  DynamicMap _item(int index) => items[index];
+
+  void _setData(DynamicMap newData) => _data = {...newData};
   void _setGBingoId(int newVal) => _bingoId = newVal;
   void _setOption(String key, dynamic value) => _data[key] = value;
 
@@ -307,7 +310,12 @@ class GlobalBingoProvider extends ChangeNotifier {
   }
 
   //* public
-  void setItem(int index, DynamicMap item) => _setItem(index, item);
+  DynamicMap item(int index) => _item(index);
+
+  void setItem(int index, DynamicMap item) {
+    _setItem(index, item);
+    notifyListeners();
+  }
 
   void initItems(int cnt) => _initItems(cnt);
 
@@ -317,10 +325,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   }
 
   void setOption(String key, dynamic value) => _setOption(key, value);
-  void setData(DynamicMap data) {
-    _setData(data);
-    notifyListeners();
-  }
+  void setData(DynamicMap data) => _setData(data);
 
   void setBingoId(int newVal) {
     _setGBingoId(newVal);

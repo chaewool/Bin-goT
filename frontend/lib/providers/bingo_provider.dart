@@ -6,6 +6,8 @@ class BingoProvider extends ApiProvider {
   //* public
   Future<DynamicMap> readBingoDetail(int bingoId) => _readBingoDetail(bingoId);
   FutureInt createOwnBingo(FormData bingoData) => _createOwnBingo(bingoData);
+  FutureDynamicMap editOwnBingo(int bingoId, FormData bingoData) =>
+      _editOwnBingo(bingoId, bingoData);
 
   //* detail
   Future<DynamicMap> _readBingoDetail(int bingoId) async {
@@ -36,6 +38,23 @@ class BingoProvider extends ApiProvider {
       print(response);
       if (response.statusCode == 200) {
         return response.data['board_id'];
+      }
+      throw Error();
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
+  }
+
+  //* update
+  Future<DynamicMap> _editOwnBingo(int bingoId, FormData bingoData) async {
+    try {
+      final dioWithForm = dioWithToken();
+      dioWithForm.options.contentType = 'multipart/form-data';
+      final response =
+          await dioWithForm.put(editBingoUrl(bingoId), data: bingoData);
+      if (response.statusCode == 200) {
+        return {};
       }
       throw Error();
     } catch (error) {

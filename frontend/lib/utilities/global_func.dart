@@ -169,8 +169,14 @@ int? getFont(BuildContext context) => context.watch<GlobalBingoProvider>().font;
 int? getCheckIcon(BuildContext context) =>
     context.watch<GlobalBingoProvider>().checkIcon;
 
-DynamicMapList getItems(BuildContext context) =>
+List getItems(BuildContext context) =>
     context.read<GlobalBingoProvider>().items;
+
+String? getItemTitle(BuildContext context, int index) =>
+    context.watch<GlobalBingoProvider>().item(index)['title'];
+
+DynamicMap readItem(BuildContext context, int index) =>
+    context.read<GlobalBingoProvider>().item(index);
 
 String getStringFont(BuildContext context) => matchFont[getFont(context)!];
 

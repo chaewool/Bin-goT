@@ -106,7 +106,7 @@ class _GroupFormState extends State<GroupForm> {
         'data': jsonEncode(groupData),
         'img': selectedImage != null
             ? MultipartFile.fromFileSync(selectedImage!.path,
-                contentType: MediaType('image', 'jpg'))
+                contentType: MediaType('image', 'png'))
             : null,
       }))
           .then((groupId) {

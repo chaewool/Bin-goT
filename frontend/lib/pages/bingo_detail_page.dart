@@ -1,4 +1,3 @@
-import 'package:bin_got/models/bingo_model.dart';
 import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -31,26 +30,6 @@ class BingoDetail extends StatelessWidget {
       if (start != '') {}
     }
 
-    Map<String, dynamic> bingoToMap(BingoDetailModel bingoDetail) {
-      final Map<String, dynamic> bingoDetailMap = {};
-      bingoDetailMap['group_id'] = bingoDetail.groupId;
-      bingoDetailMap['author_id'] = bingoDetail.authorId;
-      bingoDetailMap['achieve'] = bingoDetail.achieve;
-      bingoDetailMap['title'] = bingoDetail.title;
-      bingoDetailMap['is_black'] = bingoDetail.hasBlackBox;
-      bingoDetailMap['has_round_edge'] = bingoDetail.hasRoundEdge;
-      bingoDetailMap['background'] = bingoDetail.background;
-      bingoDetailMap['has_boarder'] = bingoDetail.hasBoarder;
-      bingoDetailMap['around_kan'] = bingoDetail.gap;
-      bingoDetailMap['complete_icon'] = bingoDetail.completeIcon;
-      bingoDetailMap['font'] = bingoDetail.font;
-      bingoDetailMap['items'] = bingoDetail.items;
-
-      groupId = bingoDetail.groupId;
-
-      return bingoDetailMap;
-    }
-
     return Scaffold(
         appBar: const BingoDetailAppBar(),
         body: FutureBuilder(
@@ -58,7 +37,8 @@ class BingoDetail extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final DynamicMap data = snapshot.data!;
-              groupId = data['group_id'];
+              final int achieve = (data['achieve']! * 100).toInt();
+              groupId = data['group'];
               setBingoData(context, data);
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -76,7 +56,7 @@ class BingoDetail extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       child: CustomText(
-                        content: data['title'],
+                        content: data['username'],
                         fontSize: FontSize.smallSize,
                       ),
                     ),
@@ -120,7 +100,7 @@ class BingoDetail extends StatelessWidget {
                   Flexible(
                     flex: 2,
                     child: CustomText(
-                      content: '달성률 : ${data['achieve']}%',
+                      content: '달성률 : $achieve%',
                       fontSize: FontSize.largeSize,
                     ),
                   )

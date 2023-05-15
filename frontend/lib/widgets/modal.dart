@@ -1,4 +1,3 @@
-import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -10,7 +9,6 @@ import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 //* 빙고
 class BingoModal extends StatefulWidget {
@@ -35,10 +33,7 @@ class _BingoModalState extends State<BingoModal> {
   void initState() {
     super.initState();
     newIdx = widget.index;
-    if (getItems(context).isEmpty) {
-      context.read<GlobalBingoProvider>().initItems(widget.cnt);
-    }
-    item = {...getItems(context)[newIdx]};
+    item = {...readItem(context, newIdx)};
   }
 
   void initialize() {
@@ -59,13 +54,13 @@ class _BingoModalState extends State<BingoModal> {
         if (newIdx < widget.cnt - 1) {
           setState(() {
             newIdx += 1;
-            item = {...getItems(context)[newIdx]};
+            item = {...readItem(context, newIdx)};
           });
         }
       } else if (newIdx > 0) {
         setState(() {
           newIdx -= 1;
-          item = {...getItems(context)[newIdx]};
+          item = {...readItem(context, newIdx)};
         });
       }
     }
@@ -76,9 +71,16 @@ class _BingoModalState extends State<BingoModal> {
           });
     }
 
+    void applyItem() {
+      setItem(context, newIdx, item);
+      toBack(context);
+    }
+
     return CustomModal(
       buttonText: '초기화',
+      cancelText: '적용',
       onPressed: initialize,
+      onCancelPressed: applyItem,
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -305,9 +307,8 @@ class CustomModal extends StatelessWidget {
   final String? title;
   final bool hasConfirm;
   final WidgetList children;
-  final ReturnVoid? onPressed;
-  final String buttonText;
-  final Widget? additionalButton;
+  final ReturnVoid? onPressed, onCancelPressed;
+  final String buttonText, cancelText;
   const CustomModal({
     super.key,
     this.title,
@@ -315,7 +316,8 @@ class CustomModal extends StatelessWidget {
     required this.children,
     this.onPressed,
     this.buttonText = '적용',
-    this.additionalButton,
+    this.cancelText = '취소',
+    this.onCancelPressed,
   });
 
   @override
@@ -332,29 +334,22 @@ class CustomModal extends StatelessWidget {
       children: [
         ...children,
         RowWithPadding(
-          horizontal: additionalButton != null ? 30 : 50,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: additionalButton != null
-              ? [
-                  additionalButton!,
-                  hasConfirm
-                      ? CustomButton(
-                          onPressed: onPressed ?? () => toBack(context),
-                          content: buttonText,
-                        )
-                      : const SizedBox(),
-                  const ExitButton(isIconType: false, buttonText: '취소'),
-                ]
-              : [
-                  hasConfirm
-                      ? CustomButton(
-                          onPressed: onPressed ?? () => toBack(context),
-                          content: buttonText,
-                        )
-                      : const SizedBox(),
-                  const ExitButton(isIconType: false, buttonText: '취소'),
-                ],
-        )
+            horizontal: 50,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              hasConfirm
+                  ? CustomButton(
+                      onPressed: onPressed ?? () => toBack(context),
+                      content: buttonText,
+                    )
+                  : const SizedBox(),
+              onCancelPressed == null
+                  ? ExitButton(isIconType: false, buttonText: cancelText)
+                  : CustomButton(
+                      onPressed: onCancelPressed!,
+                      content: cancelText,
+                    ),
+            ])
       ],
     );
   }

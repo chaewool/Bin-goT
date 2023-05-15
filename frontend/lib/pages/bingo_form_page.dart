@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:bin_got/pages/bingo_detail_page.dart';
@@ -37,29 +38,41 @@ class BingoForm extends StatefulWidget {
 
 class _BingoFormState extends State<BingoForm> {
   GlobalKey globalKey = GlobalKey();
-  var thumbnail;
+  Uint8List? thumbnail;
+  bool changed = false;
+
   @override
   void initState() {
     super.initState();
     setOption(context, 'group_id', getGroupId(context)!);
+    final size = getBingoSize(context)!;
+    if (getItems(context).isEmpty) {
+      context.read<GlobalBingoProvider>().initItems(size * size);
+    }
   }
 
   void createOrEditBingo() async {
-    await bingoToThumb();
-    if (!mounted) return;
-    final data = context.read<GlobalBingoProvider>().data;
-    await BingoProvider().createOwnBingo(FormData.fromMap({
-      'data': jsonEncode(data),
-      'thumbnail': thumbnail != null
-          ? MultipartFile.fromFileSync(thumbnail!.path,
-              contentType: MediaType('image', 'jpg'))
-          : null,
-    }));
-    if (!mounted) return;
-    toOtherPage(context,
-        page: BingoDetail(
-          bingoId: widget.bingoId!,
-        ))();
+    if (changed) {
+      await bingoToThumb();
+      if (!mounted) return;
+      final data = context.read<GlobalBingoProvider>().data;
+      final bingoData = FormData.fromMap({
+        'data': jsonEncode(data),
+        'thumbnail': MultipartFile.fromBytes(
+          thumbnail!,
+          filename: 'thumbnail.png',
+          contentType: MediaType('image', 'png'),
+        ),
+      });
+
+      if (widget.bingoId == null) {
+        await BingoProvider().createOwnBingo(bingoData).then((bingoId) {
+          toOtherPage(context, page: BingoDetail(bingoId: bingoId))();
+        });
+      } else {
+        await BingoProvider().editOwnBingo(widget.bingoId!, bingoData);
+      }
+    }
   }
 
   FutureBool bingoToThumb() async {
@@ -117,6 +130,7 @@ class _BingoFormState extends State<BingoForm> {
             child: CustomInput(
               explain: '빙고 이름',
               setValue: (value) => setOption(context, 'title', value),
+              initialValue: getTitle(context),
             ),
           ),
           Flexible(
