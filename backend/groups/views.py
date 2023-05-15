@@ -193,8 +193,14 @@ class GroupDetailView(APIView):
                 'achieve': ranker.getScore(ranker_id) / (group.size ** 2), 
                 'board_id': Board.objects.get(group=group, user=r).id
                 })
+
+        count = 0
+
+        for p in Participate.objects.filter(group=group):
+            if p.is_banned == 0:
+                count += 1
         
-        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank}
+        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank, 'count': count}
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -549,6 +555,16 @@ class GroupSearchView(APIView):
 
         groups = groups.order_by(order)[(page - 1) * cnt: page * cnt]
         data = GroupSearchSerializer(groups, many=True).data
+
+        for group in data:
+            count = 0
+
+            for p in Participate.objects.filter(group=group['id']):
+                if p.is_banned == 0:
+                    count += 1
+            
+            group['count'] = count
+
         data = [d for d in data if d['count'] < d['headcount'] and not Participate.objects.filter(group=d['id'], user=user).exists()]
         
         return Response(data=data, status=status.HTTP_200_OK)

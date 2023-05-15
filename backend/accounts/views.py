@@ -12,7 +12,7 @@ from datetime import date
 from bingot_settings import KAKAO_REST_API_KEY
 from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
-from groups.models import Group
+from groups.models import Group, Participate
 from boards.models import Board
 from groups.serializers import GroupSearchSerializer
 from commons import get_boolean
@@ -192,6 +192,16 @@ class MainView(APIView):
             recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
             
             groups = GroupSearchSerializer(recommends, many=True).data
+
+            for group in groups:
+                count = 0
+
+                for p in Participate.objects.filter(group=group['id']):
+                    if p.is_banned == 0:
+                        count += 1
+            
+                group['count'] = count
+
             groups = [d for d in groups if d['count'] < d['headcount']][:20]
 
             is_recommend = True
@@ -201,6 +211,14 @@ class MainView(APIView):
                     group['has_board'] = True
                 else:
                     group['has_board'] = False
+
+                count = 0
+
+                for p in Participate.objects.filter(group=group['id']):
+                    if p.is_banned == 0:
+                        count += 1
+            
+                group['count'] = count
         
         return Response(data={'groups': groups, 'boards': boards, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
 
