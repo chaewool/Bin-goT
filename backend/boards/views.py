@@ -3,12 +3,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import date
 import json
+import logging
 
 from commons import upload_image, delete_image
 from .models import Board
 from groups.models import Group, Participate
 from .serializers import BoardCreateSerializer, BoardItemCreateSerializer, BoardDetailSerializer
 from accounts.models import Badge, Achieve
+
+
+logger = logging.getLogger('accounts')
 
 
 def check_cnt_boards(user):
@@ -49,16 +53,25 @@ class BoardCreateView(APIView):
         
         if board_serializer.is_valid(raise_exception=True) and boarditem_serializer.is_valid(raise_exception=True):
             board = board_serializer.save(user=user, group=group)
+
+            logger.info(f'보드 아이디: {board.id}')
+            logger.info(f'보드 썸네일: {thumbnail}, {type(thumbnail)}')
             
             url = 'boards' + '/' + str(board.id)
             upload_image(url, thumbnail)
             
+            logger.info(f'보드 썸네일 등록 완료')
+            
             boarditem_serializer.save(board=board)
+            
+            logger.info(f'보드 아이템 등록 완료')
             
             user.cnt_boards += 1
             user.save()
             
             check_cnt_boards(user)
+            
+            logger.info(f'사용자 업적 관련 체크 완료')
         
             return Response(data={'board_id': board.id}, status=status.HTTP_200_OK)
     

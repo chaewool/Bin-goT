@@ -21,8 +21,8 @@ class Board(models.Model):
 class BoardItem(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='items')
     item_id = models.IntegerField(default=0)
-    title = models.CharField(max_length=20, )
-    content = models.CharField(max_length=100, )
+    title = models.CharField(max_length=20)
+    content = models.CharField(max_length=100)
     check = models.BooleanField() # 횟수 측정 여부
     check_goal = models.IntegerField(null=True) # 목표 횟수
     check_cnt = models.IntegerField(null=True) # 현재까지 수행한 횟수
