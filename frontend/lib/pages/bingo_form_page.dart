@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:bin_got/pages/bingo_detail_page.dart';
@@ -17,6 +18,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
+import 'package:http_parser/http_parser.dart';
 
 class BingoForm extends StatefulWidget {
   final int bingoSize;
@@ -45,9 +47,13 @@ class _BingoFormState extends State<BingoForm> {
   void createOrEditBingo() async {
     await bingoToThumb();
     if (!mounted) return;
+    final data = context.read<GlobalBingoProvider>().data;
     await BingoProvider().createOwnBingo(FormData.fromMap({
-      'data': context.read<GlobalBingoProvider>().data,
-      'thumbnail': thumbnail
+      'data': jsonEncode(data),
+      'thumbnail': thumbnail != null
+          ? MultipartFile.fromFileSync(thumbnail!.path,
+              contentType: MediaType('image', 'jpg'))
+          : null,
     }));
     if (!mounted) return;
     toOtherPage(context,
@@ -57,7 +63,6 @@ class _BingoFormState extends State<BingoForm> {
   }
 
   FutureBool bingoToThumb() async {
-    print('시작');
     var renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject is RenderRepaintBoundary) {
       var boundary = renderObject;
@@ -65,7 +70,6 @@ class _BingoFormState extends State<BingoForm> {
       final byteData = await image.toByteData(format: ImageByteFormat.png);
       setState(() {
         thumbnail = byteData?.buffer.asUint8List();
-        print(thumbnail);
       });
     }
     return true;

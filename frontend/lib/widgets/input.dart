@@ -1,13 +1,12 @@
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-class CustomInput extends StatefulWidget {
+class CustomInput extends StatelessWidget {
   final String? explain, initialValue;
   final bool needMore, onlyNum, enabled;
   final double? width, height;
@@ -36,62 +35,36 @@ class CustomInput extends StatefulWidget {
   });
 
   @override
-  State<CustomInput> createState() => _CustomInputState();
-}
-
-class _CustomInputState extends State<CustomInput> {
-  FocusNode inputFocus = FocusNode();
-  StringMap inputValue = {'value': ''};
-  @override
-  void initState() {
-    super.initState();
-    focusListener();
-    print('initialValue : ${widget.initialValue}');
-    inputValue['value'] = widget.initialValue ?? '';
-  }
-
-  void focusListener() {
-    inputFocus.addListener(() {
-      if (!inputFocus.hasFocus) {
-        widget.setValue(inputValue['value']);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CustomText(content: widget.title),
+        CustomText(content: title),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           child: SizedBox(
-            width: widget.width,
-            height: widget.height,
+            width: width,
+            height: height,
             child: TextField(
-              controller: TextEditingController(text: inputValue['value']),
+              controller: TextEditingController(text: initialValue),
               decoration: InputDecoration(
-                filled: widget.filled,
-                fillColor: widget.filledColor,
+                filled: filled,
+                fillColor: filledColor,
                 border: const OutlineInputBorder(),
-                hintText: widget.explain,
+                hintText: explain,
               ),
-              maxLength: widget.maxLength,
-              style: TextStyle(fontSize: convertedFontSize(widget.fontSize)),
-              maxLines: widget.needMore ? 7 : 1,
-              keyboardType: widget.onlyNum ? TextInputType.number : null,
-              inputFormatters: widget.onlyNum
-                  ? [FilteringTextInputFormatter.digitsOnly]
-                  : null,
-              enabled: widget.enabled,
+              maxLength: maxLength,
+              style: TextStyle(fontSize: convertedFontSize(fontSize)),
+              maxLines: needMore ? 7 : 1,
+              keyboardType: onlyNum ? TextInputType.number : null,
+              inputFormatters:
+                  onlyNum ? [FilteringTextInputFormatter.digitsOnly] : null,
+              enabled: enabled,
               textAlign: TextAlign.start,
               textAlignVertical: TextAlignVertical.center,
-              onChanged: (value) {
-                inputValue['value'] = value;
-              },
+              onChanged: (value) => setValue(value),
               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
               textInputAction: TextInputAction.next,
-              focusNode: inputFocus,
+              // focusNode: inputFocus,
             ),
           ),
         ),

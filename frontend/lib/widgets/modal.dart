@@ -28,9 +28,9 @@ class BingoModal extends StatefulWidget {
 }
 
 class _BingoModalState extends State<BingoModal> {
-  late final DynamicMapList items;
   late DynamicMap item;
   late int newIdx;
+
   @override
   void initState() {
     super.initState();
@@ -38,51 +38,47 @@ class _BingoModalState extends State<BingoModal> {
     if (getItems(context).isEmpty) {
       context.read<GlobalBingoProvider>().initItems(widget.cnt);
     }
-    items = getItems(context);
-    item = items[newIdx];
+    item = {...getItems(context)[newIdx]};
   }
 
-  void onPressed(bool needClose) {
+  void initialize() {
+    setState(() {
+      item['title'] = null;
+      item['content'] = null;
+      item['check'] = false;
+      item['check_goal'] = '0';
+    });
     setItem(context, newIdx, item);
-    if (needClose) {
-      toBack(context);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     void moveBingo(bool toRight) {
+      setItem(context, newIdx, item);
       if (toRight) {
         if (newIdx < widget.cnt - 1) {
           setState(() {
             newIdx += 1;
-            item = items[newIdx];
+            item = {...getItems(context)[newIdx]};
           });
         }
       } else if (newIdx > 0) {
         setState(() {
           newIdx -= 1;
-          item = items[newIdx];
+          item = {...getItems(context)[newIdx]};
         });
       }
     }
 
-    bool isChecked = false;
     void Function(bool?) changeCheckState(bool? state) {
       return (bool? state) => setState(() {
-            isChecked = !isChecked;
+            item['check'] = state;
           });
     }
 
     return CustomModal(
-      buttonText: '저장',
-      onPressed: () => onPressed(false),
-      additionalButton: widget.isDetail
-          ? null
-          : CustomButton(
-              content: '저장 후 닫기',
-              onPressed: () => onPressed(true),
-            ),
+      buttonText: '초기화',
+      onPressed: initialize,
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -92,10 +88,8 @@ class _BingoModalState extends State<BingoModal> {
               width: 170,
               height: 50,
               explain: '제목',
-              setValue: (value) {
-                item['title'] = value;
-              },
-              initialValue: widget.isDetail ? item['title'] : null,
+              setValue: (value) => item['title'] = value,
+              initialValue: item['title'],
               enabled: !widget.isDetail,
             ),
             Row(
@@ -113,9 +107,8 @@ class _BingoModalState extends State<BingoModal> {
                   height: 200,
                   enabled: !widget.isDetail,
                   fontSize: FontSize.textSize,
-                  initialValue:
-                      widget.isDetail ? item[newIdx]['content'] : null,
-                  setValue: (p0) {},
+                  initialValue: item['content'],
+                  setValue: (value) => item['content'] = value,
                 ),
                 CustomIconButton(
                   onPressed: () => moveBingo(true),
@@ -129,21 +122,21 @@ class _BingoModalState extends State<BingoModal> {
               children: [
                 CustomCheckBox(
                   label: '횟수 체크',
-                  onChange: changeCheckState(!isChecked),
-                  value: isChecked,
+                  onChange: changeCheckState(false),
+                  value: item['check'] ?? false,
                 ),
-                isChecked
+                item['check']
                     ? CustomBoxContainer(
                         child: CustomInput(
-                          width: 100,
+                          width: 50,
                           height: 40,
                           onlyNum: true,
-                          explain: '숫자 입력',
-                          setValue: (p0) {},
+                          setValue: (value) => item['check_goal'] = value,
+                          initialValue: item['check_goal'],
                         ),
                       )
                     : const SizedBox(),
-                isChecked
+                item['check']
                     ? const CustomText(
                         content: '회',
                         fontSize: FontSize.smallSize,
@@ -152,7 +145,7 @@ class _BingoModalState extends State<BingoModal> {
               ],
             ),
           ],
-        ),
+        )
       ],
     );
   }

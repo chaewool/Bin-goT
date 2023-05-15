@@ -36,13 +36,14 @@ class _IntroState extends State<Intro> {
         chat: data['noti_chat'],
       );
       context.read<AuthProvider>().setStoreId(data['id']);
+
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
-        showModal(context, page: const InputModal(title: '닉네임 설정'));
+        showModal(context, page: const InputModal(title: '닉네임 설정'))();
       }
     } catch (error) {
-      showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.');
+      showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
     }
   }
 

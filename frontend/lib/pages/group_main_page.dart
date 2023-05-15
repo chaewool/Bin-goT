@@ -70,8 +70,6 @@ class _GroupMainState extends State<GroupMain> {
             title: '로그인 확인',
             content: '로그인이 필요합니다',
           ))();
-      // setState(() {
-      // });
       return;
     }
   }

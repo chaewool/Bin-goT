@@ -24,7 +24,7 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   void _setId(int? newId) => _id = newId;
   void _storeValue(String key, dynamic value) {
     const storage = FlutterSecureStorage();
-    storage.write(key: key, value: value);
+    storage.write(key: key, value: value.toString());
   }
 
   dynamic _readStorage() async {
@@ -39,25 +39,25 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
     if (userInfo != null) {
       _setToken(userInfo!['token']);
       _setRefresh(userInfo!['refresh']);
-      _setId(userInfo['id']);
+      _setId(int.parse(userInfo['id']));
       notifyListeners();
     }
     return true;
   }
 
-  void setStoreToken(String? newToken) {
+  void setStoreToken(String newToken) {
     _setToken(newToken);
     _storeValue('token', newToken);
     notifyListeners();
   }
 
-  void setStoreRefresh(String? newRefresh) {
+  void setStoreRefresh(String newRefresh) {
     _setRefresh(newRefresh);
     _storeValue('refresh', newRefresh);
     notifyListeners();
   }
 
-  void setStoreId(int? newId) {
+  void setStoreId(int newId) {
     _setId(newId);
     _storeValue('id', newId);
     notifyListeners();
@@ -75,19 +75,19 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
 //* notification
 class NotiProvider extends ChangeNotifier {
   static bool _rankNoti = true;
-  static int _dueNoti = 0;
+  static bool _dueNoti = true;
   static bool _chatNoti = true;
 
   //* getter
   bool get rankNoti => _rankNoti;
-  int get dueNoti => _dueNoti;
+  bool get dueNoti => _dueNoti;
   bool get chatNoti => _chatNoti;
 
   //* private
   FutureBool initNoti() async {
     final prefs = await SharedPreferences.getInstance();
     _setRank(prefs.getBool('rank') ?? true);
-    _setDue(prefs.getInt('due') ?? 0);
+    _setDue(prefs.getBool('due') ?? true);
     _setChat(prefs.getBool('chat') ?? true);
     return Future.value(true);
   }
@@ -98,7 +98,7 @@ class NotiProvider extends ChangeNotifier {
   }
 
   void _setRank(bool newVal) => _rankNoti = newVal;
-  void _setDue(int newVal) => _dueNoti = newVal;
+  void _setDue(bool newVal) => _dueNoti = newVal;
   void _setChat(bool newVal) => _chatNoti = newVal;
 
   //* public
@@ -108,10 +108,9 @@ class NotiProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setStoreDue(int newDue) async {
+  void setStoreDue(bool newDue) async {
     _setDue(newDue);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('due', newDue);
+    _storeBool('due', newDue);
     notifyListeners();
   }
 
@@ -125,7 +124,7 @@ class NotiProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
     _setChat(true);
-    _setDue(0);
+    _setDue(true);
     _setRank(true);
   }
 }
@@ -249,7 +248,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   int? get bingoId => _bingoId;
 
   //* private
-  void _setData(DynamicMap data) => _data = data;
+  void _setData(DynamicMap newData) => _data = newData;
   void _setGBingoId(int newVal) => _bingoId = newVal;
   void _setOption(String key, dynamic value) => _data[key] = value;
 
@@ -298,17 +297,17 @@ class GlobalBingoProvider extends ChangeNotifier {
         'title': null,
         'content': null,
         'check': false,
-        'check_goal': 0,
+        'check_goal': '0',
       },
     );
   }
 
   void _setItem(int index, DynamicMap item) {
-    _data['items'][index] = item;
+    _data['items'][index] = {...item};
   }
 
   //* public
-  void setItem(int index, DynamicMap item) => _setItem(index, data);
+  void setItem(int index, DynamicMap item) => _setItem(index, item);
 
   void initItems(int cnt) => _initItems(cnt);
 

@@ -94,10 +94,10 @@ ReturnVoid showModal(BuildContext context, {required Widget page}) {
 //* token
 String? getToken(BuildContext context) => context.read<AuthProvider>().token;
 
-void setToken(BuildContext context, String? newToken) =>
+void setToken(BuildContext context, String newToken) =>
     context.read<AuthProvider>().setStoreToken(newToken);
 
-void setTokens(BuildContext context, String? newToken, String? newRefresh) {
+void setTokens(BuildContext context, String newToken, String newRefresh) {
   final auth = context.read<AuthProvider>();
   auth.setStoreToken(newToken);
   auth.setStoreRefresh(newRefresh);
@@ -110,13 +110,12 @@ int? getId(BuildContext context) => context.read<AuthProvider>().id;
 void setNoti(
   BuildContext context, {
   required bool rank,
-  required int due,
+  required bool due,
   required bool chat,
 }) {
-  final noti = context.read<NotiProvider>();
-  noti.setStoreRank(rank);
-  noti.setStoreDue(due);
-  noti.setStoreChat(chat);
+  context.read<NotiProvider>().setStoreRank(rank);
+  context.read<NotiProvider>().setStoreDue(due);
+  context.read<NotiProvider>().setStoreChat(chat);
 }
 
 //* group data

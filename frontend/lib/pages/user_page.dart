@@ -35,7 +35,7 @@ class _MyPageState extends State<MyPage> {
   ];
   List<StringList> notificationOptions = [
     ['ON', 'OFF'],
-    ['세 달', '한 달', '일주일', '3일'],
+    ['ON', 'OFF'],
     ['ON', 'OFF'],
     ['ON', 'OFF']
   ];
@@ -111,11 +111,8 @@ class _MyPageState extends State<MyPage> {
                       Flexible(
                         flex: 2,
                         child: CustomButton(
-                          content: notificationOptions[i][i == 1
-                              ? optionList[i]
-                              : optionList[i]
-                                  ? 0
-                                  : 1],
+                          content: notificationOptions[i]
+                              [optionList[i] ? 0 : 1],
                           onPressed: () => changeIdx(i),
                         ),
                       ),
