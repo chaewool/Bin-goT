@@ -6,7 +6,7 @@ class Board(models.Model):
     group = models.ForeignKey('groups.Group', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='boards')
     title = models.CharField(max_length=20)
-    background = models.IntegerField(default=0)
+    background = models.IntegerField(null=True)
     is_black = models.BooleanField(default=False)
     has_border = models.BooleanField(default=False)
     has_round_edge = models.BooleanField(default=False)

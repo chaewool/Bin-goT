@@ -53,25 +53,16 @@ class BoardCreateView(APIView):
         
         if board_serializer.is_valid(raise_exception=True) and boarditem_serializer.is_valid(raise_exception=True):
             board = board_serializer.save(user=user, group=group)
-
-            logger.info(f'보드 아이디: {board.id}')
-            logger.info(f'보드 썸네일: {thumbnail}, {type(thumbnail)}')
             
             url = 'boards' + '/' + str(board.id)
             upload_image(url, thumbnail)
             
-            logger.info(f'보드 썸네일 등록 완료')
-            
             boarditem_serializer.save(board=board)
-            
-            logger.info(f'보드 아이템 등록 완료')
             
             user.cnt_boards += 1
             user.save()
             
             check_cnt_boards(user)
-            
-            logger.info(f'사용자 업적 관련 체크 완료')
         
             return Response(data={'board_id': board.id}, status=status.HTTP_200_OK)
     
@@ -80,6 +71,11 @@ class BoardDetailView(APIView):
     def get(self, request, board_id):
         board = Board.objects.get(id=board_id)
         serializer = BoardDetailSerializer(board)
+        group = board.group
+        participate = Participate.objects.get(group=group, user=board.user)
+
+        if not Participate.objects.filter(user=request.user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         achieve = 0
         
@@ -87,7 +83,7 @@ class BoardDetailView(APIView):
             if item['finished']:
                 achieve += 1
         
-        data = {**serializer.data, 'username': board.user.username, 'acheive': achieve / (board.group.size ** 2)}
+        data = {**serializer.data, 'username': participate.rand_name if group.is_public else participate.user.username, 'achieve': round(achieve / (board.group.size ** 2), 2)}
         
         return Response(data=data, status=status.HTTP_200_OK)
 
