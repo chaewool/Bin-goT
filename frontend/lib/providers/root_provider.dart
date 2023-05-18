@@ -232,10 +232,13 @@ class GlobalBingoProvider extends ChangeNotifier {
     'font': 0,
     'items': <DynamicMap>[],
   };
+  // static DynamicMap _tempData = {..._data};
   static int? _bingoId;
+  static bool _isCheckTheme = false;
 
   //* getter
   DynamicMap get data => _data;
+  // DynamicMap get tempData => _tempData;
   int? get groupId => _data['group'];
   String? get title => _data['title'];
   int? get background => _data['background'];
@@ -247,11 +250,14 @@ class GlobalBingoProvider extends ChangeNotifier {
   int? get font => _data['font'];
   List get items => _data['items'];
   int? get bingoId => _bingoId;
+  bool get isCheckTheme => _isCheckTheme;
 
   //* private
   DynamicMap _item(int index) => items[index];
 
+  void _setIsCheckTheme(bool value) => _isCheckTheme = value;
   void _setData(DynamicMap newData) => _data = {...newData};
+  // void _setTempData(DynamicMap newData) => _tempData = {...newData};
   void _setGBingoId(int newVal) => _bingoId = newVal;
   void _setOption(String key, dynamic value) => _data[key] = value;
 
@@ -312,6 +318,11 @@ class GlobalBingoProvider extends ChangeNotifier {
   //* public
   DynamicMap item(int index) => _item(index);
 
+  void setIsCheckTheme(bool value) {
+    _setIsCheckTheme(value);
+    notifyListeners();
+  }
+
   void setItem(int index, DynamicMap item) {
     _setItem(index, item);
     notifyListeners();
@@ -326,6 +337,7 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   void setOption(String key, dynamic value) => _setOption(key, value);
   void setData(DynamicMap data) => _setData(data);
+  // void setTempData(DynamicMap data) => _setTempData(data);
 
   void setBingoId(int newVal) {
     _setGBingoId(newVal);

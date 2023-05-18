@@ -262,7 +262,11 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
 
 //* 빙고 상세
 class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
-  const BingoDetailAppBar({super.key});
+  final FutureBool Function() save;
+  const BingoDetailAppBar({
+    super.key,
+    required this.save,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +277,7 @@ class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
           icon: shareIcon,
         ),
         IconButtonInRow(
-          onPressed: () {},
+          onPressed: save,
           icon: saveIcon,
         ),
         const SizedBox(

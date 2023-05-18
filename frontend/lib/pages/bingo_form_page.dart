@@ -56,6 +56,7 @@ class _BingoFormState extends State<BingoForm> {
       await bingoToThumb();
       if (!mounted) return;
       final data = context.read<GlobalBingoProvider>().data;
+      print(data);
       final bingoData = FormData.fromMap({
         'data': jsonEncode(data),
         'thumbnail': MultipartFile.fromBytes(
@@ -70,8 +71,14 @@ class _BingoFormState extends State<BingoForm> {
           toOtherPage(context, page: BingoDetail(bingoId: bingoId))();
         });
       } else {
-        await BingoProvider().editOwnBingo(widget.bingoId!, bingoData);
+        await BingoProvider()
+            .editOwnBingo(widget.bingoId!, bingoData)
+            .then((_) {
+          toOtherPage(context, page: BingoDetail(bingoId: widget.bingoId!))();
+        });
       }
+    } else {
+      toBack(context);
     }
   }
 

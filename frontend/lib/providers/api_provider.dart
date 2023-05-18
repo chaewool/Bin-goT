@@ -12,7 +12,7 @@ class ApiProvider extends UrlClass {
   FutureVoid updateApi(String url, {required DynamicMap data}) async =>
       _updateApi(url, data: data);
 
-  FutureVoid deleteApi(String url) async => _deleteApi(url);
+  FutureDynamicMap deleteApi(String url) async => _deleteApi(url);
 
   FutureDynamicMap tokenRefresh() async => _tokenRefresh();
 
@@ -90,8 +90,6 @@ class ApiProvider extends UrlClass {
       switch (response.statusCode) {
         case 200:
           return {};
-        case 401:
-          return tokenRefresh();
         default:
           throw Error();
       }

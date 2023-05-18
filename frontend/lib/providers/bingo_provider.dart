@@ -8,6 +8,7 @@ class BingoProvider extends ApiProvider {
   FutureInt createOwnBingo(FormData bingoData) => _createOwnBingo(bingoData);
   FutureDynamicMap editOwnBingo(int bingoId, FormData bingoData) =>
       _editOwnBingo(bingoId, bingoData);
+  FutureDynamicMap deleteOwnBingo(int bingoId) => _deleteOwnBingo(bingoId);
 
   //* detail
   Future<DynamicMap> _readBingoDetail(int bingoId) async {
@@ -57,6 +58,17 @@ class BingoProvider extends ApiProvider {
         return {};
       }
       throw Error();
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
+  }
+
+  //* delete
+  FutureDynamicMap _deleteOwnBingo(int bingoId) async {
+    try {
+      final response = await deleteApi(deleteBingoUrl(bingoId));
+      return {};
     } catch (error) {
       print(error);
       throw Error();

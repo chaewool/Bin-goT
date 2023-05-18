@@ -1,3 +1,4 @@
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -5,6 +6,7 @@ import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //* 빙고판
 class BingoBoard extends StatefulWidget {
@@ -128,15 +130,17 @@ class EachBingo extends StatelessWidget {
                 ),
               ),
             ),
-            Center(
-              child: Expanded(
-                child: CustomIcon(
-                  icon: getCheckIconData(context),
-                  size: 80,
-                  color: convertedColor(),
-                ),
-              ),
-            ),
+            context.watch<GlobalBingoProvider>().isCheckTheme
+                ? Center(
+                    child: Expanded(
+                      child: CustomIcon(
+                        icon: getCheckIconData(context),
+                        size: 80,
+                        color: convertedColor(),
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
           ],
         ),
       ),

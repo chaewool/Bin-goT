@@ -2,6 +2,7 @@ import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
@@ -17,6 +18,7 @@ import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //* 빙고 생성 탭
 class BingoTabBar extends StatefulWidget {
@@ -37,6 +39,18 @@ class _BingoTabBarState extends State<BingoTabBar> {
           for (IconData icon in iconList) Tab(child: CustomIcon(icon: icon)),
         ],
         views: [paintTab(), optionOrFontTab(1), optionOrFontTab(2), checkTab()],
+        onChange: (index) {
+          final isCheckTheme = context.read<GlobalBingoProvider>().isCheckTheme;
+          void setCheckTheme(bool value) =>
+              context.read<GlobalBingoProvider>().setIsCheckTheme(value);
+          if (index == 3) {
+            if (!isCheckTheme) {
+              setCheckTheme(true);
+            }
+          } else if (isCheckTheme) {
+            setCheckTheme(false);
+          }
+        },
       ),
     );
   }
@@ -102,11 +116,18 @@ class _BingoTabBarState extends State<BingoTabBar> {
                   height: 40,
                   boxShadow: applyBoxShadow(i, j),
                   child: Center(
-                    child: CustomText(
-                      content: index == 2
-                          ? showedFont[2 * i + j]
-                          : optionList[2 * i + j],
-                      font: index == 2 ? matchFont[2 * i + j] : 'RIDIBatang',
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: CustomText(
+                          content: index == 2
+                              ? showedFont[2 * i + j]
+                              : optionList[2 * i + j],
+                          font:
+                              index == 2 ? matchFont[2 * i + j] : 'RIDIBatang',
+                        ),
+                      ),
                     ),
                   ),
                   // width: MediaQuery.of(context).size.width,
@@ -119,9 +140,10 @@ class _BingoTabBarState extends State<BingoTabBar> {
 
   Column checkTab() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             for (int i = 0; i < 3; i += 1)
               CustomIconButton(

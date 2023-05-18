@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -11,9 +14,10 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
-class BingoDetail extends StatelessWidget {
+class BingoDetail extends StatefulWidget {
   final int bingoId;
   const BingoDetail({
     super.key,
@@ -21,19 +25,75 @@ class BingoDetail extends StatelessWidget {
   });
 
   @override
+  State<BingoDetail> createState() => _BingoDetailState();
+}
+
+class _BingoDetailState extends State<BingoDetail> {
+  @override
   Widget build(BuildContext context) {
     int groupId = 0;
     GlobalKey globalKey = GlobalKey();
-
     void deleteBingo() {
+      BingoProvider().deleteOwnBingo(widget.bingoId).then((_) {
+        showAlert(
+          context,
+          title: '삭제 완료',
+          content: '빙고가 정상적으로 삭제되었습니다.',
+          hasCancel: false,
+        )();
+        toBack(context);
+      }).catchError((_) {
+        showAlert(
+          context,
+          title: '삭제 오류',
+          content: '오류가 발생해 빙고가 삭제되지 않았습니다.',
+          hasCancel: false,
+        )();
+      });
+    }
+
+    void onDeleteEvent() {
       final start = context.read<GlobalGroupProvider>().start;
-      if (start != '') {}
+      final difference =
+          DateTime.now().difference(DateTime.parse(start!)).inDays;
+      if (difference < 0) {
+        showAlert(
+          context,
+          title: '삭제 확인',
+          content: '빙고를 삭제하시겠습니까?\n그룹 시작 전에\n빙고를 재생성해야 합니다.',
+          onPressed: deleteBingo,
+        )();
+      } else {
+        showAlert(
+          context,
+          title: '삭제 오류',
+          content: '시작일이 지난 그룹의 빙고는 삭제할 수 없습니다',
+          hasCancel: false,
+        )();
+      }
+    }
+
+    FutureBool bingoToImage() async {
+      var renderObject = globalKey.currentContext?.findRenderObject();
+      if (renderObject is RenderRepaintBoundary) {
+        var boundary = renderObject;
+        final image = await boundary.toImage();
+        final byteData = await image.toByteData(format: ImageByteFormat.png);
+        final pngBytes = byteData?.buffer.asUint8List();
+        print(pngBytes);
+        final imgFile = File('image_file.png');
+        imgFile.writeAsBytes(pngBytes!);
+        return true;
+      }
+      return false;
     }
 
     return Scaffold(
-        appBar: const BingoDetailAppBar(),
+        appBar: BingoDetailAppBar(
+          save: bingoToImage,
+        ),
         body: FutureBuilder(
-          future: BingoProvider().readBingoDetail(bingoId),
+          future: BingoProvider().readBingoDetail(widget.bingoId),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final DynamicMap data = snapshot.data!;
@@ -67,18 +127,20 @@ class BingoDetail extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButtonInRow(
-                          onPressed: toOtherPage(context,
-                              page: BingoForm(
-                                bingoId: bingoId,
-                                bingoSize: context
-                                    .read<GlobalGroupProvider>()
-                                    .bingoSize!,
-                                needAuth: false,
-                              )),
+                          onPressed: toOtherPage(
+                            context,
+                            page: BingoForm(
+                              bingoId: widget.bingoId,
+                              bingoSize: context
+                                  .read<GlobalGroupProvider>()
+                                  .bingoSize!,
+                              needAuth: false,
+                            ),
+                          ),
                           icon: editIcon,
                         ),
                         IconButtonInRow(
-                          onPressed: deleteBingo,
+                          onPressed: onDeleteEvent,
                           icon: deleteIcon,
                         ),
                         const SizedBox(width: 20)

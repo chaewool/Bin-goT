@@ -9,7 +9,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 class CustomInput extends StatelessWidget {
   final String? explain, initialValue;
   final bool needMore, onlyNum, enabled;
-  final double? width, height;
+  final double? width, height, vertical, horizontal;
   final bool filled;
   final Color filledColor;
   final FontSize fontSize;
@@ -19,6 +19,7 @@ class CustomInput extends StatelessWidget {
 
   const CustomInput({
     super.key,
+    required this.setValue,
     this.explain,
     this.needMore = false,
     this.onlyNum = false,
@@ -30,17 +31,21 @@ class CustomInput extends StatelessWidget {
     this.fontSize = FontSize.smallSize,
     this.maxLength,
     this.title = '',
-    required this.setValue,
     this.initialValue,
+    this.horizontal = 20.0,
+    this.vertical = 10.0,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CustomText(content: title),
+        title != '' ? CustomText(content: title) : const SizedBox(),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          padding: EdgeInsets.symmetric(
+            vertical: vertical!,
+            horizontal: horizontal!,
+          ),
           child: SizedBox(
             width: width,
             height: height,

@@ -73,14 +73,16 @@ class _BingoModalState extends State<BingoModal> {
 
     void applyItem() {
       setItem(context, newIdx, item);
+      print(readItem(context, newIdx));
       toBack(context);
     }
 
     return CustomModal(
       buttonText: '초기화',
-      cancelText: '적용',
-      onPressed: initialize,
-      onCancelPressed: applyItem,
+      cancelText: widget.isDetail ? '확인' : '적용',
+      onPressed: widget.isDetail ? null : initialize,
+      onCancelPressed: widget.isDetail ? null : applyItem,
+      hasConfirm: !widget.isDetail,
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -122,20 +124,24 @@ class _BingoModalState extends State<BingoModal> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CustomCheckBox(
-                  label: '횟수 체크',
-                  onChange: changeCheckState(false),
-                  value: item['check'] ?? false,
-                ),
+                !widget.isDetail || item['check']
+                    ? CustomCheckBox(
+                        label: widget.isDetail ? '달성/목표' : '횟수 체크',
+                        onChange:
+                            widget.isDetail ? null : changeCheckState(false),
+                        value: item['check'] ?? false,
+                      )
+                    : const SizedBox(),
                 item['check']
-                    ? CustomBoxContainer(
-                        child: CustomInput(
-                          width: 50,
-                          height: 40,
-                          onlyNum: true,
-                          setValue: (value) => item['check_goal'] = value,
-                          initialValue: item['check_goal'],
-                        ),
+                    ? CustomInput(
+                        enabled: !widget.isDetail,
+                        width: 60,
+                        height: 30,
+                        onlyNum: true,
+                        setValue: (value) => item['check_goal'] = value,
+                        initialValue: widget.isDetail
+                            ? '${item['check_cnt'] ?? 0}/${item['check_goal']}'
+                            : item['check_goal'].toString(),
                       )
                     : const SizedBox(),
                 item['check']
@@ -335,7 +341,9 @@ class CustomModal extends StatelessWidget {
         ...children,
         RowWithPadding(
             horizontal: 50,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: hasConfirm
+                ? MainAxisAlignment.spaceAround
+                : MainAxisAlignment.center,
             children: [
               hasConfirm
                   ? CustomButton(
