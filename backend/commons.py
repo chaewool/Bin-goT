@@ -54,3 +54,6 @@ class RedisRanker:
     
     def getTops(self, return_count=3):
         return conn_redis.zrevrangebyscore(name=self.key, min="-inf", max="+inf", start=0, num=return_count)
+    
+def get_boolean(str):
+    return True if str in ('true', 'True') else False

@@ -72,6 +72,11 @@ class BoardDetailView(APIView):
     def get(self, request, board_id):
         board = Board.objects.get(id=board_id)
         serializer = BoardDetailSerializer(board)
+        group = board.group
+        participate = Participate.objects.get(group=group, user=board.user)
+
+        if not Participate.objects.filter(user=request.user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         achieve = 0
         
@@ -79,7 +84,7 @@ class BoardDetailView(APIView):
             if item['finished']:
                 achieve += 1
         
-        data = {**serializer.data, 'username': board.user.username, 'acheive': achieve / (board.group.size ** 2)}
+        data = {**serializer.data, 'username': participate.rand_name if group.is_public else participate.user.username, 'achieve': round(achieve / (board.group.size ** 2), 2)}
         
         return Response(data=data, status=status.HTTP_200_OK)
 

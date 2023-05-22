@@ -4,7 +4,6 @@ from datetime import date
 
 from .models import Badge
 from groups.models import Group
-from boards.models import Board
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,11 +18,7 @@ class BadgeSerializer(serializers.ModelSerializer):
 
 
 class GroupSerializer(serializers.ModelSerializer):
-    count = serializers.SerializerMethodField('get_count')
     status = serializers.SerializerMethodField('get_status')
-    
-    def get_count(self, obj):
-        return obj.users.count()
     
     def get_status(self, obj):
         if date.today() > obj.end:
@@ -35,7 +30,7 @@ class GroupSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Group
-        fields = ('id', 'groupname', 'start', 'end', 'headcount', 'count', 'status')
+        fields = ('id', 'groupname', 'start', 'end', 'headcount', 'status')
 
 
 class BoardSerializer(serializers.ModelSerializer):

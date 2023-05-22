@@ -12,9 +12,10 @@ from datetime import date
 from bingot_settings import KAKAO_REST_API_KEY
 from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
-from groups.models import Group
+from groups.models import Group, Participate
 from boards.models import Board
 from groups.serializers import GroupSearchSerializer
+from commons import get_boolean
 
 
 User = get_user_model()
@@ -120,7 +121,7 @@ class UsernameCheckView(APIView):
         
         if User.objects.filter(username=username).exists():
             return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_200_OK)
+        return Response(data={}, status=status.HTTP_200_OK)
     
     
 class UsernameUpdateView(APIView):
@@ -134,7 +135,7 @@ class UsernameUpdateView(APIView):
         user.username = username
         user.save()
         
-        return Response(status=status.HTTP_200_OK)
+        return Response(data={}, status=status.HTTP_200_OK)
     
     
 class BadgeListView(APIView):
@@ -161,23 +162,23 @@ class BadgeUpdateView(APIView):
             user.profile = badge_id
             user.save()
             
-            return Response(status=status.HTTP_200_OK)
+            return Response(data={}, status=status.HTTP_200_OK)
         return Response(data={'message': '보유하지 않은 배지입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
     
 class NotificationUpdateView(APIView):
     def post(self, request):
         user = request.user
-        noti_rank = True if request.data.get('noti_rank') == 'True' else False
-        noti_chat = True if request.data.get('noti_chat') == 'True' else False
-        noti_due = True if request.data.get('noti_due') == 'True' else False
+        noti_rank = get_boolean(request.data.get('noti_rank'))
+        noti_chat = get_boolean(request.data.get('noti_chat'))
+        noti_due = get_boolean(request.data.get('noti_due'))
         
         user.noti_rank = noti_rank
         user.noti_chat = noti_chat
         user.noti_due = noti_due
         user.save()
             
-        return Response(status=status.HTTP_200_OK)
+        return Response(data={}, status=status.HTTP_200_OK)
 
 
 class MainView(APIView):
@@ -191,6 +192,16 @@ class MainView(APIView):
             recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
             
             groups = GroupSearchSerializer(recommends, many=True).data
+
+            for group in groups:
+                count = 0
+
+                for p in Participate.objects.filter(group=group['id']):
+                    if p.is_banned == 0:
+                        count += 1
+            
+                group['count'] = count
+
             groups = [d for d in groups if d['count'] < d['headcount']][:20]
 
             is_recommend = True
@@ -200,6 +211,14 @@ class MainView(APIView):
                     group['has_board'] = True
                 else:
                     group['has_board'] = False
+
+                count = 0
+
+                for p in Participate.objects.filter(group=group['id']):
+                    if p.is_banned == 0:
+                        count += 1
+            
+                group['count'] = count
         
         return Response(data={'groups': groups, 'boards': boards, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
 

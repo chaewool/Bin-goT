@@ -14,11 +14,6 @@ class GroupCreateSerializer(serializers.ModelSerializer):
 
 
 class GroupDetailSerializer(serializers.ModelSerializer):
-    count = serializers.SerializerMethodField('get_count')
-    
-    def get_count(self, obj):
-        return obj.users.count()
-
     class Meta:
         model = Group
         exclude = ('id', 'leader', 'password', 'period', 'is_public', 'users')
@@ -36,14 +31,9 @@ class GroupUpdateSerializer(serializers.ModelSerializer):
 
 
 class GroupSearchSerializer(serializers.ModelSerializer):
-    count = serializers.SerializerMethodField('get_count')
-    
-    def get_count(self, obj):
-        return obj.users.count()
-
     class Meta:
         model = Group
-        fields = ('id', 'groupname', 'is_public', 'start', 'end', 'headcount', 'count')
+        fields = ('id', 'groupname', 'is_public', 'start', 'end', 'headcount')
 
 
 class ChatListSerializer(serializers.ModelSerializer):

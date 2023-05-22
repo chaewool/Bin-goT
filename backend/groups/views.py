@@ -6,7 +6,7 @@ from datetime import datetime, date
 import json
 import logging
 
-from commons import upload_image, delete_image, RedisRanker
+from commons import upload_image, delete_image, RedisRanker, get_boolean
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer, ChatListSerializer, ReviewListSerializer
 from .models import Group, Participate, Chat, Review
 from boards.models import Board, BoardItem
@@ -193,8 +193,14 @@ class GroupDetailView(APIView):
                 'achieve': ranker.getScore(ranker_id) / (group.size ** 2), 
                 'board_id': Board.objects.get(group=group, user=r).id
                 })
+
+        count = 0
+
+        for p in Participate.objects.filter(group=group):
+            if p.is_banned == 0:
+                count += 1
         
-        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank}
+        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank, 'count': count}
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -204,7 +210,7 @@ class GroupUpdateView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         data = json.loads(request.data.get('data'))
-        update_img = True if request.data.get('update_img') == 'True' else False
+        update_img = get_boolean(request.data.get('update_img'))
 
         if not data['groupname']:
             data['groupname'] = group.groupname
@@ -258,7 +264,7 @@ class GroupJoinView(APIView):
                 Participate.objects.create(user=user, group=group, is_banned=1)
                 
                 # leader에게 알림 보내는 코드 추가 필요
-            return Response(status=status.HTTP_200_OK)
+            return Response(data={}, status=status.HTTP_200_OK)
         
         else:
             if Participate.objects.get(user=user, group=group).is_banned == 2:
@@ -271,7 +277,7 @@ class GroupGrantView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         target_id = request.data.get('target_id')
-        grant = True if request.data.get('grant') == 'True' else False
+        grant = get_boolean(request.data.get('grant'))
 
         if group.leader == user:
             applicant = get_user_model().objects.get(id=target_id)
@@ -282,7 +288,7 @@ class GroupGrantView(APIView):
             
             if participate.is_banned == 2:
                 return Response(data={'message': '이미 승인 거부되었거나 강제 탈퇴된 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             if participate.is_banned == 0 and grant:
                 return Response(data={'message': '이미 승인된 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
             
@@ -298,7 +304,7 @@ class GroupGrantView(APIView):
                 participate.is_banned = 2
                 participate.save()
 
-            return Response(status=status.HTTP_200_OK)
+            return Response(data={}, status=status.HTTP_200_OK)
         
         return Response(data={'message': '승인 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -396,7 +402,7 @@ class GroupChatCreateView(APIView):
             chat.has_img = False
             chat.save()
             
-        return Response(status=status.HTTP_200_OK)
+        return Response(data={}, status=status.HTTP_200_OK)
 
 
 class GroupChatListView(APIView):
@@ -444,7 +450,7 @@ class GroupReviewCreateView(APIView):
             review.has_img = False
             review.save()
             
-        return Response(status=status.HTTP_200_OK)
+        return Response(data={}, status=status.HTTP_200_OK)
 
 
 class GroupReviewCheckView(APIView):
@@ -504,13 +510,13 @@ class GroupAdminView(APIView):
             if participate.is_banned == 1:
                 applicants.append({
                     'id': participate.user.id,
-                    'username': participate.user.username,
+                    'username': participate.rand_name if group.is_public else participate.user.username,
                     'board_id': board_id
                     })
             elif participate.is_banned == 0:
                 members.append({
                     'id': participate.user.id,
-                    'username': participate.user.username,
+                    'username': participate.rand_name if group.is_public else participate.user.username,
                     'board_id': board_id
                     })
         
@@ -549,6 +555,16 @@ class GroupSearchView(APIView):
 
         groups = groups.order_by(order)[(page - 1) * cnt: page * cnt]
         data = GroupSearchSerializer(groups, many=True).data
+
+        for group in data:
+            count = 0
+
+            for p in Participate.objects.filter(group=group['id']):
+                if p.is_banned == 0:
+                    count += 1
+            
+            group['count'] = count
+
         data = [d for d in data if d['count'] < d['headcount'] and not Participate.objects.filter(group=d['id'], user=user).exists()]
         
         return Response(data=data, status=status.HTTP_200_OK)
