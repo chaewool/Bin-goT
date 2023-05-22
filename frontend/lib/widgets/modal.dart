@@ -426,17 +426,29 @@ class _NotificationModalState extends State<NotificationModal> {
 
 //* 입력창이 있는 모달
 class InputModal extends StatelessWidget {
-  final String title;
-  const InputModal({super.key, required this.title});
+  final String title, type;
+  final void Function(dynamic value) setValue;
+  final ReturnVoid onPressed;
+  const InputModal({
+    super.key,
+    required this.title,
+    required this.type,
+    required this.setValue,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(title: title, children: [
-      CustomInput(
-        explain: '닉네임을 입력해주세요',
-        maxLength: 20,
-        setValue: (p0) {},
-      ),
-    ]);
+    return CustomModal(
+      title: title,
+      onPressed: onPressed,
+      children: [
+        CustomInput(
+          explain: '$type을 입력해주세요',
+          maxLength: 20,
+          setValue: setValue,
+        ),
+      ],
+    );
   }
 }

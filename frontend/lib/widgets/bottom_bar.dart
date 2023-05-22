@@ -10,6 +10,7 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 //* 그룹에서의 하단 바
 class BottomBar extends StatelessWidget {
@@ -99,13 +100,24 @@ class GroupChatBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    XFile? selectedImage;
+    void imagePicker() async {
+      final ImagePicker picker = ImagePicker();
+      final localImage = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 50,
+      );
+      selectedImage = localImage;
+    }
+
     return CustomBoxContainer(
       hasRoundEdge: false,
       color: greyColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Flexible(child: CustomIconButton(onPressed: () {}, icon: addIcon)),
+          Flexible(
+              child: CustomIconButton(onPressed: imagePicker, icon: addIcon)),
           Flexible(
             flex: 5,
             child: CustomInput(

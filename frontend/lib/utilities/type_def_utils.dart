@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 //* 기본
 typedef ReturnVoid = void Function();
+// typedef ChangeValue = void Function(String value);
 typedef StringList = List<String>;
 typedef WidgetList = List<Widget>;
 typedef IntList = List<int>;

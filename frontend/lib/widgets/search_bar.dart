@@ -10,7 +10,15 @@ import 'package:bin_got/widgets/select_box.dart';
 import 'package:flutter/material.dart';
 
 class SearchBar extends StatefulWidget {
-  const SearchBar({super.key});
+  // final String query;
+  // final Function(String value) onChange;
+  // final ReturnVoid onSearchAction;
+  const SearchBar({
+    super.key,
+    // required this.query,
+    // required this.onChange,
+    // required this.onSearchAction,
+  });
 
   @override
   State<SearchBar> createState() => _SearchBarState();
@@ -48,7 +56,11 @@ class _SearchBarState extends State<SearchBar> {
     });
   }
 
-  void changeIdx(String string, int intVal) {}
+  void changeIdx(String string, int intVal) {
+    setState(() {
+      periodIdx = intVal;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +78,9 @@ class _SearchBarState extends State<SearchBar> {
                   hintText: '키워드를 입력하세요',
                 ),
                 style: const TextStyle(fontSize: 20),
-                onChanged: (value) {
-                  keyword['value'] = value;
-                },
+                // onChanged: widget.onChange,
+                onChanged: (value) => keyword['value'] = value,
+                // controller: TextEditingController(text: widget.query),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,17 +93,21 @@ class _SearchBarState extends State<SearchBar> {
                     height: 50,
                   ),
                   CustomButton(
-                    onPressed: toOtherPage(context,
-                        page: SearchGroup(
-                          public: publicGroup && privateGroup
-                              ? 0
-                              : publicGroup
-                                  ? 1
-                                  : 2,
-                          cnt: 20,
-                          period: 1,
-                          keyword: keyword['value'],
-                        )),
+                    onPressed:
+                        // widget.onSearchAction,
+                        toOtherPage(
+                      context,
+                      page: SearchGroup(
+                        public: publicGroup && privateGroup
+                            ? 0
+                            : publicGroup
+                                ? 1
+                                : 2,
+                        cnt: 20,
+                        period: 0,
+                        keyword: keyword['value'],
+                      ),
+                    ),
                     content: '검색',
                   ),
                 ],

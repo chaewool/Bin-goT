@@ -127,6 +127,8 @@ class EachBingo extends StatelessWidget {
                   content: getItemTitle(context, index) ?? '빙고칸 제목',
                   font: getStringFont(context),
                   center: true,
+                  maxLines: 2,
+                  cutText: true,
                 ),
               ),
             ),

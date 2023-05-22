@@ -35,13 +35,13 @@ class _BingoDetailState extends State<BingoDetail> {
     GlobalKey globalKey = GlobalKey();
     void deleteBingo() {
       BingoProvider().deleteOwnBingo(widget.bingoId).then((_) {
+        toBack(context);
         showAlert(
           context,
           title: '삭제 완료',
           content: '빙고가 정상적으로 삭제되었습니다.',
           hasCancel: false,
         )();
-        toBack(context);
       }).catchError((_) {
         showAlert(
           context,

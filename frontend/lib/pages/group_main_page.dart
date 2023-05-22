@@ -7,6 +7,7 @@ import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -34,24 +35,41 @@ class GroupMain extends StatefulWidget {
 }
 
 class _GroupMainState extends State<GroupMain> {
-  @override
-  void initState() {
-    super.initState();
-    if (getToken(context) != null) {
-      verifyToken();
-    } else {
-      showModal(context,
-          page: const CustomAlert(title: '로그인 확인', content: '로그인이 필요합니다'))();
-    }
-
-    if (!widget.isPublic) {
-      showModal(context, page: const InputModal(title: '비밀번호 입력'))();
-    }
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     if (getToken(context) != null) {
+  //       verifyToken();
+  //     } else {
+  //       showModal(context,
+  //           page: const CustomAlert(title: '로그인 확인', content: '로그인이 필요합니다'))();
+  //     }
+  //     if (!widget.isPublic) {
+  //       showModal(context, page: const InputModal(title: '비밀번호 입력'))()
+  //           .then((_) {
+  //         print(_);
+  //         setState(() {
+  //           groupData = GroupProvider().readGroupDetail(
+  //             widget.groupId,
+  //             password['value']!,
+  //           );
+  //         });
+  //       });
+  //     }
+  //     setState(() {
+  // groupData = GroupProvider().readGroupDetail(
+  //   widget.groupId,
+  //   widget.password,
+  // );
+  //     });
+  //   });
+  // }
 
   int memberState = 0;
   int size = 3;
   bool needAuth = true;
+  StringMap password = {'value': ''};
 
   void verifyToken() async {
     try {

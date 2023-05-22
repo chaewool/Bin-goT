@@ -1,6 +1,6 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
@@ -376,8 +376,10 @@ class _MyTabBarState extends State<MyTabBar> {
                               ),
                               GestureDetector(
                                 onTap: toOtherPage(context,
-                                    page: const GroupMain(
-                                        groupId: 1, isPublic: true)),
+                                    page: const InputPassword(
+                                      groupId: 1,
+                                      isPublic: true,
+                                    )),
                                 child: const CustomText(
                                   content: '추천그룹',
                                   fontSize: FontSize.titleSize,

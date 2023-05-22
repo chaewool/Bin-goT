@@ -25,6 +25,7 @@ class _GroupChatState extends State<GroupChat> {
           children: [
             Expanded(
               child: SingleChildScrollView(
+                reverse: true,
                 child: Column(
                   children: [
                     chatBox(needAuth: true),

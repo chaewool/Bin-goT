@@ -39,7 +39,7 @@ class BingoForm extends StatefulWidget {
 class _BingoFormState extends State<BingoForm> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? thumbnail;
-  bool changed = false;
+  bool changed = true;
 
   @override
   void initState() {
@@ -53,30 +53,35 @@ class _BingoFormState extends State<BingoForm> {
 
   void createOrEditBingo() async {
     if (changed) {
-      await bingoToThumb();
-      if (!mounted) return;
-      final data = context.read<GlobalBingoProvider>().data;
-      print(data);
-      final bingoData = FormData.fromMap({
-        'data': jsonEncode(data),
-        'thumbnail': MultipartFile.fromBytes(
-          thumbnail!,
-          filename: 'thumbnail.png',
-          contentType: MediaType('image', 'png'),
-        ),
-      });
+      bingoToThumb().then((_) {
+        final data = context.read<GlobalBingoProvider>().data;
+        print(data);
+        final bingoData = FormData.fromMap({
+          'data': jsonEncode(data),
+          'thumbnail': MultipartFile.fromBytes(
+            thumbnail!,
+            filename: 'thumbnail.png',
+            contentType: MediaType('image', 'png'),
+          ),
+        });
 
-      if (widget.bingoId == null) {
-        await BingoProvider().createOwnBingo(bingoData).then((bingoId) {
-          toOtherPage(context, page: BingoDetail(bingoId: bingoId))();
-        });
-      } else {
-        await BingoProvider()
-            .editOwnBingo(widget.bingoId!, bingoData)
-            .then((_) {
-          toOtherPage(context, page: BingoDetail(bingoId: widget.bingoId!))();
-        });
-      }
+        if (widget.bingoId == null) {
+          BingoProvider().createOwnBingo(bingoData).then((bingoId) {
+            toOtherPage(
+              context,
+              page: BingoDetail(bingoId: bingoId),
+            )();
+          });
+        } else {
+          print(widget.bingoId);
+          BingoProvider().editOwnBingo(widget.bingoId!, bingoData).then((_) {
+            toOtherPage(
+              context,
+              page: BingoDetail(bingoId: widget.bingoId!),
+            )();
+          });
+        }
+      });
     } else {
       toBack(context);
     }

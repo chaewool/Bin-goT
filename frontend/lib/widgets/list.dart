@@ -1,6 +1,6 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -42,7 +42,7 @@ class GroupListItem extends StatelessWidget {
           boxShadow: [shadowWithOpacity],
           onTap: toOtherPage(
             context,
-            page: GroupMain(
+            page: InputPassword(
               groupId: groupInfo.id,
               isPublic: groupInfo.isPublic ?? true,
             ),

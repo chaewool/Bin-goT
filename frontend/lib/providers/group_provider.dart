@@ -45,7 +45,7 @@ class GroupProvider extends ApiProvider {
       final response = await dioWithToken().get(
         searchGroupUrl,
         queryParameters: {
-          'period': 1,
+          'period': period,
           'keyword': keyword,
           'order': order,
           'public': public,
@@ -55,7 +55,8 @@ class GroupProvider extends ApiProvider {
       );
       if (response.statusCode == 200) {
         MyGroupList groupList = response.data
-            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json));
+            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
+            .toList();
         return groupList;
       }
       throw Error();
@@ -75,17 +76,9 @@ class GroupProvider extends ApiProvider {
         queryParameters: {'password': password},
       );
       print('response: $response');
-      switch (response.statusCode) {
-        case 200:
-          return GroupDetailModel.fromJson(response.data);
-        case 401:
-          //* 토큰 리프레시
-          final token = await tokenRefresh();
-          break;
-        default:
-          throw Error();
+      if (response.statusCode == 200) {
+        return GroupDetailModel.fromJson(response.data);
       }
-
       throw Error();
     } catch (error) {
       print(error);
