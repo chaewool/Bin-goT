@@ -37,7 +37,7 @@ class _SearchBarState extends State<SearchBar> {
   bool canShowMenu = false;
   bool privateGroup = true;
   bool publicGroup = true;
-  StringMap keyword = {'value': '미라클'};
+  StringMap keyword = {'value': ''};
   void changePrivate() {
     setState(() {
       privateGroup = !privateGroup;
@@ -104,7 +104,7 @@ class _SearchBarState extends State<SearchBar> {
                                 ? 1
                                 : 2,
                         cnt: 20,
-                        period: 0,
+                        period: 1,
                         keyword: keyword['value'],
                       ),
                     ),

@@ -9,6 +9,7 @@ import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //* 빙고
 class BingoModal extends StatefulWidget {
@@ -294,7 +295,8 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
                                     color: blueColor)
                               ]
                             : null,
-                        child: halfLogo,
+                        child: Image.network(
+                            '${dotenv.env['fileUrl']}/badges/${3 * i + j}'),
                       ),
                       const Padding(
                         padding: EdgeInsets.all(8.0),

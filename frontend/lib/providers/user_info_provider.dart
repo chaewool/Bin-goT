@@ -9,6 +9,14 @@ class UserInfoProvider extends ApiProvider {
   Future<MainTabModel> getMainTabData() async => _getMainTabData();
 
   //* private
+  void _getBadges() async {
+    try {
+      await dioWithToken().get(badgeListUrl);
+    } catch (error) {
+      throw Error();
+    }
+  }
+
   void _checkName(String name) async {
     try {
       createApi(checkNameUrl, data: {'username': name});
@@ -32,6 +40,7 @@ class UserInfoProvider extends ApiProvider {
         case 200:
           final data = response.data;
           if (data.isNotEmpty) {
+            print('tabData : $data');
             MyGroupList myGroupList = data['groups']
                 .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
                 .toList();

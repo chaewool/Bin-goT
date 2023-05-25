@@ -5,6 +5,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //* 그룹 메인 내용 출력
 class ShowContentBox extends StatelessWidget {
@@ -50,10 +51,19 @@ class BingoGallery extends StatelessWidget {
           bingoId: bingo.id,
         ),
       ),
-      child: const CustomBoxContainer(
-        width: 150,
-        height: 200,
-        color: greenColor,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: CustomBoxContainer(
+          // width: 150,
+          // height: 200,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Image.network('${dotenv.env['fileUrl']}/boards/${bingo.id}'),
+              CustomText(content: bingo.groupName)
+            ],
+          ),
+        ),
       ),
     );
   }

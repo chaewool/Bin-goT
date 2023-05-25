@@ -63,6 +63,7 @@ class BottomBar extends StatelessWidget {
                   page: BingoForm(
                     bingoSize: size!,
                     needAuth: needAuth!,
+                    beforeJoin: true,
                   ),
                 ),
               ),

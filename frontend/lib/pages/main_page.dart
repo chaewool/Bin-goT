@@ -2,7 +2,6 @@ import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/search_group_page.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
-import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -68,7 +67,7 @@ class _MainState extends State<Main> {
       appBar: MainBar(onPressed: changeSearchMode),
       body: CustomBoxContainer(
         height: MediaQuery.of(context).size.height,
-        color: backgroundColor,
+        // color: backgroundColor,
         hasRoundEdge: false,
         child: Column(
           mainAxisSize: MainAxisSize.max,

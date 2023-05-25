@@ -21,17 +21,18 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   final Widget? leadingChild;
   final WidgetList? actions;
   final String? title;
-  const CustomAppBar({
-    super.key,
-    this.leadingChild,
-    this.actions,
-    this.title,
-  });
+  final double elevation;
+  const CustomAppBar(
+      {super.key,
+      this.leadingChild,
+      this.actions,
+      this.title,
+      this.elevation = 0});
 
   @override
   PreferredSizeWidget build(BuildContext context) {
     return AppBar(
-      elevation: 0,
+      elevation: elevation,
       backgroundColor: whiteColor,
       title: title != null
           ? Center(
@@ -83,6 +84,7 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
+      elevation: 1,
       leadingChild: halfLogo,
       actions: [
         onPressed != null

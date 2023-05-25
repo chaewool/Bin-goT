@@ -356,43 +356,47 @@ class _MyTabBarState extends State<MyTabBar> {
       listItems: [
         [
           SingleChildScrollView(
-            child: FutureBuilder(
-              future: tabData,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final hasNotGroup = snapshot.data!.hasNotGroup;
-                  return Column(
-                    children: [
-                      hasNotGroup
-                          ? Column(children: [
-                              const CustomText(
-                                center: true,
-                                content:
-                                    '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                                height: 1.7,
-                              ),
-                              const SizedBox(
-                                height: 70,
-                              ),
-                              GestureDetector(
-                                onTap: toOtherPage(context,
-                                    page: const InputPassword(
-                                      groupId: 1,
-                                      isPublic: true,
-                                    )),
-                                child: const CustomText(
-                                  content: '추천그룹',
-                                  fontSize: FontSize.titleSize,
+            child: CustomBoxContainer(
+              height: MediaQuery.of(context).size.height,
+              color: backgroundColor,
+              child: FutureBuilder(
+                future: tabData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final hasNotGroup = snapshot.data!.hasNotGroup;
+                    return Column(
+                      children: [
+                        hasNotGroup
+                            ? Column(children: [
+                                const CustomText(
+                                  center: true,
+                                  content:
+                                      '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                                  height: 1.7,
                                 ),
-                              ),
-                            ])
-                          : const SizedBox(),
-                      groupList(snapshot.data!.groups, hasNotGroup)
-                    ],
-                  );
-                }
-                return const CustomText(content: '그룹 정보를 불러오는 중입니다');
-              },
+                                const SizedBox(
+                                  height: 70,
+                                ),
+                                GestureDetector(
+                                  onTap: toOtherPage(context,
+                                      page: const InputPassword(
+                                        groupId: 1,
+                                        isPublic: true,
+                                      )),
+                                  child: const CustomText(
+                                    content: '추천그룹',
+                                    fontSize: FontSize.titleSize,
+                                  ),
+                                ),
+                              ])
+                            : const SizedBox(),
+                        groupList(snapshot.data!.groups, hasNotGroup)
+                      ],
+                    );
+                  }
+                  return const CustomText(content: '그룹 정보를 불러오는 중입니다');
+                },
+              ),
             ),
           )
         ],
@@ -427,9 +431,22 @@ class _MyTabBarState extends State<MyTabBar> {
         shrinkWrap: true,
         itemCount: quot + 1,
         itemBuilder: (context, index) {
-          var bingo = bingos[index];
-          return BingoGallery(
-            bingo: bingo,
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Flexible(
+                child: BingoGallery(
+                  bingo: bingos[index * 2],
+                ),
+              ),
+              Flexible(
+                child: index != quot || remain == 0
+                    ? BingoGallery(
+                        bingo: bingos[index * 2 + 1],
+                      )
+                    : const SizedBox(),
+              )
+            ],
           );
         });
   }
