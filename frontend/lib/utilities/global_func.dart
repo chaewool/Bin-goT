@@ -11,11 +11,14 @@ import 'package:provider/provider.dart';
 
 //* 공유 템플릿
 TextTemplate defaultText({
-  required int groupId,
+  required int id,
+  required bool isGroup,
   String? password,
 }) {
   return TextTemplate(
-    text: 'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요',
+    text: isGroup
+        ? 'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요'
+        : 'ㅇㅇㅇ 님이 빙고판을 공유했어요! 자세히 살펴보세요.',
     link: Link(
       webUrl: Uri.parse(''),
       mobileWebUrl: Uri.parse(''),
@@ -24,17 +27,19 @@ TextTemplate defaultText({
 }
 
 //* 공유
-void shareToFriends({required int groupId, String? password}) async {
+void shareGroup({required int groupId, String? password}) async {
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
 
   if (isKakaoTalkSharingAvailable) {
     try {
       Uri uri = await ShareClient.instance.shareDefault(
-          template: defaultText(
-        groupId: groupId,
-        password: password,
-      ));
+        template: defaultText(
+          isGroup: true,
+          id: groupId,
+          password: password,
+        ),
+      );
       await ShareClient.instance.launchKakaoTalk(uri);
       print('카카오톡 공유 완료');
     } catch (error) {
@@ -43,10 +48,44 @@ void shareToFriends({required int groupId, String? password}) async {
   } else {
     try {
       Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
-          template: defaultText(
-        groupId: groupId,
-        password: password,
-      ));
+        template: defaultText(
+          isGroup: true,
+          id: groupId,
+          password: password,
+        ),
+      );
+      await launchBrowserTab(shareUrl, popupOpen: true);
+    } catch (error) {
+      print('카카오톡 공유 실패 $error');
+    }
+  }
+}
+
+void shareBingo({required int bingoId}) async {
+  bool isKakaoTalkSharingAvailable =
+      await ShareClient.instance.isKakaoTalkSharingAvailable();
+
+  if (isKakaoTalkSharingAvailable) {
+    try {
+      Uri uri = await ShareClient.instance.shareDefault(
+        template: defaultText(
+          id: bingoId,
+          isGroup: false,
+        ),
+      );
+      await ShareClient.instance.launchKakaoTalk(uri);
+      print('카카오톡 공유 완료');
+    } catch (error) {
+      print('카카오톡 공유 실패 $error');
+    }
+  } else {
+    try {
+      Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
+        template: defaultText(
+          id: bingoId,
+          isGroup: false,
+        ),
+      );
       await launchBrowserTab(shareUrl, popupOpen: true);
     } catch (error) {
       print('카카오톡 공유 실패 $error');
@@ -58,6 +97,12 @@ void shareToFriends({required int groupId, String? password}) async {
 ReturnVoid toOtherPage(BuildContext context, {required Widget page}) {
   return () =>
       Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+}
+
+//* 페이지 이동 (기록 X)
+toOtherPageWithoutPath(BuildContext context, {required Widget page}) {
+  return () => Navigator.pushAndRemoveUntil(context,
+      MaterialPageRoute(builder: (context) => page), (router) => false);
 }
 
 //* 뒤로 가기

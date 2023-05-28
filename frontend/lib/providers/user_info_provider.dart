@@ -4,14 +4,26 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 
 class UserInfoProvider extends ApiProvider {
   //* public
-  void checkName(String name) async => _checkName(name);
-  void changeName(String name) async => _changeName(name);
-  Future<MainTabModel> getMainTabData() async => _getMainTabData();
+  Future<ProfileModel> getProfile() => _getProfile();
+  Future<BadgeList> getBadges() => _getBadges();
+  void checkName(String name) => _checkName(name);
+  void changeName(String name) => _changeName(name);
+  Future<MainTabModel> getMainTabData() => _getMainTabData();
 
   //* private
-  void _getBadges() async {
+  Future<ProfileModel> _getProfile() async {
+    final response = await dioWithToken().get(profileUrl);
+    ProfileModel profile = ProfileModel.fromJson(response.data);
+    return profile;
+  }
+
+  Future<BadgeList> _getBadges() async {
     try {
-      await dioWithToken().get(badgeListUrl);
+      final response = await dioWithToken().get(badgeListUrl);
+      BadgeList badgeList = response.data
+          .map<BadgeModel>((json) => BadgeModel.fromJson(json))
+          .toList();
+      return badgeList;
     } catch (error) {
       throw Error();
     }

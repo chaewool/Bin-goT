@@ -5,19 +5,23 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
+import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/select_box.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class SearchBar extends StatefulWidget {
-  // final String query;
-  // final Function(String value) onChange;
-  // final ReturnVoid onSearchAction;
+  final int public;
+  final int period;
+  final String? query;
+  final bool isMain;
   const SearchBar({
     super.key,
-    // required this.query,
-    // required this.onChange,
-    // required this.onSearchAction,
+    this.public = 0,
+    this.period = 0,
+    this.query,
+    this.isMain = false,
   });
 
   @override
@@ -33,11 +37,55 @@ class _SearchBarState extends State<SearchBar> {
     '여섯 달 ~ 아홉 달',
     '아홉 달 ~ 1년'
   ];
-  int periodIdx = 0;
+  late int periodIdx;
+  late bool privateGroup, publicGroup;
   bool canShowMenu = false;
-  bool privateGroup = true;
-  bool publicGroup = true;
   StringMap keyword = {'value': ''};
+  @override
+  void initState() {
+    super.initState();
+    periodIdx = widget.period;
+    privateGroup = widget.public % 2 == 0;
+    publicGroup = widget.public < 2;
+  }
+
+  void onSearchAction() {
+    if (keyword['value'] != '' || periodIdx != 0) {
+      int result = 3;
+      if (publicGroup) {
+        result -= 2;
+      }
+      if (privateGroup) {
+        result -= 1;
+      }
+
+      final page = SearchGroup(
+        public: result,
+        cnt: 20,
+        period: periodIdx,
+        getKeyword: () => keyword['value'],
+      );
+
+      if (widget.isMain) {
+        toOtherPage(context, page: page)();
+      } else {
+        toOtherPageWithoutPath(context, page: page)();
+      }
+    } else {
+      showModal(
+        context,
+        page: const CustomModal(
+          title: '필수 항목 누락',
+          hasConfirm: false,
+          cancelText: '확인',
+          children: [
+            Center(child: CustomText(content: '검색어를 입력하거나\n 기간을 선택해주세요'))
+          ],
+        ),
+      )();
+    }
+  }
+
   void changePrivate() {
     setState(() {
       privateGroup = !privateGroup;
@@ -78,9 +126,10 @@ class _SearchBarState extends State<SearchBar> {
                   hintText: '키워드를 입력하세요',
                 ),
                 style: const TextStyle(fontSize: 20),
-                // onChanged: widget.onChange,
-                onChanged: (value) => keyword['value'] = value,
-                // controller: TextEditingController(text: widget.query),
+                onChanged: (value) {
+                  keyword['value'] = value;
+                },
+                controller: TextEditingController(text: keyword['value']),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -93,21 +142,7 @@ class _SearchBarState extends State<SearchBar> {
                     height: 50,
                   ),
                   CustomButton(
-                    onPressed:
-                        // widget.onSearchAction,
-                        toOtherPage(
-                      context,
-                      page: SearchGroup(
-                        public: publicGroup && privateGroup
-                            ? 0
-                            : publicGroup
-                                ? 1
-                                : 2,
-                        cnt: 20,
-                        period: 1,
-                        keyword: keyword['value'],
-                      ),
-                    ),
+                    onPressed: onSearchAction,
                     content: '검색',
                   ),
                 ],
@@ -133,7 +168,7 @@ class _SearchBarState extends State<SearchBar> {
             ? SelectBoxContainer(
                 listItems: period,
                 valueItems: List.generate(6, (i) => i),
-                index: 0,
+                index: periodIdx,
                 mapKey: '',
                 changeShowState: changeShowMenu,
                 changeIdx: changeIdx,

@@ -40,14 +40,14 @@ class _InputPasswordState extends State<InputPassword> {
               title: '비밀번호 입력',
               type: '비밀번호',
               setValue: (value) => password['value'] = value,
-              onPressed: () => toOtherPage(context,
+              onPressed: () => toOtherPageWithoutPath(context,
                   page: GroupMain(
                     groupId: widget.groupId,
                     isPublic: false,
                   )),
             ))();
       } else {
-        toOtherPage(context,
+        toOtherPageWithoutPath(context,
             page: GroupMain(
               groupId: widget.groupId,
               isPublic: true,

@@ -36,3 +36,21 @@ class MainTabModel {
         bingos = json['boards'],
         hasNotGroup = json['is_recommend'];
 }
+
+class ProfileModel {
+  final String username;
+  final int badgeId;
+  ProfileModel.fromJson(DynamicMap json)
+      : badgeId = json['badge'],
+        username = json['username'];
+}
+
+class BadgeModel {
+  final int id;
+  final String name;
+  final bool hasBadge;
+  BadgeModel.fromJson(DynamicMap json)
+      : id = json['id'],
+        name = json['badge_cond'],
+        hasBadge = json['has_badge'];
+}

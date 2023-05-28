@@ -1,6 +1,7 @@
 import 'package:bin_got/pages/help_page.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
+import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -13,12 +14,12 @@ import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 //* 마이페이지 메인
 class MyPage extends StatefulWidget {
-  final String nickname;
-  const MyPage({super.key, this.nickname = '조코링링링'});
+  const MyPage({super.key});
 
   @override
   State<MyPage> createState() => _MyPageState();
@@ -26,6 +27,8 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   late bool isEditMode;
+  String username = '';
+  int badgeId = 0;
 
   StringList notificationList = [
     '진행률/랭킹 알림',
@@ -50,16 +53,14 @@ class _MyPageState extends State<MyPage> {
   void changeIdx(int i) {
     setState(() {
       final noti = context.read<NotiProvider>();
-      if (i == 1) {
-        optionList[i] += 1;
-        noti.setStoreDue(optionList[i]);
-      } else {
-        optionList[i] = !optionList[i];
-        if (i == 0) {
-          noti.setStoreRank(optionList[i]);
-        } else if (i == 2) {
-          noti.setStoreChat(optionList[i]);
-        }
+      optionList[i] = !optionList[i];
+      switch (i) {
+        case 0:
+          return noti.setStoreRank(optionList[i]);
+        case 1:
+          return noti.setStoreDue(optionList[i]);
+        default:
+          return noti.setStoreChat(optionList[i]);
       }
     });
   }
@@ -73,6 +74,13 @@ class _MyPageState extends State<MyPage> {
   @override
   void initState() {
     super.initState();
+    UserInfoProvider().getProfile().then((data) {
+      print('data: $data');
+      setState(() {
+        username = data.username;
+        badgeId = data.badgeId;
+      });
+    });
     isEditMode = false;
     final noti = context.read<NotiProvider>();
     optionList.add(noti.rankNoti);
@@ -174,8 +182,17 @@ class _MyPageState extends State<MyPage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CircleContainer(
-          onTap: showModal(context, page: const SelectBadgeModal()),
-          child: halfLogo,
+          onTap: showModal(context,
+              page: SelectBadgeModal(
+                presentBadge: badgeId,
+              )),
+          child: badgeId != 0
+              ? Center(
+                  child: Image.network(
+                    '${dotenv.env['fileUrl']}/badges/$badgeId',
+                  ),
+                )
+              : const SizedBox(),
         ),
         Row(
           children: isEditMode
@@ -202,8 +219,9 @@ class _MyPageState extends State<MyPage> {
                     height: 40,
                     child: Center(
                       child: CustomText(
-                          content: widget.nickname,
-                          fontSize: FontSize.titleSize),
+                        content: username,
+                        fontSize: FontSize.titleSize,
+                      ),
                     ),
                   ),
                   IconButtonInRow(

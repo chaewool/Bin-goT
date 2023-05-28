@@ -62,7 +62,7 @@ class GroupCreateCompleted extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButtonInRow(
-                onPressed: () => shareToFriends(
+                onPressed: () => shareGroup(
                   groupId: groupId,
                   password: password,
                 ),

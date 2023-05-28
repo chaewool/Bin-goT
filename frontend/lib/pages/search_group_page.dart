@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 
 class SearchGroup extends StatefulWidget {
   final int public, order, page, cnt, period;
-  final String? keyword;
+  final String? Function() getKeyword;
   const SearchGroup({
     super.key,
     required this.public,
@@ -18,7 +18,7 @@ class SearchGroup extends StatefulWidget {
     this.order = 0,
     required this.cnt,
     required this.period,
-    this.keyword,
+    required this.getKeyword,
   });
 
   @override
@@ -27,27 +27,26 @@ class SearchGroup extends StatefulWidget {
 
 class _SearchGroupState extends State<SearchGroup> {
   final StringList sort = <String>['모집 중', '전체'];
-
   final StringList publicFilter = <String>['공개', '비공개', '전체'];
   late Future<MyGroupList> groups;
-  StringMap keyword = {'value': ''};
+  late String query;
 
   @override
   void initState() {
     super.initState();
-    if (widget.keyword != null) {
-      keyword['value'] = widget.keyword!;
-    }
     print('''
-    keyword: ${widget.keyword},
+    keyword: ${widget.getKeyword()},
       public: ${widget.public},
       cnt: ${widget.cnt},
       page: ${widget.page},
       order: ${widget.order},
       period: ${widget.period},
 ''');
+    setState(() {
+      query = widget.getKeyword() ?? '';
+    });
     groups = GroupProvider().searchGroupList(
-      keyword: widget.keyword,
+      keyword: widget.getKeyword(),
       public: widget.public,
       cnt: widget.cnt,
       page: widget.page,
@@ -61,13 +60,17 @@ class _SearchGroupState extends State<SearchGroup> {
     const List<String> dateFilter = <String>['시작일 ▲', '시작일 ▼'];
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: const MainBar(),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Flexible(
+          Flexible(
             fit: FlexFit.loose,
-            child: SearchBar(),
+            child: SearchBar(
+              public: widget.public,
+              period: widget.period,
+            ),
           ),
           const Flexible(
             fit: FlexFit.loose,
@@ -76,8 +79,9 @@ class _SearchGroupState extends State<SearchGroup> {
               children: [
                 // SizedBox()
                 // SelectBox(
+                //   onTap: () {},
                 //   selectList: dateFilter,
-                //   valueList: const [],
+                //   valueList: const [0, 1],
                 //   width: 100,
                 //   height: 50,
                 //   setValue: (p0) {},

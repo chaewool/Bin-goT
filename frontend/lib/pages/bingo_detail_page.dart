@@ -91,6 +91,7 @@ class _BingoDetailState extends State<BingoDetail> {
     return Scaffold(
         appBar: BingoDetailAppBar(
           save: bingoToImage,
+          bingoId: widget.bingoId,
         ),
         body: FutureBuilder(
           future: BingoProvider().readBingoDetail(widget.bingoId),

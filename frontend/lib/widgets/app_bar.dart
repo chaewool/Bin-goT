@@ -161,7 +161,7 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
               isAdmin || isMember
                   ? IconButtonInRow(
                       icon: shareIcon,
-                      onPressed: () => shareToFriends(
+                      onPressed: () => shareGroup(
                         groupId: groupId,
                         password: '',
                       ),
@@ -265,9 +265,11 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
 //* 빙고 상세
 class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
   final FutureBool Function() save;
+  final int bingoId;
   const BingoDetailAppBar({
     super.key,
     required this.save,
+    required this.bingoId,
   });
 
   @override
@@ -275,7 +277,7 @@ class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
     return AppBarWithBack(
       actions: [
         IconButtonInRow(
-          onPressed: () {},
+          onPressed: () => shareBingo(bingoId: bingoId),
           icon: shareIcon,
         ),
         IconButtonInRow(

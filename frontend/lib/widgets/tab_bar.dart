@@ -531,6 +531,7 @@ class CustomTextTabBar extends StatelessWidget {
     return CustomBoxContainer(
       hasRoundEdge: false,
       child: ContainedTabBarView(
+        tabBarProperties: const TabBarProperties(indicatorColor: greenColor),
         tabs: [
           for (String tabTitle in tabTitles)
             Tab(
