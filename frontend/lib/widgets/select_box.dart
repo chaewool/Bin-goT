@@ -26,6 +26,7 @@ class SelectBox extends StatelessWidget {
       width: width,
       height: height,
       color: whiteColor,
+      // borderColor: greyColor,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Row(
@@ -49,6 +50,7 @@ class SelectBoxContainer extends StatefulWidget {
   final String mapKey;
   final ReturnVoid changeShowState;
   final void Function(String, int) changeIdx;
+  final double? height;
   const SelectBoxContainer({
     super.key,
     required this.listItems,
@@ -57,6 +59,7 @@ class SelectBoxContainer extends StatefulWidget {
     required this.mapKey,
     required this.changeShowState,
     required this.changeIdx,
+    this.height,
   });
 
   @override
@@ -94,6 +97,7 @@ class _SelectBoxContainerState extends State<SelectBoxContainer> {
           CustomBoxContainer(
             hasRoundEdge: false,
             width: 150,
+            height: widget.height,
             color: whiteColor,
             boxShadow: const [defaultShadow],
             child: Column(
@@ -102,9 +106,7 @@ class _SelectBoxContainerState extends State<SelectBoxContainer> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: CustomBoxContainer(
-                      onTap: () => changeSelected(
-                        newIdx: i,
-                      ),
+                      onTap: () => changeSelected(newIdx: i),
                       width: 150,
                       child: Center(
                         child: CustomText(

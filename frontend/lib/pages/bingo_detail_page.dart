@@ -52,27 +52,6 @@ class _BingoDetailState extends State<BingoDetail> {
       });
     }
 
-    void onDeleteEvent() {
-      final start = context.read<GlobalGroupProvider>().start;
-      final difference =
-          DateTime.now().difference(DateTime.parse(start!)).inDays;
-      if (difference < 0) {
-        showAlert(
-          context,
-          title: '삭제 확인',
-          content: '빙고를 삭제하시겠습니까?\n그룹 시작 전에\n빙고를 재생성해야 합니다.',
-          onPressed: deleteBingo,
-        )();
-      } else {
-        showAlert(
-          context,
-          title: '삭제 오류',
-          content: '시작일이 지난 그룹의 빙고는 삭제할 수 없습니다',
-          hasCancel: false,
-        )();
-      }
-    }
-
     FutureBool bingoToImage() async {
       var renderObject = globalKey.currentContext?.findRenderObject();
       if (renderObject is RenderRepaintBoundary) {
@@ -139,10 +118,6 @@ class _BingoDetailState extends State<BingoDetail> {
                             ),
                           ),
                           icon: editIcon,
-                        ),
-                        IconButtonInRow(
-                          onPressed: onDeleteEvent,
-                          icon: deleteIcon,
                         ),
                         const SizedBox(width: 20)
                       ],

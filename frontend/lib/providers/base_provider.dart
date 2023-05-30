@@ -5,13 +5,46 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 //* dio
 class DioClass extends AuthProvider {
   static final _baseUrl = dotenv.env['baseUrl'];
+
   Dio dio = Dio(BaseOptions(baseUrl: _baseUrl!));
-  Dio dioWithToken() => Dio(
-        BaseOptions(
-          baseUrl: _baseUrl!,
-          headers: {'Authorization': 'JWT $token'},
-        ),
-      );
+
+  Dio _dioToRefresh() => Dio(BaseOptions(
+      baseUrl: _baseUrl!, headers: {'Authorization': 'JWT $token'}));
+
+  Dio dioWithToken() {
+    final tempDio = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl!,
+        headers: {'Authorization': 'JWT $token'},
+      ),
+    );
+    tempDio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (e, handler) async {
+          if (e.response?.statusCode == 401) {
+            try {
+              //* refresh token
+              _dioToRefresh().post(
+                '/accounts/token/refresh',
+                data: {'refresh': refresh},
+              ).then((tokenData) {
+                final access = tokenData.data['access'];
+                setStoreToken(access);
+                e.requestOptions.headers['Authorization'] = access;
+              });
+              final secondRes = await dio.fetch(e.requestOptions);
+              return handler.resolve(secondRes);
+              //* 재요청
+            } catch (error) {
+              //* 토큰 초기화
+            }
+          }
+          return handler.next(e);
+        },
+      ),
+    );
+    return tempDio;
+  }
 }
 
 //* url

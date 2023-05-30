@@ -41,12 +41,28 @@ class _SearchBarState extends State<SearchBar> {
   late bool privateGroup, publicGroup;
   bool canShowMenu = false;
   StringMap keyword = {'value': ''};
+  final periodBoxKey = GlobalKey();
+  Offset? position;
+
   @override
   void initState() {
     super.initState();
     periodIdx = widget.period;
     privateGroup = widget.public % 2 == 0;
     publicGroup = widget.public < 2;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getOffset();
+    });
+  }
+
+  void getOffset() {
+    if (periodBoxKey.currentContext != null) {
+      final renderBox =
+          periodBoxKey.currentContext!.findRenderObject() as RenderBox;
+      setState(() {
+        position = renderBox.localToGlobal(Offset.zero);
+      });
+    }
   }
 
   void onSearchAction() {
@@ -136,9 +152,10 @@ class _SearchBarState extends State<SearchBar> {
                 children: [
                   const SizedBox(),
                   SelectBox(
+                    key: periodBoxKey,
                     onTap: changeShowMenu,
                     value: period[periodIdx],
-                    width: 150,
+                    width: 200,
                     height: 50,
                   ),
                   CustomButton(
@@ -150,12 +167,12 @@ class _SearchBarState extends State<SearchBar> {
               Row(
                 children: [
                   CustomCheckBox(
-                    label: '공개',
+                    label: '공개 그룹',
                     onChange: (_) => changePublic(),
                     value: publicGroup,
                   ),
                   CustomCheckBox(
-                    label: '비공개',
+                    label: '비공개 그룹',
                     onChange: (_) => changePrivate(),
                     value: privateGroup,
                   )
@@ -165,13 +182,16 @@ class _SearchBarState extends State<SearchBar> {
           ),
         ),
         canShowMenu
-            ? SelectBoxContainer(
-                listItems: period,
-                valueItems: List.generate(6, (i) => i),
-                index: periodIdx,
-                mapKey: '',
-                changeShowState: changeShowMenu,
-                changeIdx: changeIdx,
+            ? Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, position!.dx, 0),
+                child: SelectBoxContainer(
+                  listItems: period,
+                  valueItems: List.generate(6, (i) => i),
+                  index: periodIdx,
+                  changeShowState: changeShowMenu,
+                  changeIdx: changeIdx,
+                  mapKey: '',
+                ),
               )
             : const SizedBox(),
       ],

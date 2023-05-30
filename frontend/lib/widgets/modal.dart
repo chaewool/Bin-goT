@@ -5,10 +5,12 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //* 빙고
 class BingoModal extends StatefulWidget {
@@ -254,110 +256,136 @@ class SelectBadgeModal extends StatefulWidget {
 }
 
 class _SelectBadgeModalState extends State<SelectBadgeModal> {
-  late int badgeIdx;
-  void selectBadge(int idx) {
-    if (idx != badgeIdx) {
+  late int badgeId;
+  void selectBadge(int id) {
+    if (id != badgeId) {
       setState(() {
-        badgeIdx = idx;
+        badgeId = id;
       });
     }
+  }
+
+  void changeBadge() {
+    UserInfoProvider().changeBadge({'badge_id': badgeId}).then((_) {
+      toBack(context);
+    }).catchError((_) {
+      showAlert(
+        context,
+        title: '배지 변경 오류',
+        content: '오류가 발생해 배지가 변경되지 않았습니다.',
+      )();
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    badgeIdx = widget.presentBadge;
+    badgeId = widget.presentBadge;
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(
-        title: '배지 선택',
-        onPressed: () => toBack(context),
-        children: [
-          FutureBuilder(
-              future: UserInfoProvider().getBadges(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  var data = snapshot.data;
-                  return Flexible(
-                    fit: FlexFit.loose,
-                    child: ListView.separated(
-                      itemCount: data!.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 20),
-                      itemBuilder: (context, index) {
-                        final item = data[index];
-                        return CustomText(content: item.id.toString());
-                        // ColWithPadding(
-                        //   mainAxisSize: MainAxisSize.min,
-                        //   vertical: 8,
-                        //   horizontal: 8,
-                        //   children: [
-                        //     CircleContainer(
-                        //       onTap: () => selectBadge(index),
-                        //       boxShadow: index == badgeIdx
-                        //           ? [
-                        //               const BoxShadow(
-                        //                 blurRadius: 3,
-                        //                 spreadRadius: 3,
-                        //                 color: blueColor,
-                        //               )
-                        //             ]
-                        //           : null,
-                        //       child: Image.network(
-                        //         '${dotenv.env['fileUrl']}/badges/${item.id}',
-                        //         // opacity: data[index].hasBadge ? 1 : 0.5,
-                        //       ),
-                        //     ),
-                        //     Padding(
-                        //       padding: const EdgeInsets.all(8.0),
-                        //       child: CustomText(content: item.name),
-                        //     )
-                        //   ],
-                        // );
-                      },
-                    ),
-                  );
-                }
-                return const Flexible(
-                  fit: FlexFit.loose,
-                  child: Center(
-                    child: CircularProgressIndicator(),
+    return CustomModal(title: '배지 선택', onPressed: changeBadge, children: [
+      FutureBuilder(
+          future: UserInfoProvider().getBadges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var data = snapshot.data;
+              return SingleChildScrollView(
+                child: CustomBoxContainer(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  color: greyColor,
+                  hasRoundEdge: false,
+                  child: ListView.separated(
+                    itemCount: data!.length ~/ 2,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 20),
+                    itemBuilder: (context, index) {
+                      return Flexible(
+                        child: RowWithPadding(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          vertical: 8,
+                          horizontal: 8,
+                          children: [
+                            for (int di = 0; di < 2; di += 1)
+                              Column(
+                                children: [
+                                  CircleContainer(
+                                    onTap: () =>
+                                        selectBadge(data[2 * index + di].id),
+                                    boxShadow:
+                                        data[2 * index + di].id == badgeId
+                                            ? [
+                                                const BoxShadow(
+                                                  blurRadius: 3,
+                                                  spreadRadius: 3,
+                                                  color: blueColor,
+                                                )
+                                              ]
+                                            : null,
+                                    child: Image.network(
+                                      '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
+                                      opacity: AlwaysStoppedAnimation(
+                                        data[2 * index + di].hasBadge ? 1 : 0.2,
+                                      ),
+                                      // opacity: data[index].hasBadge ? 1 : 0.5,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CustomText(
+                                      content: data[2 * index + di].name,
+                                      fontSize: FontSize.smallSize,
+                                    ),
+                                  )
+                                ],
+                              )
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                );
-              }),
-          // for (int i = 0; i < 4; i += 1)
-          //   Row(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       for (int j = 0; j < 3; j += 1)
-          //         ColWithPadding(
-          //           vertical: 8,
-          //           horizontal: 8,
-          //           children: [
-          //             CircleContainer(
-          //               onTap: () => selectBadge(3 * i + j),
-          //               boxShadow: 3 * i + j == badgeIdx
-          //                   ? [
-          //                       const BoxShadow(
-          //                           blurRadius: 3,
-          //                           spreadRadius: 3,
-          //                           color: blueColor)
-          //                     ]
-          //                   : null,
-          //               child: Image.network(
-          //                   '${dotenv.env['fileUrl']}/badges/${3 * i + j}'),
-          //             ),
-          //             const Padding(
-          //               padding: EdgeInsets.all(8.0),
-          //               child: CustomText(content: '배지명'),
-          //             )
-          //           ],
-          //         ),
-          //     ],
-          //   ),
-        ]);
+                ),
+              );
+            }
+            return const Flexible(
+              fit: FlexFit.loose,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }),
+      // for (int i = 0; i < 4; i += 1)
+      //   Row(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     children: [
+      //       for (int j = 0; j < 3; j += 1)
+      //         ColWithPadding(
+      //           vertical: 8,
+      //           horizontal: 8,
+      //           children: [
+      //             CircleContainer(
+      //               onTap: () => selectBadge(3 * i + j),
+      //               boxShadow: 3 * i + j == badgeIdx
+      //                   ? [
+      //                       const BoxShadow(
+      //                           blurRadius: 3,
+      //                           spreadRadius: 3,
+      //                           color: blueColor)
+      //                     ]
+      //                   : null,
+      //               child: Image.network(
+      //                   '${dotenv.env['fileUrl']}/badges/${3 * i + j}'),
+      //             ),
+      //             const Padding(
+      //               padding: EdgeInsets.all(8.0),
+      //               child: CustomText(content: '배지명'),
+      //             )
+      //           ],
+      //         ),
+      //     ],
+      //   ),
+    ]);
   }
 }
 

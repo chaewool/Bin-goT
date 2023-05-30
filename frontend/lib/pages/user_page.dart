@@ -28,6 +28,7 @@ class MyPage extends StatefulWidget {
 class _MyPageState extends State<MyPage> {
   late bool isEditMode;
   String username = '';
+  String newName = '';
   int badgeId = 0;
 
   StringList notificationList = [
@@ -45,6 +46,7 @@ class _MyPageState extends State<MyPage> {
   List optionList = [];
 
   void changeEditMode() {
+    print('pressed');
     setState(() {
       isEditMode = !isEditMode;
     });
@@ -68,7 +70,25 @@ class _MyPageState extends State<MyPage> {
   void logout() {
     context.read<AuthProvider>().deleteVar();
     context.read<NotiProvider>().deleteVar();
-    toOtherPage(context, page: const Intro())();
+    toOtherPageWithoutPath(context, page: const Intro())();
+  }
+
+  void changeName() {
+    if (username != newName) {
+      UserInfoProvider().changeName(newName).then((_) {
+        showAlert(context, title: '닉네임 변경 완료', content: '닉네임이 변경되었습니다.')();
+        changeEditMode();
+        setState(() {
+          username = newName;
+        });
+      });
+    }
+  }
+
+  void setName(String newVal) {
+    setState(() {
+      newName = newVal;
+    });
   }
 
   @override
@@ -78,6 +98,7 @@ class _MyPageState extends State<MyPage> {
       print('data: $data');
       setState(() {
         username = data.username;
+        newName = data.username;
         badgeId = data.badgeId;
       });
     });
@@ -92,6 +113,7 @@ class _MyPageState extends State<MyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: const MyPageAppBar(),
       body: Column(
         mainAxisSize: MainAxisSize.max,
@@ -99,11 +121,12 @@ class _MyPageState extends State<MyPage> {
         children: [
           Flexible(flex: 3, child: profile(context)),
           Flexible(
-            flex: 7,
+            flex: 8,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const CustomText(content: '알림 설정'),
+                const SizedBox(height: 15),
                 for (int i = 0; i < 4; i += 1)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -162,8 +185,12 @@ class _MyPageState extends State<MyPage> {
             flex: 2,
             child: CustomTextButton(
               content: '로그아웃',
-              onTap: showAlert(context,
-                  title: '로그아웃 확인', content: '로그아웃하시겠습니까?', onPressed: logout),
+              onTap: showAlert(
+                context,
+                title: '로그아웃 확인',
+                content: '로그아웃하시겠습니까?',
+                onPressed: logout,
+              ),
             ),
           ),
           const Flexible(
@@ -178,58 +205,77 @@ class _MyPageState extends State<MyPage> {
   RowWithPadding profile(BuildContext context) {
     return RowWithPadding(
       vertical: 20,
-      horizontal: 40,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      horizontal: 15,
       children: [
-        CircleContainer(
-          onTap: showModal(context,
+        Flexible(
+          child: CircleContainer(
+            onTap: showModal(
+              context,
               page: SelectBadgeModal(
                 presentBadge: badgeId,
-              )),
-          child: badgeId != 0
-              ? Center(
-                  child: Image.network(
-                    '${dotenv.env['fileUrl']}/badges/$badgeId',
-                  ),
-                )
-              : const SizedBox(),
+              ),
+            ),
+            child: badgeId != 0
+                ? Center(
+                    child: Image.network(
+                      '${dotenv.env['fileUrl']}/badges/$badgeId',
+                    ),
+                  )
+                : const SizedBox(),
+          ),
         ),
-        Row(
-          children: isEditMode
-              ? [
-                  CustomInput(
-                    width: 150,
-                    height: 30,
-                    setValue: (p0) {},
-                  ),
-                  IconButtonInRow(
-                    icon: confirmIcon,
-                    onPressed: () {},
-                    size: 20,
-                  ),
-                  IconButtonInRow(
-                    icon: closeIcon,
-                    onPressed: changeEditMode,
-                    size: 20,
-                  ),
-                ]
-              : [
-                  SizedBox(
-                    width: 150,
-                    height: 40,
-                    child: Center(
-                      child: CustomText(
-                        content: username,
-                        fontSize: FontSize.titleSize,
+        Flexible(
+          flex: 5,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: isEditMode
+                ? [
+                    Flexible(
+                      flex: 11,
+                      child: Center(
+                        child: CustomInput(
+                          height: 35,
+                          initialValue: newName,
+                          setValue: setName,
+                        ),
                       ),
                     ),
-                  ),
-                  IconButtonInRow(
-                    onPressed: changeEditMode,
-                    icon: editIcon,
-                    size: 20,
-                  ),
-                ],
+                    Flexible(
+                      flex: 3,
+                      child: IconButtonInRow(
+                        icon: confirmIcon,
+                        color: greenColor,
+                        onPressed: changeName,
+                      ),
+                    ),
+                    Flexible(
+                      flex: 3,
+                      child: IconButtonInRow(
+                        icon: closeIcon,
+                        color: redColor,
+                        onPressed: changeEditMode,
+                      ),
+                    ),
+                  ]
+                : [
+                    Flexible(
+                      flex: 6,
+                      child: Center(
+                        child: CustomText(
+                          content: username,
+                          fontSize: FontSize.titleSize,
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: IconButtonInRow(
+                        onPressed: changeEditMode,
+                        icon: editIcon,
+                      ),
+                    ),
+                  ],
+          ),
         ),
       ],
     );

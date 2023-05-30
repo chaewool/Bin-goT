@@ -36,11 +36,7 @@ class _MainState extends State<Main> {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            isSearchMode
-                ? const SearchBar(
-                    isMain: true,
-                  )
-                : const SizedBox(),
+            isSearchMode ? const SearchBar(isMain: true) : const SizedBox(),
             const SizedBox(height: 15),
             const Expanded(child: MyTabBar()),
           ],

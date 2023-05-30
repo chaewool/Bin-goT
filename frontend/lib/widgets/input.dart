@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CustomInput extends StatelessWidget {
-  final String? explain, initialValue;
+  final String? explain;
   final bool needMore, onlyNum, enabled;
   final double? width, height, vertical, horizontal;
   final bool filled;
@@ -15,7 +15,9 @@ class CustomInput extends StatelessWidget {
   final FontSize fontSize;
   final int? maxLength;
   final String title;
-  final void Function(dynamic) setValue;
+  final String? initialValue;
+  // final String? Function() returnValue;
+  final void Function(String) setValue;
 
   const CustomInput({
     super.key,
@@ -31,9 +33,10 @@ class CustomInput extends StatelessWidget {
     this.fontSize = FontSize.smallSize,
     this.maxLength,
     this.title = '',
-    this.initialValue,
     this.horizontal = 20.0,
     this.vertical = 10.0,
+    this.initialValue,
+    // required this.returnValue,
   });
 
   @override

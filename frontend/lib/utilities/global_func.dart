@@ -100,7 +100,8 @@ ReturnVoid toOtherPage(BuildContext context, {required Widget page}) {
 }
 
 //* 페이지 이동 (기록 X)
-toOtherPageWithoutPath(BuildContext context, {required Widget page}) {
+ReturnVoid toOtherPageWithoutPath(BuildContext context,
+    {required Widget page}) {
   return () => Navigator.pushAndRemoveUntil(context,
       MaterialPageRoute(builder: (context) => page), (router) => false);
 }

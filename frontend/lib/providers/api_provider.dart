@@ -14,24 +14,7 @@ class ApiProvider extends UrlClass {
 
   FutureDynamicMap deleteApi(String url) async => _deleteApi(url);
 
-  FutureDynamicMap tokenRefresh() async => _tokenRefresh();
-
   //* private
-  //* refresh token
-
-  FutureDynamicMap _tokenRefresh() async {
-    try {
-      print('토큰 리프레시');
-      final tokenData = await _createApi(
-        refreshTokenUrl,
-        data: {'refresh': refresh},
-      );
-      return tokenData;
-    } catch (error) {
-      print(error);
-      throw Error();
-    }
-  }
 
   //* create
   FutureDynamicMap _createApi(String url, {required DynamicMap data}) async {

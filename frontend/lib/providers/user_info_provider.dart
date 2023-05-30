@@ -4,13 +4,24 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 
 class UserInfoProvider extends ApiProvider {
   //* public
+  FutureBool changeBadge(DynamicMap data) => _changeBadge(data);
   Future<ProfileModel> getProfile() => _getProfile();
   Future<BadgeList> getBadges() => _getBadges();
-  void checkName(String name) => _checkName(name);
-  void changeName(String name) => _changeName(name);
+  FutureBool checkName(String name) => _checkName(name);
+  FutureBool changeName(String name) => _changeName(name);
   Future<MainTabModel> getMainTabData() => _getMainTabData();
 
   //* private
+  FutureBool _changeBadge(DynamicMap data) async {
+    try {
+      await updateApi(changeBadgeUrl, data: data);
+      return true;
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
+  }
+
   Future<ProfileModel> _getProfile() async {
     final response = await dioWithToken().get(profileUrl);
     ProfileModel profile = ProfileModel.fromJson(response.data);
@@ -29,17 +40,19 @@ class UserInfoProvider extends ApiProvider {
     }
   }
 
-  void _checkName(String name) async {
+  FutureBool _checkName(String name) async {
     try {
-      createApi(checkNameUrl, data: {'username': name});
+      await createApi(checkNameUrl, data: {'username': name});
+      return true;
     } catch (error) {
       throw Error();
     }
   }
 
-  void _changeName(String name) async {
+  FutureBool _changeName(String name) async {
     try {
-      createApi(changeNameUrl, data: {'username': name});
+      await createApi(changeNameUrl, data: {'username': name});
+      return true;
     } catch (error) {
       throw Error();
     }
@@ -48,32 +61,27 @@ class UserInfoProvider extends ApiProvider {
   Future<MainTabModel> _getMainTabData() async {
     try {
       final response = await dioWithToken().get(mainTabUrl);
-      switch (response.statusCode) {
-        case 200:
-          final data = response.data;
-          if (data.isNotEmpty) {
-            print('tabData : $data');
-            MyGroupList myGroupList = data['groups']
-                .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
-                .toList();
-            MyBingoList myBingoList = data['boards']
-                .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
-                .toList();
-            bool hasNotGroup = data['is_recommend'];
-            return MainTabModel.fromJson({
-              'groups': myGroupList,
-              'boards': myBingoList,
-              'is_recommend': hasNotGroup
-            });
-          }
-          return MainTabModel.fromJson(
-              {'groups': [], 'boards': [], 'is_recommend': true});
-        case 401:
-          await tokenRefresh();
-          return _getMainTabData();
-        default:
-          throw Error();
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data.isNotEmpty) {
+          print('tabData : $data');
+          MyGroupList myGroupList = data['groups']
+              .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
+              .toList();
+          MyBingoList myBingoList = data['boards']
+              .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
+              .toList();
+          bool hasNotGroup = data['is_recommend'];
+          return MainTabModel.fromJson({
+            'groups': myGroupList,
+            'boards': myBingoList,
+            'is_recommend': hasNotGroup
+          });
+        }
+        return MainTabModel.fromJson(
+            {'groups': [], 'boards': [], 'is_recommend': true});
       }
+      throw Error();
     } catch (error) {
       print('mainTabError: $error');
       // UserProvider.logout();
