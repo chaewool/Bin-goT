@@ -18,6 +18,7 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
     properties.add(StringProperty('token', token));
     properties.add(StringProperty('refresh', refresh));
   }
+  //* private
 
   void _setToken(String? newToken) => _token = newToken;
   void _setRefresh(String? newRefresh) => _refresh = newRefresh;
@@ -33,6 +34,7 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
     return userInfo;
   }
 
+  //* public
   FutureBool initVar() async {
     final userInfo = await _readStorage();
     print('initVar: $userInfo');
@@ -302,7 +304,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   void _initItems(int cnt) {
     _data['items'] = List.generate(
       cnt,
-      (index) => {
+      (_) => {
         'title': null,
         'content': null,
         'check': false,

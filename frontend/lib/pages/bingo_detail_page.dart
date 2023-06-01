@@ -129,9 +129,7 @@ class _BingoDetailState extends State<BingoDetail> {
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       child: RepaintBoundary(
                         key: globalKey,
-                        child: const BingoBoard(
-                          isDetail: true,
-                        ),
+                        child: const BingoBoard(isDetail: true),
                       ),
                     ),
                   ),

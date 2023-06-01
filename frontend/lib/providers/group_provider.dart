@@ -103,6 +103,7 @@ class GroupProvider extends ApiProvider {
       throw Error();
     } catch (error) {
       print(error);
+      print(error);
       throw Error();
     }
   }

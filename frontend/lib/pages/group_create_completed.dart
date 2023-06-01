@@ -23,13 +23,8 @@ class GroupCreateCompleted extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String privateInvitation = isPublic ? '' : '비밀번호 : $password';
     String message =
-        'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요\n $privateInvitation';
-    void copyText() {
-      Clipboard.setData(ClipboardData(text: message));
-    }
-
+        'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요\n${isPublic ? '' : '비밀번호 : $password'}';
     return Scaffold(
       body: ColWithPadding(
         vertical: 60,
@@ -69,7 +64,8 @@ class GroupCreateCompleted extends StatelessWidget {
                 icon: shareIcon,
               ),
               IconButtonInRow(
-                onPressed: copyText,
+                onPressed: () =>
+                    Clipboard.setData(ClipboardData(text: message)),
                 icon: copyIcon,
               ),
             ],

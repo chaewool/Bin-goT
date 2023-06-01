@@ -149,6 +149,11 @@ void setTokens(BuildContext context, String newToken, String newRefresh) {
   auth.setStoreRefresh(newRefresh);
 }
 
+void deleteVar(BuildContext context) {
+  context.read<AuthProvider>().deleteVar();
+  context.read<NotiProvider>().deleteVar();
+}
+
 //* id
 int? getId(BuildContext context) => context.read<AuthProvider>().id;
 

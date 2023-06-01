@@ -58,12 +58,12 @@ class _GroupFormState extends State<GroupForm> {
         'groupname': '',
         'start': '',
         'end': '',
-        'size': 0, // 0
+        'size': 2,
         'is_public': true,
         'password': '',
         'description': '',
         'rule': '',
-        'need_auth': true, // true
+        'need_auth': true,
         'headcount': 0
       };
     } else {

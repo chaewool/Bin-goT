@@ -23,9 +23,14 @@ class UserInfoProvider extends ApiProvider {
   }
 
   Future<ProfileModel> _getProfile() async {
-    final response = await dioWithToken().get(profileUrl);
-    ProfileModel profile = ProfileModel.fromJson(response.data);
-    return profile;
+    try {
+      final response = await dioWithToken().get(profileUrl);
+      ProfileModel profile = ProfileModel.fromJson(response.data);
+      return profile;
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
   }
 
   Future<BadgeList> _getBadges() async {

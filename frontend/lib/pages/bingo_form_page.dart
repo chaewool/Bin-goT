@@ -67,10 +67,16 @@ class _BingoFormState extends State<BingoForm> {
         }
         int cnt = 0;
         for (var element in (data['items'] as List)) {
-          if (element['title'].trim() && element['content'].trim()) {
+          final title = element['title'].trim();
+          final content = element['content'].trim();
+          if (title != null &&
+              title != '' &&
+              content != null &&
+              content != '') {
             cnt += 1;
           }
         }
+
         if (cnt != size * size) {
           return showAlert(
             context,
@@ -78,7 +84,6 @@ class _BingoFormState extends State<BingoForm> {
             content: '빙고칸 내부를 채워주세요',
           )();
         }
-        print(data);
         final bingoData = FormData.fromMap({
           'data': jsonEncode(data),
           'thumbnail': MultipartFile.fromBytes(
