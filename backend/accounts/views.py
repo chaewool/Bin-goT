@@ -153,7 +153,7 @@ class BadgeListView(APIView):
         
     
 class BadgeUpdateView(APIView):
-    def post(self, request):
+    def put(self, request):
         user = request.user
         badge_id = request.data.get('badge_id')
         badge = Badge.objects.get(id=badge_id)

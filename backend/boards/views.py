@@ -39,7 +39,7 @@ class BoardCreateView(APIView):
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if date.today() > group.start:
+        if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 생성할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if Board.objects.filter(user=user, group=group).exists():
@@ -84,7 +84,7 @@ class BoardDetailView(APIView):
             if item['finished']:
                 achieve += 1
         
-        data = {**serializer.data, 'username': participate.rand_name if group.is_public else participate.user.username, 'achieve': round(achieve / (board.group.size ** 2), 2)}
+        data = {**serializer.data, 'username': participate.rand_name if group.is_public else participate.user.username, 'achieve': round(achieve / (board.group.size ** 2), 2), 'size': group.size}
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -106,7 +106,7 @@ class BoardUpdateView(APIView):
         if user != board.user:
             return Response(data={'message': '수정 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
     
-        if date.today() > group.start:
+        if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         items = data['items']
@@ -138,24 +138,3 @@ class BoardUpdateView(APIView):
             logger.info('보드 썸네일 갱신')
             
             return Response(status=status.HTTP_200_OK)
-
-
-class BoardDeleteView(APIView):
-    def delete(self, request, board_id):
-        user = request.user
-        board = Board.objects.get(id=board_id)
-        
-        if not Participate.objects.filter(user=user, group=board.group).exists():
-            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if user != board.user:
-            return Response(data={'message': '삭제 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if date.today() > board.group.start:
-            return Response(data={'message': '시작일이 경과하여 삭제할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        url = 'boards' + '/' + str(board.id)
-        delete_image(url)
-        board.delete()
-        
-        return Response(status=status.HTTP_200_OK)
