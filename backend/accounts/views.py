@@ -13,8 +13,6 @@ from bingot_settings import KAKAO_REST_API_KEY
 from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
 from groups.models import Group, Participate
-from boards.models import Board
-from groups.serializers import GroupSearchSerializer
 from commons import get_boolean
 
 
@@ -196,10 +194,10 @@ class MainGroupsView(APIView):
 
             recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
             
-            temp = GroupSearchSerializer(recommends, many=True).data
+            temp = GroupSerializer(recommends, many=True).data
             groups = [group for group in temp if group['count'] < group['headcount']][:10]
         else:
-            groups = GroupSearchSerializer(user.groups, many=True).data
+            groups = GroupSerializer(user.groups, many=True).data
 
             if filter == '1':
                 groups = [group for group in groups if group['status'] == '진행 중']
