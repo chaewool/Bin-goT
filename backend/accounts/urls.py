@@ -21,6 +21,7 @@ urlpatterns = [
     
     path('notification/update/', views.NotificationUpdateView.as_view(), name='notification_update'),
     
-    path('main/', views.MainView.as_view(), name='main'),
+    path('main/groups/', views.MainGroupsView.as_view(), name='main_groups'),
+    path('main/boards/', views.MainBoardsView.as_view(), name='main_boards'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
 ]

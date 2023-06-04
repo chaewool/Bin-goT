@@ -36,6 +36,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class BoardSerializer(serializers.ModelSerializer):
     groupname = serializers.SerializerMethodField('get_groupname')
     start = serializers.SerializerMethodField('get_start')
+    end = serializers.SerializerMethodField('get_end')
     status = serializers.SerializerMethodField('get_status')
     
     def get_groupname(self, obj):
@@ -43,6 +44,9 @@ class BoardSerializer(serializers.ModelSerializer):
     
     def get_start(self, obj):
         return obj.group.start
+    
+    def get_end(self, obj):
+        return obj.group.end
     
     def get_status(self, obj):
         if date.today() > obj.group.end:
@@ -54,4 +58,4 @@ class BoardSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Group
-        fields = ('id', 'groupname', 'start', 'status')
+        fields = ('id', 'groupname', 'start', 'end', 'status')

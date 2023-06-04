@@ -181,46 +181,72 @@ class NotificationUpdateView(APIView):
         return Response(data={}, status=status.HTTP_200_OK)
 
 
-class MainView(APIView):
+class MainGroupsView(APIView):
     def get(self, request):
         user = request.user
-        groups = GroupSerializer(user.groups, many=True).data
-        boards = BoardSerializer(user.boards, many=True).data
+        order = request.GET.get('order')
+        filter = request.GET.get('filter')
+        page = int(request.GET.get('page'))
+        
         is_recommend = False
 
-        if not groups:
+        # 가입한 그룹이 없음 => 그룹 추천
+        if not user.groups:
+            is_recommend = True
+
             recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
             
-            groups = GroupSearchSerializer(recommends, many=True).data
-
-            for group in groups:
-                count = 0
-
-                for p in Participate.objects.filter(group=group['id']):
-                    if p.is_banned == 0:
-                        count += 1
-            
-                group['count'] = count
-
-            groups = [d for d in groups if d['count'] < d['headcount']][:20]
-
-            is_recommend = True
+            temp = GroupSearchSerializer(recommends, many=True).data
+            groups = [group for group in temp if group['count'] < group['headcount']][:10]
         else:
-            for group in groups:
-                if Board.objects.filter(user=user, group=group['id']).exists():
-                    group['has_board'] = True
-                else:
-                    group['has_board'] = False
+            groups = GroupSearchSerializer(user.groups, many=True).data
 
-                count = 0
-
-                for p in Participate.objects.filter(group=group['id']):
-                    if p.is_banned == 0:
-                        count += 1
+            if filter == '1':
+                groups = [group for group in groups if group['status'] == '진행 중']
+            elif filter == '2':
+                groups = [group for group in groups if group['status'] == '완료']
             
-                group['count'] = count
+            if order == '0':
+                groups.sort(key=lambda x: x['end'], reverse=True)
+            else:
+                groups.sort(key=lambda x: x['end'])
+            
+            groups = groups[10 * (page - 1):10 * page]
+
+        for group in groups:
+            count = 0
+
+            for p in Participate.objects.filter(group=group['id']):
+                if p.is_banned == 0:
+                    count += 1
         
-        return Response(data={'groups': groups, 'boards': boards, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
+            group['count'] = count
+        
+        return Response(data={'groups': groups, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
+
+
+class MainBoardsView(APIView):
+    def get(self, request):
+        user = request.user
+        order = request.GET.get('order')
+        filter = request.GET.get('filter')
+        page = int(request.GET.get('page'))
+
+        boards = BoardSerializer(user.boards, many=True).data
+
+        if filter == '1':
+            boards = [board for board in boards if board['status'] == '진행 중']
+        elif filter == '2':
+            boards = [board for board in boards if board['status'] == '완료']
+        
+        if order == '0':
+            boards.sort(key=lambda x: x['end'], reverse=True)
+        else:
+            boards.sort(key=lambda x: x['end'])
+        
+        boards = boards[10 * (page - 1):10 * page]
+        
+        return Response(data={'boards': boards}, status=status.HTTP_200_OK)
 
 
 class ProfileView(APIView):

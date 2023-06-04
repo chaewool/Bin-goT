@@ -533,7 +533,6 @@ class GroupSearchView(APIView):
         order = request.GET.get('order')
         public = request.GET.get('public')
         page = int(request.GET.get('page'))
-        cnt = int(request.GET.get('cnt'))
 
         if order == '0':
             order = '-start'
@@ -553,7 +552,7 @@ class GroupSearchView(APIView):
         if keyword:
             groups = groups.filter(groupname__icontains=keyword)
 
-        groups = groups.order_by(order)[(page - 1) * cnt: page * cnt]
+        groups = groups.order_by(order)[10 * (page - 1):10 * page]
         data = GroupSearchSerializer(groups, many=True).data
 
         for group in data:
