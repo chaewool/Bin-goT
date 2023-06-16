@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Group, Chat, Review
+from .models import Group
 
 
 class GroupCreateSerializer(serializers.ModelSerializer):
@@ -34,15 +34,3 @@ class GroupSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ('id', 'groupname', 'is_public', 'start', 'end', 'headcount')
-
-
-class ChatListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Chat
-        fields = '__all__'
-
-
-class ReviewListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = '__all__'

@@ -17,7 +17,6 @@ def upload_image(url, img):
         }
     )
     
-
 def delete_image(url):
     s3_client = boto3.client(
         's3',
@@ -29,19 +28,18 @@ def delete_image(url):
         Bucket=AWS_S3_BUCKET_NAME, 
         Key=url
     )
-    
+
+
 import redis
 from urllib.parse import quote
 
 encoded_password = quote(REDIS_PASSWORD, safe="")
-conn_redis = redis.from_url("redis://:{}@bingot.xyz:6379/0".format(encoded_password), decode_responses=True)
+conn_ranker = redis.from_url("redis://:{}@bingot.xyz:6379/0".format(encoded_password), decode_responses=True)
 
 class RedisRanker:
-    def __init__(self, key, is_ranker_reset=True):
-        self.conn_redis = conn_redis
+    def __init__(self, key):
+        self.conn_redis = conn_ranker
         self.key = key
-        if is_ranker_reset is True:
-            self.conn_redis.delete(self.key)
 
     def plusOne(self, str_member):
         return int(self.conn_redis.zincrby(name=self.key, value=str_member, amount=1))
@@ -53,7 +51,34 @@ class RedisRanker:
         return int(self.conn_redis.zrevrank(name=self.key, value=str_member) or -2) + 1
     
     def getTops(self, return_count=3):
-        return conn_redis.zrevrangebyscore(name=self.key, min="-inf", max="+inf", start=0, num=return_count)
+        return self.conn_redis.zrevrangebyscore(name=self.key, min="-inf", max="+inf", start=0, num=return_count)
+
+
+import json
+
+conn_chat = redis.from_url("redis://:{}@bingot.xyz:6379/1".format(encoded_password), decode_responses=True)
+
+class RedisChat:
+    def __init__(self, key):
+        self.conn_redis = conn_chat
+        self.key = key
+
+    def addChat(self, data):
+        data['id'] = self.conn_redis.llen(self.key)
+        self.conn_redis.rpush(self.key, json.dumps(data))
+
+    def getChatList(self, page):
+        if page == 1:
+            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50, -1)]
+        else:
+            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50 * page, -50 * (page - 1))]
     
+    def getChatItem(self, chat_id):
+        return json.loads(self.conn_redis.lindex(self.key, chat_id))
+    
+    def setChatItem(self, chat_id, chat):
+        self.conn_redis.lset(self.key, chat_id, json.dumps(chat))
+
+
 def get_boolean(str):
     return True if str in ('true', 'True') else False

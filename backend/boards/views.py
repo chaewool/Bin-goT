@@ -5,7 +5,7 @@ from datetime import date
 import json
 import logging
 
-from commons import upload_image, delete_image
+from commons import upload_image
 from .models import Board
 from groups.models import Group, Participate
 from .serializers import BoardCreateSerializer, BoardItemCreateSerializer, BoardDetailSerializer

@@ -6,9 +6,9 @@ from datetime import datetime, date
 import json
 import logging
 
-from commons import upload_image, delete_image, RedisRanker, get_boolean
-from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer, ChatListSerializer, ReviewListSerializer
-from .models import Group, Participate, Chat, Review
+from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean
+from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer
+from .models import Group, Participate
 from boards.models import Board, BoardItem
 from accounts.models import Badge, Achieve
 
@@ -30,14 +30,12 @@ def check_cnt_groups(user):
     # user에게 알림 보내는 코드 추가 필요
 
 
-def check_cnt_boarditems_complete(group_id, review):
-    user = review.user
+def check_cnt_boarditems_complete(user, group, board_item):
+    board_item.finish = True
+    board_item.save()
     
-    review.item.finish = True
-    review.item.save()
-    
-    ranker = RedisRanker(group_id)
-    ranker.plusOne(str(review.user.id))
+    ranker = RedisRanker(group.id)
+    ranker.plusOne(user.id)
     
     user.cnt_boarditems_complete += 1
     user.save()
@@ -54,7 +52,7 @@ def check_cnt_boarditems_complete(group_id, review):
            
     # user에게 알림 보내는 코드 추가 필요
     
-    board = Board.objects.get(user=user, group=review.group)
+    board = Board.objects.get(user=user, group=group)
     
     cnt = 0
     for item in board.items:
@@ -389,18 +387,24 @@ class GroupChatCreateView(APIView):
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        chat = Chat(user=user, group=group, content=content)
+        chat = {
+            'user_id': user.id,
+            'content': content,
+            'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
+            'reviewed': False,
+            'item_id': -1
+        }
 
         if img:
-            chat.has_img = True
-            chat.save()
+            chat['has_img'] = True
 
             url = 'chats' + '/' + str(chat.id)
             
             upload_image(url, img)
         else:
-            chat.has_img = False
-            chat.save()
+            chat['has_img'] = False
+        
+        RedisChat(group_id).addChat(chat)
             
         return Response(data={}, status=status.HTTP_200_OK)
 
@@ -414,10 +418,7 @@ class GroupChatListView(APIView):
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        chat_serializer = ChatListSerializer(Chat.objects.filter(group=group), many=True)
-        review_serializer = ReviewListSerializer(Review.objects.filter(group=group), many=True)
-        
-        data = sorted(chat_serializer.data + review_serializer.data, key=lambda x: x['created_at'], reverse=True)[(page - 1) * 50: page * 50]
+        data = RedisChat(group_id).getChatList(page)
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -426,29 +427,31 @@ class GroupReviewCreateView(APIView):
     def post(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        board = Board.objects.get(id=request.data.get('board_id'))
-        item = BoardItem.objects.get(id=request.data.get('item_id'))
         content = request.data.get('content')
+        item_id = request.data.get('item_id')
         img = request.FILES.get('img')
         
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if user != board.user:
-            return Response(data={'message': '인증 요청 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        review = Review(user=user, group=group, item=item, content=content, reviewed=False)
+        chat = {
+            'user_id': user.id,
+            'content': content,
+            'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
+            'reviewed': False,
+            'item_id': item_id
+        }
 
         if img:
-            review.has_img = True
-            review.save()
+            chat['has_img'] = True
 
-            url = 'reviews' + '/' + str(review.id)
+            url = 'chats' + '/' + str(chat.id)
             
             upload_image(url, img)
         else:
-            review.has_img = False
-            review.save()
+            chat['has_img'] = False
+        
+        RedisChat(group_id).addChat(chat)
             
         return Response(data={}, status=status.HTTP_200_OK)
 
@@ -457,33 +460,38 @@ class GroupReviewCheckView(APIView):
     def put(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        review = Review.objects.get(id=request.data.get('review_id'))
+        review_id = int(request.data.get('review_id'))
+        chat = RedisChat(group_id)
+        review = chat.getChatItem(review_id)
+        review_user = get_user_model().objects.get(id=review['user_id'])
         
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if review.user == user:
+        if review_user == user:
             return Response(data={'message': '자신의 인증 요청은 인증할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if review.reviewed:
             return Response(data={'message': '이미 인증된 요청입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if review.item.finished:
+        board = Board.objects.filter(user=review_user, group=group)[0]
+        board_item = BoardItem.objects.filter(board=board)
+        
+        if board_item.finished:
             return Response(data={'message': '이미 완료된 항목입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        
         # 횟수 측정 여부 확인
-        if review.item.check:
-            review.item.check_cnt += 1
+        if board_item.check:
+            board_item.check_cnt += 1
             
-            if review.item.check_cnt == review.item.check_goal:
-                check_cnt_boarditems_complete(group_id, review)
+            if board_item.check_cnt == board_item.check_goal:
+                check_cnt_boarditems_complete(review_user, group, board_item)
                 
         else:    
-            check_cnt_boarditems_complete(group_id, review)
+            check_cnt_boarditems_complete(review_user, group, board_item)
         
         review.reviewed = True
-        review.save()
+        chat.setChatItem(review_id, review)
         
         return Response(status=status.HTTP_200_OK)
 
