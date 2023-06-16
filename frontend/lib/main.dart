@@ -1,3 +1,4 @@
+import 'package:bin_got/fcm_settings.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +11,18 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // .env 파일 불러오기
   await dotenv.load(fileName: '.env');
+
+  // 카카오 sdk 초기화
   KakaoSdk.init(nativeAppKey: dotenv.env['appKey']);
 
-  // Firebase 비동기 방식으로 초기화
+  // firebase 초기화
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  initFCM();
 
   runApp(const App());
 }
