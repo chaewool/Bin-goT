@@ -38,7 +38,7 @@ class DioClass extends AuthProvider {
               }).catchError((error) {
                 print('Error : $error');
                 deleteVar();
-                return handler.resolve(error);
+                // return handler.resolve(error);
               });
               //* 재요청
             } catch (error) {
@@ -65,7 +65,8 @@ class UrlClass extends DioClass {
   static const _badgeUrl = '$_accountUrl/badge';
 
   //* main
-  static const _mainTabUrl = '$_accountUrl/main/';
+  static const _mainGroupTabUrl = '$_accountUrl/main/groups';
+  static const _mainBingoTabUrl = '$_accountUrl/main/boards';
 
   //* username
   static const _checkNameUrl = '$_usernameUrl/check/';
@@ -143,7 +144,8 @@ class UrlClass extends DioClass {
   String get changeNameUrl => _changeNameUrl;
 
   //* main
-  String get mainTabUrl => _mainTabUrl;
+  String get mainGroupTabUrl => _mainGroupTabUrl;
+  String get mainBingoTabUrl => _mainBingoTabUrl;
 
   //* my page
   String get badgeListUrl => _badgeListUrl;

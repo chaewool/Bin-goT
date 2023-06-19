@@ -285,15 +285,15 @@ class MyTabBar extends StatefulWidget {
 }
 
 class _MyTabBarState extends State<MyTabBar> {
-  late Future<MainTabModel> tabData;
+  late Future<MainGroupListModel> groupTabData;
   List<List<StringList>> buttonOptions = [
     [
-      ['그룹명 순', '그룹명 역순'],
+      ['종료일 ▼', '종료일 ▼'],
       ['전체', '진행 중', '완료'],
       ['캘린더로 보기', '리스트로 보기']
     ],
     [
-      ['최신순', '오래된순'],
+      ['종료일 ▼', '종료일 ▼'],
       ['전체', '진행 중', '완료'],
       ['', '']
     ]
@@ -302,8 +302,8 @@ class _MyTabBarState extends State<MyTabBar> {
   late int presentIdx;
 
   List<IntList> idxList = [
-    [0, 0, 0],
-    [0, 0, 0]
+    [1, 0, 0],
+    [1, 0, 0]
   ];
   void changeIdx(int idx) {
     if (idxList[presentIdx][idx] < presentOptions[idx].length - 1) {
@@ -331,7 +331,11 @@ class _MyTabBarState extends State<MyTabBar> {
     super.initState();
     presentOptions = buttonOptions[0];
     presentIdx = 0;
-    tabData = UserInfoProvider().getMainTabData();
+    groupTabData = UserInfoProvider().getMainGroupData({
+      'filter': 1,
+      'order': 0,
+      'page': 1,
+    });
   }
 
   @override
@@ -360,7 +364,7 @@ class _MyTabBarState extends State<MyTabBar> {
               height: MediaQuery.of(context).size.height,
               color: backgroundColor,
               child: FutureBuilder(
-                future: tabData,
+                future: groupTabData,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final hasNotGroup = snapshot.data!.hasNotGroup;
@@ -402,10 +406,14 @@ class _MyTabBarState extends State<MyTabBar> {
         ],
         [
           FutureBuilder(
-            future: tabData,
+            future: UserInfoProvider().getMainBingoData({
+              'filter': 1,
+              'order': 0,
+              'page': 1,
+            }),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                final bingos = snapshot.data!.bingos;
+                final bingos = snapshot.data!;
                 if (bingos.isNotEmpty) {
                   return bingoList(bingos);
                 }

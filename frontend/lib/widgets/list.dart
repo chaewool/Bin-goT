@@ -39,7 +39,8 @@ class GroupListItem extends StatelessWidget {
         context,
         page: InputPassword(
           groupId: groupInfo.id,
-          isPublic: groupInfo.isPublic ?? true,
+          // isPublic: groupInfo.isPublic ?? true,
+          isPublic: true,
         ),
       ),
       child: Row(

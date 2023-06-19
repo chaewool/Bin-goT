@@ -267,6 +267,7 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
 
   void changeBadge() {
     UserInfoProvider().changeBadge({'badge_id': badgeId}).then((_) {
+      print('성공');
       toBack(context);
     }).catchError((_) {
       showAlert(

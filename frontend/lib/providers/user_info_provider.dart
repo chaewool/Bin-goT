@@ -9,7 +9,10 @@ class UserInfoProvider extends ApiProvider {
   Future<BadgeList> getBadges() => _getBadges();
   FutureBool checkName(String name) => _checkName(name);
   FutureBool changeName(String name) => _changeName(name);
-  Future<MainTabModel> getMainTabData() => _getMainTabData();
+  Future<MainGroupListModel> getMainGroupData(DynamicMap queryParameters) =>
+      _getMainGroupData(queryParameters);
+  Future<MyBingoList> getMainBingoData(DynamicMap queryParameters) =>
+      _getMainBingoData(queryParameters);
 
   //* private
   FutureBool _changeBadge(DynamicMap data) async {
@@ -63,32 +66,50 @@ class UserInfoProvider extends ApiProvider {
     }
   }
 
-  Future<MainTabModel> _getMainTabData() async {
+  Future<MainGroupListModel> _getMainGroupData(
+      DynamicMap queryParameters) async {
     try {
-      final response = await dioWithToken().get(mainTabUrl);
+      final response = await dioWithToken()
+          .get(mainGroupTabUrl, queryParameters: queryParameters);
       if (response.statusCode == 200) {
         final data = response.data;
         if (data.isNotEmpty) {
-          print('tabData : $data');
           MyGroupList myGroupList = data['groups']
               .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
               .toList();
-          MyBingoList myBingoList = data['boards']
-              .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
-              .toList();
           bool hasNotGroup = data['is_recommend'];
-          return MainTabModel.fromJson({
-            'groups': myGroupList,
-            'boards': myBingoList,
-            'is_recommend': hasNotGroup
-          });
+          return MainGroupListModel.fromJson(
+              {'groups': myGroupList, 'is_recommend': hasNotGroup});
         }
-        return MainTabModel.fromJson(
-            {'groups': [], 'boards': [], 'is_recommend': true});
+        return MainGroupListModel.fromJson(
+            {'groups': [], 'is_recommend': true});
       }
       throw Error();
     } catch (error) {
-      print('mainTabError: $error');
+      print('mainTabGroupError: $error');
+      // UserProvider.logout();
+      throw Error();
+    }
+  }
+
+  Future<MyBingoList> _getMainBingoData(DynamicMap queryParameters) async {
+    try {
+      final response = await dioWithToken()
+          .get(mainBingoTabUrl, queryParameters: queryParameters);
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data.isNotEmpty) {
+          print(data['boards']);
+          MyBingoList myBingoList = data['boards']
+              .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
+              .toList();
+          return myBingoList;
+        }
+        return [];
+      }
+      throw Error();
+    } catch (error) {
+      print('mainTabBingoError: $error');
       // UserProvider.logout();
       throw Error();
     }

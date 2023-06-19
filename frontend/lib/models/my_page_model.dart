@@ -1,14 +1,14 @@
-import 'package:bin_got/utilities/type_def_utils.dart';
+// import 'package:bin_got/utilities/type_def_utils.dart';
 
-class EnterMyPage {
-  final int badgeId;
-  final String nickname, username;
+// class EnterMyPage {
+//   final int badgeId;
+//   final String nickname, username;
 
-  EnterMyPage.fromJson(Map<dynamic, dynamic> json)
-      : badgeId = json['badge_id'],
-        nickname = json['nickname'],
-        username = json['username'];
-}
+//   EnterMyPage.fromJson(Map<dynamic, dynamic> json)
+//       : badgeId = json['badge_id'],
+//         nickname = json['nickname'],
+//         username = json['username'];
+// }
 
 // class GetBingoList {
 //   final int groupId, status, bingoId;
@@ -27,28 +27,28 @@ class EnterMyPage {
 //         bingoDetail = json['bingoDetail'];
 // }
 
-class GetBadgeList {
-  final int badgeId;
-  final String badgeName, badgeCond;
-  final bool hasBadge;
+// class GetBadgeList {
+//   final int badgeId;
+//   final String badgeName, badgeCond;
+//   final bool hasBadge;
 
-  GetBadgeList.fromJson(Map<dynamic, dynamic> json)
-      : badgeId = json['badge_id'],
-        badgeName = json['badge_name'],
-        badgeCond = json['badge_cond'],
-        hasBadge = json['has_badge'];
-}
+//   GetBadgeList.fromJson(Map<dynamic, dynamic> json)
+//       : badgeId = json['badge_id'],
+//         badgeName = json['badge_name'],
+//         badgeCond = json['badge_cond'],
+//         hasBadge = json['has_badge'];
+// }
 
-class MyBadgeModel {
-  final int id;
-  final bool hasBadge;
-  final String badgeName, badgeCond;
-  MyBadgeModel.fromJson(DynamicMap json)
-      : id = json['id'],
-        hasBadge = json['has_badge'],
-        badgeName = json['badgename'],
-        badgeCond = json['badge_cond'];
-}
+// class MyBadgeModel {
+//   final int id;
+//   final bool hasBadge;
+//   final String badgeName, badgeCond;
+//   MyBadgeModel.fromJson(DynamicMap json)
+//       : id = json['id'],
+//         hasBadge = json['has_badge'],
+//         badgeName = json['badgename'],
+//         badgeCond = json['badge_cond'];
+// }
 
 // class ApplyBadgeModel {
 //   final bool success;
