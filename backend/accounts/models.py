@@ -9,6 +9,7 @@ class User(AbstractUser):
     noti_rank = models.BooleanField(default=True)
     noti_due = models.BooleanField(default=True)
     noti_chat = models.BooleanField(default=True)
+    noti_check = models.BooleanField(default=True)
     cnt_groups = models.IntegerField(default=0)
     cnt_boards = models.IntegerField(default=0)
     cnt_boarditems_complete = models.IntegerField(default=0)

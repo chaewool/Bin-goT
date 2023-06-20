@@ -180,10 +180,12 @@ class NotificationUpdateView(APIView):
         noti_rank = get_boolean(request.data.get('noti_rank'))
         noti_chat = get_boolean(request.data.get('noti_chat'))
         noti_due = get_boolean(request.data.get('noti_due'))
+        noti_check = get_boolean(request.data.get('noti_check'))
         
         user.noti_rank = noti_rank
         user.noti_chat = noti_chat
         user.noti_due = noti_due
+        user.noti_check = noti_check
         user.save()
             
         return Response(data={}, status=status.HTTP_200_OK)

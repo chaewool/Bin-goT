@@ -8,7 +8,7 @@ from groups.models import Group
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('noti_rank', 'noti_due', 'noti_chat', 'id')
+        fields = ('noti_rank', 'noti_due', 'noti_chat', 'noti_check', 'id')
 
 
 class BadgeSerializer(serializers.ModelSerializer):
