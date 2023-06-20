@@ -201,7 +201,7 @@ class MainGroupsView(APIView):
         is_recommend = False
 
         # 가입한 그룹이 없음 => 그룹 추천
-        if not user.groups:
+        if not user.groups.all():
             is_recommend = True
 
             recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
