@@ -1,3 +1,4 @@
+import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -99,11 +100,13 @@ ReturnVoid toOtherPage(BuildContext context, {required Widget page}) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => page));
 }
 
-//* 페이지 이동 (기록 X)
-ReturnVoid toOtherPageWithoutPath(BuildContext context,
-    {required Widget page}) {
-  return () => Navigator.pushAndRemoveUntil(context,
-      MaterialPageRoute(builder: (context) => page), (router) => false);
+//* 인트로 페이지 이동 (기록 X)
+Future<bool?> toIntroPage(BuildContext context) {
+  return Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => const Intro()),
+    (router) => false,
+  );
 }
 
 //* 뒤로 가기

@@ -1,5 +1,4 @@
 //* 도움말 페이지
-import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -33,7 +32,7 @@ class Help extends StatelessWidget {
           context,
           title: '탈퇴 완료',
           content: '성공적으로 탈퇴되었습니다',
-          onPressed: toOtherPageWithoutPath(context, page: const Intro()),
+          onPressed: () => toIntroPage(context),
         )();
       });
     }

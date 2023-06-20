@@ -49,7 +49,9 @@ class ApiProvider extends UrlClass {
   FutureDynamicMap _updateApi(String url, {required DynamicMap data}) async {
     try {
       final response = await dioWithToken().put(url, data: data);
+      print('url : $url, data : $data, response: $response');
       if (response.statusCode == 200) {
+        print('200');
         return {};
       }
       throw Error();

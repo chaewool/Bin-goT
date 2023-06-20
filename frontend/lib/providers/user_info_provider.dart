@@ -5,7 +5,7 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 class UserInfoProvider extends ApiProvider {
   //* public
   FutureBool changeBadge(DynamicMap data) => _changeBadge(data);
-  Future<ProfileModel> getProfile() => _getProfile();
+  Future<ProfilModel> getProfile() => _getProfile();
   Future<BadgeList> getBadges() => _getBadges();
   FutureBool checkName(String name) => _checkName(name);
   FutureBool changeName(String name) => _changeName(name);
@@ -25,10 +25,11 @@ class UserInfoProvider extends ApiProvider {
     }
   }
 
-  Future<ProfileModel> _getProfile() async {
+  Future<ProfilModel> _getProfile() async {
     try {
       final response = await dioWithToken().get(profileUrl);
-      ProfileModel profile = ProfileModel.fromJson(response.data);
+      print(response.data);
+      ProfilModel profile = ProfilModel.fromJson(response.data);
       return profile;
     } catch (error) {
       print(error);
@@ -73,6 +74,7 @@ class UserInfoProvider extends ApiProvider {
           .get(mainGroupTabUrl, queryParameters: queryParameters);
       if (response.statusCode == 200) {
         final data = response.data;
+        print('data : $data');
         if (data.isNotEmpty) {
           MyGroupList myGroupList = data['groups']
               .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
@@ -94,13 +96,15 @@ class UserInfoProvider extends ApiProvider {
 
   Future<MyBingoList> _getMainBingoData(DynamicMap queryParameters) async {
     try {
+      print('in!!');
       final response = await dioWithToken()
           .get(mainBingoTabUrl, queryParameters: queryParameters);
+      print(response);
       if (response.statusCode == 200) {
         final data = response.data;
+        print('data : $data');
         if (data.isNotEmpty) {
-          print(data['boards']);
-          MyBingoList myBingoList = data['boards']
+          MyBingoList myBingoList = data
               .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
               .toList();
           return myBingoList;

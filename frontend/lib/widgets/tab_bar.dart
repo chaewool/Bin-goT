@@ -286,14 +286,15 @@ class MyTabBar extends StatefulWidget {
 
 class _MyTabBarState extends State<MyTabBar> {
   late Future<MainGroupListModel> groupTabData;
+  Future<MyBingoList>? bingoTabData;
   List<List<StringList>> buttonOptions = [
     [
-      ['종료일 ▼', '종료일 ▼'],
+      ['종료일 ▼', '종료일 ▲'],
       ['전체', '진행 중', '완료'],
       ['캘린더로 보기', '리스트로 보기']
     ],
     [
-      ['종료일 ▼', '종료일 ▼'],
+      ['종료일 ▼', '종료일 ▲'],
       ['전체', '진행 중', '완료'],
       ['', '']
     ]
@@ -315,6 +316,14 @@ class _MyTabBarState extends State<MyTabBar> {
         idxList[presentIdx][idx] = 0;
       });
     }
+
+    if (presentIdx == 0) {
+      //* 그룹이 있을 경우에만 적용
+      // if (!groupTabData.hasNotGroup && groupTabData.)
+      setGroupTabData();
+    } else {
+      setBingoTabData();
+    }
   }
 
   void changeTab(int index) {
@@ -323,7 +332,26 @@ class _MyTabBarState extends State<MyTabBar> {
         presentIdx = index;
         presentOptions = buttonOptions[presentIdx];
       });
+      if (index == 1 && bingoTabData == null) {
+        setBingoTabData();
+      }
     }
+  }
+
+  void setGroupTabData() {
+    groupTabData = UserInfoProvider().getMainGroupData({
+      'order': idxList[0][0],
+      'filter': idxList[0][1],
+      'page': 1,
+    });
+  }
+
+  void setBingoTabData() {
+    bingoTabData = UserInfoProvider().getMainBingoData({
+      'order': idxList[1][0],
+      'filter': idxList[1][1],
+      'page': 1,
+    });
   }
 
   @override
@@ -331,11 +359,7 @@ class _MyTabBarState extends State<MyTabBar> {
     super.initState();
     presentOptions = buttonOptions[0];
     presentIdx = 0;
-    groupTabData = UserInfoProvider().getMainGroupData({
-      'filter': 1,
-      'order': 0,
-      'page': 1,
-    });
+    setGroupTabData();
   }
 
   @override
@@ -344,7 +368,7 @@ class _MyTabBarState extends State<MyTabBar> {
       tabTitles: const ['내 그룹', '내 빙고'],
       onChange: changeTab,
       upperView: RowWithPadding(
-        vertical: 20,
+        vertical: 10,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           for (int i = 0; i < 3; i += 1)
@@ -406,11 +430,7 @@ class _MyTabBarState extends State<MyTabBar> {
         ],
         [
           FutureBuilder(
-            future: UserInfoProvider().getMainBingoData({
-              'filter': 1,
-              'order': 0,
-              'page': 1,
-            }),
+            future: bingoTabData,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final bingos = snapshot.data!;
@@ -437,7 +457,7 @@ class _MyTabBarState extends State<MyTabBar> {
     final remain = length % 2;
     return ListView.builder(
         shrinkWrap: true,
-        itemCount: quot + 1,
+        itemCount: quot + remain,
         itemBuilder: (context, index) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -549,13 +569,11 @@ class CustomTextTabBar extends StatelessWidget {
         ],
         views: [
           for (int i = 0; i < tabTitles.length; i += 1)
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  upperView ?? const SizedBox(),
-                  for (Widget listItem in listItems[i]) listItem
-                ],
-              ),
+            Column(
+              children: [
+                upperView ?? const SizedBox(),
+                for (Widget listItem in listItems[i]) listItem
+              ],
             ),
         ],
         onChange: onChange,

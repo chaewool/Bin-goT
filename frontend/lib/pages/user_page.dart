@@ -1,5 +1,4 @@
 import 'package:bin_got/pages/help_page.dart';
-import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -70,7 +69,7 @@ class _MyPageState extends State<MyPage> {
   void logout() {
     context.read<AuthProvider>().deleteVar();
     context.read<NotiProvider>().deleteVar();
-    toOtherPageWithoutPath(context, page: const Intro())();
+    toIntroPage(context);
   }
 
   void changeName() {
@@ -95,12 +94,12 @@ class _MyPageState extends State<MyPage> {
   void initState() {
     super.initState();
     UserInfoProvider().getProfile().then((data) {
-      print('data: $data');
       setState(() {
         username = data.username;
-        newName = data.username;
+        // newName = data.username;
         badgeId = data.badgeId;
       });
+      print(badgeId);
     });
     isEditMode = false;
     final noti = context.read<NotiProvider>();

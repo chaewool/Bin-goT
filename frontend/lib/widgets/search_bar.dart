@@ -75,18 +75,15 @@ class _SearchBarState extends State<SearchBar> {
         result -= 1;
       }
 
-      final page = SearchGroup(
-        public: result,
-        cnt: 20,
-        period: periodIdx,
-        getKeyword: () => keyword['value'],
-      );
-
-      if (widget.isMain) {
-        toOtherPage(context, page: page)();
-      } else {
-        toOtherPageWithoutPath(context, page: page)();
-      }
+      toOtherPage(
+        context,
+        page: SearchGroup(
+          public: result,
+          cnt: 20,
+          period: periodIdx,
+          getKeyword: () => keyword['value'],
+        ),
+      )();
     } else {
       showModal(
         context,

@@ -31,27 +31,38 @@ class _InputPasswordState extends State<InputPassword> {
       if (getToken(context) != null) {
         verifyToken();
       } else {
-        showModal(context,
-            page: const CustomAlert(title: '로그인 확인', content: '로그인이 필요합니다'))();
+        showModal(
+          context,
+          page: const CustomAlert(
+            title: '로그인 확인',
+            content: '로그인이 필요합니다',
+          ),
+        )();
       }
       if (!widget.isPublic) {
-        showModal(context,
-            page: InputModal(
-              title: '비밀번호 입력',
-              type: '비밀번호',
-              setValue: (value) => password['value'] = value,
-              onPressed: () => toOtherPageWithoutPath(context,
-                  page: GroupMain(
-                    groupId: widget.groupId,
-                    isPublic: false,
-                  )),
-            ))();
+        showModal(
+          context,
+          page: InputModal(
+            title: '비밀번호 입력',
+            type: '비밀번호',
+            setValue: (value) => password['value'] = value,
+            onPressed: () => toOtherPage(
+              context,
+              page: GroupMain(
+                groupId: widget.groupId,
+                isPublic: false,
+              ),
+            ),
+          ),
+        )();
       } else {
-        toOtherPageWithoutPath(context,
-            page: GroupMain(
-              groupId: widget.groupId,
-              isPublic: true,
-            ))();
+        toOtherPage(
+          context,
+          page: GroupMain(
+            groupId: widget.groupId,
+            isPublic: true,
+          ),
+        )();
       }
     });
   }
@@ -63,24 +74,34 @@ class _InputPasswordState extends State<InputPassword> {
         if (result.isNotEmpty) {
           setToken(context, result['token']);
         } else {
-          showModal(context,
-              page: const CustomAlert(
-                title: '로그인 확인',
-                content: '로그인이 필요합니다',
-              ))();
+          showModal(
+            context,
+            page: const CustomAlert(
+              title: '로그인 확인',
+              content: '로그인이 필요합니다',
+            ),
+          )();
         }
       });
     } catch (error) {
-      showModal(context,
-          page: const CustomAlert(
-            title: '로그인 확인',
-            content: '로그인이 필요합니다',
-          ))();
+      showModal(
+        context,
+        page: const CustomAlert(
+          title: '로그인 확인',
+          content: '로그인이 필요합니다',
+        ),
+      )();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return const CustomBoxContainer();
+    return WillPopScope(
+        onWillPop: () {
+          toBack(context);
+          toBack(context);
+          return Future.value(false);
+        },
+        child: const CustomBoxContainer());
   }
 }
