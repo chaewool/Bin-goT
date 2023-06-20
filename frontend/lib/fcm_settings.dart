@@ -1,3 +1,4 @@
+import 'package:bin_got/providers/fcm_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -36,14 +37,11 @@ void initFCM() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   final fcmToken = await messaging.getToken();
-  print("토큰: $fcmToken");
+  print("FCM 토큰: $fcmToken");
 
-  // 토큰이 업데이트될 때마다 알림 받기
+  // 토큰이 업데이트될 때마다 서버에 저장
   messaging.onTokenRefresh.listen((fcmToken) {
-    // TODO: If necessary send token to application server.
-
-    // Note: This callback is fired at each app startup and whenever a new
-    // token is generated.
+    FCMProvider().saveFCMToken(fcmToken);
   }).onError((err) {
     // Error getting token.
   });

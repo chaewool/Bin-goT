@@ -44,6 +44,9 @@ class UrlClass extends DioClass {
   static const _verifyTokenUrl = '$_tokenUrl/verify/';
   static const _refreshTokenUrl = '$_tokenUrl/refresh/';
 
+  //* fcm
+  static const _saveFCMTokentUrl = '$_tokenUrl/fcm/';
+
   //! group
   static const _groupUrl = '/groups';
 
@@ -109,4 +112,7 @@ class UrlClass extends DioClass {
   String get changeBadgeUrl => _changeBadgeUrl;
   String get notiUrl => _notiUrl;
   String get profileUrl => _profileUrl;
+
+  //* fcm
+  String get saveFCMTokentUrl => _saveFCMTokentUrl;
 }
