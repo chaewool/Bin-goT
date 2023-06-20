@@ -2,7 +2,9 @@ import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
@@ -74,41 +76,57 @@ class MemberList extends StatelessWidget {
       }
     }
 
-    return EachAccordion(
-      question: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: greyColor),
+    return isMember
+        ? CustomList(
+            height: 70,
+            boxShadow: const [defaultShadow],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleContainer(
+                  child: halfLogo,
+                ),
+                CustomText(content: nickname),
+                getId(context) != id
+                    ? IconButtonInRow(
+                        icon: closeIcon,
+                        onPressed: () => manageMember(false),
+                        color: blackColor,
+                      )
+                    : const CustomBoxContainer(
+                        color: greenColor,
+                        child: CustomText(
+                          content: '그룹장',
+                          color: whiteColor,
+                        ),
+                      ),
+              ],
             ),
-            child: halfLogo,
-          ),
-          CustomText(content: nickname),
-          Row(
-            children: [
-              isMember
-                  ? const SizedBox()
-                  : IconButtonInRow(
+          )
+        : EachAccordion(
+            question: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleContainer(child: halfLogo),
+                CustomText(content: nickname),
+                Row(
+                  children: [
+                    IconButtonInRow(
                       icon: confirmIcon,
                       onPressed: () => manageMember(true),
                       color: greenColor,
                     ),
-              IconButtonInRow(
-                icon: closeIcon,
-                onPressed: () => manageMember(false),
-                color: isMember ? blackColor : redColor,
-              ),
-            ],
-          )
-        ],
-      ),
-      answer: const SizedBox(),
-      // Image.network('${dotenv.env['fileUrl']}/bingos/$bingoId'),
-    );
+                    IconButtonInRow(
+                      icon: closeIcon,
+                      onPressed: () => manageMember(false),
+                      color: isMember ? blackColor : redColor,
+                    ),
+                  ],
+                )
+              ],
+            ),
+            answer: const SizedBox(),
+            // Image.network('${dotenv.env['fileUrl']}/bingos/$bingoId'),
+          );
   }
 }

@@ -1,12 +1,10 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
-import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
-import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
@@ -34,43 +32,36 @@ class GroupListItem extends StatelessWidget {
     }
 
     String groupMember = '(${groupInfo.count}/${groupInfo.headCount})';
-    return Stack(
-      alignment: AlignmentDirectional.topEnd,
-      children: [
-        CustomList(
-          height: 70,
-          boxShadow: [shadowWithOpacity],
-          onTap: toOtherPage(
-            context,
-            page: GroupMain(
-              groupId: groupInfo.id,
-              isPublic: groupInfo.isPublic ?? true,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CustomText(content: groupInfo.name),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomText(content: showedDif()),
-                  const SizedBox(height: 5),
-                  isSearchMode
-                      ? CustomText(
-                          content: groupMember,
-                          fontSize: FontSize.smallSize,
-                        )
-                      : const SizedBox(),
-                ],
-              )
-            ],
-          ),
+    return CustomList(
+      height: 70,
+      boxShadow: [shadowWithOpacity],
+      onTap: toOtherPage(
+        context,
+        page: InputPassword(
+          groupId: groupInfo.id,
+          // isPublic: groupInfo.isPublic ?? true,
+          isPublic: true,
         ),
-        groupInfo.hasBingo == false
-            ? const CustomIcon(icon: alertIcon)
-            : const SizedBox(),
-      ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CustomText(content: groupInfo.name),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CustomText(content: showedDif()),
+              const SizedBox(height: 5),
+              isSearchMode
+                  ? CustomText(
+                      content: groupMember,
+                      fontSize: FontSize.smallSize,
+                    )
+                  : const SizedBox(),
+            ],
+          )
+        ],
+      ),
     );
   }
 }
@@ -97,12 +88,7 @@ class RankListItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Container(
-            width: 50,
-            height: 50,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle, border: Border.all(color: greyColor)),
+          CircleContainer(
             child: CustomText(content: '$rank', fontSize: FontSize.largeSize),
           ),
           const SizedBox(width: 30),
@@ -120,13 +106,14 @@ class CustomList extends StatelessWidget {
   final Widget child;
   final ReturnVoid? onTap;
   final BoxShadowList? boxShadow;
-  const CustomList(
-      {super.key,
-      this.height,
-      this.width,
-      required this.child,
-      this.onTap,
-      this.boxShadow});
+  const CustomList({
+    super.key,
+    this.height,
+    this.width,
+    required this.child,
+    this.onTap,
+    this.boxShadow,
+  });
 
   @override
   Widget build(BuildContext context) {

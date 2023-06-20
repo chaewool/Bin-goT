@@ -1,19 +1,23 @@
-import 'package:bin_got/models/bingo_model.dart';
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bingo_board.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
-class BingoDetail extends StatelessWidget {
+class BingoDetail extends StatefulWidget {
   final int bingoId;
   const BingoDetail({
     super.key,
@@ -21,42 +25,61 @@ class BingoDetail extends StatelessWidget {
   });
 
   @override
+  State<BingoDetail> createState() => _BingoDetailState();
+}
+
+class _BingoDetailState extends State<BingoDetail> {
+  @override
   Widget build(BuildContext context) {
     int groupId = 0;
     GlobalKey globalKey = GlobalKey();
-
     void deleteBingo() {
-      final start = context.read<GlobalGroupProvider>().start;
-      if (start != '') {}
+      BingoProvider().deleteOwnBingo(widget.bingoId).then((_) {
+        toBack(context);
+        showAlert(
+          context,
+          title: '삭제 완료',
+          content: '빙고가 정상적으로 삭제되었습니다.',
+          hasCancel: false,
+        )();
+      }).catchError((_) {
+        showAlert(
+          context,
+          title: '삭제 오류',
+          content: '오류가 발생해 빙고가 삭제되지 않았습니다.',
+          hasCancel: false,
+        )();
+      });
     }
 
-    Map<String, dynamic> bingoToMap(BingoDetailModel bingoDetail) {
-      final Map<String, dynamic> bingoDetailMap = {};
-      bingoDetailMap['group_id'] = bingoDetail.groupId;
-      bingoDetailMap['author_id'] = bingoDetail.authorId;
-      bingoDetailMap['achieve'] = bingoDetail.achieve;
-      bingoDetailMap['title'] = bingoDetail.title;
-      bingoDetailMap['is_black'] = bingoDetail.hasBlackBox;
-      bingoDetailMap['has_round_edge'] = bingoDetail.hasRoundEdge;
-      bingoDetailMap['background'] = bingoDetail.background;
-      bingoDetailMap['has_boarder'] = bingoDetail.hasBoarder;
-      bingoDetailMap['around_kan'] = bingoDetail.gap;
-      bingoDetailMap['complete_icon'] = bingoDetail.completeIcon;
-      bingoDetailMap['font'] = bingoDetail.font;
-      bingoDetailMap['items'] = bingoDetail.items;
-
-      groupId = bingoDetail.groupId;
-
-      return bingoDetailMap;
+    FutureBool bingoToImage() async {
+      var renderObject = globalKey.currentContext?.findRenderObject();
+      if (renderObject is RenderRepaintBoundary) {
+        var boundary = renderObject;
+        final image = await boundary.toImage();
+        final byteData = await image.toByteData(format: ImageByteFormat.png);
+        final pngBytes = byteData?.buffer.asUint8List();
+        print(pngBytes);
+        final imgFile = File('image_file.png');
+        imgFile.writeAsBytes(pngBytes!);
+        return true;
+      }
+      return false;
     }
 
     return Scaffold(
-        appBar: const BingoDetailAppBar(),
+        appBar: BingoDetailAppBar(
+          save: bingoToImage,
+          bingoId: widget.bingoId,
+        ),
         body: FutureBuilder(
-          future: BingoProvider().readBingoDetail(bingoId),
+          future: BingoProvider().readBingoDetail(widget.bingoId),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              final BingoDetailModel data = snapshot.data!;
+              final DynamicMap data = snapshot.data!;
+              final int achieve = (data['achieve']! * 100).toInt();
+              groupId = data['group'];
+              setBingoData(context, data);
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,7 +87,7 @@ class BingoDetail extends StatelessWidget {
                   Flexible(
                     flex: 2,
                     child: CustomText(
-                      content: data.title,
+                      content: data['title'],
                       fontSize: FontSize.titleSize,
                     ),
                   ),
@@ -73,7 +96,7 @@ class BingoDetail extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       child: CustomText(
-                        content: data.title,
+                        content: data['username'],
                         fontSize: FontSize.smallSize,
                       ),
                     ),
@@ -84,19 +107,17 @@ class BingoDetail extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButtonInRow(
-                          onPressed: toOtherPage(context,
-                              page: BingoForm(
-                                bingoId: bingoId,
-                                bingoSize: context
-                                    .read<GlobalGroupProvider>()
-                                    .bingoSize!,
-                                needAuth: false,
-                              )),
+                          onPressed: toOtherPage(
+                            context,
+                            page: BingoForm(
+                              bingoId: widget.bingoId,
+                              bingoSize: context
+                                  .read<GlobalGroupProvider>()
+                                  .bingoSize!,
+                              needAuth: false,
+                            ),
+                          ),
                           icon: editIcon,
-                        ),
-                        IconButtonInRow(
-                          onPressed: deleteBingo,
-                          icon: deleteIcon,
                         ),
                         const SizedBox(width: 20)
                       ],
@@ -108,18 +129,14 @@ class BingoDetail extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       child: RepaintBoundary(
                         key: globalKey,
-                        child: BingoBoard(
-                          data: bingoToMap(data),
-                          size: context.read<GlobalGroupProvider>().bingoSize!,
-                          isDetail: true,
-                        ),
+                        child: const BingoBoard(isDetail: true),
                       ),
                     ),
                   ),
                   Flexible(
                     flex: 2,
                     child: CustomText(
-                      content: '달성률 : ${data.achieve}%',
+                      content: '달성률 : $achieve%',
                       fontSize: FontSize.largeSize,
                     ),
                   )

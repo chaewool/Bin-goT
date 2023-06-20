@@ -1,21 +1,24 @@
 import 'package:bin_got/pages/help_page.dart';
+import 'package:bin_got/providers/root_provider.dart';
+import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
-import 'package:bin_got/widgets/badge.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 
 //* 마이페이지 메인
 class MyPage extends StatefulWidget {
-  final String nickname;
-  const MyPage({super.key, this.nickname = '조코링링링'});
+  const MyPage({super.key});
 
   @override
   State<MyPage> createState() => _MyPageState();
@@ -23,11 +26,9 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   late bool isEditMode;
-  void changeEditMode() {
-    setState(() {
-      isEditMode = !isEditMode;
-    });
-  }
+  String username = '';
+  String newName = '';
+  int badgeId = 0;
 
   StringList notificationList = [
     '진행률/랭킹 알림',
@@ -37,36 +38,81 @@ class _MyPageState extends State<MyPage> {
   ];
   List<StringList> notificationOptions = [
     ['ON', 'OFF'],
-    ['세 달', '한 달', '일주일', '3일'],
+    ['ON', 'OFF'],
     ['ON', 'OFF'],
     ['ON', 'OFF']
   ];
-  IntList idxList = [0, 0, 0, 0];
+  List optionList = [];
+
+  void changeEditMode() {
+    print('pressed');
+    setState(() {
+      isEditMode = !isEditMode;
+    });
+  }
+
   void changeIdx(int i) {
-    if (i != 1) {
-      setState(() {
-        idxList[i] = 1 - idxList[i];
-      });
-    } else if (idxList[i] < 3) {
-      setState(() {
-        idxList[i] += 1;
-      });
-    } else {
-      setState(() {
-        idxList[i] = 0;
+    setState(() {
+      final noti = context.read<NotiProvider>();
+      optionList[i] = !optionList[i];
+      switch (i) {
+        case 0:
+          return noti.setStoreRank(optionList[i]);
+        case 1:
+          return noti.setStoreDue(optionList[i]);
+        default:
+          return noti.setStoreChat(optionList[i]);
+      }
+    });
+  }
+
+  void logout() {
+    context.read<AuthProvider>().deleteVar();
+    context.read<NotiProvider>().deleteVar();
+    toIntroPage(context);
+  }
+
+  void changeName() {
+    if (username != newName) {
+      UserInfoProvider().changeName(newName).then((_) {
+        showAlert(context, title: '닉네임 변경 완료', content: '닉네임이 변경되었습니다.')();
+        changeEditMode();
+        setState(() {
+          username = newName;
+        });
       });
     }
+  }
+
+  void setName(String newVal) {
+    setState(() {
+      newName = newVal;
+    });
   }
 
   @override
   void initState() {
     super.initState();
+    UserInfoProvider().getProfile().then((data) {
+      setState(() {
+        username = data.username;
+        // newName = data.username;
+        badgeId = data.badgeId;
+      });
+      print(badgeId);
+    });
     isEditMode = false;
+    final noti = context.read<NotiProvider>();
+    optionList.add(noti.rankNoti);
+    optionList.add(noti.dueNoti);
+    optionList.add(noti.chatNoti);
+    optionList.add(true);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: const MyPageAppBar(),
       body: Column(
         mainAxisSize: MainAxisSize.max,
@@ -74,11 +120,12 @@ class _MyPageState extends State<MyPage> {
         children: [
           Flexible(flex: 3, child: profile(context)),
           Flexible(
-            flex: 7,
+            flex: 8,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const CustomText(content: '알림 설정'),
+                const SizedBox(height: 15),
                 for (int i = 0; i < 4; i += 1)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,7 +141,8 @@ class _MyPageState extends State<MyPage> {
                       Flexible(
                         flex: 2,
                         child: CustomButton(
-                          content: notificationOptions[i][idxList[i]],
+                          content: notificationOptions[i]
+                              [optionList[i] ? 0 : 1],
                           onPressed: () => changeIdx(i),
                         ),
                       ),
@@ -136,8 +184,12 @@ class _MyPageState extends State<MyPage> {
             flex: 2,
             child: CustomTextButton(
               content: '로그아웃',
-              onTap: showAlert(context,
-                  title: '로그아웃 확인', content: '로그아웃하시겠습니까?', onPressed: () {}),
+              onTap: showAlert(
+                context,
+                title: '로그아웃 확인',
+                content: '로그아웃하시겠습니까?',
+                onPressed: logout,
+              ),
             ),
           ),
           const Flexible(
@@ -152,45 +204,77 @@ class _MyPageState extends State<MyPage> {
   RowWithPadding profile(BuildContext context) {
     return RowWithPadding(
       vertical: 20,
-      horizontal: 40,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      horizontal: 15,
       children: [
-        CustomBadge(onTap: showModal(context, page: const SelectBadgeModal())),
-        Row(
-          children: isEditMode
-              ? [
-                  CustomInput(
-                    width: 150,
-                    height: 30,
-                    setValue: (p0) {},
-                  ),
-                  IconButtonInRow(
-                    icon: confirmIcon,
-                    onPressed: () {},
-                    size: 20,
-                  ),
-                  IconButtonInRow(
-                    icon: closeIcon,
-                    onPressed: changeEditMode,
-                    size: 20,
-                  ),
-                ]
-              : [
-                  SizedBox(
-                    width: 150,
-                    height: 40,
-                    child: Center(
-                      child: CustomText(
-                          content: widget.nickname,
-                          fontSize: FontSize.titleSize),
+        Flexible(
+          child: CircleContainer(
+            onTap: showModal(
+              context,
+              page: SelectBadgeModal(
+                presentBadge: badgeId,
+              ),
+            ),
+            child: badgeId != 0
+                ? Center(
+                    child: Image.network(
+                      '${dotenv.env['fileUrl']}/badges/$badgeId',
                     ),
-                  ),
-                  IconButtonInRow(
-                    onPressed: changeEditMode,
-                    icon: editIcon,
-                    size: 20,
                   )
-                ],
+                : const SizedBox(),
+          ),
+        ),
+        Flexible(
+          flex: 5,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: isEditMode
+                ? [
+                    Flexible(
+                      flex: 11,
+                      child: Center(
+                        child: CustomInput(
+                          height: 35,
+                          initialValue: newName,
+                          setValue: setName,
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 3,
+                      child: IconButtonInRow(
+                        icon: confirmIcon,
+                        color: greenColor,
+                        onPressed: changeName,
+                      ),
+                    ),
+                    Flexible(
+                      flex: 3,
+                      child: IconButtonInRow(
+                        icon: closeIcon,
+                        color: redColor,
+                        onPressed: changeEditMode,
+                      ),
+                    ),
+                  ]
+                : [
+                    Flexible(
+                      flex: 6,
+                      child: Center(
+                        child: CustomText(
+                          content: username,
+                          fontSize: FontSize.titleSize,
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: IconButtonInRow(
+                        onPressed: changeEditMode,
+                        icon: editIcon,
+                      ),
+                    ),
+                  ],
+          ),
         ),
       ],
     );
