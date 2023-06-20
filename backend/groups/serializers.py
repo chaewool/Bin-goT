@@ -28,9 +28,3 @@ class GroupUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ('groupname', 'description', 'rule', 'headcount')
-
-
-class GroupSearchSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('id', 'groupname', 'is_public', 'start', 'end', 'headcount')

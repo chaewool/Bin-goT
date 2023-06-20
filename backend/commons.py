@@ -114,7 +114,7 @@ from firebase_admin import messaging
 def send_to_fcm(group, title, content):
     token = RedisToken()
 
-    registration_tokens = [token.getToken(user.id) for user in group.users]
+    registration_tokens = [token.getToken(user.id) for user in group.users.all()]
 
     message = messaging.MulticastMessage(
         data={'group_id': group.id, 'title': title, 'content': content},

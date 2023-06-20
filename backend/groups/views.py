@@ -7,10 +7,11 @@ import json
 import logging
 
 from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm
-from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer
+from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer
 from .models import Group, Participate
 from boards.models import Board, BoardItem
 from accounts.models import Badge, Achieve
+from accounts.serializers import GroupSerializer
 
 
 logger = logging.getLogger('accounts')
@@ -561,7 +562,7 @@ class GroupSearchView(APIView):
             groups = groups.filter(groupname__icontains=keyword)
 
         groups = groups.order_by(order)[10 * (page - 1):10 * page]
-        data = GroupSearchSerializer(groups, many=True).data
+        data = GroupSerializer(groups, many=True).data
 
         for group in data:
             count = 0

@@ -240,7 +240,9 @@ class MainBoardsView(APIView):
         filter = request.GET.get('filter')
         page = int(request.GET.get('page'))
 
-        boards = BoardSerializer(user.boards, many=True).data
+        groups = [board.group for board in user.boards.all()]
+
+        boards = BoardSerializer(groups, many=True).data
 
         if filter == '1':
             boards = [board for board in boards if board['status'] == '진행 중']
@@ -254,7 +256,7 @@ class MainBoardsView(APIView):
         
         boards = boards[10 * (page - 1):10 * page]
         
-        return Response(data={'boards': boards}, status=status.HTTP_200_OK)
+        return Response(data=boards, status=status.HTTP_200_OK)
 
 
 class ProfileView(APIView):
