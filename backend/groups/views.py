@@ -6,7 +6,7 @@ from datetime import datetime, date
 import json
 import logging
 
-from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean
+from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, GroupSearchSerializer
 from .models import Group, Participate
 from boards.models import Board, BoardItem
@@ -575,3 +575,13 @@ class GroupSearchView(APIView):
         data = [d for d in data if d['count'] < d['headcount'] and not Participate.objects.filter(group=d['id'], user=user).exists()]
         
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class TestView(APIView):
+    def get(self, request, group_id):
+        user = request.user
+        group = Group.objects.get(id=group_id)
+        
+        send_to_fcm(group, '테스트용 제목', '테스트용 내용')
+        
+        return Response(status=status.HTTP_200_OK)

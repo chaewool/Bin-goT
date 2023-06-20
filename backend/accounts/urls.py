@@ -12,6 +12,7 @@ urlpatterns = [
     path('kakao/unlink/', views.KaKaoUnlinkView.as_view(), name='kakao_unlink'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('token/fcm/', views.TokenFCMView.as_view(), name='token_fcm'),
     
     path('username/check/', views.UsernameCheckView.as_view(), name='username_check'),
     path('username/update/', views.UsernameUpdateView.as_view(), name='username_update'),

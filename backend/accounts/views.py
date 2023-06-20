@@ -13,7 +13,7 @@ from bingot_settings import KAKAO_REST_API_KEY
 from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
 from groups.models import Group, Participate
-from commons import get_boolean
+from commons import get_boolean, RedisToken
 
 
 User = get_user_model()
@@ -111,6 +111,16 @@ class KaKaoUnlinkView(APIView):
         user = request.user
         user.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class TokenFCMView(APIView):
+    def post(self, request):
+        user = request.user
+        fcm_token = request.data.get('fcm_token')
+
+        token = RedisToken()
+        token.setToken(user.id, fcm_token)
+        return Response(data={}, status=status.HTTP_200_OK)
 
 
 class UsernameCheckView(APIView):

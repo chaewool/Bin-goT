@@ -1,3 +1,5 @@
+# AWS S3에 이미지 저장 및 삭제
+
 import boto3
 from bingot_settings import AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY, AWS_S3_BUCKET_NAME, REDIS_PASSWORD
 
@@ -30,6 +32,8 @@ def delete_image(url):
     )
 
 
+# Redis 0번 DB에서 그룹 별 랭킹 정보 조회 및 갱신
+
 import redis
 from urllib.parse import quote
 
@@ -53,6 +57,8 @@ class RedisRanker:
     def getTops(self, return_count=3):
         return self.conn_redis.zrevrangebyscore(name=self.key, min="-inf", max="+inf", start=0, num=return_count)
 
+
+# Redis 1번 DB에서 그룹 별 채팅 정보 조회 및 갱신
 
 import json
 
@@ -80,5 +86,40 @@ class RedisChat:
         self.conn_redis.lset(self.key, chat_id, json.dumps(chat))
 
 
+# 클라이언트로부터 전달받은 데이터 중 bool 타입 데이터 변환
+
 def get_boolean(str):
     return True if str in ('true', 'True') else False
+
+
+# Redis 2번 DB에서 사용자 별 FCM 토큰 조회 및 갱신
+
+conn_token = redis.from_url("redis://:{}@bingot.xyz:6379/2".format(encoded_password), decode_responses=True)
+
+class RedisToken:
+    def __init__(self):
+        self.conn_redis = conn_token
+
+    def getToken(self, user_id):
+        return self.conn_redis.get(user_id)
+    
+    def setToken(self, user_id, token):
+        self.conn_redis.set(user_id, token)
+
+
+# FCM으로 알림 전송
+
+from firebase_admin import messaging
+
+def send_to_fcm(group, title, content):
+    token = RedisToken()
+
+    registration_tokens = [token.getToken(user.id) for user in group.users]
+
+    message = messaging.MulticastMessage(
+        data={'group_id': group.id, 'title': title, 'content': content},
+        tokens=registration_tokens,
+    )
+
+    response = messaging.send_multicast(message)
+    print('{0} messages were sent successfully'.format(response.success_count))
