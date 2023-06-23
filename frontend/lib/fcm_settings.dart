@@ -4,18 +4,47 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+@pragma('vm:entry-point')
+void onNotificationTapped(NotificationResponse notificationResponse) {
+  final payload = notificationResponse.payload;
+  print('페이로드 : $payload');
+
+  //! 페이로드에 따른 페이지 이동 로직 추가 필요
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+
+  flutterLocalNotificationsPlugin.show(
+      message.hashCode,
+      message.data['title'],
+      message.data['content'],
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'flutter_notification_high',
+          'flutter_notification_title_high',
+        ),
+      ),
+      payload: message.data['page']);
+}
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
 void initFCM() async {
   // 기기의 등록 토큰 액세스
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   final fcmToken = await messaging.getToken();
   print('fcm 토큰: $fcmToken');
-  FCMProvider().saveFCMToken(fcmToken!);
+  //! fcm 토큰 저장 로직 확인 필요
+  // FCMProvider().saveFCMToken(fcmToken!);
 
   // 토큰이 업데이트될 때마다 서버에 저장
   messaging.onTokenRefresh.listen((fcmToken) {
     FCMProvider().saveFCMToken(fcmToken);
   }).onError((err) {
-    // Error getting token.
+    throw Error();
   });
 
   // 메시지를 수신할 수 있는 권한 요청(iOS 및 웹)
@@ -30,90 +59,69 @@ void initFCM() async {
   );
 
   // 채널 생성(Android)
-  AndroidNotificationChannel channel = const AndroidNotificationChannel(
-      'flutter_notification', // id
-      'flutter_notification_title', // title
-      importance: Importance.high,
-      enableLights: true,
-      enableVibration: true,
-      showBadge: true,
-      playSound: true);
+  AndroidNotificationChannel channelLow = const AndroidNotificationChannel(
+    'flutter_notification_low', // id
+    'flutter_notification_title_low', // title
+    importance: Importance.low,
+    showBadge: true,
+  );
+
+  AndroidNotificationChannel channelHigh = const AndroidNotificationChannel(
+    'flutter_notification_high', // id
+    'flutter_notification_title_high', // title
+    importance: Importance.high,
+  );
+
+  // 포어그라운드 알림 설정(iOS)
+  await messaging.setForegroundNotificationPresentationOptions(
+    alert: false,
+    badge: true,
+    sound: false,
+  );
+
+  // 알림 설정
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channelLow);
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channelHigh);
+
+  const android =
+      AndroidInitializationSettings('@drawable/ic_notifications_icon');
+  const iOS = DarwinInitializationSettings();
+  const initSettings = InitializationSettings(android: android, iOS: iOS);
+
+  await flutterLocalNotificationsPlugin.initialize(initSettings,
+      onDidReceiveNotificationResponse: onNotificationTapped,
+      onDidReceiveBackgroundNotificationResponse: onNotificationTapped);
 
   // 포어그라운드 상태일 때 메시지 수신
   if (!kIsWeb) {
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
-
-    const android =
-        AndroidInitializationSettings('@drawable/ic_notifications_icon');
-    const iOS = DarwinInitializationSettings();
-    const initSettings = InitializationSettings(android: android, iOS: iOS);
-
-    await flutterLocalNotificationsPlugin.initialize(initSettings,
-        onDidReceiveNotificationResponse: notificationTapBackground,
-        onDidReceiveBackgroundNotificationResponse: notificationTapBackground);
-
-    await messaging.setForegroundNotificationPresentationOptions(
-      alert: false,
-      badge: true,
-      sound: false,
-    );
-
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('포어그라운드 notification: ${message.notification}');
-      print('포어그라운드 data: ${message.data}');
-      RemoteNotification? notification = message.notification;
-
-      if (notification != null) {
-        flutterLocalNotificationsPlugin.show(
-            message.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                icon: '@mipmap/ic_launcher',
-              ),
-            ));
-      }
+      flutterLocalNotificationsPlugin.show(
+          message.hashCode,
+          message.data['title'],
+          message.data['content'],
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channelLow.id,
+              channelLow.name,
+            ),
+          ),
+          payload: message.data['page']);
     });
   }
 
   // 백그라운드 상태일 때 메시지 수신
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-}
 
-void _handleMessage(RemoteMessage message) {
-  print('message = ${message.notification!.title}');
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print('백그라운드 notification: ${message.notification}');
-  print('백그라운드 data: ${message.data}');
-
-  RemoteMessage? initialMessage =
-      await FirebaseMessaging.instance.getInitialMessage();
-
-  // 종료 상태에서 클릭한 푸시 알림 메세지 핸들링
-  if (initialMessage != null) _handleMessage(initialMessage);
-
-  // 앱이 백그라운드 상태에서 푸시 알림 클릭 하여 열릴 경우 메세지 스트림을 통해 처리
-  FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
-}
-
-void notificationTapBackground(NotificationResponse notificationResponse) {
-  print('notification(${notificationResponse.id}) action tapped: '
-      '${notificationResponse.actionId} with'
-      ' payload: ${notificationResponse.payload}');
-  if (notificationResponse.input?.isNotEmpty ?? false) {
-    print(
-        'notification action tapped with input: ${notificationResponse.input}');
+  RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
+  if (message != null) {
+    print(message.data);
   }
 }
