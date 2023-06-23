@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 //* 기본
 typedef ReturnVoid = void Function();
+// typedef ChangeValue = void Function(String value);
 typedef StringList = List<String>;
 typedef WidgetList = List<Widget>;
 typedef IntList = List<int>;
@@ -34,4 +35,9 @@ typedef MyBingoList = List<MyBingoModel>;
 // typedef GroupList = List<GroupModel>;
 typedef RankList = List<GroupRankModel>;
 typedef GroupMemberList = List<GroupMemberModel>;
+
+//* bingo api
 typedef BingoItemList = List<BingoItemModel>;
+
+//* user api
+typedef BadgeList = List<BadgeModel>;

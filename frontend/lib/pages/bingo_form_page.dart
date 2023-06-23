@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:bin_got/pages/bingo_detail_page.dart';
+import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -15,16 +19,19 @@ import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
+import 'package:http_parser/http_parser.dart';
 
 class BingoForm extends StatefulWidget {
   final int bingoSize;
   final int? bingoId;
-  final bool needAuth;
+  final bool needAuth, beforeJoin;
   const BingoForm({
     super.key,
     this.bingoId,
     required this.bingoSize,
     required this.needAuth,
+    this.beforeJoin = false,
   });
 
   @override
@@ -33,81 +40,90 @@ class BingoForm extends StatefulWidget {
 
 class _BingoFormState extends State<BingoForm> {
   GlobalKey globalKey = GlobalKey();
-  var thumbnail;
-  final DynamicMap bingoData = {
-    'group_id': 0,
-    'title': '',
-    'background': null,
-    'is_black': false,
-    'has_border': true,
-    'has_round_edge': false,
-    'around_kan': 0,
-    'complete_icon': 0,
-    'font': 0,
-    'items': [],
-  };
+  Uint8List? thumbnail;
+  bool changed = true;
+  late final size;
+
   @override
   void initState() {
     super.initState();
-    bingoData['group_id'] = getGroupId(context);
-  }
-
-  void changeBackground(int i) {
-    setState(() {
-      if (bingoData['background'] == i) {
-        bingoData['background'] = null;
-      } else {
-        bingoData['background'] = i;
-      }
-    });
-  }
-
-  void setOption(String key, dynamic value) {
-    bingoData[key] = value;
-  }
-
-  void changeData(int tabIndex, int i) {
-    print('$tabIndex $i');
-    print(bingoData);
-    setState(() {
-      switch (tabIndex) {
-        case 0:
-          changeBackground(i);
-          break;
-        case 1:
-          final keyList = ['has_round_edge', 'has_border', 'is_black'];
-          switch (i) {
-            case 3:
-              bingoData['around_kan'] += bingoData['around_kan'] < 2 ? 1 : -2;
-              break;
-            default:
-              bingoData[keyList[i]] = !bingoData[keyList[i]];
-              break;
-          }
-          break;
-        case 2:
-          setOption('font', i);
-          break;
-        default:
-          setOption('complete_icon', i);
-          break;
-      }
-    });
+    size = getBingoSize(context);
+    setOption(context, 'group_id', getGroupId(context)!);
+    if (getItems(context).isEmpty) {
+      context.read<GlobalBingoProvider>().initItems(size * size);
+    }
   }
 
   void createOrEditBingo() async {
-    await bingoToThumb();
-    await BingoProvider().createOwnBingo(
-        FormData.fromMap({'data': bingoData, 'thumbnail': thumbnail}));
-    if (!mounted) return;
-    toOtherPage(context,
-        page: BingoDetail(
-          bingoId: widget.bingoId!,
-        ))();
+    if (changed) {
+      bingoToThumb().then((_) {
+        final data = context.read<GlobalBingoProvider>().data;
+        if (data['title'] == null) {
+          return showAlert(
+            context,
+            title: '필수 항목 누락',
+            content: '빙고명을 입력해주세요',
+          )();
+        }
+        int cnt = 0;
+        for (var element in (data['items'] as List)) {
+          final title = element['title'].trim();
+          final content = element['content'].trim();
+          if (title != null &&
+              title != '' &&
+              content != null &&
+              content != '') {
+            cnt += 1;
+          }
+        }
+
+        if (cnt != size * size) {
+          return showAlert(
+            context,
+            title: '필수 항목 누락',
+            content: '빙고칸 내부를 채워주세요',
+          )();
+        }
+        final bingoData = FormData.fromMap({
+          'data': jsonEncode(data),
+          'thumbnail': MultipartFile.fromBytes(
+            thumbnail!,
+            filename: 'thumbnail.png',
+            contentType: MediaType('image', 'png'),
+          ),
+        });
+
+        if (widget.bingoId == null) {
+          BingoProvider().createOwnBingo(bingoData).then((bingoId) async {
+            if (widget.beforeJoin) {
+              joinGroup();
+            }
+            if (!mounted) return;
+            toOtherPage(
+              context,
+              page: BingoDetail(bingoId: bingoId),
+            )();
+          });
+        } else {
+          print(widget.bingoId);
+          BingoProvider().editOwnBingo(widget.bingoId!, bingoData).then((_) {
+            toOtherPage(
+              context,
+              page: BingoDetail(bingoId: widget.bingoId!),
+            )();
+          });
+        }
+      });
+    } else {
+      return showAlert(
+        context,
+        title: '필수 항목 누락',
+        content: '변경사항이 없습니다.',
+      )();
+    }
   }
 
   FutureBool bingoToThumb() async {
-    print('시작');
     var renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject is RenderRepaintBoundary) {
       var boundary = renderObject;
@@ -115,7 +131,6 @@ class _BingoFormState extends State<BingoForm> {
       final byteData = await image.toByteData(format: ImageByteFormat.png);
       setState(() {
         thumbnail = byteData?.buffer.asUint8List();
-        print(thumbnail);
       });
     }
     return true;
@@ -123,22 +138,31 @@ class _BingoFormState extends State<BingoForm> {
 
   void joinGroup() async {
     try {
-      await GroupProvider().joinGroup(getGroupId(context)!);
-      if (!mounted) return;
-      if (widget.needAuth == true) {
-        toBack(context)();
-      }
-      showAlert(
-        context,
-        title: '가입 신청',
-        content: widget.needAuth == true
-            ? '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.'
-            : '성공적으로 가입되었습니다.',
-        hasCancel: false,
-      )();
-      if (widget.needAuth == false) {
-        //* 새로고침
-      }
+      GroupProvider().joinGroup(getGroupId(context)!).then((_) {
+        if (widget.needAuth == true) {
+          toBack(context);
+          showAlert(
+            context,
+            title: '가입 신청',
+            content: '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.',
+            hasCancel: false,
+          )();
+        } else {
+          toOtherPage(
+            context,
+            page: GroupMain(
+              groupId: getGroupId(context)!,
+              isPublic: true,
+            ),
+          );
+          showAlert(
+            context,
+            title: '가입 완료',
+            content: '성공적으로 가입되었습니다.',
+            hasCancel: false,
+          )();
+        }
+      });
     } catch (error) {
       showAlert(
         context,
@@ -162,7 +186,8 @@ class _BingoFormState extends State<BingoForm> {
             flex: 2,
             child: CustomInput(
               explain: '빙고 이름',
-              setValue: (value) => bingoData['title'] = value,
+              setValue: (value) => setOption(context, 'title', value),
+              initialValue: getTitle(context),
             ),
           ),
           Flexible(
@@ -171,27 +196,22 @@ class _BingoFormState extends State<BingoForm> {
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               child: RepaintBoundary(
                 key: globalKey,
-                child: BingoBoard(
-                    data: bingoData,
-                    size: widget.bingoSize,
-                    isDetail: false,
-                    changeData: changeData),
+                child: const BingoBoard(
+                  isDetail: false,
+                ),
               ),
             ),
           ),
-          Flexible(
+          const Flexible(
             flex: 4,
-            child: BingoTabBar(
-              data: bingoData,
-              changeData: changeData,
-            ),
+            child: BingoTabBar(),
           ),
           Flexible(
             flex: 1,
             child: Center(
               child: CustomButton(
                 onPressed: createOrEditBingo,
-                content: '완료',
+                content: widget.beforeJoin ? '가입 신청' : '완료',
                 fontSize: FontSize.textSize,
               ),
             ),

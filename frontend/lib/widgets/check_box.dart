@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 
 class CustomCheckBox extends StatefulWidget {
   final String label;
-  final void Function(bool?) onChange;
+  final void Function(bool?)? onChange;
   final bool value;
-  const CustomCheckBox(
-      {super.key,
-      required this.label,
-      required this.onChange,
-      required this.value});
+  const CustomCheckBox({
+    super.key,
+    required this.label,
+    required this.value,
+    this.onChange,
+  });
 
   @override
   State<CustomCheckBox> createState() => _CustomCheckBox();

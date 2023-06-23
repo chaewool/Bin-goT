@@ -37,6 +37,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => NotiProvider()),
         ChangeNotifierProvider(create: (_) => GlobalGroupProvider()),
+        ChangeNotifierProvider(create: (_) => GlobalBingoProvider()),
       ],
       child: MaterialApp(
         home: const Intro(),

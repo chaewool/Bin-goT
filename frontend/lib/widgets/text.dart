@@ -5,18 +5,22 @@ import 'package:flutter/material.dart';
 class CustomText extends StatelessWidget {
   final String content;
   final FontSize fontSize;
-  final bool center;
+  final bool center, cutText;
   final String font;
   final Color color;
   final double? height;
-  const CustomText(
-      {super.key,
-      required this.content,
-      this.fontSize = FontSize.textSize,
-      this.center = false,
-      this.font = 'RIDIBatang',
-      this.color = blackColor,
-      this.height});
+  final int? maxLines;
+  const CustomText({
+    super.key,
+    required this.content,
+    this.fontSize = FontSize.textSize,
+    this.center = false,
+    this.font = 'RIDIBatang',
+    this.color = blackColor,
+    this.height,
+    this.maxLines,
+    this.cutText = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +33,8 @@ class CustomText extends StatelessWidget {
         height: height,
       ),
       textAlign: center ? TextAlign.center : null,
+      maxLines: maxLines,
+      overflow: cutText ? TextOverflow.ellipsis : null,
     );
   }
 }

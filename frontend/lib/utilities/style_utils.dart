@@ -45,7 +45,8 @@ StringList showedFont = [
   '한국기계연구원',
   '땅스부대찌개'
 ];
-StringList matchFont = [
+
+const StringList matchFont = [
   'RIDIBatang',
   'Kyobo',
   'Korail',

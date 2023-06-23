@@ -1,7 +1,7 @@
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +26,7 @@ class SelectBox extends StatelessWidget {
       width: width,
       height: height,
       color: whiteColor,
+      // borderColor: greyColor,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Row(
@@ -49,6 +50,7 @@ class SelectBoxContainer extends StatefulWidget {
   final String mapKey;
   final ReturnVoid changeShowState;
   final void Function(String, int) changeIdx;
+  final double? height;
   const SelectBoxContainer({
     super.key,
     required this.listItems,
@@ -57,6 +59,7 @@ class SelectBoxContainer extends StatefulWidget {
     required this.mapKey,
     required this.changeShowState,
     required this.changeIdx,
+    this.height,
   });
 
   @override
@@ -94,6 +97,7 @@ class _SelectBoxContainerState extends State<SelectBoxContainer> {
           CustomBoxContainer(
             hasRoundEdge: false,
             width: 150,
+            height: widget.height,
             color: whiteColor,
             boxShadow: const [defaultShadow],
             child: Column(
@@ -102,9 +106,7 @@ class _SelectBoxContainerState extends State<SelectBoxContainer> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: CustomBoxContainer(
-                      onTap: () => changeSelected(
-                        newIdx: i,
-                      ),
+                      onTap: () => changeSelected(newIdx: i),
                       width: 150,
                       child: Center(
                         child: CustomText(

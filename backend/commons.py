@@ -111,15 +111,15 @@ class RedisToken:
 
 from firebase_admin import messaging
 
-def send_to_fcm(group, title, content):
+def send_to_fcm(group, title, body):
     token = RedisToken()
 
     registration_tokens = [token.getToken(user.id) for user in group.users.all()]
 
     message = messaging.MulticastMessage(
-        data={'group_id': group.id, 'title': title, 'content': content},
+        notification=messaging.Notification(title=title, body=body),
+        data={'group_id': str(group.id)},
         tokens=registration_tokens,
     )
 
     response = messaging.send_multicast(message)
-    print('{0} messages were sent successfully'.format(response.success_count))

@@ -2,15 +2,27 @@ import 'package:bin_got/pages/search_group_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
+import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/select_box.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class SearchBar extends StatefulWidget {
-  const SearchBar({super.key});
+  final int public;
+  final int period;
+  final String? query;
+  final bool isMain;
+  const SearchBar({
+    super.key,
+    this.public = 0,
+    this.period = 0,
+    this.query,
+    this.isMain = false,
+  });
 
   @override
   State<SearchBar> createState() => _SearchBarState();
@@ -25,11 +37,68 @@ class _SearchBarState extends State<SearchBar> {
     '여섯 달 ~ 아홉 달',
     '아홉 달 ~ 1년'
   ];
-  int periodIdx = 0;
+  late int periodIdx;
+  late bool privateGroup, publicGroup;
   bool canShowMenu = false;
-  bool privateGroup = true;
-  bool publicGroup = true;
-  StringMap keyword = {'value': '미라클'};
+  StringMap keyword = {'value': ''};
+  final periodBoxKey = GlobalKey();
+  Offset? position;
+
+  @override
+  void initState() {
+    super.initState();
+    periodIdx = widget.period;
+    privateGroup = widget.public % 2 == 0;
+    publicGroup = widget.public < 2;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getOffset();
+    });
+  }
+
+  void getOffset() {
+    if (periodBoxKey.currentContext != null) {
+      final renderBox =
+          periodBoxKey.currentContext!.findRenderObject() as RenderBox;
+      setState(() {
+        position = renderBox.localToGlobal(Offset.zero);
+      });
+    }
+  }
+
+  void onSearchAction() {
+    if (keyword['value'] != '' || periodIdx != 0) {
+      int result = 3;
+      if (publicGroup) {
+        result -= 2;
+      }
+      if (privateGroup) {
+        result -= 1;
+      }
+
+      toOtherPage(
+        context,
+        page: SearchGroup(
+          public: result,
+          cnt: 20,
+          period: periodIdx,
+          getKeyword: () => keyword['value'],
+        ),
+      )();
+    } else {
+      showModal(
+        context,
+        page: const CustomModal(
+          title: '필수 항목 누락',
+          hasConfirm: false,
+          cancelText: '확인',
+          children: [
+            Center(child: CustomText(content: '검색어를 입력하거나\n 기간을 선택해주세요'))
+          ],
+        ),
+      )();
+    }
+  }
+
   void changePrivate() {
     setState(() {
       privateGroup = !privateGroup;
@@ -48,7 +117,11 @@ class _SearchBarState extends State<SearchBar> {
     });
   }
 
-  void changeIdx(String string, int intVal) {}
+  void changeIdx(String string, int intVal) {
+    setState(() {
+      periodIdx = intVal;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,29 +142,21 @@ class _SearchBarState extends State<SearchBar> {
                 onChanged: (value) {
                   keyword['value'] = value;
                 },
+                controller: TextEditingController(text: keyword['value']),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const SizedBox(),
                   SelectBox(
+                    key: periodBoxKey,
                     onTap: changeShowMenu,
                     value: period[periodIdx],
-                    width: 150,
+                    width: 200,
                     height: 50,
                   ),
                   CustomButton(
-                    onPressed: toOtherPage(context,
-                        page: SearchGroup(
-                          public: publicGroup && privateGroup
-                              ? 0
-                              : publicGroup
-                                  ? 1
-                                  : 2,
-                          cnt: 20,
-                          period: 1,
-                          keyword: keyword['value'],
-                        )),
+                    onPressed: onSearchAction,
                     content: '검색',
                   ),
                 ],
@@ -99,12 +164,12 @@ class _SearchBarState extends State<SearchBar> {
               Row(
                 children: [
                   CustomCheckBox(
-                    label: '공개',
+                    label: '공개 그룹',
                     onChange: (_) => changePublic(),
                     value: publicGroup,
                   ),
                   CustomCheckBox(
-                    label: '비공개',
+                    label: '비공개 그룹',
                     onChange: (_) => changePrivate(),
                     value: privateGroup,
                   )
@@ -114,13 +179,16 @@ class _SearchBarState extends State<SearchBar> {
           ),
         ),
         canShowMenu
-            ? SelectBoxContainer(
-                listItems: period,
-                valueItems: List.generate(6, (i) => i),
-                index: 0,
-                mapKey: '',
-                changeShowState: changeShowMenu,
-                changeIdx: changeIdx,
+            ? Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, position!.dx, 0),
+                child: SelectBoxContainer(
+                  listItems: period,
+                  valueItems: List.generate(6, (i) => i),
+                  index: periodIdx,
+                  changeShowState: changeShowMenu,
+                  changeIdx: changeIdx,
+                  mapKey: '',
+                ),
               )
             : const SizedBox(),
       ],

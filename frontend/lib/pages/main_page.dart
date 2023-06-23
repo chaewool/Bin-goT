@@ -1,8 +1,5 @@
-import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/providers/user_info_provider.dart';
-import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +13,7 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  late Future<MainTabModel> groups;
   bool isSearchMode = false;
-
-  @override
-  void initState() {
-    super.initState();
-    groups = UserInfoProvider().getMainTabData();
-  }
 
   void changeSearchMode() {
     setState(() {
@@ -41,12 +31,12 @@ class _MainState extends State<Main> {
       appBar: MainBar(onPressed: changeSearchMode),
       body: CustomBoxContainer(
         height: MediaQuery.of(context).size.height,
-        color: backgroundColor,
+        // color: backgroundColor,
         hasRoundEdge: false,
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            isSearchMode ? const SearchBar() : const SizedBox(),
+            isSearchMode ? const SearchBar(isMain: true) : const SizedBox(),
             const SizedBox(height: 15),
             const Expanded(child: MyTabBar()),
           ],
