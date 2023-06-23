@@ -6,7 +6,7 @@ from datetime import datetime, date
 import json
 import logging
 
-from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm
+from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm, send_badge_notification
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer
 from .models import Group, Participate
 from boards.models import Board, BoardItem
@@ -19,16 +19,11 @@ logger = logging.getLogger('accounts')
 
 def check_cnt_groups(user):
     if user.cnt_groups == 1:
-        badge = Badge.objects.get(id=2)
-        Achieve.objects.create(user=user, badge=badge)
+        send_badge_notification(user, 2)
     elif user.cnt_groups == 3:
-        badge = Badge.objects.get(id=3)
-        Achieve.objects.create(user=user, badge=badge)
+        send_badge_notification(user, 3)
     elif user.cnt_groups == 5:
-        badge = Badge.objects.get(id=4)
-        Achieve.objects.create(user=user, badge=badge)
-        
-    # user에게 알림 보내는 코드 추가 필요
+        send_badge_notification(user, 4)
 
 
 def check_cnt_boarditems_complete(user, group, board_item):
@@ -42,16 +37,11 @@ def check_cnt_boarditems_complete(user, group, board_item):
     user.save()
                 
     if user.cnt_boarditems_complete == 1:
-        badge = Badge.objects.get(id=8)
-        Achieve.objects.create(user=user, badge=badge)
+        send_badge_notification(user, 8)
     elif user.cnt_boarditems_complete == 10:
-        badge = Badge.objects.get(id=9)
-        Achieve.objects.create(user=user, badge=badge)
+        send_badge_notification(user, 9)
     elif user.cnt_boarditems_complete == 100:
-        badge = Badge.objects.get(id=10)
-        Achieve.objects.create(user=user, badge=badge) 
-           
-    # user에게 알림 보내는 코드 추가 필요
+        send_badge_notification(user, 10)
     
     board = Board.objects.get(user=user, group=group)
     
@@ -68,16 +58,11 @@ def check_cnt_boarditems_complete(user, group, board_item):
         user.save()
               
         if user.cnt_boards_complete == 1:
-            badge = Badge.objects.get(id=11)
-            Achieve.objects.create(user=user, badge=badge)
-        elif user.cnt_boards_complete == 12:
-            badge = Badge.objects.get(id=9)
-            Achieve.objects.create(user=user, badge=badge)
+            send_badge_notification(user, 11)
+        elif user.cnt_boards_complete == 10:
+            send_badge_notification(user, 12)
         elif user.cnt_boards_complete == 100:
-            badge = Badge.objects.get(id=13)
-            Achieve.objects.create(user=user, badge=badge)
-            
-        # user에게 알림 보내는 코드 추가 필요
+            send_badge_notification(user, 13)
 
 
 class GroupCreateView(APIView):
@@ -261,8 +246,8 @@ class GroupJoinView(APIView):
                 check_cnt_groups(user)
             else:
                 Participate.objects.create(user=user, group=group, is_banned=1)
+                send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.')
                 
-                # leader에게 알림 보내는 코드 추가 필요
             return Response(data={}, status=status.HTTP_200_OK)
         
         else:
@@ -299,6 +284,7 @@ class GroupGrantView(APIView):
                 applicant.save()
                 
                 check_cnt_groups(applicant)
+                send_to_fcm(applicant, '', '가입 승인!', f'{group.groupname} 그룹에 가입되셨습니다.', '그룹 가입 후 이동할 경로')
             else:
                 participate.is_banned = 2
                 participate.save()
@@ -406,6 +392,7 @@ class GroupChatCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
+        send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
             
         return Response(data={}, status=status.HTTP_200_OK)
 
@@ -453,6 +440,7 @@ class GroupReviewCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
+        send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
             
         return Response(data={}, status=status.HTTP_200_OK)
 
@@ -493,6 +481,8 @@ class GroupReviewCheckView(APIView):
         
         review.reviewed = True
         chat.setChatItem(review_id, review)
+
+        send_to_fcm(user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', '인증 확인 후 이동할 경로')
         
         return Response(status=status.HTTP_200_OK)
 
@@ -576,13 +566,3 @@ class GroupSearchView(APIView):
         data = [d for d in data if d['count'] < d['headcount'] and not Participate.objects.filter(group=d['id'], user=user).exists()]
         
         return Response(data=data, status=status.HTTP_200_OK)
-
-
-class TestView(APIView):
-    def get(self, request, group_id):
-        user = request.user
-        group = Group.objects.get(id=group_id)
-        
-        send_to_fcm(group, '테스트용 제목', '테스트용 내용')
-        
-        return Response(status=status.HTTP_200_OK)

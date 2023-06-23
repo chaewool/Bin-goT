@@ -1,3 +1,9 @@
+# 클라이언트로부터 전달받은 데이터 중 bool 타입 데이터 변환
+
+def get_boolean(str):
+    return True if str in ('true', 'True') else False
+
+
 # AWS S3에 이미지 저장 및 삭제
 
 import boto3
@@ -86,12 +92,6 @@ class RedisChat:
         self.conn_redis.lset(self.key, chat_id, json.dumps(chat))
 
 
-# 클라이언트로부터 전달받은 데이터 중 bool 타입 데이터 변환
-
-def get_boolean(str):
-    return True if str in ('true', 'True') else False
-
-
 # Redis 2번 DB에서 사용자 별 FCM 토큰 조회 및 갱신
 
 conn_token = redis.from_url("redis://:{}@bingot.xyz:6379/2".format(encoded_password), decode_responses=True)
@@ -111,15 +111,48 @@ class RedisToken:
 
 from firebase_admin import messaging
 
-def send_to_fcm(group, title, body):
+def send_to_fcm(user, group, title, content, path):
     token = RedisToken()
 
-    registration_tokens = [token.getToken(user.id) for user in group.users.all()]
+    if group:
+        if user:
+            registration_tokens = [token.getToken(temp.id) for temp in group.users.all() if temp != user]
 
-    message = messaging.MulticastMessage(
-        notification=messaging.Notification(title=title, body=body),
-        data={'group_id': str(group.id)},
-        tokens=registration_tokens,
-    )
+            message = messaging.MulticastMessage(
+                data={'title': title, 'content': content, 'path': path},
+                tokens=registration_tokens,
+            )
 
-    response = messaging.send_multicast(message)
+            messaging.send_multicast(message)
+        else:
+            registration_tokens = [token.getToken(user.id) for user in group.users.all()]
+
+            message = messaging.MulticastMessage(
+                data={'title': title, 'content': content, 'path': path},
+                tokens=registration_tokens,
+            )
+
+            messaging.send_multicast(message)
+    else:
+        registration_token = token.getToken(user.id)
+
+        message = messaging.Message(
+            data={'title': title, 'content': content, 'path': path},
+            tokens=registration_token,
+        )
+
+        messaging.send(message)
+
+
+# 뱃지 알림 전송
+
+from accounts.models import Badge, Achieve
+
+def send_badge_notification(user, badge_id):
+    title = '새로운 뱃지 획득!'
+    content = '알림을 눌러 획득한 뱃지를 확인해보세요.'
+    path = '뱃지 획득 후 이동할 경로'
+
+    badge = Badge.objects.get(id=badge_id)
+    Achieve.objects.create(user=user, badge=badge)
+    send_to_fcm(user, '', title, content, path)

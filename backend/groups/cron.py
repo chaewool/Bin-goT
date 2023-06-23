@@ -1,47 +1,42 @@
 from datetime import date
 
-from commons import RedisRanker, delete_image
-from accounts.models import Achieve, Badge
-from groups.models import Group, Participate
-from boards.models import Board
+from commons import RedisRanker, send_to_fcm, send_badge_notification
+from groups.models import Group
 
 
+# 종료일에 순위 알림
 def every_day():
     groups = Group.objects.all()
     today = date.today()
     
     for group in groups:
-        # 시작일인데 빙고판 없는 사람들 강퇴
-        if today == group.start:
-            users = group.users.all()
-            for user in users:
-                if not Board.objects.filter(group=group, user=user).exists():
-                    Participate.objects.filter(group=group, user=user).delete()
-                    
-                    # 알림 보내는 작업 추가
-            
-            if len(Participate.objects.filter(group=group)) < 1:
-                url = 'groups' + '/' + str(group.id)
-                delete_image(url)
-                group.delete()
-            
-        # 종료일에 순위 알림
-        elif today == group.end:
+        if today == group.end:
             ranker = RedisRanker(str(group.id))
             
             users = group.users.all()
             for user in users:
                 rank = ranker.getRank(str(user.id))
+
+                title = f'{group.groupname} 그룹의 빙고가 종료되었습니다.'
+                content = f'당신의 등수는 {rank}등입니다.'
+                path = '등수 확인 후 이동할 경로'
+
+                send_to_fcm(user.id, '', title, content, path)
                 
                 if rank == 1:
+                    title = '새로운 뱃지 획득!'
+                    content = '알림을 눌러 획득한 뱃지를 확인해보세요.'
+                    path = '뱃지 획득 후 이동할 경로'
+
                     user.cnt_rank1 += 1
                     user.save()
                                 
                     if user.cnt_rank1 == 1:
-                        badge = Badge.objects.get(id=14)
-                        Achieve.objects.create(user=user, badge=badge)
+                        send_badge_notification(user, 14)
                     elif user.cnt_rank1 == 5:
-                        badge = Badge.objects.get(id=15)
-                        Achieve.objects.create(user=user, badge=badge)
-                    
-                # 알림 보내는 작업 추가
+                        send_badge_notification(user, 15)
+
+
+# 매주 월요일에 현재 순위 알림
+
+# 남은 기간 알림

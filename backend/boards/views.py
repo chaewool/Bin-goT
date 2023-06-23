@@ -5,11 +5,10 @@ from datetime import date
 import json
 import logging
 
-from commons import upload_image
+from commons import upload_image, send_badge_notification
 from .models import Board
 from groups.models import Group, Participate
 from .serializers import BoardCreateSerializer, BoardItemCreateSerializer, BoardDetailSerializer
-from accounts.models import Badge, Achieve
 
 
 logger = logging.getLogger('accounts')
@@ -17,16 +16,11 @@ logger = logging.getLogger('accounts')
 
 def check_cnt_boards(user):
     if user.cnt_boards == 1:
-        badge = Badge.objects.get(id=5)
-        Achieve.objects.create(user=user, badge=badge)
+        send_badge_notification(user, 5)
     elif user.cnt_boards == 3:
-        badge = Badge.objects.get(id=6)
-        Achieve.objects.create(user=user, badge=badge)
+        send_badge_notification(user, 6)
     elif user.cnt_boards == 5:
-        badge = Badge.objects.get(id=7)
-        Achieve.objects.create(user=user, badge=badge)
-                      
-    # user에게 알림 보내는 코드 추가 필요
+        send_badge_notification(user, 7)
 
 
 class BoardCreateView(APIView):

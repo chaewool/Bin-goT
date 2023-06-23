@@ -24,7 +24,4 @@ urlpatterns = [
     path('<int:group_id>/admin/', views.GroupAdminView.as_view(), name='group_admin'),
     
     path('search/', views.GroupSearchView.as_view(), name='group_search'),
-
-    # 알림 테스트용
-    path('<int:group_id>/test/', views.TestView.as_view(), name='test'),
 ]
