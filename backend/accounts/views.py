@@ -200,27 +200,12 @@ class MainGroupsView(APIView):
         
         is_recommend = False
 
-        logger.info(f'쿼리 확인: {order}, {type(order)}')
-        logger.info(f'쿼리 확인: {filter}, {type(filter)}')
-        logger.info(f'쿼리 확인: {page}, {type(page)}')
-
         # 가입한 그룹이 없음 => 그룹 추천
         if not user.groups.all():
-            logger.info('그룹 추천 진입')
-
             is_recommend = True
 
             recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
-
-            logger.info('추천 그룹 목록 추출')
-            
-            temp = GroupSerializer(recommends, many=True).data
-
-            logger.info('직렬화 성공')
-
-            groups = [group for group in temp if group['count'] < group['headcount']][:10]
-
-            logger.info('추천 그룹 선별 완료')
+            groups = GroupSerializer(recommends, many=True).data
         else:
             logger.info('그룹 목록 진입')
             
@@ -246,8 +231,9 @@ class MainGroupsView(APIView):
                     count += 1
         
             group['count'] = count
-
-        logger.info('그룹 회원 수 등록 완료')
+        
+        if is_recommend:
+            groups = [group for group in groups if group['count'] < group['headcount']][:10]
         
         return Response(data={'groups': groups, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
 
