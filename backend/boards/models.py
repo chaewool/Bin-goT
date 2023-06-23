@@ -25,7 +25,7 @@ class BoardItem(models.Model):
     content = models.CharField(max_length=100)
     check = models.BooleanField() # 횟수 측정 여부
     check_goal = models.IntegerField(null=True) # 목표 횟수
-    check_cnt = models.IntegerField(null=True) # 현재까지 수행한 횟수
+    check_cnt = models.IntegerField(default=0) # 현재까지 수행한 횟수
     finished = models.BooleanField(default=False)
 
     def __str__(self) -> str:

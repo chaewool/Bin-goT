@@ -138,7 +138,7 @@ def send_to_fcm(user, group, title, content, path):
 
         message = messaging.Message(
             data={'title': title, 'content': content, 'path': path},
-            tokens=registration_token,
+            token=registration_token,
         )
 
         messaging.send(message)
