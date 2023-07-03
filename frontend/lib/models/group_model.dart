@@ -69,16 +69,16 @@ class GroupDetailModel {
   // rank = json['rank'],
 }
 
-class ChatDetailModel {
-  final int userId;
-  final String chatId, nickname, content, createdAt, image;
-  final bool needCheck;
-  ChatDetailModel.fromJson(String chatId, DynamicMap json)
-      : chatId = chatId,
-        needCheck = json['needCheck'],
-        userId = json['userId'],
-        nickname = json['nickname'],
+class GroupChatModel {
+  final int chatId, userId, itemId;
+  final String content, createdAt;
+  final bool reviewed, hasImage;
+  GroupChatModel.fromJson(DynamicMap json)
+      : chatId = json['id'],
+        userId = json['user_id'],
+        itemId = json['item_id'],
         content = json['content'],
-        createdAt = json['createdAt'],
-        image = json['image'] ?? '';
+        createdAt = json['created_at'],
+        reviewed = json['reviewed'],
+        hasImage = json['has_img'];
 }

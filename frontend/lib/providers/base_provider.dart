@@ -108,6 +108,16 @@ class UrlClass extends DioClass {
   String _groupRankUrl(int groupId) => '${_groupDetailUrl(groupId)}rank/';
   String _getMembersUrl(int groupId) => '${_groupDetailUrl(groupId)}admin/';
 
+  //* chat & review
+  String _groupChatListUrl(int groupId) =>
+      '${_groupDetailUrl(groupId)}chat/list/';
+  String _groupChatCreateUrl(int groupId) =>
+      '${_groupDetailUrl(groupId)}chat/list/';
+  String _groupReviewCreateUrl(int groupId) =>
+      '${_groupDetailUrl(groupId)}review/create/';
+  String _groupReviewCheckUrl(int groupId) =>
+      '${_groupDetailUrl(groupId)}review/check/';
+
   //! bingo
   static const _bingoUrl = '/boards';
   //* CRUD
@@ -135,6 +145,10 @@ class UrlClass extends DioClass {
   String exitGroupUrl(int groupId) => _exitGroupUrl(groupId);
   String groupRankUrl(int groupId) => _groupRankUrl(groupId);
   String getMembersUrl(int groupId) => _getMembersUrl(groupId);
+  String groupChatListUrl(int groupId) => _groupChatListUrl(groupId);
+  String groupChatCreateUrl(int groupId) => _groupChatCreateUrl(groupId);
+  String groupReviewCreateUrl(int groupId) => _groupReviewCreateUrl(groupId);
+  String groupReviewCheckUrl(int groupId) => _groupReviewCheckUrl(groupId);
 
   //* bingo
   String get createBingoUrl => _createBingoUrl;
