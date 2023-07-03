@@ -53,6 +53,10 @@ class _InputPasswordState extends State<InputPassword> {
                 isPublic: false,
               ),
             ),
+            onCancelPressed: () {
+              toBack(context);
+              toBack(context);
+            },
           ),
         )();
       } else {

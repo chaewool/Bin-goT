@@ -1,4 +1,6 @@
+import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
@@ -11,7 +13,7 @@ import 'package:flutter/material.dart';
 
 class SearchGroup extends StatefulWidget {
   final int public, order, page, cnt, period;
-  final String? Function() getKeyword;
+  final String? query;
   const SearchGroup({
     super.key,
     required this.public,
@@ -19,7 +21,7 @@ class SearchGroup extends StatefulWidget {
     this.order = 0,
     required this.cnt,
     required this.period,
-    required this.getKeyword,
+    required this.query,
   });
 
   @override
@@ -30,7 +32,6 @@ class _SearchGroupState extends State<SearchGroup> {
   final StringList sortList = ['시작일 ▲', '시작일 ▼'];
   final StringList filterList = ['공개', '비공개', '전체'];
   late Future<MyGroupList> groups;
-  late String query;
   bool showSort = false;
   bool showFilter = false;
   int sortIdx = 0;
@@ -44,18 +45,15 @@ class _SearchGroupState extends State<SearchGroup> {
   void initState() {
     super.initState();
     print('''
-    keyword: ${widget.getKeyword()},
+    keyword: ${widget.query},
       public: ${widget.public},
       cnt: ${widget.cnt},
       page: ${widget.page},
       order: ${widget.order},
       period: ${widget.period},
 ''');
-    setState(() {
-      query = widget.getKeyword() ?? '';
-    });
     groups = GroupProvider().searchGroupList(
-      keyword: widget.getKeyword(),
+      keyword: widget.query,
       public: widget.public,
       cnt: widget.cnt,
       page: widget.page,
@@ -109,111 +107,115 @@ class _SearchGroupState extends State<SearchGroup> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: backgroundColor,
-      appBar: const MainBar(),
-      body: Stack(
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                fit: FlexFit.loose,
-                child: SearchBar(
-                  public: widget.public,
-                  period: widget.period,
+    return WillPopScope(
+      onWillPop: () {
+        toOtherPage(context, page: const Main())();
+        return Future.value(false);
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: backgroundColor,
+        appBar: const MainBar(),
+        body: Stack(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: SearchBar(
+                    public: widget.public,
+                    period: widget.period,
+                    query: widget.query,
+                  ),
                 ),
-              ),
-              Flexible(
-                fit: FlexFit.loose,
-                child: RowWithPadding(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  horizontal: 25,
-                  children: [
-                    // SizedBox()
-                    SelectBox(
-                      key: sortKey,
-                      onTap: changeShowSort,
-                      value: sortList[sortIdx],
-                      width: 120,
-                      height: 50,
-                    ),
-                    SelectBox(
-                      key: filterKey,
-                      onTap: changeShowFilter,
-                      value: filterList[filterIdx],
-                      width: 120,
-                      height: 50,
-                    ),
-                  ],
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: RowWithPadding(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    horizontal: 25,
+                    children: [
+                      // SizedBox()
+                      SelectBox(
+                        key: sortKey,
+                        onTap: changeShowSort,
+                        value: sortList[sortIdx],
+                        width: 120,
+                        height: 50,
+                      ),
+                      SelectBox(
+                        key: filterKey,
+                        onTap: changeShowFilter,
+                        value: filterList[filterIdx],
+                        width: 120,
+                        height: 50,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              FutureBuilder(
-                future: groups,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    var data = snapshot.data;
-                    if (data!.isNotEmpty) {
+                FutureBuilder(
+                  future: groups,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      var data = snapshot.data;
+                      if (data!.isNotEmpty) {
+                        return Expanded(child: myGroupList(data));
+                      }
                       return Flexible(
-                        fit: FlexFit.loose,
-                        child: myGroupList(data),
+                        // fit: FlexFit.loose,
+                        child: Column(
+                          children: const [
+                            CustomText(
+                              center: true,
+                              fontSize: FontSize.titleSize,
+                              content:
+                                  '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
+                              height: 1.5,
+                            ),
+                          ],
+                        ),
                       );
                     }
-                    return Flexible(
+                    return const Flexible(
                       fit: FlexFit.loose,
-                      child: Column(
-                        children: const [
-                          CustomText(
-                            center: true,
-                            fontSize: FontSize.titleSize,
-                            content:
-                                '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
-                            height: 1.5,
-                          ),
-                        ],
+                      child: Center(
+                        child: CircularProgressIndicator(),
                       ),
                     );
-                  }
-                  return const Flexible(
-                    fit: FlexFit.loose,
-                    child: Center(
-                      child: CircularProgressIndicator(),
+                  },
+                ),
+              ],
+            ),
+            showFilter
+                ? Padding(
+                    padding: EdgeInsets.fromLTRB(0, filterPosition!.dy, 0, 0),
+                    child: SelectBoxContainer(
+                      listItems: filterList,
+                      valueItems: List.generate(3, (i) => i),
+                      index: filterIdx,
+                      changeShowState: changeShowFilter,
+                      changeIdx: changeFilter,
+                      height: 120,
+                      mapKey: '',
                     ),
-                  );
-                },
-              ),
-            ],
-          ),
-          showFilter
-              ? Padding(
-                  padding: EdgeInsets.fromLTRB(0, filterPosition!.dy, 0, 0),
-                  child: SelectBoxContainer(
-                    listItems: filterList,
-                    valueItems: List.generate(3, (i) => i),
-                    index: filterIdx,
-                    changeShowState: changeShowFilter,
-                    changeIdx: changeFilter,
-                    height: 120,
-                    mapKey: '',
-                  ),
-                )
-              : const SizedBox(),
-          showSort
-              ? Padding(
-                  padding: EdgeInsets.fromLTRB(0, sortPosition!.dy, 0, 0),
-                  child: SelectBoxContainer(
-                    listItems: sortList,
-                    valueItems: List.generate(2, (i) => i),
-                    index: sortIdx,
-                    changeShowState: changeShowSort,
-                    changeIdx: changeSort,
-                    height: 80,
-                    mapKey: '',
-                  ),
-                )
-              : const SizedBox(),
-        ],
+                  )
+                : const SizedBox(),
+            showSort
+                ? Padding(
+                    padding: EdgeInsets.fromLTRB(0, sortPosition!.dy, 0, 0),
+                    child: SelectBoxContainer(
+                      listItems: sortList,
+                      valueItems: List.generate(2, (i) => i),
+                      index: sortIdx,
+                      changeShowState: changeShowSort,
+                      changeIdx: changeSort,
+                      height: 80,
+                      mapKey: '',
+                    ),
+                  )
+                : const SizedBox(),
+          ],
+        ),
       ),
     );
   }
@@ -223,12 +225,13 @@ class _SearchGroupState extends State<SearchGroup> {
       itemCount: data.length,
       itemBuilder: (context, index) {
         var group = data[index];
+        print(group);
         return GroupListItem(
           isSearchMode: true,
           groupInfo: group,
         );
       },
-      separatorBuilder: (context, index) => const SizedBox(height: 20),
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
     );
   }
 }

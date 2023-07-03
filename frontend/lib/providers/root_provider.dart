@@ -79,11 +79,15 @@ class NotiProvider extends ChangeNotifier {
   static bool _rankNoti = true;
   static bool _dueNoti = true;
   static bool _chatNoti = true;
+  static bool _completeNoti = true;
+  static bool _beforeExit = false;
 
   //* getter
   bool get rankNoti => _rankNoti;
   bool get dueNoti => _dueNoti;
   bool get chatNoti => _chatNoti;
+  bool get completeNoti => _completeNoti;
+  bool get beforeExit => _beforeExit;
 
   //* private
   FutureBool initNoti() async {
@@ -91,6 +95,7 @@ class NotiProvider extends ChangeNotifier {
     _setRank(prefs.getBool('rank') ?? true);
     _setDue(prefs.getBool('due') ?? true);
     _setChat(prefs.getBool('chat') ?? true);
+    _setChat(prefs.getBool('complete') ?? true);
     return Future.value(true);
   }
 
@@ -102,6 +107,20 @@ class NotiProvider extends ChangeNotifier {
   void _setRank(bool newVal) => _rankNoti = newVal;
   void _setDue(bool newVal) => _dueNoti = newVal;
   void _setChat(bool newVal) => _chatNoti = newVal;
+  void _setComplete(bool newVal) => _completeNoti = newVal;
+
+  FutureBool _changePressed() {
+    if (!_beforeExit) {
+      _beforeExit = true;
+      notifyListeners();
+      Future.delayed(const Duration(seconds: 2), () {
+        _beforeExit = false;
+        notifyListeners();
+      });
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
 
   //* public
   void setStoreRank(bool newRank) {
@@ -122,13 +141,22 @@ class NotiProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setStoreComplete(bool newComplete) {
+    _setComplete(newComplete);
+    _storeBool('complete', newComplete);
+    notifyListeners();
+  }
+
   void deleteVar() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
     _setChat(true);
     _setDue(true);
     _setRank(true);
+    _setComplete(true);
   }
+
+  FutureBool changePressed() => _changePressed();
 }
 
 //* group data

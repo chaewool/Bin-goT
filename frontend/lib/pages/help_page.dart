@@ -32,7 +32,7 @@ class Help extends StatelessWidget {
           context,
           title: '탈퇴 완료',
           content: '성공적으로 탈퇴되었습니다',
-          onPressed: () => toIntroPage(context),
+          onPressed: () => toOtherPageWithoutPath(context),
         )();
       });
     }

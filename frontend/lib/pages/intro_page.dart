@@ -8,6 +8,7 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class Intro extends StatefulWidget {
@@ -33,17 +34,24 @@ class _IntroState extends State<Intro> {
         rank: data['noti_rank'],
         due: data['noti_due'],
         chat: data['noti_chat'],
+        complete: data['noti_check'],
       );
       context.read<AuthProvider>().setStoreId(data['id']);
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
+        StringMap name = {'value': ''};
         showModal(context,
             page: InputModal(
               title: '닉네임 설정',
               type: '닉네임',
-              setValue: (value) {},
-              onPressed: () {},
+              setValue: (value) {
+                name['value'] = value;
+                print(name);
+              },
+              onPressed: () {
+                print('yes');
+              },
             ))();
       }
     } catch (error) {
@@ -73,31 +81,37 @@ class _IntroState extends State<Intro> {
     await context.read<NotiProvider>().initNoti();
   }
 
-  void afterFewSec(int sec, ReturnVoid changeVar) {
-    Future.delayed(Duration(seconds: sec), () {
+  void afterFewSec(int millisec, ReturnVoid changeVar) {
+    Future.delayed(Duration(milliseconds: millisec), () {
       setState(changeVar);
     });
+  }
+
+  Future<PermissionStatus> readPermission() async {
+    var result = await Permission.storage.request();
+    return result;
   }
 
   @override
   void initState() {
     super.initState();
-
-    afterFewSec(1, () {
+    afterFewSec(500, () {
       showLogo = true;
     });
-    afterFewSec(2, () {
+    afterFewSec(1000, () {
       showExplain = true;
     });
-    afterFewSec(3, () {
+    afterFewSec(1500, () {
       showTitle = true;
     });
     verifyToken();
     initNoti();
-    afterFewSec(4, () {
-      if (!showLoginBtn) {
-        toOtherPage(context, page: const Main())();
-      }
+    readPermission().then((_) {
+      afterFewSec(2000, () {
+        if (!showLoginBtn) {
+          toOtherPageWithoutPath(context, page: const Main());
+        }
+      });
     });
   }
 
@@ -108,7 +122,7 @@ class _IntroState extends State<Intro> {
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 100),
         child: SizedBox(
-          width: MediaQuery.of(context).size.width,
+          width: getWidth(context),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,12 +132,16 @@ class _IntroState extends State<Intro> {
                 children: [
                   showExplain
                       ? const CustomText(
-                          content: '당신을 채울', fontSize: FontSize.sloganSize)
+                          content: '당신을 채울',
+                          fontSize: FontSize.sloganSize,
+                        )
                       : const SizedBox(),
                   const SizedBox(height: 20),
                   showTitle
                       ? const CustomText(
-                          content: 'Bin:goT', fontSize: FontSize.sloganSize)
+                          content: 'Bin:goT',
+                          fontSize: FontSize.sloganSize,
+                        )
                       : const SizedBox(),
                 ],
               ),

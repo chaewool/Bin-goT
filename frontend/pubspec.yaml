@@ -48,6 +48,11 @@ dependencies:
   flutter_secure_storage : ^5.0.2
   provider: ^6.0.5
   shared_preferences: ^2.1.0
+  permission_handler: ^10.3.0
+  flutter_email_sender: ^5.2.0
+  device_info_plus: ^8.1.0
+  package_info_plus: ^3.0.3
+  http_parser: ^4.0.2
 
 
 dev_dependencies:

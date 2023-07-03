@@ -69,7 +69,7 @@ class CustomInput extends StatelessWidget {
               enabled: enabled,
               textAlign: TextAlign.start,
               textAlignVertical: TextAlignVertical.center,
-              onChanged: (value) => setValue(value),
+              onChanged: setValue,
               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
               textInputAction: TextInputAction.next,
               // focusNode: inputFocus,

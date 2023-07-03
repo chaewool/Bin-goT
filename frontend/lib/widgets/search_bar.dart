@@ -40,7 +40,7 @@ class _SearchBarState extends State<SearchBar> {
   late int periodIdx;
   late bool privateGroup, publicGroup;
   bool canShowMenu = false;
-  StringMap keyword = {'value': ''};
+  StringMap keyword = {};
   final periodBoxKey = GlobalKey();
   Offset? position;
 
@@ -50,6 +50,7 @@ class _SearchBarState extends State<SearchBar> {
     periodIdx = widget.period;
     privateGroup = widget.public % 2 == 0;
     publicGroup = widget.public < 2;
+    keyword['value'] = widget.query ?? '';
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getOffset();
     });
@@ -81,7 +82,7 @@ class _SearchBarState extends State<SearchBar> {
           public: result,
           cnt: 20,
           period: periodIdx,
-          getKeyword: () => keyword['value'],
+          query: keyword['value'],
         ),
       )();
     } else {
@@ -142,6 +143,8 @@ class _SearchBarState extends State<SearchBar> {
                 onChanged: (value) {
                   keyword['value'] = value;
                 },
+                onSubmitted: (_) => onSearchAction(),
+                textInputAction: TextInputAction.search,
                 controller: TextEditingController(text: keyword['value']),
               ),
               Row(

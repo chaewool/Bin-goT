@@ -35,6 +35,7 @@ class BingoProvider extends ApiProvider {
     try {
       final dioWithForm = dioWithToken();
       dioWithForm.options.contentType = 'multipart/form-data';
+      print(createBingoUrl);
       final response = await dioWithForm.post(createBingoUrl, data: bingoData);
       print(response);
       if (response.statusCode == 200) {

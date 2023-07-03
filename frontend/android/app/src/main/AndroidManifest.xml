@@ -1,5 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bin_got">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
    <application
         android:label="bin_got"
         android:name="${applicationName}"
@@ -49,6 +54,7 @@
                 <data android:host="kakaolink"
                     android:scheme="kakaoea92a1dc805d50e7c75555e658fa925e" />
             </intent-filter>
+            
         </activity>
 
 

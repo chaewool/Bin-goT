@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
-
 import 'package:bin_got/pages/bingo_detail_page.dart';
+import 'package:bin_got/pages/group_create_completed.dart';
 import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/group_provider.dart';
@@ -26,12 +26,14 @@ class BingoForm extends StatefulWidget {
   final int bingoSize;
   final int? bingoId;
   final bool needAuth, beforeJoin;
+  final FormData? formData;
   const BingoForm({
     super.key,
     this.bingoId,
     required this.bingoSize,
     required this.needAuth,
     this.beforeJoin = false,
+    this.formData,
   });
 
   @override
@@ -84,6 +86,7 @@ class _BingoFormState extends State<BingoForm> {
             content: '빙고칸 내부를 채워주세요',
           )();
         }
+        print('bingo data => $data');
         final bingoData = FormData.fromMap({
           'data': jsonEncode(data),
           'thumbnail': MultipartFile.fromBytes(
@@ -94,16 +97,7 @@ class _BingoFormState extends State<BingoForm> {
         });
 
         if (widget.bingoId == null) {
-          BingoProvider().createOwnBingo(bingoData).then((bingoId) async {
-            if (widget.beforeJoin) {
-              joinGroup();
-            }
-            if (!mounted) return;
-            toOtherPage(
-              context,
-              page: BingoDetail(bingoId: bingoId),
-            )();
-          });
+          widget.beforeJoin ? joinGroup(bingoData) : createGroup(bingoData);
         } else {
           print(widget.bingoId);
           BingoProvider().editOwnBingo(widget.bingoId!, bingoData).then((_) {
@@ -136,9 +130,25 @@ class _BingoFormState extends State<BingoForm> {
     return true;
   }
 
-  void joinGroup() async {
+  void createGroup(FormData bingoData) {
+    GroupProvider().createOwnGroup(widget.formData!).then((groupId) {
+      toOtherPage(
+        context,
+        page: GroupCreateCompleted(
+          groupId: groupId,
+          password: '',
+        ),
+      )();
+    });
+  }
+
+  void joinGroup(FormData bingoData) async {
     try {
-      GroupProvider().joinGroup(getGroupId(context)!).then((_) {
+      final groupId = getGroupId(context)!;
+      GroupProvider().joinGroup(groupId).then((data) {
+        print('그룹 가입 성공 => $data');
+        print('form data : $bingoData');
+        print('빙고 생성 성공');
         if (widget.needAuth == true) {
           toBack(context);
           showAlert(
@@ -151,7 +161,7 @@ class _BingoFormState extends State<BingoForm> {
           toOtherPage(
             context,
             page: GroupMain(
-              groupId: getGroupId(context)!,
+              groupId: groupId,
               isPublic: true,
             ),
           );
@@ -162,8 +172,17 @@ class _BingoFormState extends State<BingoForm> {
             hasCancel: false,
           )();
         }
+      }).catchError((e) {
+        print('catch error : $e');
+        showAlert(
+          context,
+          title: '가입 오류',
+          content: '오류가 발생해 가입이 되지 않았습니다.',
+          hasCancel: false,
+        )();
       });
     } catch (error) {
+      print('error : $error');
       showAlert(
         context,
         title: '가입 오류',

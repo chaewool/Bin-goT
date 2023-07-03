@@ -1,4 +1,5 @@
 //* 그룹 관리 페이지
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -19,7 +20,7 @@ class GroupAdmin extends StatelessWidget {
         groupId: groupId,
       ),
       body: CustomBoxContainer(
-        height: MediaQuery.of(context).size.height,
+        height: getHeight(context),
         child: GroupAdminTabBar(
           groupId: groupId,
         ),

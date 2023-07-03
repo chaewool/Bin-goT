@@ -101,10 +101,10 @@ ReturnVoid toOtherPage(BuildContext context, {required Widget page}) {
 }
 
 //* 인트로 페이지 이동 (기록 X)
-Future<bool?> toIntroPage(BuildContext context) {
+Future<bool?> toOtherPageWithoutPath(BuildContext context, {Widget? page}) {
   return Navigator.pushAndRemoveUntil(
     context,
-    MaterialPageRoute(builder: (context) => const Intro()),
+    MaterialPageRoute(builder: (context) => page ?? const Intro()),
     (router) => false,
   );
 }
@@ -166,11 +166,25 @@ void setNoti(
   required bool rank,
   required bool due,
   required bool chat,
+  required bool complete,
 }) {
   context.read<NotiProvider>().setStoreRank(rank);
   context.read<NotiProvider>().setStoreDue(due);
   context.read<NotiProvider>().setStoreChat(chat);
+  context.read<NotiProvider>().setStoreComplete(complete);
 }
+
+//* size
+double getWidth(BuildContext context) => MediaQuery.of(context).size.width;
+double getHeight(BuildContext context) => MediaQuery.of(context).size.height;
+
+//* exit app
+FutureBool exitApp(BuildContext context) =>
+    context.read<NotiProvider>().changePressed();
+
+//* 뒤로 가기 버튼 눌림 여부
+bool watchPressed(BuildContext context) =>
+    context.watch<NotiProvider>().beforeExit;
 
 //* group data
 int? getGroupId(BuildContext context) =>
