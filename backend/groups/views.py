@@ -10,7 +10,6 @@ from commons import upload_image, delete_image, RedisRanker, RedisChat, get_bool
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer
 from .models import Group, Participate
 from boards.models import Board, BoardItem
-from accounts.models import Badge, Achieve
 from accounts.serializers import GroupSerializer
 
 
@@ -331,6 +330,9 @@ class GroupResignView(APIView):
             return Response(data={'message': '그룹장은 탈퇴할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         participate.delete()
+        
+        board = Board.objects.filter(group=group, user=user)
+        board.delete()
         
         if len(Participate.objects.filter(group=group)) < 1:
             url = 'groups' + '/' + str(group.id)
