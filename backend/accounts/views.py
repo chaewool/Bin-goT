@@ -167,7 +167,7 @@ class BadgeUpdateView(APIView):
         badge = Badge.objects.get(id=badge_id)
         
         if Achieve.objects.filter(user=user, badge=badge).exists():
-            user.profile = badge_id
+            user.badge = badge_id
             user.save()
             
             return Response(data={}, status=status.HTTP_200_OK)
