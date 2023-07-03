@@ -88,15 +88,15 @@ class GroupCreateView(APIView):
             return Response(data={'message': '비공개 그룹은 비밀번호를 설정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if 271 <= period <= 365:
-            period = 4
+            period = 5
         elif 181 <= period:
-            period = 3
+            period = 4
         elif 91 <= period:
-            period = 2
+            period = 3
         elif 31 <= period:
-            period = 1
+            period = 2
         else:
-            period = 0
+            period = 1
         
         serializer = GroupCreateSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
