@@ -1,3 +1,4 @@
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -10,7 +11,12 @@ import 'package:bin_got/widgets/list.dart';
 import 'package:flutter/material.dart';
 
 class GroupChat extends StatefulWidget {
-  const GroupChat({super.key});
+  final int page, groupId;
+  const GroupChat({
+    super.key,
+    required this.page,
+    required this.groupId,
+  });
 
   @override
   State<GroupChat> createState() => _GroupChatState();
@@ -18,6 +24,15 @@ class GroupChat extends StatefulWidget {
 
 class _GroupChatState extends State<GroupChat> {
   late Future<GroupChatList> chats;
+
+  @override
+  void initState() {
+    super.initState();
+    chats = GroupProvider().readGroupChatList(
+      widget.groupId,
+      widget.page,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,41 +43,38 @@ class _GroupChatState extends State<GroupChat> {
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                  reverse: true,
-                  child: FutureBuilder(
-                      future: chats,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          var data = snapshot.data;
-                          if (data!.isNotEmpty) {
-                            return Flexible(
-                              fit: FlexFit.loose,
-                              child: groupChatList(data),
-                            );
-                          }
+                child: FutureBuilder(
+                    future: chats,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        var data = snapshot.data;
+                        if (data!.isNotEmpty) {
                           return Flexible(
                             fit: FlexFit.loose,
-                            child: Column(
-                              children: const [
-                                CustomText(
-                                  center: true,
-                                  fontSize: FontSize.titleSize,
-                                  content: '채팅 기록이 없습니다.',
-                                  height: 1.5,
-                                ),
-                              ],
-                            ),
+                            child: groupChatList(data),
                           );
                         }
-                        return const Flexible(
+                        return Flexible(
                           fit: FlexFit.loose,
-                          child: Center(
-                            child: CircularProgressIndicator(),
+                          child: Column(
+                            children: const [
+                              CustomText(
+                                center: true,
+                                fontSize: FontSize.titleSize,
+                                content: '채팅 기록이 없습니다.',
+                                height: 1.5,
+                              ),
+                            ],
                           ),
                         );
-                      })),
-            ),
+                      }
+                      return const Flexible(
+                        fit: FlexFit.loose,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    })),
             const GroupChatBottomBar()
           ],
         ),

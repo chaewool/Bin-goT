@@ -203,7 +203,6 @@ class GroupProvider extends ApiProvider {
           'page': page,
         },
       );
-      print('response: $response');
       switch (response.statusCode) {
         case 200:
           final data = response.data;

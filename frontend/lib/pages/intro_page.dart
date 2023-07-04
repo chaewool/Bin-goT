@@ -97,7 +97,11 @@ class _IntroState extends State<Intro> {
     initNoti();
     afterFewSec(4, () {
       if (!showLoginBtn) {
-        toOtherPage(context, page: const GroupChat())();
+        toOtherPage(context,
+            page: const GroupChat(
+              page: 1,
+              groupId: 2,
+            ))();
       }
     });
   }
