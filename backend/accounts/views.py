@@ -217,9 +217,9 @@ class MainGroupsView(APIView):
                 groups = [group for group in groups if group['status'] == '완료']
             
             if order == '0':
-                groups.sort(key=lambda x: x['end'], reverse=True)
+                groups.sort(key=lambda x: (x['end'], x['start']), reverse=True)
             else:
-                groups.sort(key=lambda x: x['end'])
+                groups.sort(key=lambda x: (x['end'], x['start']))
             
             groups = groups[10 * (page - 1):10 * page]
 
@@ -245,9 +245,7 @@ class MainBoardsView(APIView):
         filter = request.GET.get('filter')
         page = int(request.GET.get('page'))
 
-        groups = [board.group for board in user.boards.all()]
-
-        boards = BoardSerializer(groups, many=True).data
+        boards = BoardSerializer(user.boards.all(), many=True).data
 
         if filter == '1':
             boards = [board for board in boards if board['status'] == '진행 중']
@@ -255,9 +253,9 @@ class MainBoardsView(APIView):
             boards = [board for board in boards if board['status'] == '완료']
         
         if order == '0':
-            boards.sort(key=lambda x: x['end'], reverse=True)
+            boards.sort(key=lambda x: (x['end'], x['start']), reverse=True)
         else:
-            boards.sort(key=lambda x: x['end'])
+            boards.sort(key=lambda x: (x['end'], x['start']))
         
         boards = boards[10 * (page - 1):10 * page]
         
