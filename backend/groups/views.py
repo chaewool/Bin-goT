@@ -529,7 +529,7 @@ class GroupAdminView(APIView):
 class GroupSearchView(APIView):
     def get(self, request):
         user = request.user
-        period = request.GET.get('period')
+        period = int(request.GET.get('period'))
         keyword = request.GET.get('keyword')
         order = request.GET.get('order')
         public = request.GET.get('public')
