@@ -171,7 +171,7 @@ class ChatListItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          CustomText(content: data.userId.toString()),
+          CustomText(content: data.username),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
