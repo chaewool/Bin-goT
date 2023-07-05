@@ -70,7 +70,7 @@ class GroupCreateView(APIView):
                     break
             Participate.objects.create(user=user, group=group, is_banned=0, rand_name=rand_name)
         else:
-            Participate.objects.create(user=user, group=group, is_banned=0)
+            Participate.objects.create(user=user, group=group, is_banned=0, rand_name=user.username)
         
         user.cnt_groups += 1
         user.save()
@@ -199,7 +199,7 @@ class GroupJoinView(APIView):
                 
                 check_cnt_groups(user)
             else:
-                Participate.objects.create(user=user, group=group, is_banned=1)
+                Participate.objects.create(user=user, group=group, is_banned=1, rand_name=user.username)
                 send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.')
             
             createBoard(request, group)
@@ -336,7 +336,7 @@ class GroupChatCreateView(APIView):
         
         chat = {
             'user_id': user.id,
-            'username': participate[0]['rand_name'],
+            'username': participate[0].rand_name,
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
@@ -386,7 +386,7 @@ class GroupReviewCreateView(APIView):
         
         chat = {
             'user_id': user.id,
-            'username': participate[0]['rand_name'],
+            'username': participate[0].rand_name,
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
