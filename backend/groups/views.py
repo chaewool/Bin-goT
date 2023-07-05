@@ -6,62 +6,15 @@ from datetime import datetime, date
 import json
 import logging
 
-from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm, send_badge_notification
+from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer
 from .models import Group, Participate
+from .utils import check_cnt_groups, check_cnt_boarditems_complete, createBoard
 from boards.models import Board, BoardItem
 from accounts.serializers import GroupSerializer
 
 
 logger = logging.getLogger('accounts')
-
-
-def check_cnt_groups(user):
-    if user.cnt_groups == 1:
-        send_badge_notification(user, 2)
-    elif user.cnt_groups == 3:
-        send_badge_notification(user, 3)
-    elif user.cnt_groups == 5:
-        send_badge_notification(user, 4)
-
-
-def check_cnt_boarditems_complete(user, group, board_item):
-    board_item.finish = True
-    board_item.save()
-    
-    ranker = RedisRanker(group.id)
-    ranker.plusOne(user.id)
-    
-    user.cnt_boarditems_complete += 1
-    user.save()
-                
-    if user.cnt_boarditems_complete == 1:
-        send_badge_notification(user, 8)
-    elif user.cnt_boarditems_complete == 10:
-        send_badge_notification(user, 9)
-    elif user.cnt_boarditems_complete == 100:
-        send_badge_notification(user, 10)
-    
-    board = Board.objects.get(user=user, group=group)
-    
-    cnt = 0
-    for item in board.items:
-        if item.finished:
-            cnt += 1
-    
-    if cnt == board.size ** 2:
-        board.finished = True
-        board.save()
-        
-        user.cnt_boards_complete += 1
-        user.save()
-              
-        if user.cnt_boards_complete == 1:
-            send_badge_notification(user, 11)
-        elif user.cnt_boards_complete == 10:
-            send_badge_notification(user, 12)
-        elif user.cnt_boards_complete == 100:
-            send_badge_notification(user, 13)
 
 
 class GroupCreateView(APIView):
@@ -123,6 +76,8 @@ class GroupCreateView(APIView):
         user.save()
         
         check_cnt_groups(user)
+
+        createBoard(request, group)
         
         return Response(data={'group_id': group.id}, status=status.HTTP_200_OK)
 
@@ -246,6 +201,8 @@ class GroupJoinView(APIView):
             else:
                 Participate.objects.create(user=user, group=group, is_banned=1)
                 send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.')
+            
+            createBoard(request, group)
                 
             return Response(data={}, status=status.HTTP_200_OK)
         

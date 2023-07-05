@@ -5,61 +5,13 @@ from datetime import date
 import json
 import logging
 
-from commons import upload_image, send_badge_notification
+from commons import upload_image
 from .models import Board
-from groups.models import Group, Participate
+from groups.models import Participate
 from .serializers import BoardCreateSerializer, BoardItemCreateSerializer, BoardDetailSerializer
 
 
 logger = logging.getLogger('accounts')
-
-
-def check_cnt_boards(user):
-    if user.cnt_boards == 1:
-        send_badge_notification(user, 5)
-    elif user.cnt_boards == 3:
-        send_badge_notification(user, 6)
-    elif user.cnt_boards == 5:
-        send_badge_notification(user, 7)
-
-
-class BoardCreateView(APIView):
-    def post(self, request):
-        user = request.user
-        thumbnail = request.FILES.get('thumbnail')
-        data = json.loads(request.data.get('data'))
-        group = Group.objects.get(id=data.get('group_id'))
-        
-        if not Participate.objects.filter(user=user, group=group).exists():
-            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if date.today() >= group.start:
-            return Response(data={'message': '시작일이 경과하여 생성할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if Board.objects.filter(user=user, group=group).exists():
-            return Response(data={'message': '이미 해당 그룹에서 빙고를 생성했습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-        items = data['items']
-        if len(items) < group.size ** 2:
-            return Response(data={'message': '항목의 개수가 부족합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        board_serializer = BoardCreateSerializer(data=data)
-        boarditem_serializer = BoardItemCreateSerializer(data=items, many=True)
-        
-        if board_serializer.is_valid(raise_exception=True) and boarditem_serializer.is_valid(raise_exception=True):
-            board = board_serializer.save(user=user, group=group)
-            
-            url = 'boards' + '/' + str(board.id)
-            upload_image(url, thumbnail)
-            
-            boarditem_serializer.save(board=board)
-            
-            user.cnt_boards += 1
-            user.save()
-            
-            check_cnt_boards(user)
-        
-            return Response(data={'board_id': board.id}, status=status.HTTP_200_OK)
     
 
 class BoardDetailView(APIView):
