@@ -458,15 +458,11 @@ class _MyTabBarState extends State<MyTabBar> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Flexible(
-                child: BingoGallery(
-                  bingo: bingos[index * 2],
-                ),
+                child: BingoGallery(bingo: bingos[index * 2]),
               ),
               Flexible(
                 child: index != quot || remain == 0
-                    ? BingoGallery(
-                        bingo: bingos[index * 2 + 1],
-                      )
+                    ? BingoGallery(bingo: bingos[index * 2 + 1])
                     : const SizedBox(),
               )
             ],
@@ -484,6 +480,7 @@ class _MyTabBarState extends State<MyTabBar> {
             return GroupListItem(
               isSearchMode: isSearchMode,
               groupInfo: group,
+              public: true,
             );
           });
     }

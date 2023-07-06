@@ -8,7 +8,6 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class Intro extends StatefulWidget {
@@ -40,19 +39,7 @@ class _IntroState extends State<Intro> {
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
-        StringMap name = {'value': ''};
-        showModal(context,
-            page: InputModal(
-              title: '닉네임 설정',
-              type: '닉네임',
-              setValue: (value) {
-                name['value'] = value;
-                print(name);
-              },
-              onPressed: () {
-                print('yes');
-              },
-            ))();
+        showModal(context, page: const ChangeNameModal())();
       }
     } catch (error) {
       showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
@@ -87,11 +74,6 @@ class _IntroState extends State<Intro> {
     });
   }
 
-  Future<PermissionStatus> readPermission() async {
-    var result = await Permission.storage.request();
-    return result;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -106,12 +88,10 @@ class _IntroState extends State<Intro> {
     });
     verifyToken();
     initNoti();
-    readPermission().then((_) {
-      afterFewSec(2000, () {
-        if (!showLoginBtn) {
-          toOtherPageWithoutPath(context, page: const Main());
-        }
-      });
+    afterFewSec(2000, () {
+      if (!showLoginBtn) {
+        toOtherPageWithoutPath(context, page: const Main());
+      }
     });
   }
 

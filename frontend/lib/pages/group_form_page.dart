@@ -100,9 +100,15 @@ class _GroupFormState extends State<GroupForm> {
       showAlert(context,
           title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
     } else if (widget.groupId == null) {
-      toOtherPage(context,
-          page: BingoForm(
-              bingoSize: groupData['size'], needAuth: groupData['need_auth']));
+      print(groupData['size']);
+      toOtherPage(
+        context,
+        page: BingoForm(
+          beforeData: groupData,
+          bingoSize: groupData['size'],
+          needAuth: groupData['need_auth'],
+        ),
+      )();
       // GroupProvider()
       //     .createOwnGroup(FormData.fromMap({
       //   'data': jsonEncode(groupData),
@@ -138,35 +144,30 @@ class _GroupFormState extends State<GroupForm> {
   }
 
   void imagePicker() async {
-    print('permission : ${await Permission.storage.isDenied}');
-    if (await Permission.storage.isDenied) {
-      var result = await Permission.storage.request();
-      print('result : $result');
-      // Permission.storage.request().then((_) async {
-      //   print('request');
-      //   if (await Permission.storage.isGranted) {
-      //     final ImagePicker picker = ImagePicker();
-      //     final localImage = await picker.pickImage(
-      //       source: ImageSource.gallery,
-      //       imageQuality: 50,
-      //     );
-      //     setState(() {
-      //       selectedImage = localImage;
-      //       isImageUpdated = true;
-      //     });
-      //   }
-      // });
-    } else {
-      final ImagePicker picker = ImagePicker();
-      final localImage = await picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 50,
-      );
-      setState(() {
-        selectedImage = localImage;
-        isImageUpdated = true;
-      });
-    }
+    Permission.storage.request().then((value) {
+      if (value == PermissionStatus.denied ||
+          value == PermissionStatus.permanentlyDenied) {
+        showAlert(
+          context,
+          title: '미디어 접근 권한 거부',
+          content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 허용해주세요',
+          hasCancel: false,
+        )();
+      } else {
+        final ImagePicker picker = ImagePicker();
+        picker
+            .pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 50,
+        )
+            .then((localImage) {
+          setState(() {
+            selectedImage = localImage;
+            isImageUpdated = true;
+          });
+        });
+      }
+    });
   }
 
   void deleteImage() {

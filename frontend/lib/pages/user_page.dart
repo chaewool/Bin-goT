@@ -8,7 +8,6 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
-import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -29,11 +28,10 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  late bool isEditMode;
   String username = '';
   StringMap newName = {'value': ''};
   int badgeId = 0;
-  bool applyNoti = false;
+  bool canEditNoti = false;
 
   StringList notificationList = [
     '진행률/랭킹 알림',
@@ -48,16 +46,16 @@ class _MyPageState extends State<MyPage> {
     ['ON', 'OFF']
   ];
   List optionList = [];
+  List initialOption = [];
 
-  void changeEditMode() {
-    print('pressed');
+  void changeNoti(bool newVal) {
     setState(() {
-      isEditMode = !isEditMode;
+      canEditNoti = newVal;
     });
   }
 
   void changeIdx(int i) {
-    if (applyNoti) {
+    if (canEditNoti) {
       setState(() {
         optionList[i] = !optionList[i];
       });
@@ -75,20 +73,24 @@ class _MyPageState extends State<MyPage> {
     // }
   }
 
-  void changeNoti() {
+  void cancelChange() {
+    optionList = List.from(initialOption);
+    changeNoti(false);
+  }
+
+  void applyNoti() {
     UserInfoProvider().changeNoti({
       'noti_rank': optionList[0],
       'noti_chat': optionList[1],
       'noti_due': optionList[2],
       'noti_check': optionList[3],
     }).then((_) {
-      setState(() {
-        applyNoti = false;
-      });
+      changeNoti(false);
       context.read<NotiProvider>().setStoreRank(optionList[0]);
       context.read<NotiProvider>().setStoreDue(optionList[1]);
       context.read<NotiProvider>().setStoreChat(optionList[2]);
       context.read<NotiProvider>().setStoreComplete(optionList[3]);
+      initialOption = List.from(optionList);
     });
   }
 
@@ -96,27 +98,6 @@ class _MyPageState extends State<MyPage> {
     context.read<AuthProvider>().deleteVar();
     context.read<NotiProvider>().deleteVar();
     toOtherPageWithoutPath(context);
-  }
-
-  void changeName() {
-    final newVal = newName['value'];
-    if (newVal == null || newVal.trim() == '') {
-      showAlert(context, title: '닉네임 오류', content: '올바른 닉네임을 입력해주세요')();
-    } else if (username != newVal) {
-      UserInfoProvider().changeName(newVal).then((_) {
-        showAlert(context, title: '닉네임 변경 완료', content: '닉네임이 변경되었습니다.')();
-        changeEditMode();
-        setState(() {
-          username = newVal;
-        });
-      });
-    } else {
-      showAlert(context, title: '닉네임 오류', content: '닉네임이 변경되지 않았습니다')();
-    }
-  }
-
-  void setName(String newVal) {
-    newName['value'] = newVal.trim();
   }
 
   @override
@@ -129,11 +110,11 @@ class _MyPageState extends State<MyPage> {
         badgeId = data.badgeId;
       });
     });
-    isEditMode = false;
     optionList.add(context.read<NotiProvider>().rankNoti);
     optionList.add(context.read<NotiProvider>().dueNoti);
     optionList.add(context.read<NotiProvider>().chatNoti);
     optionList.add(context.read<NotiProvider>().completeNoti);
+    initialOption = List.from(optionList);
   }
 
   //* 문의하기
@@ -224,35 +205,55 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    const CustomText(content: '알림 설정'),
-                    applyNoti
-                        ? Row(
-                            children: [
-                              CustomButton(
-                                content: '적용',
-                                onPressed: changeNoti,
-                              ),
-                              CustomButton(
-                                content: '취소',
-                                onPressed: () {
-                                  setState(() {
-                                    applyNoti = false;
-                                  });
-                                },
-                              ),
-                            ],
-                          )
-                        : CustomButton(
-                            content: '수정',
-                            onPressed: () {
-                              setState(() {
-                                applyNoti = true;
-                              });
-                            },
-                          ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 60),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const CustomText(content: '알림 설정'),
+                      canEditNoti
+                          ? Row(
+                              children: [
+                                IconButtonInRow(
+                                  icon: confirmIcon,
+                                  color: greenColor,
+                                  onPressed: applyNoti,
+                                ),
+                                IconButtonInRow(
+                                  icon: closeIcon,
+                                  color: redColor,
+                                  onPressed: cancelChange,
+                                ),
+
+                                // CustomButton(
+                                //   content: '적용',
+                                //   onPressed: changeNoti,
+                                // ),
+                                // CustomButton(
+                                //   content: '취소',
+                                //   onPressed: () {
+                                //     setState(() {
+                                //       applyNoti = false;
+                                //     });
+                                //   },
+                                // ),
+                              ],
+                            )
+                          : IconButtonInRow(
+                              onPressed: () => changeNoti(true),
+                              icon: editIcon,
+                              size: 25,
+                            ),
+                      // CustomButton(
+                      //     content: '수정',
+                      //     onPressed: () {
+                      //       setState(() {
+                      //         applyNoti = true;
+                      //       });
+                      //     },
+                      //   ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 15),
                 for (int i = 0; i < 4; i += 1)
@@ -355,56 +356,61 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
           ),
         ),
         Flexible(
-          flex: 5,
+          flex: 4,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: isEditMode
-                ? [
-                    Flexible(
-                      flex: 11,
-                      child: Center(
-                        child: CustomInput(
-                          height: 35,
-                          initialValue: newName['value'],
-                          setValue: setName,
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 3,
-                      child: IconButtonInRow(
-                        icon: confirmIcon,
-                        color: greenColor,
-                        onPressed: changeName,
-                      ),
-                    ),
-                    Flexible(
-                      flex: 3,
-                      child: IconButtonInRow(
-                        icon: closeIcon,
-                        color: redColor,
-                        onPressed: changeEditMode,
-                      ),
-                    ),
-                  ]
-                : [
-                    Flexible(
-                      flex: 6,
-                      child: Center(
-                        child: CustomText(
-                          content: username,
-                          fontSize: FontSize.titleSize,
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: IconButtonInRow(
-                        onPressed: changeEditMode,
-                        icon: editIcon,
-                      ),
-                    ),
-                  ],
+            children:
+                // isEditMode
+                //     ? [
+                //         Flexible(
+                //           flex: 11,
+                //           child: Center(
+                //             child: CustomInput(
+                //               height: 35,
+                //               initialValue: newName['value'],
+                //               setValue: setName,
+                //             ),
+                //           ),
+                //         ),
+                //         Flexible(
+                //           flex: 3,
+                //           child: IconButtonInRow(
+                //             icon: confirmIcon,
+                //             color: greenColor,
+                //             onPressed: changeName,
+                //           ),
+                //         ),
+                //         Flexible(
+                //           flex: 3,
+                //           child: IconButtonInRow(
+                //             icon: closeIcon,
+                //             color: redColor,
+                //             onPressed: changeEditMode,
+                //           ),
+                //         ),
+                //       ]
+                //     :
+                [
+              Flexible(
+                flex: 5,
+                child: Center(
+                  child: CustomText(
+                    content: username,
+                    fontSize: FontSize.titleSize,
+                  ),
+                ),
+              ),
+              Flexible(
+                flex: 2,
+                child: IconButtonInRow(
+                  onPressed: showModal(
+                    context,
+                    page: const ChangeNameModal(),
+                  ),
+                  icon: editIcon,
+                ),
+              ),
+            ],
           ),
         ),
       ],

@@ -51,6 +51,7 @@ class UserInfoProvider extends ApiProvider {
   }
 
   FutureBool _changeNoti(DynamicMap data) async {
+    print('noti url : $notiUrl, data : $data');
     await updateApi(notiUrl, data: data);
     return Future.value(true);
   }

@@ -332,7 +332,8 @@ class GlobalBingoProvider extends ChangeNotifier {
   void _initItems(int cnt) {
     _data['items'] = List.generate(
       cnt,
-      (_) => {
+      (index) => {
+        'item_id': index,
         'title': null,
         'content': null,
         'check': false,

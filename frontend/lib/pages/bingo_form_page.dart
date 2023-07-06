@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/pages/group_create_completed.dart';
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -26,14 +26,16 @@ class BingoForm extends StatefulWidget {
   final int bingoSize;
   final int? bingoId;
   final bool needAuth, beforeJoin;
-  final FormData? formData;
+  final DynamicMap? beforeData;
+  final MultipartFile? groupImg;
   const BingoForm({
     super.key,
     this.bingoId,
     required this.bingoSize,
     required this.needAuth,
     this.beforeJoin = false,
-    this.formData,
+    this.beforeData,
+    this.groupImg,
   });
 
   @override
@@ -49,8 +51,11 @@ class _BingoFormState extends State<BingoForm> {
   @override
   void initState() {
     super.initState();
-    size = getBingoSize(context);
-    setOption(context, 'group_id', getGroupId(context)!);
+    size = widget.bingoSize;
+    // ?? getBingoSize(context);
+    // if (getGroupId(context) != null) {
+    //   setOption(context, 'group_id', getGroupId(context));
+    // }
     if (getItems(context).isEmpty) {
       context.read<GlobalBingoProvider>().initItems(size * size);
     }
@@ -87,18 +92,18 @@ class _BingoFormState extends State<BingoForm> {
           )();
         }
         print('bingo data => $data');
-        final bingoData = FormData.fromMap({
-          'data': jsonEncode(data),
-          'thumbnail': MultipartFile.fromBytes(
-            thumbnail!,
-            filename: 'thumbnail.png',
-            contentType: MediaType('image', 'png'),
-          ),
-        });
 
         if (widget.bingoId == null) {
-          widget.beforeJoin ? joinGroup(bingoData) : createGroup(bingoData);
+          widget.beforeJoin ? joinGroup(data) : createGroup(data);
         } else {
+          final bingoData = FormData.fromMap({
+            'data': jsonEncode(data),
+            'thumbnail': MultipartFile.fromBytes(
+              thumbnail!,
+              filename: 'thumbnail.png',
+              contentType: MediaType('image', 'png'),
+            ),
+          });
           print(widget.bingoId);
           BingoProvider().editOwnBingo(widget.bingoId!, bingoData).then((_) {
             toOtherPage(
@@ -130,8 +135,17 @@ class _BingoFormState extends State<BingoForm> {
     return true;
   }
 
-  void createGroup(FormData bingoData) {
-    GroupProvider().createOwnGroup(widget.formData!).then((groupId) {
+  void createGroup(DynamicMap bingoData) {
+    final formData = FormData.fromMap({
+      'data': jsonEncode(widget.beforeData),
+      'board_data': jsonEncode(bingoData),
+      'thumbnail': MultipartFile.fromBytes(
+        thumbnail!,
+        filename: 'thumbnail.png',
+        contentType: MediaType('image', 'png'),
+      ),
+    });
+    GroupProvider().createOwnGroup(formData).then((groupId) {
       toOtherPage(
         context,
         page: GroupCreateCompleted(
@@ -142,10 +156,19 @@ class _BingoFormState extends State<BingoForm> {
     });
   }
 
-  void joinGroup(FormData bingoData) async {
+  void joinGroup(DynamicMap bingoData) async {
     try {
       final groupId = getGroupId(context)!;
-      GroupProvider().joinGroup(groupId).then((data) {
+      print('data => $bingoData');
+      final formData = FormData.fromMap({
+        'board_data': jsonEncode(bingoData),
+        'thumbnail': MultipartFile.fromBytes(
+          thumbnail!,
+          filename: 'thumbnail.png',
+          contentType: MediaType('image', 'png'),
+        ),
+      });
+      GroupProvider().joinGroup(groupId, formData).then((data) {
         print('그룹 가입 성공 => $data');
         print('form data : $bingoData');
         print('빙고 생성 성공');
@@ -158,18 +181,15 @@ class _BingoFormState extends State<BingoForm> {
             hasCancel: false,
           )();
         } else {
-          toOtherPage(
-            context,
-            page: GroupMain(
-              groupId: groupId,
-              isPublic: true,
-            ),
-          );
           showAlert(
             context,
             title: '가입 완료',
             content: '성공적으로 가입되었습니다.',
             hasCancel: false,
+            onPressed: toOtherPage(
+              context,
+              page: InputPassword(isPublic: true, groupId: groupId),
+            ),
           )();
         }
       }).catchError((e) {
@@ -215,8 +235,9 @@ class _BingoFormState extends State<BingoForm> {
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               child: RepaintBoundary(
                 key: globalKey,
-                child: const BingoBoard(
+                child: BingoBoard(
                   isDetail: false,
+                  bingoSize: size,
                 ),
               ),
             ),

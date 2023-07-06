@@ -2,11 +2,8 @@ import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/pages/bingo_detail_page.dart';
 import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/pages/group_rank_page.dart';
-import 'package:bin_got/providers/group_provider.dart';
-import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -15,17 +12,14 @@ import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
 
 class GroupMain extends StatefulWidget {
   final int groupId;
-  final bool isPublic;
-  final String password;
+  final GroupDetailModel data;
   const GroupMain({
     super.key,
     required this.groupId,
-    required this.isPublic,
-    this.password = '',
+    required this.data,
   });
 
   @override
@@ -33,62 +27,17 @@ class GroupMain extends StatefulWidget {
 }
 
 class _GroupMainState extends State<GroupMain> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     if (getToken(context) != null) {
-  //       verifyToken();
-  //     } else {
-  //       showModal(context,
-  //           page: const CustomAlert(title: '로그인 확인', content: '로그인이 필요합니다'))();
-  //     }
-  //     if (!widget.isPublic) {
-  //       showModal(context, page: const InputModal(title: '비밀번호 입력'))()
-  //           .then((_) {
-  //         print(_);
-  //         setState(() {
-  //           groupData = GroupProvider().readGroupDetail(
-  //             widget.groupId,
-  //             password['value']!,
-  //           );
-  //         });
-  //       });
-  //     }
-  //     setState(() {
-  // groupData = GroupProvider().readGroupDetail(
-  //   widget.groupId,
-  //   widget.password,
-  // );
-  //     });
-  //   });
-  // }
-
-  int memberState = 0;
-  int size = 3;
-  bool needAuth = true;
-  StringMap password = {'value': ''};
-
-  // void verifyToken() async {
-  //   try {
-  //     await context.read<AuthProvider>().initVar();
-  //     final result = await UserProvider().confirmToken();
-  //     if (result.isNotEmpty) {
-  //       if (!mounted) return;
-  //       setToken(context, result['token']);
-  //     } else {
-  //       if (!mounted) return;
-  //       throw Error();
-  //     }
-  //   } catch (error) {
-  //     showModal(context,
-  //         page: const CustomAlert(
-  //           title: '로그인 확인',
-  //           content: '로그인이 필요합니다',
-  //         ))();
-  //     return;
-  //   }
-  // }
+  late int memberState, size;
+  late int? bingoId;
+  late bool needAuth;
+  @override
+  void initState() {
+    super.initState();
+    memberState = widget.data.memberState;
+    size = widget.data.bingoSize;
+    needAuth = widget.data.needAuth;
+    bingoId = widget.data.bingoId;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,79 +57,41 @@ class _GroupMainState extends State<GroupMain> {
           ),
         ),
         body: SingleChildScrollView(
-            child: FutureBuilder(
-          future: GroupProvider().readGroupDetail(
-            widget.groupId,
-            widget.password,
-          ),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final GroupDetailModel data = snapshot.data!;
-              if (memberState != data.memberState) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    memberState = data.memberState;
-                  });
-                });
-              }
-              if (needAuth != data.needAuth) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    needAuth = data.needAuth;
-                  });
-                });
-              }
-              if (size != data.bingoSize) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    size = data.bingoSize;
-                  });
-                });
-              }
-
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.read<GlobalGroupProvider>().setData(data);
-                context.read<GlobalGroupProvider>().setGroupId(widget.groupId);
-                // setState(() {
-                //   needAuth = data.needAuth;
-                // });
-              });
-              // setMemberState(data.memberState);
-              return ColWithPadding(
-                vertical: 30,
-                horizontal: 30,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  data.hasImage
-                      ? Image.network(
-                          '${dotenv.env['fileUrl']}/groups/${widget.groupId}')
-                      : const SizedBox(),
-                  groupHeader(data),
-                  const SizedBox(height: 20),
-                  data.memberState != 0
-                      ? CustomButton(
-                          onPressed: toOtherPage(
-                            context,
-                            page: data.bingoId != 0
-                                ? BingoDetail(bingoId: data.bingoId!)
-                                : BingoForm(
-                                    bingoSize: data.bingoSize,
-                                    needAuth: data.needAuth,
-                                  ),
-                          ),
-                          content: data.bingoId != 0 ? '내 빙고 보기' : '내 빙고 만들기',
-                        )
-                      : const SizedBox(),
-                  ShowContentBox(
-                      contentTitle: '설명', content: data.description ?? ''),
-                  ShowContentBox(contentTitle: '규칙', content: data.rule ?? ''),
-                  // groupRankTop3(context, data),
-                ],
-              );
-            }
-            return const Center(child: CustomText(content: '정보를 불러오는 중입니다'));
-          },
-        )),
+          child: CustomBoxContainer(
+              child: ColWithPadding(
+            vertical: 30,
+            horizontal: 30,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              widget.data.hasImage
+                  ? Image.network(
+                      '${dotenv.env['fileUrl']}/groups/${widget.groupId}')
+                  : const SizedBox(),
+              groupHeader(widget.data),
+              const SizedBox(height: 20),
+              memberState != 0
+                  ? CustomButton(
+                      onPressed: toOtherPage(
+                        context,
+                        page: widget.data.bingoId != 0
+                            ? BingoDetail(bingoId: bingoId!)
+                            : BingoForm(
+                                bingoSize: size,
+                                needAuth: needAuth,
+                                beforeJoin: true,
+                              ),
+                      ),
+                      content: bingoId != 0 ? '내 빙고 보기' : '내 빙고 만들기',
+                    )
+                  : const SizedBox(),
+              ShowContentBox(
+                  contentTitle: '설명', content: widget.data.description ?? ''),
+              ShowContentBox(
+                  contentTitle: '규칙', content: widget.data.rule ?? ''),
+              // groupRankTop3(context, data),
+            ],
+          )),
+        ),
         bottomNavigationBar: BottomBar(
           isMember: memberState != 0,
           groupId: widget.groupId,

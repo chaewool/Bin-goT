@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 class BingoProvider extends ApiProvider {
   //* public
   Future<DynamicMap> readBingoDetail(int bingoId) => _readBingoDetail(bingoId);
-  FutureInt createOwnBingo(FormData bingoData) => _createOwnBingo(bingoData);
+  // FutureInt createOwnBingo(FormData bingoData) => _createOwnBingo(bingoData);
   FutureDynamicMap editOwnBingo(int bingoId, FormData bingoData) =>
       _editOwnBingo(bingoId, bingoData);
   FutureDynamicMap deleteOwnBingo(int bingoId) => _deleteOwnBingo(bingoId);
@@ -31,22 +31,22 @@ class BingoProvider extends ApiProvider {
   }
 
   //* create
-  FutureInt _createOwnBingo(FormData bingoData) async {
-    try {
-      final dioWithForm = dioWithToken();
-      dioWithForm.options.contentType = 'multipart/form-data';
-      print(createBingoUrl);
-      final response = await dioWithForm.post(createBingoUrl, data: bingoData);
-      print(response);
-      if (response.statusCode == 200) {
-        return response.data['board_id'];
-      }
-      throw Error();
-    } catch (error) {
-      print(error);
-      throw Error();
-    }
-  }
+  // FutureInt _createOwnBingo(FormData bingoData) async {
+  //   try {
+  //     final dioWithForm = dioWithToken();
+  //     dioWithForm.options.contentType = 'multipart/form-data';
+  //     print(createBingoUrl);
+  //     final response = await dioWithForm.post(createBingoUrl, data: bingoData);
+  //     print(response);
+  //     if (response.statusCode == 200) {
+  //       return response.data['board_id'];
+  //     }
+  //     throw Error();
+  //   } catch (error) {
+  //     print(error);
+  //     throw Error();
+  //   }
+  // }
 
   //* update
   Future<DynamicMap> _editOwnBingo(int bingoId, FormData bingoData) async {

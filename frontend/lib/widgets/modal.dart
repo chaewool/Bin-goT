@@ -162,6 +162,45 @@ class _BingoModalState extends State<BingoModal> {
   }
 }
 
+//* 닉네임
+class ChangeNameModal extends StatelessWidget {
+  final String? username;
+  const ChangeNameModal({
+    super.key,
+    this.username,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final newName = {'value': username};
+
+    void changeName() {
+      final newVal = newName['value'];
+      if (newVal == null || newVal.trim() == '') {
+        showAlert(context, title: '닉네임 오류', content: '올바른 닉네임을 입력해주세요')();
+      } else if (username != newVal) {
+        UserInfoProvider().changeName(newVal).then((_) {
+          toBack(context);
+          showAlert(context, title: '닉네임 변경 완료', content: '닉네임이 변경되었습니다.')();
+        });
+      } else {
+        showAlert(context, title: '닉네임 오류', content: '닉네임이 변경되지 않았습니다')();
+      }
+    }
+
+    void setName(String newVal) {
+      newName['value'] = newVal.trim();
+    }
+
+    return InputModal(
+      title: '닉네임 설정',
+      type: '닉네임',
+      setValue: setName,
+      onPressed: changeName,
+    );
+  }
+}
+
 //* 날짜
 // class DateModal extends StatelessWidget {
 //   const DateModal({super.key});
