@@ -38,6 +38,7 @@ class DioClass extends AuthProvider {
               }).catchError((error) {
                 print('Error : $error');
                 deleteVar();
+                return handler.reject(error);
                 // return handler.resolve(error);
               });
               //* 재요청

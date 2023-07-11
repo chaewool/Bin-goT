@@ -382,45 +382,41 @@ class _MyTabBarState extends State<MyTabBar> {
       ),
       listItems: [
         [
-          SingleChildScrollView(
-            child: Expanded(
-              child: CustomBoxContainer(
-                color: backgroundColor,
-                child: FutureBuilder(
-                  future: groupTabData,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final hasNotGroup = snapshot.data!.hasNotGroup;
-                      return Column(
-                        children: [
-                          hasNotGroup
-                              ? Column(
-                                  children: const [
-                                    CustomText(
-                                      center: true,
-                                      content:
-                                          '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                                      height: 1.7,
-                                    ),
-                                    SizedBox(
-                                      height: 70,
-                                    ),
-                                    CustomText(
-                                      content: '추천그룹',
-                                      fontSize: FontSize.titleSize,
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox(),
-                          groupList(snapshot.data!.groups, hasNotGroup)
-                        ],
-                      );
-                    }
-                    return const CustomText(content: '그룹 정보를 불러오는 중입니다');
-                  },
-                ),
-              ),
-            ),
+          // Expanded(child: Column(children: [
+
+          // ],))
+          FutureBuilder(
+            future: groupTabData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final hasNotGroup = snapshot.data!.hasNotGroup;
+                return Column(
+                  children: [
+                    hasNotGroup
+                        ? Column(
+                            children: const [
+                              CustomText(
+                                center: true,
+                                content:
+                                    '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                                height: 1.7,
+                              ),
+                              SizedBox(
+                                height: 70,
+                              ),
+                              CustomText(
+                                content: '추천그룹',
+                                fontSize: FontSize.titleSize,
+                              ),
+                            ],
+                          )
+                        : const SizedBox(),
+                    groupList(snapshot.data!.groups, hasNotGroup)
+                  ],
+                );
+              }
+              return const CustomText(content: '그룹 정보를 불러오는 중입니다');
+            },
           )
         ],
         [

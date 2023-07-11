@@ -4,7 +4,9 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +23,6 @@ TextTemplate defaultText({
         ? 'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요'
         : 'ㅇㅇㅇ 님이 빙고판을 공유했어요! 자세히 살펴보세요.',
     link: Link(
-      webUrl: Uri.parse(''),
       mobileWebUrl: Uri.parse(''),
     ),
   );
@@ -92,6 +93,20 @@ void shareBingo({required int bingoId}) async {
       print('카카오톡 공유 실패 $error');
     }
   }
+}
+
+Future<String> buildDynamicLink(String whereNotice, String noticeId) async {
+  String url = dotenv.env['baseUrl']!;
+
+  final DynamicLinkParameters parameters = DynamicLinkParameters(
+    uriPrefix: url,
+    link: Uri.parse('$url/$whereNotice/$noticeId'),
+    androidParameters:
+        AndroidParameters(packageName: dotenv.env['packageName']!),
+  );
+  final dynamicLink =
+      await FirebaseDynamicLinks.instance.buildShortLink(parameters);
+  return dynamicLink.shortUrl.toString();
 }
 
 //* 페이지 이동
@@ -185,6 +200,49 @@ FutureBool exitApp(BuildContext context) =>
 //* 뒤로 가기 버튼 눌림 여부
 bool watchPressed(BuildContext context) =>
     context.watch<NotiProvider>().beforeExit;
+
+//* scroll
+int? getTotal(BuildContext context) =>
+    context.read<GlobalScrollProvider>().totalPages;
+
+void setTotal(BuildContext context, int? newTotal) =>
+    context.read<GlobalScrollProvider>().setTotal(newTotal);
+
+bool readLoading(BuildContext context) =>
+    context.read<GlobalScrollProvider>().loading;
+
+bool getLoading(BuildContext context) =>
+    context.watch<GlobalScrollProvider>().loading;
+
+void setLoading(BuildContext context, bool value) =>
+    context.read<GlobalScrollProvider>().setLoading(value);
+
+int getPage(BuildContext context) => context.read<GlobalScrollProvider>().page;
+
+void increasePage(BuildContext context) =>
+    context.read<GlobalScrollProvider>().increasePage();
+
+void initPage(BuildContext context) =>
+    context.read<GlobalScrollProvider>().initPage();
+
+bool getWorking(BuildContext context) =>
+    context.read<GlobalScrollProvider>().working;
+
+void setWorking(BuildContext context, bool value) =>
+    context.read<GlobalScrollProvider>().setWorking(value);
+
+bool getAdditional(BuildContext context) =>
+    context.read<GlobalScrollProvider>().additional;
+
+void setAdditional(BuildContext context, bool value) =>
+    context.read<GlobalScrollProvider>().setAdditional(value);
+
+void initLoadingData(BuildContext context) {
+  setLoading(context, true);
+  initPage(context);
+  setAdditional(context, false);
+  setWorking(context, false);
+}
 
 //* group data
 int? getGroupId(BuildContext context) =>

@@ -17,6 +17,7 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   bool isSearchMode = false;
+  double paddingTop = 0;
 
   void changeSearchMode() {
     setState(() {
@@ -29,6 +30,18 @@ class _MainState extends State<Main> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        setState(() {
+          paddingTop = MediaQuery.of(context).padding.top;
+        });
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () => exitApp(context),
@@ -36,22 +49,24 @@ class _MainState extends State<Main> {
         appBar: MainBar(onPressed: changeSearchMode),
         body: Stack(
           children: [
-            CustomBoxContainer(
-              height: getHeight(context),
-              // color: backgroundColor,
-              hasRoundEdge: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  isSearchMode
-                      ? const SearchBar(isMain: true)
-                      : const SizedBox(),
-                  const SizedBox(height: 15),
-                  const Expanded(
-                    // height: MediaQuery.of(context).size.height - 200,
-                    child: MyTabBar(),
-                  ),
-                ],
+            Expanded(
+              child: CustomBoxContainer(
+                height: getHeight(context) - 50 - paddingTop,
+                // color: backgroundColor,
+                hasRoundEdge: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    isSearchMode
+                        ? const SearchBar(isMain: true)
+                        : const SizedBox(),
+                    const SizedBox(height: 15),
+                    const Expanded(
+                      // height: MediaQuery.of(context).size.height - 200,
+                      child: MyTabBar(),
+                    ),
+                  ],
+                ),
               ),
             ),
             watchPressed(context)
