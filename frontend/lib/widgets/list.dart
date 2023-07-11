@@ -154,3 +154,32 @@ class CustomList extends StatelessWidget {
 //     );
 //   }
 // }
+
+//* 채팅 목록
+class ChatListItem extends StatelessWidget {
+  final GroupChatModel data;
+  const ChatListItem({
+    super.key,
+    required this.data,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomList(
+      height: 70,
+      boxShadow: [shadowWithOpacity],
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CustomText(content: data.username),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CustomText(content: data.content),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}

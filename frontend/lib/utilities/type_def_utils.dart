@@ -35,6 +35,7 @@ typedef MyBingoList = List<MyBingoModel>;
 // typedef GroupList = List<GroupModel>;
 typedef RankList = List<GroupRankModel>;
 typedef GroupMemberList = List<GroupMemberModel>;
+typedef GroupChatList = List<GroupChatModel>;
 
 //* bingo api
 typedef BingoItemList = List<BingoItemModel>;
