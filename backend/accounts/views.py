@@ -199,6 +199,7 @@ class MainGroupsView(APIView):
         page = int(request.GET.get('page'))
         
         is_recommend = False
+        last_page = page
 
         # 가입한 그룹이 없음 => 그룹 추천
         if not user.groups.all():
@@ -206,9 +207,7 @@ class MainGroupsView(APIView):
 
             recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
             groups = GroupSerializer(recommends, many=True).data
-        else:
-            logger.info('그룹 목록 진입')
-            
+        else:            
             groups = GroupSerializer(user.groups, many=True).data
 
             if filter == '1':
@@ -221,6 +220,11 @@ class MainGroupsView(APIView):
             else:
                 groups.sort(key=lambda x: (x['end'], x['start']))
             
+            last_page = len(groups) // 10
+            
+            if len(groups) % 10:
+                last_page += 1
+
             groups = groups[10 * (page - 1):10 * page]
 
         for group in groups:
@@ -235,7 +239,7 @@ class MainGroupsView(APIView):
         if is_recommend:
             groups = [group for group in groups if group['count'] < group['headcount']][:10]
         
-        return Response(data={'groups': groups, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
+        return Response(data={'groups': groups, 'is_recommend': is_recommend, 'last_page': last_page}, status=status.HTTP_200_OK)
 
 
 class MainBoardsView(APIView):
@@ -244,6 +248,8 @@ class MainBoardsView(APIView):
         order = request.GET.get('order')
         filter = request.GET.get('filter')
         page = int(request.GET.get('page'))
+
+        last_page = page
 
         boards = BoardSerializer(user.boards.all(), many=True).data
 
@@ -256,10 +262,15 @@ class MainBoardsView(APIView):
             boards.sort(key=lambda x: (x['end'], x['start']), reverse=True)
         else:
             boards.sort(key=lambda x: (x['end'], x['start']))
+            
+        last_page = len(boards) // 10
         
+        if len(boards) % 10:
+            last_page += 1
+            
         boards = boards[10 * (page - 1):10 * page]
         
-        return Response(data=boards, status=status.HTTP_200_OK)
+        return Response(data={'boards': boards, 'last_page': last_page}, status=status.HTTP_200_OK)
 
 
 class ProfileView(APIView):

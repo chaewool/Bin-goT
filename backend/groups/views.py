@@ -336,6 +336,7 @@ class GroupChatCreateView(APIView):
         
         chat = {
             'user_id': user.id,
+            'badge_id': user.badge,
             'username': participate[0].rand_name,
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
@@ -386,6 +387,7 @@ class GroupReviewCreateView(APIView):
         
         chat = {
             'user_id': user.id,
+            'badge_id': user.badge,
             'username': participate[0].rand_name,
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
@@ -496,6 +498,8 @@ class GroupSearchView(APIView):
         public = request.GET.get('public')
         page = int(request.GET.get('page'))
 
+        last_page = page
+
         if order == '0':
             order = '-start'
         else:
@@ -514,10 +518,10 @@ class GroupSearchView(APIView):
         if keyword:
             groups = groups.filter(groupname__icontains=keyword)
 
-        groups = groups.order_by(order)[10 * (page - 1):10 * page]
-        data = GroupSerializer(groups, many=True).data
+        groups = groups.order_by(order)
+        groups = GroupSerializer(groups, many=True).data
 
-        for group in data:
+        for group in groups:
             count = 0
 
             for p in Participate.objects.filter(group=group['id']):
@@ -526,6 +530,13 @@ class GroupSearchView(APIView):
             
             group['count'] = count
 
-        data = [d for d in data if d['count'] < d['headcount'] and not Participate.objects.filter(group=d['id'], user=user).exists()]
+        groups = [d for d in groups if d['count'] < d['headcount'] and not Participate.objects.filter(group=d['id'], user=user).exists()]
+           
+        last_page = len(groups) // 10
         
-        return Response(data=data, status=status.HTTP_200_OK)
+        if len(groups) % 10:
+            last_page += 1
+
+        groups = groups[10 * (page - 1):10 * page]
+        
+        return Response(data={'groups': groups, 'last_page': last_page}, status=status.HTTP_200_OK)
