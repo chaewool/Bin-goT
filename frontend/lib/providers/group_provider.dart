@@ -208,4 +208,32 @@ class GroupProvider extends ApiProvider {
       throw Error();
     }
   }
+
+  //* chat list
+  Future<GroupChatList> readGroupChatList(int groupId, int page) async {
+    try {
+      final response = await dioWithToken().get(
+        groupChatListUrl(groupId),
+        queryParameters: {
+          'page': page,
+        },
+      );
+      switch (response.statusCode) {
+        case 200:
+          final data = response.data;
+          if (data.isNotEmpty) {
+            GroupChatList chats = data
+                .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
+                .toList();
+            return chats;
+          }
+          return [];
+        default:
+          throw Error();
+      }
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
+  }
 }

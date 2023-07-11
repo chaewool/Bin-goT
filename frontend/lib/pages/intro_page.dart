@@ -57,10 +57,7 @@ class _IntroState extends State<Intro> {
         showLoginBtn = true;
       }
     } catch (error) {
-      setState(() {
-        showLoginBtn = true;
-      });
-      return;
+      showLoginBtn = true;
     }
   }
 

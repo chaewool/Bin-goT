@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from datetime import timedelta
 
 import bingot_settings
 
@@ -41,12 +43,13 @@ INSTALLED_APPS = [
     'accounts',
     'groups',
     'boards',
-    'articles',
 
     # third party apps
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'django_crontab',
 
     # django apps
     'django.contrib.admin',
@@ -165,3 +168,78 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=6),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'TOKEN_USER_CLASS': 'user.User',
+    'SIGNING_KEY': bingot_settings.SECRET_KEY,
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+
+# Logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'django.server': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[{server_time}] {message}',
+            'style': '{',
+        },
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        }
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'files/log/logfile.log'),
+            'encoding': 'UTF-8',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers':['file'],
+            'propagate': False,
+            'level':'INFO',
+        },
+        'accounts': {
+            'handlers': ['file'],
+            'propagate': False,
+            'level': 'INFO',
+        },
+    },
+}
+
+
+# crontab
+
+CRONJOBS = [
+    ('0 0 * * *', 'groups.cron.every_day', '>> ./files/log/cron.log'),
+]
+
+
+# fcm
+
+import firebase_admin
+from firebase_admin import credentials
+
+cred_path = os.path.join(BASE_DIR, "serviceAccountKey.json")
+cred = credentials.Certificate(cred_path)
+firebase_admin.initialize_app(cred)

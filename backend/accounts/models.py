@@ -1,23 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+
 class User(AbstractUser):
-    user_id = models.AutoField(primary_key=True, db_column='user_id')
-    kakao_id = models.CharField(max_length=255, unique=True, null=False)
-    username = models.CharField(max_length=20, unique=True, null=False)
-    profile = models.IntegerField(null=False, default=0)
-    noti_rank = models.BooleanField(null=False, default=True)
-    noti_due = models.BooleanField(null=False, default=True)
-    noti_chat = models.BooleanField(null=False, default=True)
-    is_activated = models.BooleanField(null=False, default=True)
+    kakao_id = models.CharField(max_length=255, unique=True)
+    username = models.CharField(max_length=20, unique=True)
+    badge = models.IntegerField(default=0)
+    noti_rank = models.BooleanField(default=True)
+    noti_due = models.BooleanField(default=True)
+    noti_chat = models.BooleanField(default=True)
+    cnt_groups = models.IntegerField(default=0)
+    cnt_boards = models.IntegerField(default=0)
+    cnt_boarditems_complete = models.IntegerField(default=0)
+    cnt_boards_complete = models.IntegerField(default=0)
+    cnt_rank1 = models.IntegerField(default=0)
+    groups = models.ManyToManyField('groups.Group', through='groups.Participate', related_name="groups")
 
     def __str__(self) -> str:
         return self.username
 
 class Badge(models.Model):
-    badge_id = models.AutoField(primary_key=True, db_column='badge_id')
-    badgename = models.CharField(max_length=20, unique=True, null=False)
-    badge_cond = models.CharField(max_length=100, null=False)
+    badge_cond = models.CharField(max_length=100)
 
     def __str__(self) -> str:
         return self.badgename
