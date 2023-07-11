@@ -74,10 +74,30 @@ class GroupProvider extends ApiProvider {
       final response = await dioWithToken().get(
         groupDetailUrl(groupId),
         queryParameters: {'password': password},
-      );
+      ).catchError((error) {
+        // print('catch error => ${error.response!.data}');
+      });
       print('response: $response');
+      // return response;
       if (response.statusCode == 200) {
         return GroupDetailModel.fromJson(response.data);
+      }
+      throw Error();
+    } catch (error) {
+      throw Error();
+    }
+  }
+
+  //* join
+  FutureBool joinGroup(int groupId, FormData groupData) async {
+    try {
+      final dioWithForm = dioWithToken();
+      dioWithForm.options.contentType = 'multipart/form-data';
+      final response =
+          await dioWithForm.post(joinGroupUrl(groupId), data: groupData);
+      print(response);
+      if (response.statusCode == 200) {
+        return Future.value(true);
       }
       throw Error();
     } catch (error) {
@@ -85,10 +105,6 @@ class GroupProvider extends ApiProvider {
       throw Error();
     }
   }
-
-  //* join
-  FutureDynamicMap joinGroup(int groupId) async =>
-      deliverApi(joinGroupUrl(groupId));
 
   //* create
   FutureInt createOwnGroup(FormData groupData) async {
@@ -102,7 +118,6 @@ class GroupProvider extends ApiProvider {
       }
       throw Error();
     } catch (error) {
-      print(error);
       print(error);
       throw Error();
     }

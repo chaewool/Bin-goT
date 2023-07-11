@@ -15,42 +15,41 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:flutter/rendering.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-class BingoDetail extends StatefulWidget {
+class BingoDetail extends StatelessWidget {
   final int bingoId;
+  final int? size;
   const BingoDetail({
     super.key,
     required this.bingoId,
+    this.size,
   });
 
-  @override
-  State<BingoDetail> createState() => _BingoDetailState();
-}
-
-class _BingoDetailState extends State<BingoDetail> {
   @override
   Widget build(BuildContext context) {
     int groupId = 0;
     GlobalKey globalKey = GlobalKey();
-    void deleteBingo() {
-      BingoProvider().deleteOwnBingo(widget.bingoId).then((_) {
-        toBack(context);
-        showAlert(
-          context,
-          title: '삭제 완료',
-          content: '빙고가 정상적으로 삭제되었습니다.',
-          hasCancel: false,
-        )();
-      }).catchError((_) {
-        showAlert(
-          context,
-          title: '삭제 오류',
-          content: '오류가 발생해 빙고가 삭제되지 않았습니다.',
-          hasCancel: false,
-        )();
-      });
-    }
+    int bingoSize = size ?? context.read<GlobalGroupProvider>().bingoSize!;
+    // void deleteBingo() {
+    //   BingoProvider().deleteOwnBingo(widget.bingoId).then((_) {
+    //     toBack(context);
+    //     showAlert(
+    //       context,
+    //       title: '삭제 완료',
+    //       content: '빙고가 정상적으로 삭제되었습니다.',
+    //       hasCancel: false,
+    //     )();
+    //   }).catchError((_) {
+    //     showAlert(
+    //       context,
+    //       title: '삭제 오류',
+    //       content: '오류가 발생해 빙고가 삭제되지 않았습니다.',
+    //       hasCancel: false,
+    //     )();
+    //   });
+    // }
 
     FutureBool bingoToImage() async {
       var renderObject = globalKey.currentContext?.findRenderObject();
@@ -67,13 +66,35 @@ class _BingoDetailState extends State<BingoDetail> {
       return false;
     }
 
+    FutureBool saveBingoImg() {
+      try {
+        Permission.storage.request().then((value) {
+          if (value == PermissionStatus.denied ||
+              value == PermissionStatus.permanentlyDenied) {
+            showAlert(
+              context,
+              title: '미디어 접근 권한 거부',
+              content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 허용해주세요',
+              hasCancel: false,
+            )();
+          } else {
+            bingoToImage();
+          }
+        });
+        return Future.value(true);
+      } catch (error) {
+        print(error);
+        return Future.value(false);
+      }
+    }
+
     return Scaffold(
         appBar: BingoDetailAppBar(
-          save: bingoToImage,
-          bingoId: widget.bingoId,
+          save: saveBingoImg,
+          bingoId: bingoId,
         ),
         body: FutureBuilder(
-          future: BingoProvider().readBingoDetail(widget.bingoId),
+          future: BingoProvider().readBingoDetail(bingoId),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final DynamicMap data = snapshot.data!;
@@ -110,10 +131,8 @@ class _BingoDetailState extends State<BingoDetail> {
                           onPressed: toOtherPage(
                             context,
                             page: BingoForm(
-                              bingoId: widget.bingoId,
-                              bingoSize: context
-                                  .read<GlobalGroupProvider>()
-                                  .bingoSize!,
+                              bingoId: bingoId,
+                              bingoSize: bingoSize,
                               needAuth: false,
                             ),
                           ),
@@ -129,7 +148,10 @@ class _BingoDetailState extends State<BingoDetail> {
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       child: RepaintBoundary(
                         key: globalKey,
-                        child: const BingoBoard(isDetail: true),
+                        child: BingoBoard(
+                          isDetail: true,
+                          bingoSize: bingoSize,
+                        ),
                       ),
                     ),
                   ),

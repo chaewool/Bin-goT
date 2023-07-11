@@ -47,7 +47,7 @@ class BingoGallery extends StatelessWidget {
     return GestureDetector(
       onTap: toOtherPage(
         context,
-        page: BingoDetail(bingoId: bingo.id),
+        page: BingoDetail(bingoId: bingo.id, size: bingo.size),
       ),
       child: Padding(
         padding: const EdgeInsets.all(8),

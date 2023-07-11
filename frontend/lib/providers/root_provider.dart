@@ -79,11 +79,15 @@ class NotiProvider extends ChangeNotifier {
   static bool _rankNoti = true;
   static bool _dueNoti = true;
   static bool _chatNoti = true;
+  static bool _completeNoti = true;
+  static bool _beforeExit = false;
 
   //* getter
   bool get rankNoti => _rankNoti;
   bool get dueNoti => _dueNoti;
   bool get chatNoti => _chatNoti;
+  bool get completeNoti => _completeNoti;
+  bool get beforeExit => _beforeExit;
 
   //* private
   FutureBool initNoti() async {
@@ -91,6 +95,7 @@ class NotiProvider extends ChangeNotifier {
     _setRank(prefs.getBool('rank') ?? true);
     _setDue(prefs.getBool('due') ?? true);
     _setChat(prefs.getBool('chat') ?? true);
+    _setChat(prefs.getBool('complete') ?? true);
     return Future.value(true);
   }
 
@@ -102,6 +107,20 @@ class NotiProvider extends ChangeNotifier {
   void _setRank(bool newVal) => _rankNoti = newVal;
   void _setDue(bool newVal) => _dueNoti = newVal;
   void _setChat(bool newVal) => _chatNoti = newVal;
+  void _setComplete(bool newVal) => _completeNoti = newVal;
+
+  FutureBool _changePressed() {
+    if (!_beforeExit) {
+      _beforeExit = true;
+      notifyListeners();
+      Future.delayed(const Duration(seconds: 2), () {
+        _beforeExit = false;
+        notifyListeners();
+      });
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
 
   //* public
   void setStoreRank(bool newRank) {
@@ -122,13 +141,74 @@ class NotiProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setStoreComplete(bool newComplete) {
+    _setComplete(newComplete);
+    _storeBool('complete', newComplete);
+    notifyListeners();
+  }
+
   void deleteVar() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
     _setChat(true);
     _setDue(true);
     _setRank(true);
+    _setComplete(true);
   }
+
+  FutureBool changePressed() => _changePressed();
+}
+
+//* scroll
+class GlobalScrollProvider extends ChangeNotifier {
+  static int? _totalPages;
+  static bool _loading = true;
+  static int _page = 0;
+  static bool _working = false;
+  static bool _additional = false;
+
+  bool get loading => _loading;
+  bool get working => _working;
+  bool get additional => _additional;
+  int? get totalPages => _totalPages;
+  int get page => _page;
+
+  void increasePage() {
+    _setPage(_page + 1);
+    notifyListeners();
+  }
+
+  void initPage() {
+    _setPage(0);
+    notifyListeners();
+  }
+
+  void setWorking(bool newVal) {
+    _setWorking(newVal);
+    notifyListeners();
+  }
+
+  void setAdditional(bool newVal) {
+    _setAdditional(newVal);
+    notifyListeners();
+  }
+
+  void setTotal(int? newVal) {
+    _setTotal(newVal);
+    notifyListeners();
+  }
+
+  void setLoading(bool value) {
+    _setLoading(value);
+    notifyListeners();
+  }
+
+  //* private
+  void _setWorking(bool newVal) => _working = newVal;
+  void _setAdditional(bool newVal) => _additional = newVal;
+  void _setPage(int newVal) => _page = newVal;
+  void _setTotal(int? newVal) => _totalPages = newVal;
+  void _setLoading(bool value) => _loading = value;
 }
 
 //* group data
@@ -304,7 +384,8 @@ class GlobalBingoProvider extends ChangeNotifier {
   void _initItems(int cnt) {
     _data['items'] = List.generate(
       cnt,
-      (_) => {
+      (index) => {
+        'item_id': index,
         'title': null,
         'content': null,
         'check': false,

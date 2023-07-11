@@ -13,6 +13,7 @@ class UserInfoProvider extends ApiProvider {
       _getMainGroupData(queryParameters);
   Future<MyBingoList> getMainBingoData(DynamicMap queryParameters) =>
       _getMainBingoData(queryParameters);
+  FutureBool changeNoti(DynamicMap data) => _changeNoti(data);
 
   //* private
   FutureBool _changeBadge(DynamicMap data) async {
@@ -49,8 +50,15 @@ class UserInfoProvider extends ApiProvider {
     }
   }
 
+  FutureBool _changeNoti(DynamicMap data) async {
+    print('noti url : $notiUrl, data : $data');
+    await updateApi(notiUrl, data: data);
+    return Future.value(true);
+  }
+
   FutureBool _checkName(String name) async {
     try {
+      print('$checkNameUrl => $name');
       await createApi(checkNameUrl, data: {'username': name});
       return true;
     } catch (error) {
@@ -70,6 +78,7 @@ class UserInfoProvider extends ApiProvider {
   Future<MainGroupListModel> _getMainGroupData(
       DynamicMap queryParameters) async {
     try {
+      print('url : $mainGroupTabUrl, query : $queryParameters');
       final response = await dioWithToken()
           .get(mainGroupTabUrl, queryParameters: queryParameters);
       if (response.statusCode == 200) {

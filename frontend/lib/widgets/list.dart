@@ -12,23 +12,29 @@ import 'package:flutter/material.dart';
 class GroupListItem extends StatelessWidget {
   final bool isSearchMode;
   final MyGroupModel groupInfo;
+  final bool? public;
   const GroupListItem({
     super.key,
     required this.isSearchMode,
     required this.groupInfo,
+    this.public,
   });
 
   @override
   Widget build(BuildContext context) {
     String showedDif() {
-      final difference =
-          DateTime.now().difference(DateTime.parse(groupInfo.start)).inDays;
+      final difference = (DateTime.now()
+                  .difference(DateTime.parse(groupInfo.start))
+                  .inSeconds /
+              Duration.secondsPerDay)
+          .floor();
       if (difference < 0) {
         return 'D - ${-difference}';
       } else if (difference > 0) {
         return 'D + $difference';
+      } else {
+        return 'D-Day';
       }
-      return 'D-Day';
     }
 
     String groupMember = '(${groupInfo.count}/${groupInfo.headCount})';
@@ -39,8 +45,7 @@ class GroupListItem extends StatelessWidget {
         context,
         page: InputPassword(
           groupId: groupInfo.id,
-          // isPublic: groupInfo.isPublic ?? true,
-          isPublic: true,
+          isPublic: public ?? groupInfo.isPublic!,
         ),
       ),
       child: Row(

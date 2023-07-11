@@ -35,9 +35,10 @@ class ApiProvider extends UrlClass {
   //* data unnecessary
   FutureDynamicMap _deliverApi(String url) async {
     try {
+      print('url : $url');
       final response = await dioWithToken().post(url);
       if (response.statusCode == 200) {
-        return {};
+        return response.data;
       }
       throw Error();
     } catch (error) {

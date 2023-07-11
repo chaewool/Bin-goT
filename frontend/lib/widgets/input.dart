@@ -69,7 +69,7 @@ class CustomInput extends StatelessWidget {
               enabled: enabled,
               textAlign: TextAlign.start,
               textAlignVertical: TextAlignVertical.center,
-              onChanged: (value) => setValue(value),
+              onChanged: setValue,
               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
               textInputAction: TextInputAction.next,
               // focusNode: inputFocus,
@@ -100,8 +100,17 @@ class InputDate extends StatelessWidget {
         onTap: showModal(
           context,
           page: CustomBoxContainer(
+            width: getWidth(context) * 0.9,
+            height: getHeight(context) * 0.8,
             color: whiteColor,
             child: SfDateRangePicker(
+              showTodayButton: true,
+              view: DateRangePickerView.year,
+              navigationDirection: DateRangePickerNavigationDirection.vertical,
+              enableMultiView: true,
+              confirmText: '적용',
+              cancelText: '취소',
+              headerHeight: 100,
               minDate: now,
               maxDate: now.add(const Duration(days: 365)),
               enablePastDates: false,

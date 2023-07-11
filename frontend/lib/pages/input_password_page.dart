@@ -1,4 +1,5 @@
 import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -40,29 +41,41 @@ class _InputPasswordState extends State<InputPassword> {
         )();
       }
       if (!widget.isPublic) {
-        showModal(
-          context,
-          page: InputModal(
-            title: '비밀번호 입력',
-            type: '비밀번호',
-            setValue: (value) => password['value'] = value,
-            onPressed: () => toOtherPage(
-              context,
-              page: GroupMain(
-                groupId: widget.groupId,
-                isPublic: false,
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return WillPopScope(
+              onWillPop: () {
+                toBack(context);
+                toBack(context);
+                return Future.value(false);
+              },
+              child: InputModal(
+                title: '비밀번호 입력',
+                type: '비밀번호',
+                setValue: (value) => password['value'] = value.trim(),
+                onPressed: () => verifyPassword(password['value']),
+                onCancelPressed: () {
+                  toBack(context);
+                  toBack(context);
+                },
               ),
-            ),
-          ),
-        )();
+            );
+          },
+        );
       } else {
-        toOtherPage(
-          context,
-          page: GroupMain(
-            groupId: widget.groupId,
-            isPublic: true,
-          ),
-        )();
+        GroupProvider().readGroupDetail(widget.groupId, '').then((data) {
+          context.read<GlobalGroupProvider>().setData(data);
+          context.read<GlobalGroupProvider>().setGroupId(widget.groupId);
+          toOtherPage(
+            context,
+            page: GroupMain(
+              groupId: widget.groupId,
+              data: data,
+            ),
+          )();
+        });
       }
     });
   }
@@ -94,14 +107,40 @@ class _InputPasswordState extends State<InputPassword> {
     }
   }
 
+  void verifyPassword(String? password) {
+    print('password => $password');
+    if (password == null || password == '') {
+      showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
+    } else {
+      GroupProvider().readGroupDetail(widget.groupId, password).then((data) {
+        print(data);
+        toBack(context);
+        context.read<GlobalGroupProvider>().setData(data);
+        context.read<GlobalGroupProvider>().setGroupId(widget.groupId);
+        toOtherPage(
+          context,
+          page: GroupMain(
+            groupId: widget.groupId,
+            data: data,
+          ),
+        )();
+      }).catchError((error) {
+        print(error);
+        showAlert(context,
+            title: '오류 발생', content: '오류가 발생해 요청 작업을 처리하지 못했습니다')();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () {
-          toBack(context);
-          toBack(context);
-          return Future.value(false);
-        },
-        child: const CustomBoxContainer());
+      onWillPop: () {
+        toBack(context);
+        toBack(context);
+        return Future.value(false);
+      },
+      child: const CustomBoxContainer(),
+    );
   }
 }

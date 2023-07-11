@@ -29,7 +29,11 @@ class BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const IconDataList bottomBarIcons = [homeIcon, myPageIcon, chatIcon];
-    const WidgetList nextPages = [Main(), MyPage(), GroupChat()];
+    const WidgetList nextPages = [
+      Main(),
+      MyPage(),
+      GroupChat(page: 1, groupId: 2)
+    ];
 
     return isMember
         ? BottomNavigationBar(

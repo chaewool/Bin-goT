@@ -39,7 +39,7 @@ class UserProvider extends ApiProvider {
   FutureDynamicMap _confirmToken() async {
     try {
       if (token == null || token == '') return {};
-      print('토큰 유효성 검사');
+      print('토큰 유효성 검사 => $token');
       final data = await createApi(verifyTokenUrl, data: {'token': token});
       return {'token': token};
     } catch (error) {

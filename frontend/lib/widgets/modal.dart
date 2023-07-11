@@ -44,6 +44,7 @@ class _BingoModalState extends State<BingoModal> {
       item['content'] = null;
       item['check'] = false;
       item['check_goal'] = '0';
+      item['item_id'] = newIdx;
     });
     setItem(context, newIdx, item);
   }
@@ -161,6 +162,45 @@ class _BingoModalState extends State<BingoModal> {
   }
 }
 
+//* 닉네임
+class ChangeNameModal extends StatelessWidget {
+  final String? username;
+  const ChangeNameModal({
+    super.key,
+    this.username,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final newName = {'value': username};
+
+    void changeName() {
+      final newVal = newName['value'];
+      if (newVal == null || newVal.trim() == '') {
+        showAlert(context, title: '닉네임 오류', content: '올바른 닉네임을 입력해주세요')();
+      } else if (username != newVal) {
+        UserInfoProvider().changeName(newVal).then((_) {
+          toBack(context);
+          showAlert(context, title: '닉네임 변경 완료', content: '닉네임이 변경되었습니다.')();
+        });
+      } else {
+        showAlert(context, title: '닉네임 오류', content: '닉네임이 변경되지 않았습니다')();
+      }
+    }
+
+    void setName(String newVal) {
+      newName['value'] = newVal.trim();
+    }
+
+    return InputModal(
+      title: '닉네임 설정',
+      type: '닉네임',
+      setValue: setName,
+      onPressed: changeName,
+    );
+  }
+}
+
 //* 날짜
 // class DateModal extends StatelessWidget {
 //   const DateModal({super.key});
@@ -249,7 +289,12 @@ class CustomAlert extends StatelessWidget {
 //* 배지 선택
 class SelectBadgeModal extends StatefulWidget {
   final int presentBadge;
-  const SelectBadgeModal({super.key, required this.presentBadge});
+  final void Function(int) onPressed;
+  const SelectBadgeModal({
+    super.key,
+    required this.presentBadge,
+    required this.onPressed,
+  });
 
   @override
   State<SelectBadgeModal> createState() => _SelectBadgeModalState();
@@ -266,9 +311,10 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
   }
 
   void changeBadge() {
-    UserInfoProvider().changeBadge({'badge_id': badgeId}).then((_) {
-      print('성공');
+    UserInfoProvider().changeBadge({'badge_id': badgeId}).then((data) {
+      print('성공 => $data');
       toBack(context);
+      widget.onPressed(badgeId);
     }).catchError((_) {
       showAlert(
         context,
@@ -294,7 +340,7 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
               var data = snapshot.data;
               return SingleChildScrollView(
                 child: CustomBoxContainer(
-                  height: MediaQuery.of(context).size.height * 0.6,
+                  height: getHeight(context) * 0.6,
                   color: greyColor,
                   hasRoundEdge: false,
                   child: ListView.separated(
@@ -509,14 +555,16 @@ class _NotificationModalState extends State<NotificationModal> {
 //* 입력창이 있는 모달
 class InputModal extends StatelessWidget {
   final String title, type;
-  final void Function(dynamic value) setValue;
+  final void Function(String value) setValue;
   final ReturnVoid onPressed;
+  final ReturnVoid? onCancelPressed;
   const InputModal({
     super.key,
     required this.title,
     required this.type,
     required this.setValue,
     required this.onPressed,
+    this.onCancelPressed,
   });
 
   @override
@@ -524,6 +572,7 @@ class InputModal extends StatelessWidget {
     return CustomModal(
       title: title,
       onPressed: onPressed,
+      onCancelPressed: onCancelPressed,
       children: [
         CustomInput(
           explain: '$type을 입력해주세요',

@@ -1,5 +1,5 @@
 //* 그룹 생성 완료 페이지
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -74,10 +74,7 @@ class GroupCreateCompleted extends StatelessWidget {
             content: '생성된 그룹으로 가기',
             onPressed: toOtherPage(
               context,
-              page: GroupMain(
-                groupId: groupId,
-                isPublic: isPublic,
-              ),
+              page: InputPassword(isPublic: true, groupId: groupId),
             ),
           )
         ],

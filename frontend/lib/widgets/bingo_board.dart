@@ -11,9 +11,11 @@ import 'package:provider/provider.dart';
 //* 빙고판
 class BingoBoard extends StatefulWidget {
   final bool isDetail;
+  final int? bingoSize;
   const BingoBoard({
     super.key,
     required this.isDetail,
+    this.bingoSize,
   });
 
   @override
@@ -25,8 +27,9 @@ class _BingoBoardState extends State<BingoBoard> {
   @override
   void initState() {
     super.initState();
+    print('widget => ${widget.bingoSize}, get => ${getBingoSize(context)}');
     setState(() {
-      size = getBingoSize(context);
+      size = widget.bingoSize ?? getBingoSize(context);
     });
   }
 

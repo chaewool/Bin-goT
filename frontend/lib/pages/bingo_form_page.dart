@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
-
 import 'package:bin_got/pages/bingo_detail_page.dart';
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/group_create_completed.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -26,12 +26,16 @@ class BingoForm extends StatefulWidget {
   final int bingoSize;
   final int? bingoId;
   final bool needAuth, beforeJoin;
+  final DynamicMap? beforeData;
+  final MultipartFile? groupImg;
   const BingoForm({
     super.key,
     this.bingoId,
     required this.bingoSize,
     required this.needAuth,
     this.beforeJoin = false,
+    this.beforeData,
+    this.groupImg,
   });
 
   @override
@@ -47,8 +51,11 @@ class _BingoFormState extends State<BingoForm> {
   @override
   void initState() {
     super.initState();
-    size = getBingoSize(context);
-    setOption(context, 'group_id', getGroupId(context)!);
+    size = widget.bingoSize;
+    // ?? getBingoSize(context);
+    // if (getGroupId(context) != null) {
+    //   setOption(context, 'group_id', getGroupId(context));
+    // }
     if (getItems(context).isEmpty) {
       context.read<GlobalBingoProvider>().initItems(size * size);
     }
@@ -84,27 +91,19 @@ class _BingoFormState extends State<BingoForm> {
             content: '빙고칸 내부를 채워주세요',
           )();
         }
-        final bingoData = FormData.fromMap({
-          'data': jsonEncode(data),
-          'thumbnail': MultipartFile.fromBytes(
-            thumbnail!,
-            filename: 'thumbnail.png',
-            contentType: MediaType('image', 'png'),
-          ),
-        });
+        print('bingo data => $data');
 
         if (widget.bingoId == null) {
-          BingoProvider().createOwnBingo(bingoData).then((bingoId) async {
-            if (widget.beforeJoin) {
-              joinGroup();
-            }
-            if (!mounted) return;
-            toOtherPage(
-              context,
-              page: BingoDetail(bingoId: bingoId),
-            )();
-          });
+          widget.beforeJoin ? joinGroup(data) : createGroup(data);
         } else {
+          final bingoData = FormData.fromMap({
+            'data': jsonEncode(data),
+            'thumbnail': MultipartFile.fromBytes(
+              thumbnail!,
+              filename: 'thumbnail.png',
+              contentType: MediaType('image', 'png'),
+            ),
+          });
           print(widget.bingoId);
           BingoProvider().editOwnBingo(widget.bingoId!, bingoData).then((_) {
             toOtherPage(
@@ -136,9 +135,43 @@ class _BingoFormState extends State<BingoForm> {
     return true;
   }
 
-  void joinGroup() async {
+  void createGroup(DynamicMap bingoData) {
+    final formData = FormData.fromMap({
+      'data': jsonEncode(widget.beforeData),
+      'board_data': jsonEncode(bingoData),
+      'thumbnail': MultipartFile.fromBytes(
+        thumbnail!,
+        filename: 'thumbnail.png',
+        contentType: MediaType('image', 'png'),
+      ),
+    });
+    GroupProvider().createOwnGroup(formData).then((groupId) {
+      toOtherPage(
+        context,
+        page: GroupCreateCompleted(
+          groupId: groupId,
+          password: '',
+        ),
+      )();
+    });
+  }
+
+  void joinGroup(DynamicMap bingoData) async {
     try {
-      GroupProvider().joinGroup(getGroupId(context)!).then((_) {
+      final groupId = getGroupId(context)!;
+      print('data => $bingoData');
+      final formData = FormData.fromMap({
+        'board_data': jsonEncode(bingoData),
+        'thumbnail': MultipartFile.fromBytes(
+          thumbnail!,
+          filename: 'thumbnail.png',
+          contentType: MediaType('image', 'png'),
+        ),
+      });
+      GroupProvider().joinGroup(groupId, formData).then((data) {
+        print('그룹 가입 성공 => $data');
+        print('form data : $bingoData');
+        print('빙고 생성 성공');
         if (widget.needAuth == true) {
           toBack(context);
           showAlert(
@@ -148,22 +181,28 @@ class _BingoFormState extends State<BingoForm> {
             hasCancel: false,
           )();
         } else {
-          toOtherPage(
-            context,
-            page: GroupMain(
-              groupId: getGroupId(context)!,
-              isPublic: true,
-            ),
-          );
           showAlert(
             context,
             title: '가입 완료',
             content: '성공적으로 가입되었습니다.',
             hasCancel: false,
+            onPressed: toOtherPage(
+              context,
+              page: InputPassword(isPublic: true, groupId: groupId),
+            ),
           )();
         }
+      }).catchError((e) {
+        print('catch error : $e');
+        showAlert(
+          context,
+          title: '가입 오류',
+          content: '오류가 발생해 가입이 되지 않았습니다.',
+          hasCancel: false,
+        )();
       });
     } catch (error) {
+      print('error : $error');
       showAlert(
         context,
         title: '가입 오류',
@@ -196,8 +235,9 @@ class _BingoFormState extends State<BingoForm> {
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               child: RepaintBoundary(
                 key: globalKey,
-                child: const BingoBoard(
+                child: BingoBoard(
                   isDetail: false,
+                  bingoSize: size,
                 ),
               ),
             ),

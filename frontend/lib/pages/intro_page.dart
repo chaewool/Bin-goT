@@ -1,4 +1,3 @@
-import 'package:bin_got/pages/group_chat_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
@@ -34,18 +33,13 @@ class _IntroState extends State<Intro> {
         rank: data['noti_rank'],
         due: data['noti_due'],
         chat: data['noti_chat'],
+        complete: data['noti_check'],
       );
       context.read<AuthProvider>().setStoreId(data['id']);
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
-        showModal(context,
-            page: InputModal(
-              title: '닉네임 설정',
-              type: '닉네임',
-              setValue: (value) {},
-              onPressed: () {},
-            ))();
+        showModal(context, page: const ChangeNameModal())();
       }
     } catch (error) {
       showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
@@ -63,10 +57,7 @@ class _IntroState extends State<Intro> {
         showLoginBtn = true;
       }
     } catch (error) {
-      setState(() {
-        showLoginBtn = true;
-      });
-      return;
+      showLoginBtn = true;
     }
   }
 
@@ -74,8 +65,8 @@ class _IntroState extends State<Intro> {
     await context.read<NotiProvider>().initNoti();
   }
 
-  void afterFewSec(int sec, ReturnVoid changeVar) {
-    Future.delayed(Duration(seconds: sec), () {
+  void afterFewSec(int millisec, ReturnVoid changeVar) {
+    Future.delayed(Duration(milliseconds: millisec), () {
       setState(changeVar);
     });
   }
@@ -83,25 +74,20 @@ class _IntroState extends State<Intro> {
   @override
   void initState() {
     super.initState();
-
-    afterFewSec(1, () {
+    afterFewSec(500, () {
       showLogo = true;
     });
-    afterFewSec(2, () {
+    afterFewSec(1000, () {
       showExplain = true;
     });
-    afterFewSec(3, () {
+    afterFewSec(1500, () {
       showTitle = true;
     });
     verifyToken();
     initNoti();
-    afterFewSec(4, () {
+    afterFewSec(2000, () {
       if (!showLoginBtn) {
-        toOtherPage(context,
-            page: const GroupChat(
-              page: 1,
-              groupId: 2,
-            ))();
+        toOtherPageWithoutPath(context, page: const Main());
       }
     });
   }
@@ -113,7 +99,7 @@ class _IntroState extends State<Intro> {
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 100),
         child: SizedBox(
-          width: MediaQuery.of(context).size.width,
+          width: getWidth(context),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,12 +109,16 @@ class _IntroState extends State<Intro> {
                 children: [
                   showExplain
                       ? const CustomText(
-                          content: '당신을 채울', fontSize: FontSize.sloganSize)
+                          content: '당신을 채울',
+                          fontSize: FontSize.sloganSize,
+                        )
                       : const SizedBox(),
                   const SizedBox(height: 20),
                   showTitle
                       ? const CustomText(
-                          content: 'Bin:goT', fontSize: FontSize.sloganSize)
+                          content: 'Bin:goT',
+                          fontSize: FontSize.sloganSize,
+                        )
                       : const SizedBox(),
                 ],
               ),
