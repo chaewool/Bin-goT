@@ -77,7 +77,14 @@ class GroupCreateView(APIView):
         
         check_cnt_groups(user)
 
-        createBoard(request, group)
+        result = createBoard(request, group)
+        
+        if result:
+            url = 'groups' + '/' + str(group.id)
+            delete_image(url)
+            group.delete()
+
+            return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
         
         return Response(data={'group_id': group.id}, status=status.HTTP_200_OK)
 
@@ -192,17 +199,23 @@ class GroupJoinView(APIView):
                     if str(num[i][-2:]) != f'{i + 1:0>2}':
                         rand_name = f'익명의 참여자 {i + 1:0>2}'
                         break
-                Participate.objects.create(user=user, group=group, is_banned=0, rand_name=rand_name)
+                participate = Participate.objects.create(user=user, group=group, is_banned=0, rand_name=rand_name)
                 
                 user.cnt_groups += 1
                 user.save()
                 
                 check_cnt_groups(user)
             else:
-                Participate.objects.create(user=user, group=group, is_banned=1, rand_name=user.username)
-                send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.')
+                participate = Participate.objects.create(user=user, group=group, is_banned=1, rand_name=user.username)
             
-            createBoard(request, group)
+            result = createBoard(request, group)
+    
+            if result:
+                participate.delete()
+
+                return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
+            
+            send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.')
                 
             return Response(data={}, status=status.HTTP_200_OK)
         

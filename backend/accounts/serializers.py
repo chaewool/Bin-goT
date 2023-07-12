@@ -24,7 +24,7 @@ class GroupSerializer(serializers.ModelSerializer):
     def get_status(self, obj):
         if date.today() > obj.end:
             return '완료'
-        elif date.today() > obj.start:
+        elif date.today() >= obj.start:
             return '진행 중'
         else:
             return '시작 전'
@@ -53,7 +53,7 @@ class BoardSerializer(serializers.ModelSerializer):
     def get_status(self, obj):
         if date.today() > obj.group.end:
             return '완료'
-        elif date.today() > obj.group.start:
+        elif date.today() >= obj.group.start:
             return '진행 중'
         else:
             return '시작 전'

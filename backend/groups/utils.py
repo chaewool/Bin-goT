@@ -71,11 +71,11 @@ def createBoard(request, group):
     data = json.loads(request.data.get('board_data'))
     
     if date.today() >= group.start:
-        return Response(data={'message': '시작일이 경과하여 가입할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        return '시작일이 경과하여 가입할 수 없습니다.'
 
     items = data['items']
     if len(items) < group.size ** 2:
-        return Response(data={'message': '항목의 개수가 부족합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        return '항목의 개수가 부족합니다.'
     
     board_serializer = BoardCreateSerializer(data=data)
     boarditem_serializer = BoardItemCreateSerializer(data=items, many=True)
