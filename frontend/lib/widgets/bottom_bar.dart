@@ -9,8 +9,10 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:bin_got/providers/group_provider.dart';
 
 //* 그룹에서의 하단 바
 class BottomBar extends StatelessWidget {
@@ -100,12 +102,20 @@ class FormBottomBar extends StatelessWidget {
 }
 
 //* 그룹 채팅 입력 하단 바
-class GroupChatBottomBar extends StatelessWidget {
-  const GroupChatBottomBar({super.key});
+class GroupChatBottomBar extends StatefulWidget {
+  final int groupId;
+  const GroupChatBottomBar({super.key, required this.groupId});
 
+  @override
+  State<GroupChatBottomBar> createState() => _GroupChatBottomBarState();
+}
+
+class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
   @override
   Widget build(BuildContext context) {
     XFile? selectedImage;
+    String? content;
+
     void imagePicker() async {
       final ImagePicker picker = ImagePicker();
       final localImage = await picker.pickImage(
@@ -128,10 +138,25 @@ class GroupChatBottomBar extends StatelessWidget {
             child: CustomInput(
               filled: true,
               explain: '내용을 입력하세요',
-              setValue: (p0) {},
+              setValue: (value) {
+                content = value;
+              },
             ),
           ),
-          Flexible(child: CustomIconButton(onPressed: () {}, icon: sendIcon)),
+          Flexible(
+              child: CustomIconButton(
+                  onPressed: () {
+                    print(content);
+                    GroupProvider()
+                        .createGroupChatChat(
+                            widget.groupId,
+                            FormData.fromMap({
+                              'content': content,
+                              'img': selectedImage,
+                            }))
+                        .then((result) => print('결과: $result'));
+                  },
+                  icon: sendIcon)),
         ],
       ),
     );
