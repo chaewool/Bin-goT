@@ -32,13 +32,15 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  syncfusion_flutter_datepicker: ^21.1.41
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^1.0.2
+  # syncfusion_flutter_datepicker: ^21.1.41
+  custom_date_range_picker: ^1.0.6
   contained_tab_bar_view: ^0.8.0
-  # intl: ^0.17.0
+  # intl: ^0.18.0
   share: ^2.0.4
   kakao_flutter_sdk_user: ^1.4.0
   kakao_flutter_sdk_share: ^1.4.0

@@ -121,6 +121,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  custom_date_range_picker:
+    dependency: "direct main"
+    description:
+      name: custom_date_range_picker
+      sha256: "69b803e285e27cdf018ed4a81edb53c9db3542e8853a9c086421260f943d7b16"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   dart_style:
     dependency: transitive
     description:
@@ -818,22 +826,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  syncfusion_flutter_core:
-    dependency: transitive
-    description:
-      name: syncfusion_flutter_core
-      sha256: "05b079cb1be26a8d5c1afe714172d2eed9178049f4a7dc773b2cbb8b053eff8d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "21.1.41"
-  syncfusion_flutter_datepicker:
-    dependency: "direct main"
-    description:
-      name: syncfusion_flutter_datepicker
-      sha256: "1213fae21e01781903d8cc8d7d332cb56ee9f05032661bc0e2c852525f1a0c40"
-      url: "https://pub.dev"
-    source: hosted
-    version: "21.1.41"
   term_glyph:
     dependency: transitive
     description:

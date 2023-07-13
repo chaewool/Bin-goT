@@ -1,5 +1,6 @@
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 
 class UserInfoProvider extends ApiProvider {
@@ -89,11 +90,14 @@ class UserInfoProvider extends ApiProvider {
               .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
               .toList();
           bool hasNotGroup = data['is_recommend'];
+          GlobalBingoProvider().setTotalPage(data['last_page']);
           return MainGroupListModel.fromJson(
               {'groups': myGroupList, 'is_recommend': hasNotGroup});
         }
         return MainGroupListModel.fromJson(
             {'groups': [], 'is_recommend': true});
+      } else if (response.statusCode == 401) {
+        print('여기서 401 오류 처리 할 거야');
       }
       throw Error();
     } catch (error) {
@@ -110,7 +114,8 @@ class UserInfoProvider extends ApiProvider {
           .get(mainBingoTabUrl, queryParameters: queryParameters);
       print(response);
       if (response.statusCode == 200) {
-        final data = response.data;
+        final data = response.data['boards'];
+        GlobalBingoProvider().setTotalPage(response.data['last_page']);
         print('data : $data');
         if (data.isNotEmpty) {
           MyBingoList myBingoList = data

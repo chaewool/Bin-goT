@@ -49,24 +49,22 @@ class _MainState extends State<Main> {
         appBar: MainBar(onPressed: changeSearchMode),
         body: Stack(
           children: [
-            Expanded(
-              child: CustomBoxContainer(
-                height: getHeight(context) - 50 - paddingTop,
-                // color: backgroundColor,
-                hasRoundEdge: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    isSearchMode
-                        ? const SearchBar(isMain: true)
-                        : const SizedBox(),
-                    const SizedBox(height: 15),
-                    const Expanded(
-                      // height: MediaQuery.of(context).size.height - 200,
-                      child: MyTabBar(),
-                    ),
-                  ],
-                ),
+            CustomBoxContainer(
+              height: getHeight(context) - 50 - paddingTop,
+              // color: backgroundColor,
+              hasRoundEdge: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  isSearchMode
+                      ? const SearchBar(isMain: true)
+                      : const SizedBox(),
+                  const SizedBox(height: 15),
+                  const Expanded(
+                    // height: MediaQuery.of(context).size.height - 200,
+                    child: MyTabBar(),
+                  ),
+                ],
               ),
             ),
             watchPressed(context)

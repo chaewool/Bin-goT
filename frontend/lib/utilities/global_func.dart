@@ -202,11 +202,28 @@ bool watchPressed(BuildContext context) =>
     context.watch<NotiProvider>().beforeExit;
 
 //* scroll
-int? getTotal(BuildContext context) =>
-    context.read<GlobalScrollProvider>().totalPages;
+int? getTotal(BuildContext context, int mode) {
+  switch (mode) {
+    case 0:
+      return context.read<GlobalScrollProvider>().lastPage;
+    case 1:
+      return context.read<GlobalGroupProvider>().lastPage;
+    default:
+      return context.read<GlobalBingoProvider>().lastPage;
+  }
+}
 
-void setTotal(BuildContext context, int? newTotal) =>
-    context.read<GlobalScrollProvider>().setTotal(newTotal);
+// void setTotal(BuildContext context,
+//     {required int mode, required int newTotal}) {
+//   switch (mode) {
+//     case 0:
+//       return context.read<GlobalScrollProvider>().setTotal(newTotal);
+//     case 1:
+//       return context.read<GlobalGroupProvider>().setTotalPage(newTotal);
+//     default:
+//       return context.read<GlobalBingoProvider>().setTotalPage(newTotal);
+//   }
+// }
 
 bool readLoading(BuildContext context) =>
     context.read<GlobalScrollProvider>().loading;
@@ -217,13 +234,38 @@ bool getLoading(BuildContext context) =>
 void setLoading(BuildContext context, bool value) =>
     context.read<GlobalScrollProvider>().setLoading(value);
 
-int getPage(BuildContext context) => context.read<GlobalScrollProvider>().page;
+int getPage(BuildContext context, int mode) {
+  switch (mode) {
+    case 0:
+      return context.read<GlobalScrollProvider>().page;
+    case 1:
+      return context.read<GlobalGroupProvider>().page;
+    default:
+      return context.read<GlobalBingoProvider>().page;
+  }
+}
 
-void increasePage(BuildContext context) =>
-    context.read<GlobalScrollProvider>().increasePage();
+void increasePage(BuildContext context, int mode) {
+  switch (mode) {
+    case 0:
+      return context.read<GlobalScrollProvider>().increasePage();
+    case 1:
+      return context.read<GlobalGroupProvider>().increasePage();
+    default:
+      return context.read<GlobalBingoProvider>().increasePage();
+  }
+}
 
-void initPage(BuildContext context) =>
-    context.read<GlobalScrollProvider>().initPage();
+void initPage(BuildContext context, int mode) {
+  switch (mode) {
+    case 0:
+      return context.read<GlobalScrollProvider>().initPage();
+    case 1:
+      return context.read<GlobalGroupProvider>().initPage();
+    default:
+      return context.read<GlobalBingoProvider>().initPage();
+  }
+}
 
 bool getWorking(BuildContext context) =>
     context.read<GlobalScrollProvider>().working;
@@ -237,9 +279,9 @@ bool getAdditional(BuildContext context) =>
 void setAdditional(BuildContext context, bool value) =>
     context.read<GlobalScrollProvider>().setAdditional(value);
 
-void initLoadingData(BuildContext context) {
+void initLoadingData(BuildContext context, int mode) {
   setLoading(context, true);
-  initPage(context);
+  initPage(context, mode);
   setAdditional(context, false);
   setWorking(context, false);
 }

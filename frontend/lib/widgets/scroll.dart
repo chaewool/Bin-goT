@@ -1,44 +1,173 @@
-import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
-class InfiniteScroll extends StatelessWidget {
-  final List data;
-  final MyGroupModel? myGroupModel;
-  final bool isSearchMode, hasNotGroup;
-  const InfiniteScroll({
+class GroupScroll extends StatelessWidget {
+  final MyGroupList myGroupList;
+  final bool hasNotGroup;
+  final bool isSearch;
+  const GroupScroll({
     super.key,
-    required this.data,
-    required this.isSearchMode,
-    required this.myGroupModel,
-    this.hasNotGroup = false,
+    required this.myGroupList,
+    required this.isSearch,
+    required this.hasNotGroup,
   });
 
   @override
   Widget build(BuildContext context) {
+    print('has not group => $hasNotGroup');
+    return InfiniteScroll(
+      data: myGroupList,
+      isGroupMode: true,
+      mode: isSearch ? 0 : 1,
+      emptyWidget: Column(
+        children: const [
+          CustomText(
+            center: true,
+            content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+            height: 1.7,
+          ),
+        ],
+      ),
+      hasNotGroupWidget: hasNotGroup
+          ? Column(
+              children: const [
+                CustomText(
+                  center: true,
+                  content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                  height: 1.7,
+                ),
+                SizedBox(
+                  height: 70,
+                ),
+                CustomText(
+                  content: '추천그룹',
+                  fontSize: FontSize.titleSize,
+                ),
+              ],
+            )
+          : null,
+    );
+  }
+}
+
+// class BingoScroll extends StatelessWidget {
+//   final MyBingoList myBingoList;
+//   const BingoScroll({
+//     super.key,
+//     required this.myBingoList,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return InfiniteScroll(
+//       data: myBingoList,
+//       mode: 2,
+//       emptyWidget: const Padding(
+//         padding: EdgeInsets.only(top: 40),
+//         child: CustomText(
+//           center: true,
+//           height: 1.7,
+//           content: '아직 생성한 빙고가 없어요.\n그룹 내에서\n빙고를 생성해보세요.',
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class ChatScroll extends StatelessWidget {
+  final GroupChatList groupChatList;
+  const ChatScroll({
+    super.key,
+    required this.groupChatList,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InfiniteScroll(
+      data: groupChatList,
+      mode: 0,
+      emptyWidget: Column(
+        children: const [
+          CustomText(
+            center: true,
+            content: '그룹 채팅 데이터가 없습니다',
+            height: 1.7,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InfiniteScroll extends StatelessWidget {
+  final List data;
+  final int cnt, mode;
+  final Widget emptyWidget;
+  final Widget? hasNotGroupWidget;
+  final bool isGroupMode;
+  // final MyGroupModel? myGroupModel;
+  // final bool isGroupMode, isChatMode, isSearchMode, hasNotGroup;
+  const InfiniteScroll({
+    super.key,
+    required this.data,
+    this.cnt = 10,
+    required this.emptyWidget,
+    required this.mode,
+    this.hasNotGroupWidget,
+    // required this.myGroupModel,
+    this.isGroupMode = false,
+    // this.isChatMode = false,
+    // this.isSearchMode = false,
+    // this.hasNotGroup = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    print(data);
     return CustomBoxContainer(
+      color: backgroundColor,
       child: !getLoading(context)
-          ? data.isNotEmpty && !hasNotGroup
+          ? data.isNotEmpty
               ? ListView.builder(
-                  itemCount: data.length,
+                  // hasNotGroupWidget ?? const SizedBox(),
+                  itemCount: mode != 2 ? data.length : (data.length / 2).ceil(),
                   itemBuilder: (context, i) {
-                    final returnedWidget = GroupListItem(
-                        isSearchMode: isSearchMode, groupInfo: myGroupModel!);
+                    final returnedWidget = isGroupMode
+                        ? GroupListItem(
+                            isSearchMode: mode == 0,
+                            groupInfo: data[i],
+                          )
+                        : mode == 2
+                            ? Row(
+                                children: [
+                                  Flexible(
+                                    child: BingoGallery(bingo: data[2 * i]),
+                                  ),
+                                  Flexible(
+                                    child: (i != data.length ||
+                                            data.length % 2 == 0)
+                                        ? BingoGallery(bingo: data[2 * i + 1])
+                                        : const SizedBox(),
+                                  ),
+                                ],
+                              )
+                            : ChatListItem(data: data[i]);
                     return Column(
                       children: [
-                        i < getPage(context) * 10
-                            // || !getAdditional(context)
+                        i < getPage(context, mode) * cnt
                             ? Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
+                                padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
                                 child: returnedWidget,
                               )
                             : const SizedBox(),
                         i == data.length - 1 &&
-                                getTotal(context)! > getPage(context)
+                                getTotal(context, mode)! >
+                                    getPage(context, mode)
                             ? const Padding(
                                 padding: EdgeInsets.symmetric(
                                   vertical: 40,
@@ -52,202 +181,9 @@ class InfiniteScroll extends StatelessWidget {
                     );
                   },
                 )
-              : Column(
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: Center(
-                        child: CustomText(
-                          height: 1.7,
-                          center: true,
-                          content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                          color: whiteColor,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 70,
-                    ),
-                    CustomText(
-                      content: '추천그룹',
-                      fontSize: FontSize.titleSize,
-                    ),
-                  ],
-                )
+              : emptyWidget
           : const Center(child: CircularProgressIndicator()),
+      // CustomText(content: '빙고 정보를 불러오는 중입니다')
     );
   }
 }
-
-// class CustomSilverList extends StatelessWidget {
-//   final bool showReview, isMain, isSearch;
-//   final int? toiletId, folderId;
-//   final String? toiletName;
-//   final List data;
-//   final ReturnVoid refreshPage;
-//   const CustomSilverList({
-//     super.key,
-//     required this.showReview,
-//     required this.isMain,
-//     required this.isSearch,
-//     this.toiletId,
-//     this.folderId,
-//     this.toiletName,
-//     required this.data,
-//     required this.refreshPage,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     int cnt = showReview || (!isMain && !isSearch) ? 10 : 20;
-//     String ifEmpty() {
-//       String showedContent = '';
-//       if (isSearch) {
-//         showedContent = '조건에 맞는 화장실이';
-//       } else if (showReview) {
-//         showedContent = '이 화장실에 대한 리뷰가';
-//       } else if (isMain) {
-//         showedContent = '주변에 화장실이';
-//       } else {
-//         showedContent = '즐겨찾기한 화장실이';
-//       }
-//       return '$showedContent 없습니다.';
-//     }
-
-//     return CustomBox(
-//       color: mainColor,
-//       child: Padding(
-//         padding: const EdgeInsets.symmetric(horizontal: 10),
-//         child: !getLoading(context)
-//             ? data.isNotEmpty
-//                 ? CustomListView(
-//                     itemCount: data.length,
-//                     itemBuilder: (context, i) {
-//                       final returnedWidget = showReview
-//                           ? ReviewBox(
-//                               review: data[i],
-//                               toiletId: toiletId!,
-//                               toiletName: toiletName!,
-//                               refreshPage: refreshPage,
-//                             )
-//                           : ListItem(
-//                               showReview: false,
-//                               toiletModel: data[i],
-//                               isMain: isMain,
-//                               refreshPage: refreshPage,
-//                               index: i,
-//                             );
-
-//                       return Column(
-//                         children: [
-//                           i < getPage(context) * cnt
-//                               // || !getAdditional(context)
-//                               ? Padding(
-//                                   padding: const EdgeInsets.only(bottom: 20),
-//                                   child: returnedWidget,
-//                                 )
-//                               : const SizedBox(),
-//                           i == data.length - 1 &&
-//                                   getTotal(context)! > getPage(context)
-//                               ? const Padding(
-//                                   padding: EdgeInsets.symmetric(
-//                                     vertical: 40,
-//                                   ),
-//                                   child: Center(
-//                                     child: CircularProgressIndicator(),
-//                                   ),
-//                                 )
-//                               : const SizedBox()
-//                         ],
-//                       );
-//                     },
-//                   )
-//                 : Padding(
-//                     padding: const EdgeInsets.only(top: 40),
-//                     child: Center(
-//                       child: CustomText(
-//                         title: ifEmpty(),
-//                         color: CustomColors.whiteColor,
-//                       ),
-//                     ),
-//                   )
-//             : const Center(child: CircularProgressIndicator()),
-//       ),
-//     );
-//   }
-// }
-
-// class CustomBoxWithScrollView extends StatefulWidget {
-//   final ScrollController? appBarScroll, listScroll;
-//   final Widget flexibleSpace;
-//   final double toolbarHeight;
-//   // expandedHeight;
-//   final Color backgroundColor;
-//   final WidgetList? silverChild;
-//   // final ReturnVoid addScrollListner;
-//   // final SliverChildDelegate? sliverChildDelegate;
-//   // final ScrollPhysics physics;
-
-//   const CustomBoxWithScrollView({
-//     super.key,
-//     this.appBarScroll,
-//     this.listScroll,
-//     required this.flexibleSpace,
-//     this.toolbarHeight = 200,
-//     // this.expandedHeight = 100,
-//     this.backgroundColor = mainColor,
-//     this.silverChild,
-//     // required this.addScrollListner,
-//     // this.sliverChildDelegate,
-//     // this.physics = const AlwaysScrollableScrollPhysics(),
-//   });
-
-//   @override
-//   State<CustomBoxWithScrollView> createState() =>
-//       _CustomBoxWithScrollViewState();
-// }
-
-// class _CustomBoxWithScrollViewState extends State<CustomBoxWithScrollView> {
-//   @override
-//   void initState() {
-//     super.initState();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return CustomBox(
-//       radius: 0,
-//       color: mainColor,
-//       borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-//       child: Column(
-//         children: [
-//           SizedBox(
-//             height: widget.toolbarHeight,
-//             child: CustomScrollView(
-//               controller: widget.appBarScroll,
-//               slivers: [
-//                 CustomSilverAppBar(
-//                   elevation: 0,
-//                   toolbarHeight: widget.toolbarHeight,
-//                   // expandedHeight: widget.expandedHeight,
-//                   flexibleSpace: widget.flexibleSpace,
-//                   backgroundColor: widget.backgroundColor,
-//                 ),
-//               ],
-//             ),
-//           ),
-//           Expanded(
-//             child: CustomScrollView(
-//               controller: widget.listScroll,
-//               slivers: [
-//                 SliverList(
-//                   delegate: SliverChildListDelegate(widget.silverChild!),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

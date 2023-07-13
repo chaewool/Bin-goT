@@ -7,7 +7,6 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
-import 'package:bin_got/widgets/select_box.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
@@ -30,24 +29,26 @@ class SearchBar extends StatefulWidget {
 
 class _SearchBarState extends State<SearchBar> {
   final List<String> period = <String>[
-    '기간을 선택해주세요',
-    '한 달 이하',
-    '한 달 ~ 세 달',
-    '세 달 ~ 여섯 달',
-    '여섯 달 ~ 아홉 달',
-    '아홉 달 ~ 1년'
+    '기간 미선택',
+    '한 달',
+    '세 달',
+    '여섯 달',
+    '아홉 달',
+    '1년',
+    '하루',
   ];
-  late int periodIdx;
   late bool privateGroup, publicGroup;
-  bool canShowMenu = false;
   StringMap keyword = {};
   final periodBoxKey = GlobalKey();
   Offset? position;
+  late double end;
+  late double start;
 
   @override
   void initState() {
     super.initState();
-    periodIdx = widget.period;
+    end = widget.period.toDouble();
+    start = end == 0.0 ? 0 : end - 1;
     privateGroup = widget.public % 2 == 0;
     publicGroup = widget.public < 2;
     keyword['value'] = widget.query ?? '';
@@ -67,7 +68,7 @@ class _SearchBarState extends State<SearchBar> {
   }
 
   void onSearchAction() {
-    if (keyword['value'] != '' || periodIdx != 0) {
+    if (keyword['value'] != '' || end != 0) {
       int result = 3;
       if (publicGroup) {
         result -= 2;
@@ -81,7 +82,7 @@ class _SearchBarState extends State<SearchBar> {
         page: SearchGroup(
           public: result,
           cnt: 20,
-          period: periodIdx,
+          period: end.toInt(),
           query: keyword['value'],
         ),
       )();
@@ -112,89 +113,78 @@ class _SearchBarState extends State<SearchBar> {
     });
   }
 
-  void changeShowMenu() {
-    setState(() {
-      canShowMenu = !canShowMenu;
-    });
-  }
-
-  void changeIdx(String string, int intVal) {
-    setState(() {
-      periodIdx = intVal;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        CustomBoxContainer(
-          color: whiteColor,
-          child: ColWithPadding(
-            horizontal: 30,
-            vertical: 17,
+    return CustomBoxContainer(
+      color: whiteColor,
+      child: ColWithPadding(
+        horizontal: 30,
+        vertical: 17,
+        children: [
+          TextField(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: '키워드를 입력하세요',
+            ),
+            style: const TextStyle(fontSize: 20),
+            onChanged: (value) {
+              keyword['value'] = value;
+            },
+            onSubmitted: (_) => onSearchAction(),
+            textInputAction: TextInputAction.search,
+            controller: TextEditingController(text: keyword['value']),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: '키워드를 입력하세요',
-                ),
-                style: const TextStyle(fontSize: 20),
+              const SizedBox(),
+              RangeSlider(
+                min: 0,
+                max: 5,
+                values: RangeValues(start, end),
+                divisions: 5,
+                labels: RangeLabels(
+                    period[start == 0.0 && end != 0.0 ? 6 : start.toInt()],
+                    period[end.toInt()]),
                 onChanged: (value) {
-                  keyword['value'] = value;
+                  final newStart = value.start;
+                  final newEnd = value.end;
+                  setState(() {
+                    if (newEnd == 0) {
+                      end = 0;
+                      start = 0;
+                    } else if (end != newEnd) {
+                      end = newEnd;
+                      start = newEnd - 1;
+                    } else if (start < 5 && start != newStart) {
+                      start = newStart;
+                      end = newStart + 1;
+                    }
+                  });
                 },
-                onSubmitted: (_) => onSearchAction(),
-                textInputAction: TextInputAction.search,
-                controller: TextEditingController(text: keyword['value']),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(),
-                  SelectBox(
-                    key: periodBoxKey,
-                    onTap: changeShowMenu,
-                    value: period[periodIdx],
-                    width: 200,
-                    height: 50,
-                  ),
-                  CustomButton(
-                    onPressed: onSearchAction,
-                    content: '검색',
-                  ),
-                ],
+              CustomButton(
+                onPressed: onSearchAction,
+                content: '검색',
               ),
-              Row(
-                children: [
-                  CustomCheckBox(
-                    label: '공개 그룹',
-                    onChange: (_) => changePublic(),
-                    value: publicGroup,
-                  ),
-                  CustomCheckBox(
-                    label: '비공개 그룹',
-                    onChange: (_) => changePrivate(),
-                    value: privateGroup,
-                  )
-                ],
-              )
             ],
           ),
-        ),
-        canShowMenu
-            ? Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, position!.dx, 0),
-                child: SelectBoxContainer(
-                  listItems: period,
-                  valueItems: List.generate(6, (i) => i),
-                  index: periodIdx,
-                  changeShowState: changeShowMenu,
-                  changeIdx: changeIdx,
-                  mapKey: '',
-                ),
+          Row(
+            children: [
+              CustomCheckBox(
+                label: '공개 그룹',
+                onChange: (_) => changePublic(),
+                value: publicGroup,
+              ),
+              CustomCheckBox(
+                label: '비공개 그룹',
+                onChange: (_) => changePrivate(),
+                value: privateGroup,
               )
-            : const SizedBox(),
-      ],
+            ],
+          )
+        ],
+      ),
     );
   }
 }

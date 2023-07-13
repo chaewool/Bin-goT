@@ -4,7 +4,7 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+// import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CustomInput extends StatelessWidget {
   final String? explain;
@@ -103,33 +103,34 @@ class InputDate extends StatelessWidget {
             width: getWidth(context) * 0.9,
             height: getHeight(context) * 0.8,
             color: whiteColor,
-            child: SfDateRangePicker(
-              showTodayButton: true,
-              view: DateRangePickerView.year,
-              navigationDirection: DateRangePickerNavigationDirection.vertical,
-              enableMultiView: true,
-              confirmText: '적용',
-              cancelText: '취소',
-              headerHeight: 100,
-              minDate: now,
-              maxDate: now.add(const Duration(days: 365)),
-              enablePastDates: false,
-              showActionButtons: true,
-              selectionMode: DateRangePickerSelectionMode.range,
-              onCancel: () => toBack(context),
-              onSubmit: (pickedDate) {
-                final start = (pickedDate as PickerDateRange)
-                    .startDate
-                    ?.toString()
-                    .split(' ')[0];
-                final end = pickedDate.endDate?.toString().split(' ')[0];
-                if (start != null && end != null) {
-                  onSubmit(context, 'start')(start);
-                  onSubmit(context, 'end')(end);
-                  toBack(context);
-                }
-              },
-            ),
+            child: const CustomText(content: '원래 여기에 range picker가'),
+            // SfDateRangePicker(
+            //   showTodayButton: true,
+            //   view: DateRangePickerView.year,
+            //   navigationDirection: DateRangePickerNavigationDirection.vertical,
+            //   enableMultiView: true,
+            //   confirmText: '적용',
+            //   cancelText: '취소',
+            //   headerHeight: 100,
+            //   minDate: now,
+            //   maxDate: now.add(const Duration(days: 365)),
+            //   enablePastDates: false,
+            //   showActionButtons: true,
+            //   selectionMode: DateRangePickerSelectionMode.range,
+            //   onCancel: () => toBack(context),
+            //   onSubmit: (pickedDate) {
+            //     final start = (pickedDate as PickerDateRange)
+            //         .startDate
+            //         ?.toString()
+            //         .split(' ')[0];
+            //     final end = pickedDate.endDate?.toString().split(' ')[0];
+            //     if (start != null && end != null) {
+            //       onSubmit(context, 'start')(start);
+            //       onSubmit(context, 'end')(end);
+            //       toBack(context);
+            //     }
+            //   },
+            // ),
           ),
         ),
         // () {

@@ -24,6 +24,8 @@ class ApiProvider extends UrlClass {
       print('create: $response');
       if (response.statusCode == 200) {
         return response.data;
+      } else if (response.statusCode == 401) {
+        return {'statusCode': 401};
       }
       throw Error();
     } catch (error) {
@@ -37,8 +39,11 @@ class ApiProvider extends UrlClass {
     try {
       print('url : $url');
       final response = await dioWithToken().post(url);
-      if (response.statusCode == 200) {
+      final statusCode = response.statusCode;
+      if (statusCode == 200) {
         return response.data;
+      } else if (response.statusCode == 401) {
+        return {'statusCode': 401};
       }
       throw Error();
     } catch (error) {
@@ -54,6 +59,8 @@ class ApiProvider extends UrlClass {
       if (response.statusCode == 200) {
         print('200');
         return {};
+      } else if (response.statusCode == 401) {
+        return {'statusCode': 401};
       }
       throw Error();
     } catch (error) {
@@ -67,6 +74,8 @@ class ApiProvider extends UrlClass {
       final response = await dioWithToken().delete(url);
       if (response.statusCode == 200) {
         return {};
+      } else if (response.statusCode == 401) {
+        return {'statusCode': 401};
       }
       throw Error();
     } catch (error) {

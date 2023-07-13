@@ -1,6 +1,7 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:dio/dio.dart';
 
@@ -54,9 +55,13 @@ class GroupProvider extends ApiProvider {
         },
       );
       if (response.statusCode == 200) {
-        MyGroupList groupList = response.data
+        print('data => ${response.data}');
+        MyGroupList groupList = response.data['groups']
             .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
             .toList();
+        print('group list => $groupList');
+
+        GlobalScrollProvider().setTotalPage(response.data['last_page']);
         return groupList;
       }
       throw Error();
