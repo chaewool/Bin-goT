@@ -5,7 +5,6 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,29 +21,6 @@ class _IntroState extends State<Intro> {
   var showExplain = false;
   var showTitle = false;
   var showLoginBtn = false;
-
-  void login() async {
-    try {
-      final data = await UserProvider().login();
-      if (!mounted) return;
-      setTokens(context, data['access_token'], data['refresh_token']);
-      setNoti(
-        context,
-        rank: data['noti_rank'],
-        due: data['noti_due'],
-        chat: data['noti_chat'],
-        complete: data['noti_check'],
-      );
-      context.read<AuthProvider>().setStoreId(data['id']);
-      if (data['is_login']) {
-        toOtherPage(context, page: const Main())();
-      } else {
-        showModal(context, page: const ChangeNameModal())();
-      }
-    } catch (error) {
-      showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
-    }
-  }
 
   void verifyToken() async {
     try {
@@ -124,7 +100,7 @@ class _IntroState extends State<Intro> {
               ),
               showLoginBtn
                   ? GestureDetector(
-                      onTap: login,
+                      onTap: () => login(context),
                       child: kakaoLogin,
                     )
                   : const SizedBox(),

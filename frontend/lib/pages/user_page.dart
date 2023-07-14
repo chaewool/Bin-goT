@@ -1,3 +1,4 @@
+import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/help_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
@@ -104,11 +105,19 @@ class _MyPageState extends State<MyPage> {
   void initState() {
     super.initState();
     UserInfoProvider().getProfile().then((data) {
-      setState(() {
-        username = data.username;
-        newName['value'] = data.username;
-        badgeId = data.badgeId;
-      });
+      if (data is ProfilModel) {
+        setState(() {
+          username = data.username;
+          newName['value'] = data.username;
+          badgeId = data.badgeId;
+        });
+      } else if (data['statusCode'] == 401) {
+        showLoginModal(context);
+      } else {
+        showErrorModal(context);
+      }
+    }).catchError((error) {
+      showErrorModal(context);
     });
     optionList.add(context.read<NotiProvider>().rankNoti);
     optionList.add(context.read<NotiProvider>().dueNoti);

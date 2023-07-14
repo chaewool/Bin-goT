@@ -292,20 +292,18 @@ class _MyTabBarState extends State<MyTabBar> {
     [
       ['종료일 ▼', '종료일 ▲'],
       ['전체', '진행 중', '완료'],
-      ['캘린더로 보기', '리스트로 보기']
     ],
     [
       ['종료일 ▼', '종료일 ▲'],
       ['전체', '진행 중', '완료'],
-      ['', '']
     ]
   ];
   late List<StringList> presentOptions;
   late int presentIdx;
 
   List<IntList> idxList = [
-    [1, 0, 0],
-    [1, 0, 0]
+    [1, 0],
+    [1, 0]
   ];
   void changeIdx(int idx) {
     if (idxList[presentIdx][idx] < presentOptions[idx].length - 1) {
@@ -445,9 +443,10 @@ class _MyTabBarState extends State<MyTabBar> {
       onChange: changeTab,
       upperView: RowWithPadding(
         vertical: 10,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        horizontal: 25,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          for (int i = 0; i < 3; i += 1)
+          for (int i = 0; i < 2; i += 1)
             Center(
               child: CustomTextButton(
                 content: presentOptions[i][idxList[presentIdx][i]],
@@ -460,42 +459,38 @@ class _MyTabBarState extends State<MyTabBar> {
       listItems: [
         [
           Expanded(
-            child: idxList[0][2] == 0
-                ? InfiniteScroll(
-                    data: groupTabData,
-                    isGroupMode: true,
-                    mode: 1,
-                    emptyWidget: Column(
-                      children: const [
-                        CustomText(
-                          center: true,
-                          content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                          height: 1.7,
-                        ),
-                      ],
-                    ),
-                    hasNotGroupWidget: hasNotGroup
-                        ? Column(
-                            children: const [
-                              CustomText(
-                                center: true,
-                                content:
-                                    '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                                height: 1.7,
-                              ),
-                              SizedBox(
-                                height: 70,
-                              ),
-                              CustomText(
-                                content: '추천그룹',
-                                fontSize: FontSize.titleSize,
-                              ),
-                            ],
-                          )
-                        : null,
+              child: InfiniteScroll(
+            data: groupTabData,
+            isGroupMode: true,
+            mode: 1,
+            emptyWidget: Column(
+              children: const [
+                CustomText(
+                  center: true,
+                  content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                  height: 1.7,
+                ),
+              ],
+            ),
+            hasNotGroupWidget: hasNotGroup
+                ? Column(
+                    children: const [
+                      CustomText(
+                        center: true,
+                        content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                        height: 1.7,
+                      ),
+                      SizedBox(
+                        height: 70,
+                      ),
+                      CustomText(
+                        content: '추천그룹',
+                        fontSize: FontSize.titleSize,
+                      ),
+                    ],
                   )
-                : const SizedBox(),
-          )
+                : null,
+          ))
         ],
         [
           Expanded(

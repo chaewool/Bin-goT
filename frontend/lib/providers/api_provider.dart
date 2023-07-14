@@ -9,7 +9,7 @@ class ApiProvider extends UrlClass {
 
   FutureDynamicMap deliverApi(String url) async => _deliverApi(url);
 
-  FutureVoid updateApi(String url, {required DynamicMap data}) async =>
+  FutureDynamicMap updateApi(String url, {required DynamicMap data}) async =>
       _updateApi(url, data: data);
 
   FutureDynamicMap deleteApi(String url) async => _deleteApi(url);
@@ -22,14 +22,12 @@ class ApiProvider extends UrlClass {
       print(data);
       final response = await dioWithToken().post(url, data: data);
       print('create: $response');
-      if (response.statusCode == 200) {
-        return response.data;
-      } else if (response.statusCode == 401) {
-        return {'statusCode': 401};
-      }
-      throw Error();
+      return response.data;
     } catch (error) {
       print('createError: $error');
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
       throw Error();
     }
   }
@@ -39,14 +37,11 @@ class ApiProvider extends UrlClass {
     try {
       print('url : $url');
       final response = await dioWithToken().post(url);
-      final statusCode = response.statusCode;
-      if (statusCode == 200) {
-        return response.data;
-      } else if (response.statusCode == 401) {
+      return response.data;
+    } catch (error) {
+      if (error.toString().contains('401')) {
         return {'statusCode': 401};
       }
-      throw Error();
-    } catch (error) {
       throw Error();
     }
   }
@@ -56,14 +51,11 @@ class ApiProvider extends UrlClass {
     try {
       final response = await dioWithToken().put(url, data: data);
       print('url : $url, data : $data, response: $response');
-      if (response.statusCode == 200) {
-        print('200');
-        return {};
-      } else if (response.statusCode == 401) {
+      return {};
+    } catch (error) {
+      if (error.toString().contains('401')) {
         return {'statusCode': 401};
       }
-      throw Error();
-    } catch (error) {
       throw Error();
     }
   }
@@ -71,14 +63,12 @@ class ApiProvider extends UrlClass {
   //* delete
   FutureDynamicMap _deleteApi(String url) async {
     try {
-      final response = await dioWithToken().delete(url);
-      if (response.statusCode == 200) {
-        return {};
-      } else if (response.statusCode == 401) {
+      await dioWithToken().delete(url);
+      return {};
+    } catch (error) {
+      if (error.toString().contains('401')) {
         return {'statusCode': 401};
       }
-      throw Error();
-    } catch (error) {
       throw Error();
     }
   }

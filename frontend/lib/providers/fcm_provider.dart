@@ -5,11 +5,6 @@ class FCMProvider extends ApiProvider {
   void saveFCMToken(String token) async => _saveFCMToken(token);
 
   //* private
-  void _saveFCMToken(String token) async {
-    try {
+  void _saveFCMToken(String token) =>
       createApi(saveFCMTokentUrl, data: {'fcm_token': token});
-    } catch (error) {
-      throw Error();
-    }
-  }
 }

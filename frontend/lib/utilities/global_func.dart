@@ -1,5 +1,7 @@
 import 'package:bin_got/pages/intro_page.dart';
+import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
+import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -154,6 +156,46 @@ ReturnVoid showModal(BuildContext context, {required Widget page}) {
         builder: (context) => page,
       );
 }
+
+//* login
+void login(BuildContext context) async {
+  try {
+    UserProvider().login().then((data) {
+      setTokens(context, data['access_token'], data['refresh_token']);
+      setNoti(
+        context,
+        rank: data['noti_rank'],
+        due: data['noti_due'],
+        chat: data['noti_chat'],
+        complete: data['noti_check'],
+      );
+      context.read<AuthProvider>().setStoreId(data['id']);
+      if (data['is_login']) {
+        toOtherPage(context, page: const Main())();
+      } else {
+        showModal(context, page: const ChangeNameModal())();
+      }
+    }).catchError((error) {
+      showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
+    });
+  } catch (error) {
+    showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
+  }
+}
+
+void showLoginModal(BuildContext context) => showAlert(
+      context,
+      title: '토큰 만료',
+      content: '토큰이 만료되었습니다. 재로그인하시겠습니까?',
+      onPressed: () => login(context),
+    )();
+
+void showErrorModal(BuildContext context) => showAlert(
+      context,
+      title: '오류 발생',
+      content: '오류가 발생했습니다.',
+      hasCancel: false,
+    )();
 
 //* token
 String? getToken(BuildContext context) => context.read<AuthProvider>().token;

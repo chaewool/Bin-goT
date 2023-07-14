@@ -4,27 +4,24 @@ import 'package:dio/dio.dart';
 
 class BingoProvider extends ApiProvider {
   //* public
-  Future<DynamicMap> readBingoDetail(int bingoId) => _readBingoDetail(bingoId);
+  FutureDynamicMap readBingoDetail(int bingoId) => _readBingoDetail(bingoId);
   // FutureInt createOwnBingo(FormData bingoData) => _createOwnBingo(bingoData);
   FutureDynamicMap editOwnBingo(int bingoId, FormData bingoData) =>
       _editOwnBingo(bingoId, bingoData);
   FutureDynamicMap deleteOwnBingo(int bingoId) => _deleteOwnBingo(bingoId);
 
   //* detail
-  Future<DynamicMap> _readBingoDetail(int bingoId) async {
+  FutureDynamicMap _readBingoDetail(int bingoId) async {
     try {
-      final response = await dioWithToken().get(
-        bingoDetailUrl(bingoId),
-      );
+      final response = await dioWithToken().get(bingoDetailUrl(bingoId));
       print('response: $response');
-      switch (response.statusCode) {
-        case 200:
-          return response.data;
-        // return BingoDetailModel.fromJson(response.data);
-        default:
-          throw Error();
-      }
+
+      return response.data;
+      // return BingoDetailModel.fromJson(response.data);
     } catch (error) {
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
       print(error);
       throw Error();
     }
@@ -49,30 +46,24 @@ class BingoProvider extends ApiProvider {
   // }
 
   //* update
-  Future<DynamicMap> _editOwnBingo(int bingoId, FormData bingoData) async {
+  FutureDynamicMap _editOwnBingo(int bingoId, FormData bingoData) async {
     try {
       final dioWithForm = dioWithToken();
       dioWithForm.options.contentType = 'multipart/form-data';
       final response =
           await dioWithForm.put(editBingoUrl(bingoId), data: bingoData);
-      if (response.statusCode == 200) {
-        return {};
-      }
-      throw Error();
+
+      return {};
     } catch (error) {
       print(error);
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
       throw Error();
     }
   }
 
   //* delete
-  FutureDynamicMap _deleteOwnBingo(int bingoId) async {
-    try {
-      final response = await deleteApi(deleteBingoUrl(bingoId));
-      return {};
-    } catch (error) {
-      print(error);
-      throw Error();
-    }
-  }
+  FutureDynamicMap _deleteOwnBingo(int bingoId) =>
+      deleteApi(deleteBingoUrl(bingoId));
 }

@@ -8,7 +8,7 @@ import 'package:dio/dio.dart';
 //* group provider
 class GroupProvider extends ApiProvider {
   //* search
-  Future<MyGroupList> searchGroupList({
+  FutureDynamic searchGroupList({
     int? period,
     String? keyword,
     int? order,
@@ -25,7 +25,7 @@ class GroupProvider extends ApiProvider {
         page: page,
       );
 
-  Future<MyGroupList> _searchGroupList({
+  FutureDynamic _searchGroupList({
     int? period,
     String? keyword,
     int? order,
@@ -72,7 +72,7 @@ class GroupProvider extends ApiProvider {
   }
 
   //* detail
-  Future<GroupDetailModel> readGroupDetail(int groupId, String password) async {
+  FutureDynamic readGroupDetail(int groupId, String password) async {
     try {
       print('groupId: $groupId, password: $password');
       print(groupDetailUrl(groupId));
@@ -84,28 +84,28 @@ class GroupProvider extends ApiProvider {
       });
       print('response: $response');
       // return response;
-      if (response.statusCode == 200) {
-        return GroupDetailModel.fromJson(response.data);
-      }
-      throw Error();
+      return GroupDetailModel.fromJson(response.data);
     } catch (error) {
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
       throw Error();
     }
   }
 
   //* join
-  FutureBool joinGroup(int groupId, FormData groupData) async {
+  FutureDynamic joinGroup(int groupId, FormData groupData) async {
     try {
       final dioWithForm = dioWithToken();
       dioWithForm.options.contentType = 'multipart/form-data';
       final response =
           await dioWithForm.post(joinGroupUrl(groupId), data: groupData);
       print(response);
-      if (response.statusCode == 200) {
-        return Future.value(true);
-      }
-      throw Error();
+      return Future.value(true);
     } catch (error) {
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
       print(error);
       throw Error();
     }
@@ -129,85 +129,81 @@ class GroupProvider extends ApiProvider {
   }
 
   //* join or forced exit
-  FutureVoid grantThisMember(int groupId, DynamicMap grantData) async =>
+  FutureDynamic grantThisMember(int groupId, DynamicMap grantData) =>
       createApi(grantMemberUrl(groupId), data: grantData);
 
   //* update
-  FutureVoid editOwnGroup(int groupId, FormData groupData) async {
+  FutureDynamic editOwnGroup(int groupId, FormData groupData) async {
     try {
       print(groupData);
       final response =
           await dioWithToken().put(editGroupUrl(groupId), data: groupData);
-      print(response);
-      if (response.statusCode == 200) {
-        return response.data.groupId;
-      }
-      throw Error();
+      return response.data.groupId;
     } catch (error) {
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
       print(error);
       throw Error();
     }
   }
 
   //* delete
-  FutureVoid deleteOwnGroup(int groupId) async =>
+  FutureDynamic deleteOwnGroup(int groupId) async =>
       deleteApi(deleteGroupUrl(groupId));
 
   //* exit
-  FutureVoid exitThisGroup(int groupId) async =>
+  FutureDynamic exitThisGroup(int groupId) async =>
       deleteApi(exitGroupUrl(groupId));
 
   //* rank
-  Future<RankList> groupRank(int groupId) async {
+  FutureDynamic groupRank(int groupId) async {
     try {
       final response = await dioWithToken().get(groupRankUrl(groupId));
-      if (response.statusCode == 200) {
-        RankList rankList = response.data.map<GroupRankModel>((json) {
-          return GroupRankModel.fromJson(json);
-        }).toList();
-        return rankList;
-      }
-      throw Error();
+      RankList rankList = response.data.map<GroupRankModel>((json) {
+        return GroupRankModel.fromJson(json);
+      }).toList();
+      return rankList;
     } catch (error) {
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
       throw Error();
     }
   }
 
   //* group members
-  Future<GroupAdminTabModel> getAdminTabData(int groupId) =>
-      _getAdminTabData(groupId);
-  Future<GroupAdminTabModel> _getAdminTabData(int groupId) async {
+  FutureDynamic getAdminTabData(int groupId) => _getAdminTabData(groupId);
+
+  FutureDynamic _getAdminTabData(int groupId) async {
     try {
       print(getMembersUrl(groupId));
       final response = await dioWithToken().get(getMembersUrl(groupId));
-      switch (response.statusCode) {
-        case 200:
-          final data = response.data;
-          if (data.isNotEmpty) {
-            GroupMemberList applicants = data['applicants']
-                .map<GroupMemberModel>(
-                    (json) => GroupMemberModel.fromJson(json))
-                .toList();
-            GroupMemberList members = data['members']
-                .map<GroupMemberModel>(
-                    (json) => GroupMemberModel.fromJson(json))
-                .toList();
-            bool needAuth = data['need_auth'];
-            return GroupAdminTabModel.fromJson({
-              'applicants': applicants,
-              'members': members,
-              'need_auth': needAuth,
-            });
-          }
-          return GroupAdminTabModel.fromJson({
-            'applicants': [],
-            'members': [],
-            'need_auth': false,
-          });
-        default:
-          throw Error();
+
+      final data = response.data;
+      if (data.isNotEmpty) {
+        GroupMemberList applicants = data['applicants']
+            .map<GroupMemberModel>((json) => GroupMemberModel.fromJson(json))
+            .toList();
+        GroupMemberList members = data['members']
+            .map<GroupMemberModel>((json) => GroupMemberModel.fromJson(json))
+            .toList();
+        bool needAuth = data['need_auth'];
+        return GroupAdminTabModel.fromJson({
+          'applicants': applicants,
+          'members': members,
+          'need_auth': needAuth,
+        });
       }
+      return GroupAdminTabModel.fromJson({
+        'applicants': [],
+        'members': [],
+        'need_auth': false,
+      });
     } catch (error) {
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
       print('mainTabError: $error');
       // UserProvider.logout();
       throw Error();
@@ -215,7 +211,7 @@ class GroupProvider extends ApiProvider {
   }
 
   //* chat list
-  Future<GroupChatList> readGroupChatList(int groupId, int page) async {
+  FutureDynamic readGroupChatList(int groupId, int page) async {
     try {
       final response = await dioWithToken().get(
         groupChatListUrl(groupId),
@@ -223,20 +219,18 @@ class GroupProvider extends ApiProvider {
           'page': page,
         },
       );
-      switch (response.statusCode) {
-        case 200:
-          final data = response.data;
-          if (data.isNotEmpty) {
-            GroupChatList chats = data
-                .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
-                .toList();
-            return chats;
-          }
-          return [];
-        default:
-          throw Error();
+      final data = response.data;
+      if (data.isNotEmpty) {
+        GroupChatList chats = data
+            .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
+            .toList();
+        return chats;
       }
+      return [];
     } catch (error) {
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
       print(error);
       throw Error();
     }

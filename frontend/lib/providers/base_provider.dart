@@ -9,22 +9,28 @@ class DioClass extends AuthProvider {
   Dio dio = Dio(BaseOptions(baseUrl: _baseUrl!));
 
   Dio dioWithToken() {
+    final dioWithAccess = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl!,
+        headers: {'Authorization': 'JWT $token'},
+      ),
+    );
     final tempDio = Dio(
       BaseOptions(
         baseUrl: _baseUrl!,
         headers: {'Authorization': 'JWT $token'},
       ),
     );
-    tempDio.interceptors.add(
+    dioWithAccess.interceptors.add(
       InterceptorsWrapper(
         onError: (e, handler) async {
           print('----------');
           print('error message : $e ${e.response!.data}');
           if (e.response?.statusCode == 401) {
-            print('401 Error');
+            print('access => 401 Error => 갱신 시도');
             try {
               //* refresh token
-              dio.post(
+              tempDio.post(
                 '/accounts/token/refresh/',
                 data: {'refresh': refresh},
               ).then((tokenData) async {
@@ -39,7 +45,7 @@ class DioClass extends AuthProvider {
                 print('Error : $error');
                 deleteVar();
                 // handler.next(error);
-                return handler.resolve(error);
+                return handler.next(error);
               });
               //* 재요청
             } catch (error) {
@@ -52,7 +58,7 @@ class DioClass extends AuthProvider {
         },
       ),
     );
-    return tempDio;
+    return dioWithAccess;
   }
 }
 

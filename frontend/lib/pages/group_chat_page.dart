@@ -28,10 +28,20 @@ class _GroupChatState extends State<GroupChat> {
   @override
   void initState() {
     super.initState();
-    chats = GroupProvider().readGroupChatList(
+    readChats();
+  }
+
+  void readChats() async {
+    GroupProvider()
+        .readGroupChatList(
       widget.groupId,
       widget.page,
-    );
+    )
+        .then((data) {
+      if (data is GroupChatList) {
+        chats = data;
+      }
+    });
   }
 
   @override
