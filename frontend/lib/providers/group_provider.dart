@@ -236,4 +236,21 @@ class GroupProvider extends ApiProvider {
       throw Error();
     }
   }
+
+  //* create chat
+  FutureBool createGroupChatChat(int groupId, FormData groupChatData) async {
+    try {
+      final dioWithForm = dioWithToken();
+      dioWithForm.options.contentType = 'multipart/form-data';
+      final response = await dioWithForm.post(groupChatCreateUrl(groupId),
+          data: groupChatData);
+      if (response.statusCode == 200) {
+        return Future.value(true);
+      }
+      throw Error();
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
+  }
 }

@@ -7,6 +7,7 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //* 그룹 목록
 class GroupListItem extends StatelessWidget {
@@ -176,6 +177,14 @@ class ChatListItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Center(
+              child: Image.network(
+                '${dotenv.env['fileUrl']}/badges/${data.badgeId}',
+              ),
+            ),
+          ),
           CustomText(content: data.username),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
