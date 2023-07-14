@@ -95,11 +95,13 @@ class _SearchGroupState extends State<SearchGroup> {
       period: widget.period,
     )
         .then((newGroups) {
-      groups.addAll(newGroups);
-      setLoading(context, false);
-      if (more) {
-        setWorking(context, false);
-        setAdditional(context, false);
+      if (newGroups is MyGroupList) {
+        groups.addAll(newGroups);
+        setLoading(context, false);
+        if (more) {
+          setWorking(context, false);
+          setAdditional(context, false);
+        }
       }
     });
     increasePage(context, 0);

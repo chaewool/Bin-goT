@@ -176,7 +176,12 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
   @override
   void initState() {
     super.initState();
-    tabData = GroupProvider().getAdminTabData(widget.groupId);
+    final tempData = GroupProvider().getAdminTabData(widget.groupId);
+    if (tempData is Future<GroupAdminTabModel>) {
+      tabData = tempData;
+    } else {
+      showErrorModal(context);
+    }
   }
 
   void changeTab(int index) {

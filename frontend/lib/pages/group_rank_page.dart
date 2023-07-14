@@ -1,5 +1,6 @@
 //* 그룹 내 달성률 랭킹
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
@@ -11,13 +12,30 @@ import 'package:flutter/material.dart';
 class GroupRank extends StatefulWidget {
   final int groupId;
   final bool isMember;
-  const GroupRank({required this.groupId, required this.isMember, super.key});
+  const GroupRank({
+    super.key,
+    required this.groupId,
+    required this.isMember,
+  });
 
   @override
   State<GroupRank> createState() => _GroupRankState();
 }
 
 class _GroupRankState extends State<GroupRank> {
+  Future<RankList>? rankList;
+
+  @override
+  void initState() {
+    super.initState();
+    final tempList = GroupProvider().groupRank(widget.groupId);
+    if (tempList is Future<RankList>) {
+      rankList = tempList;
+    } else {
+      showErrorModal(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +54,7 @@ class _GroupRankState extends State<GroupRank> {
                     CustomText(content: '그룹 랭킹', fontSize: FontSize.titleSize),
               ),
               FutureBuilder(
-                future: GroupProvider().groupRank(widget.groupId),
+                future: rankList,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return groupRankList(snapshot);
