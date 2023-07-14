@@ -119,7 +119,7 @@ class UrlClass extends DioClass {
   String _groupChatListUrl(int groupId) =>
       '${_groupDetailUrl(groupId)}chat/list/';
   String _groupChatCreateUrl(int groupId) =>
-      '${_groupDetailUrl(groupId)}chat/list/';
+      '${_groupDetailUrl(groupId)}chat/create/';
   String _groupReviewCreateUrl(int groupId) =>
       '${_groupDetailUrl(groupId)}review/create/';
   String _groupReviewCheckUrl(int groupId) =>
