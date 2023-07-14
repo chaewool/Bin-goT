@@ -215,7 +215,7 @@ class GroupJoinView(APIView):
 
                 return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
             
-            if not group.need_auth:
+            if group.need_auth:
                 send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.')
                 
             return Response(data={}, status=status.HTTP_200_OK)
