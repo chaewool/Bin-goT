@@ -192,7 +192,7 @@ class GroupJoinView(APIView):
         group = Group.objects.get(id=group_id)
 
         if not Participate.objects.filter(user=user, group=group).exists():
-            if group.is_public:
+            if not group.need_auth:
                 num = [x.rand_name for x in Participate.objects.filter(group=group)]
                 rand_name = f'익명의 참여자 {len(num) + 1:0>2}'
                 for i in range(len(num)):
@@ -215,7 +215,8 @@ class GroupJoinView(APIView):
 
                 return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
             
-            send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.')
+            if not group.need_auth:
+                send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.')
                 
             return Response(data={}, status=status.HTTP_200_OK)
         
