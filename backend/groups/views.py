@@ -404,9 +404,12 @@ class GroupReviewCreateView(APIView):
         item_id = request.data.get('item_id')
         img = request.FILES.get('img')
         participate = Participate.objects.filter(user=user, group=group)
+
+        if date.today() < group.start:
+            return Response(data={'message': '시작일 이전에는 요청할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
                 
-        if date.today() >= group.start:
-            return Response(data={'message': '시작일이 경과하여 요청할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        if date.today() >= group.end:
+            return Response(data={'message': '종료일이 경과하여 요청할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if not participate.exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -445,8 +448,11 @@ class GroupReviewCheckView(APIView):
         review = chat.getChatItem(review_id)
         review_user = get_user_model().objects.get(id=review['user_id'])
 
-        if date.today() >= group.start:
-            return Response(data={'message': '시작일이 경과하여 인증할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        if date.today() < group.start:
+            return Response(data={'message': '시작일 이전에는 인증할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if date.today() >= group.end:
+            return Response(data={'message': '종료일이 경과하여 인증할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
