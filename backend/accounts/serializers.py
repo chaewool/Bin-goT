@@ -6,6 +6,7 @@ from .models import Badge
 from groups.models import Group
 from boards.models import Board
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
@@ -35,11 +36,15 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class BoardSerializer(serializers.ModelSerializer):
+    groupid = serializers.SerializerMethodField('get_groupid')
     groupname = serializers.SerializerMethodField('get_groupname')
     start = serializers.SerializerMethodField('get_start')
     end = serializers.SerializerMethodField('get_end')
     status = serializers.SerializerMethodField('get_status')
     size = serializers.SerializerMethodField('get_size')
+
+    def get_groupid(self, obj):
+        return obj.group.id
 
     def get_groupname(self, obj):
         return obj.group.groupname
@@ -63,4 +68,4 @@ class BoardSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Board
-        fields = ('id', 'groupname', 'start', 'end', 'status', 'size')
+        fields = ('id', 'group_id', 'groupname', 'start', 'end', 'status', 'size')
