@@ -36,7 +36,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class BoardSerializer(serializers.ModelSerializer):
-    groupid = serializers.SerializerMethodField('get_groupid')
+    group_id = serializers.SerializerMethodField('get_groupid')
     groupname = serializers.SerializerMethodField('get_groupname')
     start = serializers.SerializerMethodField('get_start')
     end = serializers.SerializerMethodField('get_end')
