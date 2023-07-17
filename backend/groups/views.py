@@ -156,6 +156,9 @@ class GroupUpdateView(APIView):
         group = Group.objects.get(id=group_id)
         data = json.loads(request.data.get('data'))
         update_img = get_boolean(request.data.get('update_img'))
+                
+        if date.today() >= group.start:
+            return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not data['groupname']:
             data['groupname'] = group.groupname
@@ -190,6 +193,9 @@ class GroupJoinView(APIView):
     def post(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
+
+        if date.today() >= group.start:
+            return Response(data={'message': '시작일이 경과하여 가입할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not Participate.objects.filter(user=user, group=group).exists():
             if not group.need_auth:
@@ -232,6 +238,9 @@ class GroupGrantView(APIView):
         group = Group.objects.get(id=group_id)
         target_id = request.data.get('target_id')
         grant = get_boolean(request.data.get('grant'))
+                
+        if date.today() >= group.start:
+            return Response(data={'message': '시작일이 경과하여 승인할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if group.leader == user:
             applicant = get_user_model().objects.get(id=target_id)
@@ -395,6 +404,9 @@ class GroupReviewCreateView(APIView):
         item_id = request.data.get('item_id')
         img = request.FILES.get('img')
         participate = Participate.objects.filter(user=user, group=group)
+                
+        if date.today() >= group.start:
+            return Response(data={'message': '시작일이 경과하여 요청할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if not participate.exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -432,6 +444,9 @@ class GroupReviewCheckView(APIView):
         chat = RedisChat(group_id)
         review = chat.getChatItem(review_id)
         review_user = get_user_model().objects.get(id=review['user_id'])
+
+        if date.today() >= group.start:
+            return Response(data={'message': '시작일이 경과하여 인증할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -470,6 +485,9 @@ class GroupAdminView(APIView):
     def get(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
+
+        if date.today() >= group.start:
+            return Response(data={'message': '시작일이 경과하여 관리할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if not Participate.objects.filter(user=user, group=group).exists() or user != group.leader:
             return Response(data={'message': '권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
