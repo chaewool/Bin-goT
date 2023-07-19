@@ -10,6 +10,8 @@ class BingoProvider extends ApiProvider {
       _editOwnBingo(bingoId, bingoData);
   FutureDynamicMap deleteOwnBingo(int bingoId) => _deleteOwnBingo(bingoId);
 
+  FutureDynamicMap makeCompleteMessage(int groupId, FormData completeData) =>
+      _makeCompleteMessage(groupId, completeData);
   //* detail
   FutureDynamicMap _readBingoDetail(int bingoId) async {
     try {
@@ -48,12 +50,26 @@ class BingoProvider extends ApiProvider {
   //* update
   FutureDynamicMap _editOwnBingo(int bingoId, FormData bingoData) async {
     try {
-      final dioWithForm = dioWithToken();
-      dioWithForm.options.contentType = 'multipart/form-data';
-      final response =
-          await dioWithForm.put(editBingoUrl(bingoId), data: bingoData);
+      await dioWithTokenForm().put(editBingoUrl(bingoId), data: bingoData);
 
       return {};
+    } catch (error) {
+      print(error);
+      if (error.toString().contains('401')) {
+        return {'statusCode': 401};
+      }
+      throw Error();
+    }
+  }
+
+  //* create chat
+  FutureDynamicMap _makeCompleteMessage(
+      int groupId, FormData completeData) async {
+    try {
+      final response = await dioWithTokenForm()
+          .post(groupReviewCreateUrl(groupId), data: completeData);
+
+      return response.data;
     } catch (error) {
       print(error);
       if (error.toString().contains('401')) {

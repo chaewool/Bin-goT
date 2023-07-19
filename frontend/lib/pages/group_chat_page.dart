@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -5,31 +8,34 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GroupChat extends StatefulWidget {
-  final int page, groupId;
-  const GroupChat({
-    super.key,
-    required this.page,
-    required this.groupId,
-  });
+  const GroupChat({super.key});
 
   @override
   State<GroupChat> createState() => _GroupChatState();
 }
 
 class _GroupChatState extends State<GroupChat> {
+  int page = 1;
   GroupChatList chats = [];
+  late int groupId;
   final controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    initLoadingData(context, 0);
-    if (readLoading(context)) {
-      readChats(false);
-    }
+    groupId = getGroupId(context)!;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initLoadingData(context, 0);
+      if (readLoading(context)) {
+        readChats(false);
+      }
+    });
 
     controller.addListener(() {
       () {
@@ -55,12 +61,7 @@ class _GroupChatState extends State<GroupChat> {
   }
 
   void readChats([bool more = true]) async {
-    GroupProvider()
-        .readGroupChatList(
-      widget.groupId,
-      widget.page,
-    )
-        .then((data) {
+    GroupProvider().readGroupChatList(groupId, page).then((data) {
       if (data is GroupChatList) {
         chats.addAll(data);
         setLoading(context, false);
@@ -69,8 +70,34 @@ class _GroupChatState extends State<GroupChat> {
           setAdditional(context, false);
         }
       }
-    });
+    }).catchError((error) {});
     increasePage(context, 0);
+  }
+
+  void addChat(StringMap content, XFile? image) {
+    GroupProvider()
+        .createGroupChatChat(
+      groupId,
+      FormData.fromMap({
+        'data': jsonEncode(content),
+        'img': image != null
+            ? MultipartFile.fromFileSync(
+                image.path,
+                contentType: MediaType('image', 'png'),
+              )
+            : null,
+      }),
+    )
+        .then((data) {
+      chats.insert(
+          0,
+          GroupChatModel.fromJson({
+            ...data,
+            ...content,
+            'reviewed': false,
+            'hasImage': image != null
+          }));
+    });
   }
 
   @override
@@ -82,21 +109,27 @@ class _GroupChatState extends State<GroupChat> {
         child: Column(
           children: [
             Expanded(
-                child: InfiniteScroll(
-              data: chats,
-              mode: 0,
-              emptyWidget: Column(
-                children: const [
-                  CustomText(
-                    center: true,
-                    fontSize: FontSize.titleSize,
-                    content: '채팅 기록이 없습니다.',
-                    height: 1.5,
-                  ),
-                ],
+              child: InfiniteScroll(
+                cnt: 50,
+                reverse: true,
+                data: chats,
+                mode: 0,
+                emptyWidget: Column(
+                  children: const [
+                    CustomText(
+                      center: true,
+                      fontSize: FontSize.titleSize,
+                      content: '채팅 기록이 없습니다.',
+                      height: 1.5,
+                    ),
+                  ],
+                ),
               ),
-            )),
-            GroupChatBottomBar(groupId: widget.groupId)
+            ),
+            GroupChatBottomBar(
+              groupId: groupId,
+              addChat: addChat,
+            )
           ],
         ),
       ),

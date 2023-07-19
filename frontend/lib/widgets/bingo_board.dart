@@ -50,19 +50,15 @@ class _BingoBoardState extends State<BingoBoard> {
 
     return Stack(
       children: [
-        Flexible(
-          flex: 3,
-          fit: FlexFit.tight,
-          child: getBackground(context) != null
-              ? const CustomBoxContainer(
-                  hasRoundEdge: false,
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/aaron-burden.jpg'),
-                    fit: BoxFit.fill,
-                  ),
-                )
-              : const SizedBox(),
-        ),
+        getBackground(context) != null
+            ? const CustomBoxContainer(
+                hasRoundEdge: false,
+                image: DecorationImage(
+                  image: AssetImage('assets/images/aaron-burden.jpg'),
+                  fit: BoxFit.fill,
+                ),
+              )
+            : const SizedBox(),
         Column(
           children: [
             for (int i = 0; i < size!; i += 1)
@@ -124,25 +120,21 @@ class EachBingo extends StatelessWidget {
         child: Stack(
           children: [
             Center(
-              child: Expanded(
-                child: CustomText(
-                  color: convertedColor(),
-                  content: getItemTitle(context, index) ?? '빙고칸 제목',
-                  font: getStringFont(context),
-                  center: true,
-                  maxLines: 2,
-                  cutText: true,
-                ),
+              child: CustomText(
+                color: convertedColor(),
+                content: getItemTitle(context, index) ?? '빙고칸 제목',
+                font: getStringFont(context),
+                center: true,
+                maxLines: 2,
+                cutText: true,
               ),
             ),
             context.watch<GlobalBingoProvider>().isCheckTheme
                 ? Center(
-                    child: Expanded(
-                      child: CustomIcon(
-                        icon: getCheckIconData(context),
-                        size: 80,
-                        color: convertedColor(),
-                      ),
+                    child: CustomIcon(
+                      icon: getCheckIconData(context),
+                      size: 80,
+                      color: convertedColor(),
                     ),
                   )
                 : const SizedBox(),

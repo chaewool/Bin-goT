@@ -19,6 +19,7 @@ import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -27,7 +28,7 @@ class BingoForm extends StatefulWidget {
   final int? bingoId;
   final bool needAuth, beforeJoin;
   final DynamicMap? beforeData;
-  final MultipartFile? groupImg;
+  final XFile? groupImg;
   const BingoForm({
     super.key,
     this.bingoId,
@@ -103,15 +104,29 @@ class _BingoFormState extends State<BingoForm> {
               filename: 'thumbnail.png',
               contentType: MediaType('image', 'png'),
             ),
+            'img': widget.groupImg != null
+                ? MultipartFile.fromFileSync(widget.groupImg!.path,
+                    contentType: MediaType('image', 'png'))
+                : null,
           });
           print(widget.bingoId);
-          BingoProvider().editOwnBingo(widget.bingoId!, bingoData).then((_) {
-            toOtherPage(
-              context,
-              page: BingoDetail(bingoId: widget.bingoId!),
-            )();
+          BingoProvider()
+              .editOwnBingo(widget.bingoId!, bingoData)
+              .then((value) {
+            if (value['statusCode'] == 401) {
+              showLoginModal(context);
+            } else {
+              toOtherPage(
+                context,
+                page: BingoDetail(bingoId: widget.bingoId!),
+              )();
+            }
+          }).catchError((_) {
+            showErrorModal(context);
           });
         }
+      }).catchError((_) {
+        showErrorModal(context);
       });
     } else {
       return showAlert(
@@ -144,6 +159,10 @@ class _BingoFormState extends State<BingoForm> {
         filename: 'thumbnail.png',
         contentType: MediaType('image', 'png'),
       ),
+      'img': widget.groupImg != null
+          ? MultipartFile.fromFileSync(widget.groupImg!.path,
+              contentType: MediaType('image', 'png'))
+          : null,
     });
     GroupProvider().createOwnGroup(formData).then((groupId) {
       toOtherPage(
@@ -153,7 +172,7 @@ class _BingoFormState extends State<BingoForm> {
           password: '',
         ),
       )();
-    });
+    }).catchError((error) {});
   }
 
   void joinGroup(DynamicMap bingoData) async {

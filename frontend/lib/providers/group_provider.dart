@@ -96,10 +96,8 @@ class GroupProvider extends ApiProvider {
   //* join
   FutureDynamic joinGroup(int groupId, FormData groupData) async {
     try {
-      final dioWithForm = dioWithToken();
-      dioWithForm.options.contentType = 'multipart/form-data';
       final response =
-          await dioWithForm.post(joinGroupUrl(groupId), data: groupData);
+          await dioWithTokenForm().post(joinGroupUrl(groupId), data: groupData);
       print(response);
       return Future.value(true);
     } catch (error) {
@@ -237,14 +235,13 @@ class GroupProvider extends ApiProvider {
   }
 
   //* create chat
-  FutureBool createGroupChatChat(int groupId, FormData groupChatData) async {
+  FutureDynamicMap createGroupChatChat(
+      int groupId, FormData groupChatData) async {
     try {
-      final dioWithForm = dioWithToken();
-      dioWithForm.options.contentType = 'multipart/form-data';
-      final response = await dioWithForm.post(groupChatCreateUrl(groupId),
-          data: groupChatData);
+      final response = await dioWithTokenForm()
+          .post(groupChatCreateUrl(groupId), data: groupChatData);
       if (response.statusCode == 200) {
-        return Future.value(true);
+        return response.data;
       }
       throw Error();
     } catch (error) {

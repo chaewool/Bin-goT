@@ -4,10 +4,10 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
+import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/search_bar.dart';
-import 'package:bin_got/widgets/select_box.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
@@ -32,14 +32,14 @@ class _SearchGroupState extends State<SearchGroup> {
   final StringList sortList = ['시작일 ▲', '시작일 ▼'];
   final StringList filterList = ['공개', '비공개', '전체'];
   MyGroupList groups = [];
-  bool showSort = false;
-  bool showFilter = false;
-  int sortIdx = 0;
-  int filterIdx = 0;
-  final filterKey = GlobalKey();
-  final sortKey = GlobalKey();
-  Offset? filterPosition;
-  Offset? sortPosition;
+  // bool showSort = false;
+  // bool showFilter = false;
+  late int sortIdx;
+  late int filterIdx;
+  // final filterKey = GlobalKey();
+  // final sortKey = GlobalKey();
+  // Offset? filterPosition;
+  // Offset? sortPosition;
   final controller = ScrollController();
 
   @override
@@ -53,13 +53,15 @@ class _SearchGroupState extends State<SearchGroup> {
       order: ${widget.order},
       period: ${widget.period},
 ''');
+    sortIdx = widget.order;
+    filterIdx = widget.public;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initLoadingData(context, 0);
       if (readLoading(context)) {
         search(false);
       }
-      getOffset();
+      // getOffset();
       controller.addListener(() {
         () {
           if (controller.position.pixels >=
@@ -107,43 +109,47 @@ class _SearchGroupState extends State<SearchGroup> {
     increasePage(context, 0);
   }
 
-  void getOffset() {
-    if (filterKey.currentContext != null) {
-      final renderBox =
-          filterKey.currentContext!.findRenderObject() as RenderBox;
-      setState(() {
-        filterPosition = renderBox.localToGlobal(Offset.zero);
-      });
-    }
-    if (sortKey.currentContext != null) {
-      final renderBox = sortKey.currentContext!.findRenderObject() as RenderBox;
-      setState(() {
-        sortPosition = renderBox.localToGlobal(Offset.zero);
-      });
-    }
-  }
+  // void getOffset() {
+  //   if (filterKey.currentContext != null) {
+  //     final renderBox =
+  //         filterKey.currentContext!.findRenderObject() as RenderBox;
+  //     setState(() {
+  //       filterPosition = renderBox.localToGlobal(Offset.zero);
+  //     });
+  //   }
+  //   if (sortKey.currentContext != null) {
+  //     final renderBox = sortKey.currentContext!.findRenderObject() as RenderBox;
+  //     setState(() {
+  //       sortPosition = renderBox.localToGlobal(Offset.zero);
+  //     });
+  //   }
+  // }
 
-  void changeShowSort() {
+  // void changeShowSort() {
+  //   setState(() {
+  //     showSort = !showSort;
+  //   });
+  // }
+
+  void changeSort() {
     setState(() {
-      showSort = !showSort;
+      sortIdx = 1 - sortIdx;
     });
   }
 
-  void changeSort(String string, int idx) {
-    setState(() {
-      sortIdx = idx;
-    });
-  }
+  // void changeShowFilter() {
+  //   setState(() {
+  //     showFilter = !showFilter;
+  //   });
+  // }
 
-  void changeShowFilter() {
+  void changeFilter() {
     setState(() {
-      showFilter = !showFilter;
-    });
-  }
-
-  void changeFilter(String string, int idx) {
-    setState(() {
-      filterIdx = idx;
+      if (filterIdx == 2) {
+        filterIdx = 0;
+      } else {
+        filterIdx += 1;
+      }
     });
   }
 
@@ -174,24 +180,38 @@ class _SearchGroupState extends State<SearchGroup> {
                 Flexible(
                   fit: FlexFit.loose,
                   child: RowWithPadding(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     horizontal: 25,
                     children: [
-                      // SizedBox()
-                      SelectBox(
-                        key: sortKey,
-                        onTap: changeShowSort,
-                        value: sortList[sortIdx],
-                        width: 120,
-                        height: 50,
+                      Center(
+                        child: CustomTextButton(
+                          content: sortList[sortIdx],
+                          fontSize: FontSize.smallSize,
+                          onTap: changeSort,
+                        ),
                       ),
-                      SelectBox(
-                        key: filterKey,
-                        onTap: changeShowFilter,
-                        value: filterList[filterIdx],
-                        width: 120,
-                        height: 50,
+                      Center(
+                        child: CustomTextButton(
+                          content: filterList[filterIdx],
+                          fontSize: FontSize.smallSize,
+                          onTap: changeFilter,
+                        ),
                       ),
+
+                      // SelectBox(
+                      //   key: sortKey,
+                      //   onTap: changeShowSort,
+                      //   value: sortList[sortIdx],
+                      //   width: 120,
+                      //   height: 50,
+                      // ),
+                      // SelectBox(
+                      //   key: filterKey,
+                      //   onTap: changeShowFilter,
+                      //   value: filterList[filterIdx],
+                      //   width: 120,
+                      //   height: 50,
+                      // ),
                     ],
                   ),
                 ),
@@ -212,34 +232,34 @@ class _SearchGroupState extends State<SearchGroup> {
                 ),
               ],
             ),
-            showFilter
-                ? Padding(
-                    padding: EdgeInsets.fromLTRB(0, filterPosition!.dy, 0, 0),
-                    child: SelectBoxContainer(
-                      listItems: filterList,
-                      valueItems: List.generate(3, (i) => i),
-                      index: filterIdx,
-                      changeShowState: changeShowFilter,
-                      changeIdx: changeFilter,
-                      height: 120,
-                      mapKey: '',
-                    ),
-                  )
-                : const SizedBox(),
-            showSort
-                ? Padding(
-                    padding: EdgeInsets.fromLTRB(0, sortPosition!.dy, 0, 0),
-                    child: SelectBoxContainer(
-                      listItems: sortList,
-                      valueItems: List.generate(2, (i) => i),
-                      index: sortIdx,
-                      changeShowState: changeShowSort,
-                      changeIdx: changeSort,
-                      height: 80,
-                      mapKey: '',
-                    ),
-                  )
-                : const SizedBox(),
+            // showFilter
+            //     ? Padding(
+            //         padding: EdgeInsets.fromLTRB(0, filterPosition!.dy, 0, 0),
+            //         child: SelectBoxContainer(
+            //           listItems: filterList,
+            //           valueItems: List.generate(3, (i) => i),
+            //           index: filterIdx,
+            //           changeShowState: changeShowFilter,
+            //           changeIdx: changeFilter,
+            //           height: 120,
+            //           mapKey: '',
+            //         ),
+            //       )
+            //     : const SizedBox(),
+            // showSort
+            //     ? Padding(
+            //         padding: EdgeInsets.fromLTRB(0, sortPosition!.dy, 0, 0),
+            //         child: SelectBoxContainer(
+            //           listItems: sortList,
+            //           valueItems: List.generate(2, (i) => i),
+            //           index: sortIdx,
+            //           changeShowState: changeShowSort,
+            //           changeIdx: changeSort,
+            //           height: 80,
+            //           mapKey: '',
+            //         ),
+            //       )
+            //     : const SizedBox(),
           ],
         ),
       ),

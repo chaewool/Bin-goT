@@ -98,72 +98,83 @@ class BingoDetail extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final DynamicMap data = snapshot.data!;
+              print('bingo data => $data');
               final int achieve = (data['achieve']! * 100).toInt();
               groupId = data['group'];
               setBingoData(context, data);
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: CustomText(
-                      content: data['title'],
-                      fontSize: FontSize.titleSize,
-                    ),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
+              if (data['statusCode'] == 401) {
+                showLoginModal(context);
+                return const SizedBox();
+              } else {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      flex: 2,
                       child: CustomText(
-                        content: data['username'],
-                        fontSize: FontSize.smallSize,
+                        content: data['title'],
+                        fontSize: FontSize.titleSize,
                       ),
                     ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButtonInRow(
-                          onPressed: toOtherPage(
-                            context,
-                            page: BingoForm(
-                              bingoId: bingoId,
-                              bingoSize: bingoSize,
-                              needAuth: false,
-                            ),
+                    Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: CustomText(
+                          content: data['username'],
+                          fontSize: FontSize.smallSize,
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          DateTime.now().difference(
+                                    DateTime.parse(getStart(context)!),
+                                  ) >
+                                  Duration.zero
+                              ? IconButtonInRow(
+                                  onPressed: toOtherPage(
+                                    context,
+                                    page: BingoForm(
+                                      bingoId: bingoId,
+                                      bingoSize: bingoSize,
+                                      needAuth: false,
+                                    ),
+                                  ),
+                                  icon: editIcon,
+                                )
+                              : const SizedBox(),
+                          const SizedBox(width: 20)
+                        ],
+                      ),
+                    ),
+                    Flexible(
+                      flex: 6,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: RepaintBoundary(
+                          key: globalKey,
+                          child: BingoBoard(
+                            isDetail: true,
+                            bingoSize: bingoSize,
                           ),
-                          icon: editIcon,
-                        ),
-                        const SizedBox(width: 20)
-                      ],
-                    ),
-                  ),
-                  Flexible(
-                    flex: 6,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: RepaintBoundary(
-                        key: globalKey,
-                        child: BingoBoard(
-                          isDetail: true,
-                          bingoSize: bingoSize,
                         ),
                       ),
                     ),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    child: CustomText(
-                      content: '달성률 : $achieve%',
-                      fontSize: FontSize.largeSize,
-                    ),
-                  )
-                ],
-              );
+                    Flexible(
+                      flex: 2,
+                      child: CustomText(
+                        content: '달성률 : $achieve%',
+                        fontSize: FontSize.largeSize,
+                      ),
+                    )
+                  ],
+                );
+              }
             }
             return const Center(child: CustomText(content: '정보를 불러오는 중입니다'));
           },

@@ -44,11 +44,16 @@ class BingoGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: toOtherPage(
+    void toBingoDetail() {
+      setGroupId(context, bingo.groupId);
+      toOtherPage(
         context,
         page: BingoDetail(bingoId: bingo.id, size: bingo.size),
-      ),
+      );
+    }
+
+    return GestureDetector(
+      onTap: toBingoDetail,
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: CustomBoxContainer(

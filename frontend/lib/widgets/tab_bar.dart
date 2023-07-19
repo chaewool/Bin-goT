@@ -1,4 +1,5 @@
 import 'package:bin_got/models/group_model.dart';
+import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
@@ -348,18 +349,27 @@ class _MyTabBarState extends State<MyTabBar> {
       'filter': idxList[0][1],
       'page': getPage(context, 1),
     }).then((groupData) {
-      setState(() {
-        groupTabData.addAll(groupData.groups);
-        hasNotGroup = groupData.hasNotGroup;
-      });
-      setLoading(context, false);
-      if (more) {
-        setWorking(context, false);
-        setAdditional(context, false);
+      if (groupData is MainGroupListModel) {
+        setState(() {
+          groupTabData.addAll(groupData.groups);
+          hasNotGroup = groupData.hasNotGroup;
+        });
+        setLoading(context, false);
+        if (more) {
+          setWorking(context, false);
+          setAdditional(context, false);
+        }
+        increasePage(context, 1);
+      } else if (groupData['statusCode'] == 401) {
+        showLoginModal(context);
+      } else {
+        showErrorModal(context);
       }
       return true;
+    }).catchError((error) {
+      showErrorModal(context);
+      return false;
     });
-    increasePage(context, 1);
     return Future.value(answer);
   }
 

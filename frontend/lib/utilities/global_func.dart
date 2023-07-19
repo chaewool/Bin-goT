@@ -335,8 +335,14 @@ int? getGroupId(BuildContext context) =>
 int? getBingoSize(BuildContext context) =>
     context.read<GlobalGroupProvider>().bingoSize;
 
-// void setGroupData(BuildContext context, dynamic newVal) =>
-//     context.read<GlobalGroupProvider>().setData(newVal);
+String? getStart(BuildContext context) =>
+    context.read<GlobalGroupProvider>().start;
+
+void setGroupData(BuildContext context, dynamic newVal) =>
+    context.read<GlobalGroupProvider>().setData(newVal);
+
+void setGroupId(BuildContext context, int newVal) =>
+    context.read<GlobalGroupProvider>().setGroupId(newVal);
 
 //* bingo data
 

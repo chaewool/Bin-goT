@@ -66,8 +66,8 @@ class _InputPasswordState extends State<InputPassword> {
         );
       } else {
         GroupProvider().readGroupDetail(widget.groupId, '').then((data) {
-          context.read<GlobalGroupProvider>().setData(data);
-          context.read<GlobalGroupProvider>().setGroupId(widget.groupId);
+          setGroupData(context, data);
+          setGroupId(context, widget.groupId);
           toOtherPage(
             context,
             page: GroupMain(
@@ -115,8 +115,8 @@ class _InputPasswordState extends State<InputPassword> {
       GroupProvider().readGroupDetail(widget.groupId, password).then((data) {
         print(data);
         toBack(context);
-        context.read<GlobalGroupProvider>().setData(data);
-        context.read<GlobalGroupProvider>().setGroupId(widget.groupId);
+        setGroupData(context, data);
+        setGroupId(context, widget.groupId);
         toOtherPage(
           context,
           page: GroupMain(
@@ -126,8 +126,11 @@ class _InputPasswordState extends State<InputPassword> {
         )();
       }).catchError((error) {
         print(error);
-        showAlert(context,
-            title: '오류 발생', content: '오류가 발생해 요청 작업을 처리하지 못했습니다')();
+        showAlert(
+          context,
+          title: '오류 발생',
+          content: '오류가 발생해 요청 작업을 처리하지 못했습니다',
+        )();
       });
     }
   }

@@ -13,10 +13,10 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
-import 'package:bin_got/widgets/select_box.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -67,7 +67,6 @@ class _GroupFormState extends State<GroupForm> {
       };
     } else {
       groupData = {};
-      isImageUpdated = true;
     }
   }
 
@@ -91,55 +90,70 @@ class _GroupFormState extends State<GroupForm> {
     if (groupData['headcount'].runtimeType != int) {
       groupData['headcount'] = int.parse(groupData['headcount']);
     }
-    if (groupData['groupname'].length < 3) {
-      showAlert(context, title: '그룹명 오류', content: '그룹명을 3자 이상으로 입력해주세요.')();
-    } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
-      showAlert(context,
-          title: '인원 수 오류', content: '인원 수는 1명 이상 30명 이하로 입력해주세요.')();
-    } else if (!groupData['is_public'] && groupData['password'].length < 4) {
-      showAlert(context,
-          title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
-    } else if (widget.groupId == null) {
-      print(groupData['size']);
-      toOtherPage(
-        context,
-        page: BingoForm(
-          beforeData: groupData,
-          bingoSize: groupData['size'],
-          needAuth: groupData['need_auth'],
-        ),
-      )();
-      // GroupProvider()
-      //     .createOwnGroup(FormData.fromMap({
-      //   'data': jsonEncode(groupData),
-      //   'img': selectedImage != null
-      //       ? MultipartFile.fromFileSync(selectedImage!.path,
-      //           contentType: MediaType('image', 'png'))
-      //       : null,
-      // }))
-      //     .then((groupId) {
-      //   toOtherPage(
-      //     context,
-      //     page: GroupCreateCompleted(
-      //       groupId: groupId,
-      //       password: groupData['password'],
-      //     ),
-      //   )();
-      // });
+
+    if (widget.groupId == null) {
+      if (groupData['groupname'].length < 3) {
+        showAlert(context, title: '그룹명 오류', content: '그룹명을 3자 이상으로 입력해주세요.')();
+      } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
+        showAlert(context,
+            title: '인원 수 오류', content: '인원 수는 1명 이상 30명 이하로 입력해주세요.')();
+      } else if (!groupData['is_public'] && groupData['password'].length < 4) {
+        showAlert(context,
+            title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
+      } else {
+        print(groupData['size']);
+        toOtherPage(
+          context,
+          page: BingoForm(
+            beforeData: groupData,
+            bingoSize: groupData['size'],
+            needAuth: groupData['need_auth'],
+            groupImg: selectedImage,
+          ),
+        )();
+      }
     } else {
-      print(groupData);
-      GroupProvider()
-          .editOwnGroup(
-              widget.groupId!,
-              FormData.fromMap({
-                'data': groupData,
-                'img': widget.groupId == null || isImageUpdated
-                    ? selectedImage
-                    : null,
-              }))
-          .then((groupId) {
-        toBack(context);
-      });
+      if (groupData.containsKey('groupname') &&
+          groupData['groupname'].length < 3) {
+        showAlert(
+          context,
+          title: '그룹명 오류',
+          content: '그룹명을 3자 이상으로 입력해주세요.',
+        )();
+      } else if (groupData.containsKey('headcount') &&
+          (groupData['headcount'] < 1 || groupData['headcount'] > 30)) {
+        showAlert(
+          context,
+          title: '인원 수 오류',
+          content: '인원 수는 1명 이상 30명 이하로 입력해주세요.',
+        )();
+      } else if (groupData.containsKey('is_public') &&
+          !groupData['is_public'] &&
+          groupData['password'].length < 4) {
+        showAlert(
+          context,
+          title: '비밀번호 오류',
+          content: '그룹 비밀번호를 4자 이상으로 입력해주세요.',
+        )();
+      } else {
+        print(groupData);
+        GroupProvider()
+            .editOwnGroup(
+                widget.groupId!,
+                FormData.fromMap({
+                  'data': groupData,
+                  'img': isImageUpdated && selectedImage != null
+                      ? MultipartFile.fromFileSync(
+                          selectedImage!.path,
+                          contentType: MediaType('image', 'png'),
+                        )
+                      : null,
+                  'update_img': isImageUpdated,
+                }))
+            .then((groupId) {
+          toBack(context);
+        }).catchError((error) {});
+      }
     }
   }
 
@@ -165,6 +179,8 @@ class _GroupFormState extends State<GroupForm> {
             selectedImage = localImage;
             isImageUpdated = true;
           });
+        }).catchError((error) {
+          showErrorModal(context);
         });
       }
     });
@@ -186,6 +202,13 @@ class _GroupFormState extends State<GroupForm> {
       return '$start ~ $end';
     }
     return '기간을 선택해주세요';
+  }
+
+  void changeGroupData(int i, int j) {
+    setState(() {
+      selectedIndex[i] = j;
+    });
+    setGroupData(context, i == 0 ? 'size' : 'need_auth')(convertedValues[i][j]);
   }
 
   @override
@@ -234,32 +257,23 @@ class _GroupFormState extends State<GroupForm> {
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          CustomText(content: labelList[i]),
-                          Stack(
-                            children: [
-                              SelectBox(
-                                value: printedValues[i][selectedIndex[i]],
-                                width: 60,
-                                height: 50,
-                                onTap: () => changeShowState(i),
+                          for (int j = 0; j < labelList[i].length; j += 1)
+                            CustomBoxContainer(
+                              onTap: () => changeGroupData(i, j),
+                              width: 150,
+                              height: 40,
+                              boxShadow: applyBoxShadow(i, j),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: CustomText(
+                                    content: labelList[i],
+                                  ),
+                                ),
                               ),
-                              showList[i]
-                                  ? SelectBoxContainer(
-                                      listItems: printedValues[i],
-                                      valueItems: convertedValues[i],
-                                      index: i,
-                                      mapKey: i == 0 ? 'size' : 'need_auth',
-                                      changeShowState: () => changeShowState(i),
-                                      changeIdx: (key, idx) {
-                                        setState(() {
-                                          selectedIndex[i] = idx;
-                                        });
-                                        setGroupData(context, key)(
-                                            convertedValues[i][idx]);
-                                      })
-                                  : const SizedBox(),
-                            ],
-                          )
+                            ),
                         ],
                       )
                     : const SizedBox(),
@@ -321,6 +335,8 @@ class _GroupFormState extends State<GroupForm> {
           )
         : widget.groupId == null
             ? CustomBoxContainer(
+                width: 270,
+                height: 150,
                 onTap: imagePicker,
                 image: DecorationImage(
                   fit: BoxFit.fill,
@@ -332,8 +348,18 @@ class _GroupFormState extends State<GroupForm> {
                 ),
               )
             : CustomBoxContainer(
+                width: 270,
+                height: 150,
                 child: Image.network(
                     '${dotenv.env['fileUrl']}/groups/${widget.groupId}'),
               );
+  }
+
+  BoxShadowList applyBoxShadow(int i, int j) {
+    if (selectedIndex[i] == j) {
+      return [selectedShadow];
+    } else {
+      return [defaultShadow];
+    }
   }
 }

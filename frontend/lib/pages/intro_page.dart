@@ -25,15 +25,22 @@ class _IntroState extends State<Intro> {
   void verifyToken() async {
     try {
       await context.read<AuthProvider>().initVar();
-      final result = await UserProvider().confirmToken();
-      if (result.isNotEmpty) {
-        if (!mounted) return;
-        setToken(context, result['token']);
-      } else {
-        showLoginBtn = true;
-      }
+      UserProvider().confirmToken().then((result) {
+        if (result.isNotEmpty) {
+          if (!mounted) return;
+          setToken(context, result['token']);
+        } else {
+          showLoginBtn = true;
+        }
+      }).catchError((error) {
+        print('intro error => $error');
+      });
     } catch (error) {
+      print('오류 오류');
+      // setState(() {
+
       showLoginBtn = true;
+      // });
     }
   }
 

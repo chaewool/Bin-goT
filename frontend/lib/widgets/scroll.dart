@@ -109,7 +109,7 @@ class InfiniteScroll extends StatelessWidget {
   final int cnt, mode;
   final Widget emptyWidget;
   final Widget? hasNotGroupWidget;
-  final bool isGroupMode;
+  final bool isGroupMode, reverse;
   // final MyGroupModel? myGroupModel;
   // final bool isGroupMode, isChatMode, isSearchMode, hasNotGroup;
   const InfiniteScroll({
@@ -121,6 +121,7 @@ class InfiniteScroll extends StatelessWidget {
     this.hasNotGroupWidget,
     // required this.myGroupModel,
     this.isGroupMode = false,
+    this.reverse = false,
     // this.isChatMode = false,
     // this.isSearchMode = false,
     // this.hasNotGroup = false,
@@ -134,6 +135,7 @@ class InfiniteScroll extends StatelessWidget {
       child: !getLoading(context)
           ? data.isNotEmpty
               ? ListView.builder(
+                  reverse: reverse,
                   // hasNotGroupWidget ?? const SizedBox(),
                   itemCount: mode != 2 ? data.length : (data.length / 2).ceil(),
                   itemBuilder: (context, i) {
