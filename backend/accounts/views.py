@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
 import requests
 import logging
 from datetime import date
@@ -112,6 +113,19 @@ class KaKaoUnlinkView(APIView):
         user.delete()
         return Response(status=status.HTTP_200_OK)
 
+
+class TokenVerifyView(APIView):
+    def post(self, request):
+        # 토큰 검증
+        JWT_authenticator = JWTAuthentication()
+        response = JWT_authenticator.authenticate(request)
+        if response:
+            user = response[0]
+
+            # 새로운 토큰 발급
+            token = TokenObtainPairSerializer.get_token(user)
+            return Response(data={'refresh_token': str(token), 'access_token': str(token.access_token)}, status=status.HTTP_200_OK)
+    
 
 class TokenFCMView(APIView):
     def post(self, request):
