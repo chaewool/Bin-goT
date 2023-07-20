@@ -4,6 +4,14 @@ from commons import RedisRanker, send_to_fcm, send_badge_notification
 from groups.models import Group
 
 
+def test():
+    class Temp():
+        def __init__(self) -> None:
+            self.id = 1
+
+    send_to_fcm(Temp(), '', '테스트 제목', '테스트 내용', '경로')
+
+
 def every_day():
     groups = Group.objects.all()
     today = date.today()
