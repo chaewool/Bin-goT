@@ -36,7 +36,11 @@ void initFCM() async {
   // 기기의 등록 토큰 액세스
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   final fcmToken = await messaging.getToken();
-  FCMProvider().saveFCMToken(fcmToken!);
+  FCMProvider().saveFCMToken(fcmToken!).then((value) {
+    print('fcm $value');
+  }).catchError((error) {
+    print('fcm error => $error');
+  });
 
   // 토큰이 업데이트될 때마다 서버에 저장
   messaging.onTokenRefresh.listen((fcmToken) {

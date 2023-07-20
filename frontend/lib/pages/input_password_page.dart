@@ -68,6 +68,7 @@ class _InputPasswordState extends State<InputPassword> {
         GroupProvider().readGroupDetail(widget.groupId, '').then((data) {
           setGroupData(context, data);
           setGroupId(context, widget.groupId);
+          print('group id : ${widget.groupId}');
           toOtherPage(
             context,
             page: GroupMain(

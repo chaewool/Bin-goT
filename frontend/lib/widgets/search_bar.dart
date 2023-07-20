@@ -10,12 +10,13 @@ import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
-class SearchBar extends StatefulWidget {
+class CustomSearchBar extends StatefulWidget {
   final int public;
   final int period;
   final String? query;
   final bool isMain;
-  const SearchBar({
+
+  const CustomSearchBar({
     super.key,
     this.public = 0,
     this.period = 0,
@@ -24,10 +25,10 @@ class SearchBar extends StatefulWidget {
   });
 
   @override
-  State<SearchBar> createState() => _SearchBarState();
+  State<CustomSearchBar> createState() => _CustomSearchBarState();
 }
 
-class _SearchBarState extends State<SearchBar> {
+class _CustomSearchBarState extends State<CustomSearchBar> {
   final List<String> period = <String>[
     '기간 미선택',
     '한 달',
@@ -39,8 +40,6 @@ class _SearchBarState extends State<SearchBar> {
   ];
   late bool privateGroup, publicGroup;
   StringMap keyword = {};
-  final periodBoxKey = GlobalKey();
-  Offset? position;
   late double end;
   late double start;
 
@@ -52,19 +51,6 @@ class _SearchBarState extends State<SearchBar> {
     privateGroup = widget.public % 2 == 0;
     publicGroup = widget.public < 2;
     keyword['value'] = widget.query ?? '';
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getOffset();
-    });
-  }
-
-  void getOffset() {
-    if (periodBoxKey.currentContext != null) {
-      final renderBox =
-          periodBoxKey.currentContext!.findRenderObject() as RenderBox;
-      setState(() {
-        position = renderBox.localToGlobal(Offset.zero);
-      });
-    }
   }
 
   void onSearchAction() {

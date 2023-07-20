@@ -26,21 +26,15 @@ class _IntroState extends State<Intro> {
     try {
       await context.read<AuthProvider>().initVar();
       UserProvider().confirmToken().then((result) {
-        if (result.isNotEmpty) {
-          if (!mounted) return;
-          setToken(context, result['token']);
-        } else {
-          showLoginBtn = true;
-        }
+        setTokens(context, result['token'], result['refresh']);
       }).catchError((error) {
         print('intro error => $error');
       });
     } catch (error) {
       print('오류 오류');
-      // setState(() {
-
-      showLoginBtn = true;
-      // });
+      setState(() {
+        showLoginBtn = true;
+      });
     }
   }
 

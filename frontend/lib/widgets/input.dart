@@ -84,12 +84,14 @@ class CustomInput extends StatelessWidget {
 //* date input
 class InputDate extends StatefulWidget {
   final String explain, title;
-  final Function(BuildContext, String) onSubmit;
+  // final Function(BuildContext, String) onSubmit;
+  final Function(List<DateTime?>) applyDay;
   const InputDate({
     super.key,
     required this.explain,
     required this.title,
-    required this.onSubmit,
+    // required this.onSubmit,
+    required this.applyDay,
   });
 
   @override
@@ -104,23 +106,23 @@ class _InputDateState extends State<InputDate> {
     null,
   ];
 
-  String _getValueText(
-    CalendarDatePicker2Type datePickerType,
-    List<DateTime?> values,
-  ) {
-    values =
-        values.map((e) => e != null ? DateUtils.dateOnly(e) : null).toList();
+  // String _getValueText(
+  //   CalendarDatePicker2Type datePickerType,
+  //   List<DateTime?> values,
+  // ) {
+  //   values =
+  //       values.map((e) => e != null ? DateUtils.dateOnly(e) : null).toList();
 
-    if (values.isNotEmpty) {
-      final startDate = values[0].toString().replaceAll('00:00:00.000', '');
-      final endDate = values.length > 1
-          ? values[1].toString().replaceAll('00:00:00.000', '')
-          : 'null';
-      return '$startDate to $endDate';
-    } else {
-      return 'null';
-    }
-  }
+  //   if (values.isNotEmpty) {
+  //     final startDate = values[0].toString().replaceAll('00:00:00.000', '');
+  //     final endDate = values.length > 1
+  //         ? values[1].toString().replaceAll('00:00:00.000', '')
+  //         : 'null';
+  //     return '$startDate to $endDate';
+  //   } else {
+  //     return 'null';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -259,11 +261,11 @@ class _InputDateState extends State<InputDate> {
             dialogBackgroundColor: whiteColor,
           );
           if (values != null) {
-            // ignore: avoid_print
-            print(_getValueText(
-              config.calendarType,
-              values,
-            ));
+            widget.applyDay(values);
+            // print(_getValueText(
+            //   config.calendarType,
+            //   values,
+            // ));
             setState(() {
               _dialogCalendarPickerValue = values;
             });

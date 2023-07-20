@@ -30,6 +30,7 @@ class _GroupChatState extends State<GroupChat> {
   void initState() {
     super.initState();
     groupId = getGroupId(context)!;
+    print('group id => $groupId');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initLoadingData(context, 0);
       if (readLoading(context)) {
@@ -62,6 +63,7 @@ class _GroupChatState extends State<GroupChat> {
 
   void readChats([bool more = true]) async {
     GroupProvider().readGroupChatList(groupId, page).then((data) {
+      print('chat data => $data');
       if (data is GroupChatList) {
         chats.addAll(data);
         setLoading(context, false);

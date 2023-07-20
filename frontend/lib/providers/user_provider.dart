@@ -40,8 +40,8 @@ class UserProvider extends ApiProvider {
     try {
       if (token == null || token == '') return {};
       print('토큰 유효성 검사 => $token');
-      await createApi(verifyTokenUrl, data: {'token': token});
-      return {'token': token};
+      final result = await createApi(verifyTokenUrl, data: {'token': token});
+      return result;
     } catch (error) {
       print('오류 발생');
       throw Error();

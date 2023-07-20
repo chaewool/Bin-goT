@@ -34,15 +34,15 @@ class GroupProvider extends ApiProvider {
     required int page,
   }) async {
     try {
-      // print(searchGroupUrl);
-      // print('${{
-      //   'period': period,
-      //   'keyword': keyword,
-      //   'order': order,
-      //   'public': public,
-      //   'cnt': cnt,
-      //   'page': page,
-      // }}');
+      print(searchGroupUrl);
+      print('${{
+        'period': period,
+        'keyword': keyword,
+        'order': order,
+        'public': public,
+        'cnt': cnt,
+        'page': page,
+      }}');
       final response = await dioWithToken().get(
         searchGroupUrl,
         queryParameters: {
@@ -218,6 +218,7 @@ class GroupProvider extends ApiProvider {
         },
       );
       final data = response.data;
+      print('chatdata => $data');
       if (data.isNotEmpty) {
         GroupChatList chats = data
             .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))

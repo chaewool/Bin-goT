@@ -96,8 +96,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   void logout() {
-    context.read<AuthProvider>().deleteVar();
-    context.read<NotiProvider>().deleteVar();
+    deleteVar(context);
     toOtherPageWithoutPath(context);
   }
 

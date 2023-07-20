@@ -1,10 +1,11 @@
 import 'package:bin_got/providers/api_provider.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 
 class FCMProvider extends ApiProvider {
   //* public
-  void saveFCMToken(String token) async => _saveFCMToken(token);
+  FutureDynamicMap saveFCMToken(String token) async => _saveFCMToken(token);
 
   //* private
-  void _saveFCMToken(String token) =>
+  FutureDynamicMap _saveFCMToken(String token) =>
       createApi(saveFCMTokentUrl, data: {'fcm_token': token});
 }

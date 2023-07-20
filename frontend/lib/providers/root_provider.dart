@@ -185,6 +185,7 @@ class GlobalScrollProvider extends ChangeNotifier {
 
   void setLoading(bool value) {
     _setLoading(value);
+    print('loading => $_loading');
     notifyListeners();
   }
 

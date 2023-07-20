@@ -174,24 +174,30 @@ class ChatListItem extends StatelessWidget {
     return CustomList(
       height: 70,
       boxShadow: [shadowWithOpacity],
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Center(
-              child: Image.network(
-                '${dotenv.env['fileUrl']}/badges/${data.badgeId}',
-              ),
-            ),
-          ),
-          CustomText(content: data.username),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              CustomText(content: data.content),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: Image.network(
+                    '${dotenv.env['fileUrl']}/badges/${data.badgeId}',
+                  ),
+                ),
+              ),
+              CustomText(content: data.username),
             ],
-          )
+          ),
+          if (data.hasImage == true)
+            Image.network(
+              '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${data.chatId}',
+            ),
+          if (data.content != null) CustomText(content: data.content!),
         ],
       ),
     );

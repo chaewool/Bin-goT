@@ -129,7 +129,7 @@ class InfiniteScroll extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(data);
+    print('scroll data => $data, isGroupMode $isGroupMode, mode $mode');
     return CustomBoxContainer(
       color: backgroundColor,
       child: !getLoading(context)

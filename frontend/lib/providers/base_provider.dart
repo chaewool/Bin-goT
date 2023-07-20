@@ -5,135 +5,119 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 //* dio
 class DioClass extends AuthProvider {
   static final _baseUrl = dotenv.env['baseUrl'];
-  bool _alreadyInitToken = false;
-  bool _alreadyInitForm = false;
 
   final dio = Dio(BaseOptions(baseUrl: _baseUrl!));
 
-  final _dioWithAccess = Dio(
-    BaseOptions(
-      baseUrl: _baseUrl!,
-      headers: {'Authorization': 'JWT ${AuthProvider().token}'},
-    ),
-  );
-
-  final _dioWithForm = Dio(
-    BaseOptions(
-      baseUrl: _baseUrl!,
-      headers: {
-        'Authorization': 'JWT ${AuthProvider().token}',
-      },
-      contentType: 'multipart/form-data',
-    ),
-  );
-
   Dio dioWithToken() {
-    if (!_alreadyInitToken) {
-      final tempDio = Dio(
-        BaseOptions(
-          baseUrl: _baseUrl!,
-          headers: {'Authorization': 'JWT ${AuthProvider().token}'},
-        ),
-      );
-      _dioWithAccess.interceptors.add(
-        InterceptorsWrapper(
-          onError: (e, handler) async {
-            print('----------');
-            print('error message : $e ${e.response!.data}');
-            if (e.response?.statusCode == 401) {
-              print('access => 401 Error => 갱신 시도');
-              try {
-                //* refresh token
-                tempDio.post(
-                  '/accounts/token/refresh/',
-                  data: {'refresh': refresh},
-                ).then((tokenData) async {
-                  // print('tokenData: $tokenData');
-                  final access = tokenData.data['access'];
-                  setStoreToken(access);
-                  e.requestOptions.headers['Authorization'] = 'JWT $access';
-                  final secondRes = await dio.fetch(e.requestOptions);
-                  // print('secondRes : $secondRes');
-                  return handler.resolve(secondRes);
-                }).catchError((error) {
-                  print('Error : $error');
-                  deleteVar();
-                  handler.next(error);
-                  return handler.next(error);
-                });
-                //* 재요청
-              } catch (error) {
-                print('not try : $error');
+    final dioWithAccess = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl!,
+        headers: {'Authorization': 'JWT $token'},
+      ),
+    );
+    final tempDio = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl!,
+        headers: {'Authorization': 'JWT $token'},
+      ),
+    );
+    dioWithAccess.interceptors.add(
+      InterceptorsWrapper(
+        onError: (e, handler) async {
+          print('----------');
+          print('error message : $e ${e.response?.data}');
+          print('token => $token');
+          if (e.response?.statusCode == 401) {
+            print('access => 401 Error => 갱신 시도');
+            try {
+              //* refresh token
+              tempDio.post(
+                '/accounts/token/refresh/',
+                data: {'refresh': refresh},
+              ).then((tokenData) async {
+                // print('tokenData: $tokenData');
+                final access = tokenData.data['access'];
+                print('accessToken => $access');
+                setStoreToken(access);
+                e.requestOptions.headers['Authorization'] = 'JWT $access';
+                final secondRes = await dio.fetch(e.requestOptions);
+                // print('secondRes : $secondRes');
+                return handler.resolve(secondRes);
+              }).catchError((error) {
+                print('Error : $error');
                 deleteVar();
-              }
-            } else {
-              print('not 401 error => $e');
-              return handler.next(e);
+                return handler.next(error);
+              });
+              //* 재요청
+            } catch (error) {
+              print('not try : $error');
+              deleteVar();
             }
-          },
-        ),
-      );
-      _alreadyInitToken = true;
-      return _dioWithAccess;
-    } else {
-      return _dioWithAccess;
-    }
+          } else {
+            print('not 401 error => $e');
+            return handler.next(e);
+          }
+        },
+      ),
+    );
+    return dioWithAccess;
   }
 
   Dio dioWithTokenForm() {
-    if (!_alreadyInitForm) {
-      final tempDio = Dio(
-        BaseOptions(
-          baseUrl: _baseUrl!,
-          headers: {
-            'Authorization': 'JWT ${AuthProvider().token}',
-          },
-          contentType: 'multipart/form-data',
-        ),
-      );
-      _dioWithForm.interceptors.add(
-        InterceptorsWrapper(
-          onError: (e, handler) async {
-            print('----------');
-            print('error message : $e ${e.response!.data}');
-            if (e.response?.statusCode == 401) {
-              print('access => 401 Error => 갱신 시도');
-              try {
-                //* refresh token
-                tempDio.post(
-                  '/accounts/token/refresh/',
-                  data: {'refresh': refresh},
-                ).then((tokenData) async {
-                  // print('tokenData: $tokenData');
-                  final access = tokenData.data['access'];
-                  setStoreToken(access);
-                  e.requestOptions.headers['Authorization'] = 'JWT $access';
-                  final secondRes = await dio.fetch(e.requestOptions);
-                  // print('secondRes : $secondRes');
-                  return handler.resolve(secondRes);
-                }).catchError((error) {
-                  print('Error : $error');
-                  deleteVar();
-                  // handler.next(error);
-                  return handler.next(error);
-                });
-                //* 재요청
-              } catch (error) {
-                print('not try : $error');
+    final dioWithForm = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl!,
+        headers: {'Authorization': 'JWT $token'},
+        contentType: 'multipart/form-data',
+      ),
+    );
+    final tempDio = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl!,
+        headers: {'Authorization': 'JWT $token'},
+        contentType: 'multipart/form-data',
+      ),
+    );
+    dioWithForm.interceptors.add(
+      InterceptorsWrapper(
+        onError: (e, handler) async {
+          print('----------');
+          print('error message : $e ${e.response!.data}');
+          print('token => $token');
+          if (e.response?.statusCode == 401) {
+            print('access => 401 Error => 갱신 시도');
+            try {
+              //* refresh token
+              tempDio.post(
+                '/accounts/token/refresh/',
+                data: {'refresh': refresh},
+              ).then((tokenData) async {
+                // print('tokenData: $tokenData');
+                final access = tokenData.data['access'];
+                setStoreToken(access);
+                e.requestOptions.headers['Authorization'] = 'JWT $access';
+                final secondRes = await dio.fetch(e.requestOptions);
+                // print('secondRes : $secondRes');
+                return handler.resolve(secondRes);
+              }).catchError((error) {
+                print('Error : $error');
                 deleteVar();
-              }
-            } else {
-              print('not 401 error => $e');
-              return handler.next(e);
+                // handler.next(error);
+                return handler.next(error);
+              });
+              //* 재요청
+            } catch (error) {
+              print('not try : $error');
+              deleteVar();
             }
-          },
-        ),
-      );
-      _alreadyInitForm = true;
-      return _dioWithForm;
-    } else {
-      return _dioWithForm;
-    }
+          } else {
+            print('not 401 error => $e');
+            return handler.next(e);
+          }
+        },
+      ),
+    );
+    return dioWithForm;
   }
 }
 

@@ -204,9 +204,8 @@ void setToken(BuildContext context, String newToken) =>
     context.read<AuthProvider>().setStoreToken(newToken);
 
 void setTokens(BuildContext context, String newToken, String newRefresh) {
-  final auth = context.read<AuthProvider>();
-  auth.setStoreToken(newToken);
-  auth.setStoreRefresh(newRefresh);
+  context.read<AuthProvider>().setStoreToken(newToken);
+  context.read<AuthProvider>().setStoreRefresh(newRefresh);
 }
 
 void deleteVar(BuildContext context) {

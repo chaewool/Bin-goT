@@ -22,12 +22,13 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   final WidgetList? actions;
   final String? title;
   final double elevation;
-  const CustomAppBar(
-      {super.key,
-      this.leadingChild,
-      this.actions,
-      this.title,
-      this.elevation = 0});
+  const CustomAppBar({
+    super.key,
+    this.leadingChild,
+    this.actions,
+    this.title,
+    this.elevation = 0,
+  });
 
   @override
   PreferredSizeWidget build(BuildContext context) {

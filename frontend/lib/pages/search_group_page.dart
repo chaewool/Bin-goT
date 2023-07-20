@@ -162,58 +162,52 @@ class _SearchGroupState extends State<SearchGroup> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: backgroundColor,
         appBar: const MainBar(),
         body: Stack(
           children: [
             Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: SearchBar(
-                    public: widget.public,
-                    period: widget.period,
-                    query: widget.query,
-                  ),
+                CustomSearchBar(
+                  public: widget.public,
+                  period: widget.period,
+                  query: widget.query,
                 ),
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: RowWithPadding(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    horizontal: 25,
-                    children: [
-                      Center(
-                        child: CustomTextButton(
-                          content: sortList[sortIdx],
-                          fontSize: FontSize.smallSize,
-                          onTap: changeSort,
-                        ),
+                RowWithPadding(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  vertical: 10,
+                  horizontal: 25,
+                  children: [
+                    Center(
+                      child: CustomTextButton(
+                        content: sortList[sortIdx],
+                        fontSize: FontSize.smallSize,
+                        onTap: changeSort,
                       ),
-                      Center(
-                        child: CustomTextButton(
-                          content: filterList[filterIdx],
-                          fontSize: FontSize.smallSize,
-                          onTap: changeFilter,
-                        ),
+                    ),
+                    Center(
+                      child: CustomTextButton(
+                        content: filterList[filterIdx],
+                        fontSize: FontSize.smallSize,
+                        onTap: changeFilter,
                       ),
+                    ),
 
-                      // SelectBox(
-                      //   key: sortKey,
-                      //   onTap: changeShowSort,
-                      //   value: sortList[sortIdx],
-                      //   width: 120,
-                      //   height: 50,
-                      // ),
-                      // SelectBox(
-                      //   key: filterKey,
-                      //   onTap: changeShowFilter,
-                      //   value: filterList[filterIdx],
-                      //   width: 120,
-                      //   height: 50,
-                      // ),
-                    ],
-                  ),
+                    // SelectBox(
+                    //   key: sortKey,
+                    //   onTap: changeShowSort,
+                    //   value: sortList[sortIdx],
+                    //   width: 120,
+                    //   height: 50,
+                    // ),
+                    // SelectBox(
+                    //   key: filterKey,
+                    //   onTap: changeShowFilter,
+                    //   value: filterList[filterIdx],
+                    //   width: 120,
+                    //   height: 50,
+                    // ),
+                  ],
                 ),
                 Expanded(
                   child: InfiniteScroll(
