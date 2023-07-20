@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 const double appBarHeight = 50;
 
 //* appBar 기본 틀
-class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leadingChild;
   final WidgetList? actions;
   final String? title;
@@ -55,7 +55,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* 뒤로 가기 버튼을 포함한 app bar
-class AppBarWithBack extends StatelessWidget with PreferredSizeWidget {
+class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
   final WidgetList? actions;
   final String? title;
   final ReturnVoid? onPressed;
@@ -83,7 +83,7 @@ class AppBarWithBack extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* main, search
-class MainBar extends StatelessWidget with PreferredSizeWidget {
+class MainBar extends StatelessWidget implements PreferredSizeWidget {
   final ReturnVoid? onPressed;
   const MainBar({super.key, this.onPressed});
 
@@ -116,7 +116,7 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* group main
-class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
+class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool onlyBack, isMember, isAdmin;
   final int groupId;
   const GroupAppBar({
@@ -198,7 +198,7 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* group admin
-class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
+class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
   final int groupId;
   const AdminAppBar({
     super.key,
@@ -283,7 +283,7 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* 빙고 상세
-class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
+class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final FutureBool Function() save;
   final int bingoId;
   const BingoDetailAppBar({
@@ -316,7 +316,7 @@ class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* 마이 페이지
-class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
+class MyPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyPageAppBar({super.key});
 
   @override

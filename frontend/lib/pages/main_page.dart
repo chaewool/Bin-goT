@@ -58,7 +58,7 @@ class _MainState extends State<Main> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     isSearchMode
-                        ? const SearchBar(isMain: true)
+                        ? const CustomSearchBar(isMain: true)
                         : const SizedBox(),
                     const SizedBox(height: 15),
                     const Expanded(
