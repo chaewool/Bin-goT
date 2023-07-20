@@ -8,6 +8,8 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:bin_got/providers/fcm_provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class Intro extends StatefulWidget {
   const Intro({super.key});
@@ -25,8 +27,21 @@ class _IntroState extends State<Intro> {
   void verifyToken() async {
     try {
       await context.read<AuthProvider>().initVar();
-      UserProvider().confirmToken().then((result) {
+      UserProvider().confirmToken().then((result) async {
         setTokens(context, result['token'], result['refresh']);
+
+        // 기기의 등록 토큰 액세스
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+        final fcmToken = await messaging.getToken();
+        FCMProvider().saveFCMToken(fcmToken!);
+        print('fcm 토큰 $fcmToken');
+
+        // 토큰이 업데이트될 때마다 서버에 저장
+        messaging.onTokenRefresh.listen((fcmToken) {
+          FCMProvider().saveFCMToken(fcmToken);
+        }).onError((err) {
+          throw Error();
+        });
       }).catchError((error) {
         print('intro error => $error');
       });
