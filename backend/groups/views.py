@@ -379,7 +379,7 @@ class GroupChatCreateView(APIView):
         RedisChat(group_id).addChat(chat)
         send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
             
-        return Response(data={}, status=status.HTTP_200_OK)
+        return Response(data=chat, status=status.HTTP_200_OK)
 
 
 class GroupChatListView(APIView):
@@ -436,7 +436,7 @@ class GroupReviewCreateView(APIView):
         RedisChat(group_id).addChat(chat)
         send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
             
-        return Response(data={}, status=status.HTTP_200_OK)
+        return Response(data=chat, status=status.HTTP_200_OK)
 
 
 class GroupReviewCheckView(APIView):
