@@ -33,17 +33,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 void initFCM() async {
-  // 기기의 등록 토큰 액세스
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  final fcmToken = await messaging.getToken();
-  FCMProvider().saveFCMToken(fcmToken!);
-
-  // 토큰이 업데이트될 때마다 서버에 저장
-  messaging.onTokenRefresh.listen((fcmToken) {
-    FCMProvider().saveFCMToken(fcmToken);
-  }).onError((err) {
-    throw Error();
-  });
 
   // 메시지를 수신할 수 있는 권한 요청(iOS 및 웹)
   await messaging.requestPermission(

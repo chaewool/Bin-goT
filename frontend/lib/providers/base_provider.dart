@@ -19,7 +19,7 @@ class DioClass extends AuthProvider {
       InterceptorsWrapper(
         onError: (e, handler) async {
           print('----------');
-          print('error message : $e ${e.response!.data}');
+          print('error message : $e ${e.response}');
           if (e.response?.statusCode == 401) {
             print('401 Error');
             try {

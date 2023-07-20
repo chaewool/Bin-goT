@@ -11,12 +11,12 @@ import 'package:bin_got/widgets/select_box.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
-class SearchBar extends StatefulWidget {
+class CustomSearchBar extends StatefulWidget {
   final int public;
   final int period;
   final String? query;
   final bool isMain;
-  const SearchBar({
+  const CustomSearchBar({
     super.key,
     this.public = 0,
     this.period = 0,
@@ -25,10 +25,10 @@ class SearchBar extends StatefulWidget {
   });
 
   @override
-  State<SearchBar> createState() => _SearchBarState();
+  State<CustomSearchBar> createState() => _SearchBarState();
 }
 
-class _SearchBarState extends State<SearchBar> {
+class _SearchBarState extends State<CustomSearchBar> {
   final List<String> period = <String>[
     '기간을 선택해주세요',
     '한 달 이하',

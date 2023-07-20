@@ -123,7 +123,7 @@ class _SearchGroupState extends State<SearchGroup> {
               children: [
                 Flexible(
                   fit: FlexFit.loose,
-                  child: SearchBar(
+                  child: CustomSearchBar(
                     public: widget.public,
                     period: widget.period,
                     query: widget.query,
