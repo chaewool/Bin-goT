@@ -1,5 +1,7 @@
 from django.urls import path
 
+from rest_framework_simplejwt.views import TokenVerifyView
+
 from . import views
 
 app_name = 'accounts'
@@ -8,7 +10,8 @@ urlpatterns = [
     path('kakao/callback/', views.KaKaoCallBackView.as_view(), name='kakao_callback'),
     path('kakao/native/', views.KaKaoNativeView.as_view(), name='kakao_native'),
     path('kakao/unlink/', views.KaKaoUnlinkView.as_view(), name='kakao_unlink'),
-    path('token/verify/', views.TokenVerifyView.as_view(), name='token_verify'),
+    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('token/refresh/', views.TokenRefreshView.as_view(), name='token_refresh'),
     path('token/fcm/', views.TokenFCMView.as_view(), name='token_fcm'),
     
     path('username/check/', views.UsernameCheckView.as_view(), name='username_check'),

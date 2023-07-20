@@ -5,11 +5,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.authentication import JWTAuthentication
 import requests
 import logging
 from datetime import date
+import jwt
 
+from bingot.settings import SIMPLE_JWT
 from bingot_settings import KAKAO_REST_API_KEY
 from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
@@ -114,17 +115,26 @@ class KaKaoUnlinkView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class TokenVerifyView(APIView):
-    def post(self, request):
-        # 토큰 검증
-        JWT_authenticator = JWTAuthentication()
-        response = JWT_authenticator.authenticate(request)
-        if response:
-            user = response[0]
+class TokenRefreshView(APIView):
+    permission_classes = [AllowAny]
 
-            # 새로운 토큰 발급
-            token = TokenObtainPairSerializer.get_token(user)
-            return Response(data={'refresh_token': str(token), 'access_token': str(token.access_token)}, status=status.HTTP_200_OK)
+    def post(self, request):
+        token = request.data.get('token')
+
+        user_id = jwt.decode(
+            token,
+            SIMPLE_JWT['SIGNING_KEY'],
+            algorithms=[SIMPLE_JWT['ALGORITHM']],
+        )['user_id']
+        user = get_user_model().objects.get(pk=user_id)
+
+        tokens = TokenObtainPairSerializer.get_token(user)
+        
+        data = {}
+        data['refresh_token'] = str(tokens)
+        data['access_token'] = str(tokens.access_token)
+
+        return Response(data=data, status=status.HTTP_200_OK)
     
 
 class TokenFCMView(APIView):
