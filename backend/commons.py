@@ -81,9 +81,9 @@ class RedisChat:
 
     def getChatList(self, page):
         if page == 1:
-            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50, -1)]
+            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50, -1)][::-1]
         else:
-            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50 * page, -50 * (page - 1))]
+            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50 * page, -50 * (page - 1))][::-1]
     
     def getChatItem(self, chat_id):
         return json.loads(self.conn_redis.lindex(self.key, chat_id))
