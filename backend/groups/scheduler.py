@@ -1,3 +1,7 @@
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from django_apscheduler.jobstores import register_events
+from django.conf import settings
 from datetime import date, timedelta
 import logging
 
@@ -8,12 +12,12 @@ from groups.models import Group
 logger = logging.getLogger('accounts')
 
 
-def test():
+def test_every_minute():
     class Temp():
         def __init__(self) -> None:
             self.id = 1
 
-    send_to_fcm(Temp(), '', '테스트 제목', '테스트 내용', '경로')
+    # send_to_fcm(Temp(), '', '테스트 제목', '테스트 내용', '경로')
 
     logger.info('1분마다 로그 찍힘')
 
@@ -88,3 +92,38 @@ def every_monday():
                 rank = ranker.getRank(str(user.id))
                 content = f'당신의 등수는 {rank}등입니다.'
                 send_to_fcm(user, '', title, content, path)
+
+
+def start():
+    scheduler = BackgroundScheduler(timezone=settings.TIME_ZONE)
+    register_events(scheduler)
+
+    scheduler.add_job(
+        test_every_minute,
+        trigger=CronTrigger(minute="*"),
+        id="test_every_minute",
+        max_instances=1,
+        replace_existing=True,
+    )
+    # scheduler.add_job(
+    #     every_day,
+    #     trigger=CronTrigger(day="*"),
+    #     id="every_day",
+    #     max_instances=1,
+    #     replace_existing=True,
+    # )
+    # scheduler.add_job(
+    #     every_monday,
+    #     trigger=CronTrigger(day_of_week="mon", hour="09", minute="00"),
+    #     id="every_monday",
+    #     max_instances=1,
+    #     replace_existing=True,
+    # )
+
+    try:
+        logger.info("Starting scheduler...")
+        scheduler.start()
+    except KeyboardInterrupt:
+        logger.info("Stopping scheduler...")
+        scheduler.shutdown()
+        logger.info("Scheduler shut down successfully!")

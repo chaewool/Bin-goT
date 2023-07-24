@@ -16,11 +16,3 @@ services:
       - 8080:8080
     depends_on:
       - _build_image
-
-  cron:
-    image: main_image
-    container_name: backimg_cron
-    restart: always
-    command: bash -c "service cron start && python manage.py crontab add && tail -f /dev/null"
-    depends_on:
-      - backend
