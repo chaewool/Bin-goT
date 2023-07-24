@@ -1,7 +1,11 @@
 from datetime import date, timedelta
+import logging
 
 from commons import RedisRanker, send_to_fcm, send_badge_notification
 from groups.models import Group
+
+
+logger = logging.getLogger('accounts')
 
 
 def test():
@@ -10,6 +14,8 @@ def test():
             self.id = 1
 
     send_to_fcm(Temp(), '', '테스트 제목', '테스트 내용', '경로')
+
+    logger.info('1분마다 로그 찍힘')
 
 
 def every_day():
