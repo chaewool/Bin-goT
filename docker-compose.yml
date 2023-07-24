@@ -21,6 +21,6 @@ services:
     image: main_image
     container_name: backimg_cron
     restart: always
-    command: bash -c "service cron start && python manage.py crontab add && python manage.py crontab show && tail -f /dev/null"
+    command: bash -c "service cron start && python manage.py crontab add && tail -f /dev/null"
     depends_on:
       - backend
