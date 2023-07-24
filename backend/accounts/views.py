@@ -234,6 +234,12 @@ class MainGroupsView(APIView):
         else:            
             groups = GroupSerializer(user.groups, many=True).data
 
+            temp = []
+            for group in groups:
+                if Participate.objects.filter(group=group['id'], user=user, is_banned=0):
+                    temp.append(group)
+            groups = temp[:]
+
             if filter == '1':
                 groups = [group for group in groups if group['status'] == '진행 중']
             elif filter == '2':
@@ -276,6 +282,12 @@ class MainBoardsView(APIView):
         last_page = page
 
         boards = BoardSerializer(user.boards.all(), many=True).data
+
+        temp = []
+        for board in boards:
+            if Participate.objects.filter(group=board['group_id'], user=user, is_banned=0):
+                temp.append(board)
+        boards = temp[:]
 
         if filter == '1':
             boards = [board for board in boards if board['status'] == '진행 중']

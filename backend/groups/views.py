@@ -491,9 +491,6 @@ class GroupAdminView(APIView):
     def get(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-
-        if date.today() >= group.start:
-            return Response(data={'message': '시작일이 경과하여 관리할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if not Participate.objects.filter(user=user, group=group).exists() or user != group.leader:
             return Response(data={'message': '권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -510,11 +507,12 @@ class GroupAdminView(APIView):
                 board_id = -1
             
             if participate.is_banned == 1:
-                applicants.append({
-                    'id': participate.user.id,
-                    'username': participate.rand_name if group.is_public else participate.user.username,
-                    'board_id': board_id
-                    })
+                if date.today() < group.start:
+                    applicants.append({
+                        'id': participate.user.id,
+                        'username': participate.rand_name if group.is_public else participate.user.username,
+                        'board_id': board_id
+                        })
             elif participate.is_banned == 0:
                 members.append({
                     'id': participate.user.id,
