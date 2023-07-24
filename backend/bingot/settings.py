@@ -231,9 +231,9 @@ LOGGING = {
 # crontab
 
 CRONJOBS = [
-    ('0 0 * * *', 'groups.cron.every_day', '>> files/log/cron.log'),
-    ('0 0 * * 1', 'groups.cron.every_monday', '>> files/log/cron.log'),
-    ('* * * * *', 'groups.cron.test', '>> files/log/cron.log'),
+    ('0 0 * * *', 'groups.cron.every_day', f'>> {BASE_DIR}/files/log/cron.log'),
+    ('0 0 * * 1', 'groups.cron.every_monday', f'>> {BASE_DIR}/files/log/cron.log'),
+    ('* * * * *', 'groups.cron.test', f'>> {BASE_DIR}/files/log/cron.log'),
 ]
 
 
