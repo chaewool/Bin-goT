@@ -13,6 +13,7 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -519,12 +520,14 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
                                                 )
                                               ]
                                             : null,
-                                    child: Image.network(
-                                      '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
-                                      opacity: AlwaysStoppedAnimation(
-                                        data[2 * index + di].hasBadge ? 1 : 0.2,
+                                    child: Opacity(
+                                      opacity: data[2 * index + di].hasBadge
+                                          ? 1
+                                          : 0.2,
+                                      child: CachedNetworkImage(
+                                        imageUrl:
+                                            '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
                                       ),
-                                      // opacity: data[index].hasBadge ? 1 : 0.5,
                                     ),
                                   ),
                                   Padding(

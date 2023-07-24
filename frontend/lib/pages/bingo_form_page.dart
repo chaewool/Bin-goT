@@ -207,7 +207,11 @@ class _BingoFormState extends State<BingoForm> {
             hasCancel: false,
             onPressed: toOtherPage(
               context,
-              page: InputPassword(isPublic: true, groupId: groupId),
+              page: InputPassword(
+                isPublic: true,
+                groupId: groupId,
+                needCheck: false,
+              ),
             ),
           )();
         }

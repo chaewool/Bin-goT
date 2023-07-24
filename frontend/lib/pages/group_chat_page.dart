@@ -5,6 +5,7 @@ import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -21,7 +22,6 @@ class GroupChat extends StatefulWidget {
 }
 
 class _GroupChatState extends State<GroupChat> {
-  int page = 1;
   GroupChatList chats = [];
   late int groupId;
   final controller = ScrollController();
@@ -61,51 +61,57 @@ class _GroupChatState extends State<GroupChat> {
     });
   }
 
-  void readChats([bool more = true]) async {
-    GroupProvider().readGroupChatList(groupId, page).then((data) {
+  void readChats([bool more = true]) {
+    GroupProvider()
+        .readGroupChatList(groupId, getPage(context, 0))
+        .then((data) {
       print('chat data => $data');
-      if (data is GroupChatList) {
-        chats.addAll(data);
-        setLoading(context, false);
-        if (more) {
-          setWorking(context, false);
-          setAdditional(context, false);
-        }
+      print('total ${getTotal(context, 0)} page ${getPage(context, 0)}');
+
+      chats.addAll(data);
+      setLoading(context, false);
+      if (more) {
+        setWorking(context, false);
+        setAdditional(context, false);
       }
     }).catchError((error) {});
     increasePage(context, 0);
   }
 
-  void addChat(StringMap content, XFile? image) {
-    GroupProvider()
-        .createGroupChatChat(
-      groupId,
-      FormData.fromMap({
-        'data': jsonEncode(content),
-        'img': image != null
-            ? MultipartFile.fromFileSync(
-                image.path,
-                contentType: MediaType('image', 'png'),
-              )
-            : null,
-      }),
-    )
-        .then((data) {
-      chats.insert(
-          0,
-          GroupChatModel.fromJson({
-            ...data,
-            ...content,
-            'reviewed': false,
-            'hasImage': image != null
-          }));
-    });
+  void addChat(String? content, XFile? image) {
+    print('content: $content');
+    if ((content != null && content != '') || image != null) {
+      GroupProvider()
+          .createGroupChatChat(
+        groupId,
+        FormData.fromMap({
+          'content': jsonEncode(content),
+          'img': image != null
+              ? MultipartFile.fromFileSync(
+                  image.path,
+                  contentType: MediaType('image', 'png'),
+                )
+              : null,
+        }),
+      )
+          .then((data) {
+        chats.insert(
+            0,
+            GroupChatModel.fromJson({
+              ...data,
+              'content': content,
+              'reviewed': false,
+              'hasImage': image != null
+            }));
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      appBar: const AppBarWithBack(),
       body: Padding(
         padding: const EdgeInsets.only(top: 20),
         child: Column(

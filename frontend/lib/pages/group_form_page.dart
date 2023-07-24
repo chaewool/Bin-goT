@@ -14,6 +14,7 @@ import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
@@ -471,8 +472,12 @@ class _GroupFormState extends State<GroupForm> {
             : CustomBoxContainer(
                 width: 270,
                 height: 150,
-                child: Image.network(
-                    '${dotenv.env['fileUrl']}/groups/${widget.groupId}'),
+                child: CachedNetworkImage(
+                  placeholder: (context, url) =>
+                      const SizedBox(width: 100, height: 100),
+                  imageUrl: '${dotenv.env['fileUrl']}/groups/${widget.groupId}',
+                  // errorWidget: ,
+                ),
               );
   }
 

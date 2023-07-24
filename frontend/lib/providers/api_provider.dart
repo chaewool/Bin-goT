@@ -26,9 +26,6 @@ class ApiProvider extends UrlClass {
       return response.data;
     } catch (error) {
       print('createError: $error');
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }
@@ -40,9 +37,6 @@ class ApiProvider extends UrlClass {
       final response = await dioWithToken().post(url);
       return response.data;
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }
@@ -54,9 +48,6 @@ class ApiProvider extends UrlClass {
       print('url : $url, data : $data, response: $response');
       return {};
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }
@@ -67,9 +58,6 @@ class ApiProvider extends UrlClass {
       await dioWithToken().delete(url);
       return {};
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }

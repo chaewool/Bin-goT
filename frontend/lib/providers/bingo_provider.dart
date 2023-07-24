@@ -21,9 +21,6 @@ class BingoProvider extends ApiProvider {
       return response.data;
       // return BingoDetailModel.fromJson(response.data);
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       print(error);
       throw Error();
     }
@@ -55,9 +52,6 @@ class BingoProvider extends ApiProvider {
       return {};
     } catch (error) {
       print(error);
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }
@@ -72,9 +66,6 @@ class BingoProvider extends ApiProvider {
       return response.data;
     } catch (error) {
       print(error);
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }

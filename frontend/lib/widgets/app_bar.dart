@@ -166,13 +166,11 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       icon: settingsIcon,
                       onPressed: toOtherPage(
                         context,
-                        page: GroupAdmin(
-                          groupId: groupId,
-                        ),
+                        page: GroupAdmin(groupId: groupId),
                       ),
                     )
                   : const SizedBox(),
-              isMember && today.difference(start) > Duration.zero
+              isMember && today.difference(start) < Duration.zero
                   ? IconButtonInRow(
                       icon: shareIcon,
                       onPressed: () => shareGroup(
@@ -181,7 +179,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     )
                   : const SizedBox(),
-              isMember && !isAdmin && today.difference(start) > Duration.zero
+              isMember && !isAdmin && today.difference(start) < Duration.zero
                   ? IconButtonInRow(
                       icon: exitIcon,
                       onPressed: showAlert(
@@ -276,7 +274,7 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBarWithBack(
-      actions: today.difference(start) > Duration.zero
+      actions: today.difference(start) < Duration.zero
           ? [
               IconButtonInRow(icon: editIcon, onPressed: onEditAction),
               IconButtonInRow(icon: deleteIcon, onPressed: onDeleteAction),

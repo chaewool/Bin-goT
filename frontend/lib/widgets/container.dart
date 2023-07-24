@@ -4,6 +4,7 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -46,10 +47,11 @@ class BingoGallery extends StatelessWidget {
   Widget build(BuildContext context) {
     void toBingoDetail() {
       setGroupId(context, bingo.groupId);
+      setStart(context, bingo.start);
       toOtherPage(
         context,
         page: BingoDetail(bingoId: bingo.id, size: bingo.size),
-      );
+      )();
     }
 
     return GestureDetector(
@@ -62,7 +64,13 @@ class BingoGallery extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Image.network('${dotenv.env['fileUrl']}/boards/${bingo.id}'),
+              CachedNetworkImage(
+                imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
+                placeholder: (context, url) => const SizedBox(
+                  width: 50,
+                  height: 50,
+                ),
+              ),
               CustomText(content: bingo.groupName)
             ],
           ),

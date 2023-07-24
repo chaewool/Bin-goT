@@ -44,6 +44,9 @@ class _IntroState extends State<Intro> {
         });
       }).catchError((error) {
         print('intro error => $error');
+        setState(() {
+          showLoginBtn = true;
+        });
       });
     } catch (error) {
       print('오류 오류');

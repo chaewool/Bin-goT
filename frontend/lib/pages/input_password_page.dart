@@ -10,12 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class InputPassword extends StatefulWidget {
-  final bool isPublic;
+  final bool isPublic, needCheck;
   final int groupId;
   const InputPassword({
     super.key,
     required this.isPublic,
     required this.groupId,
+    this.needCheck = true,
   });
 
   @override
@@ -24,46 +25,56 @@ class InputPassword extends StatefulWidget {
 
 class _InputPasswordState extends State<InputPassword> {
   StringMap password = {'value': ''};
+  Future<bool?> showLoginModal() => showModal(
+        context,
+        page: CustomAlert(
+          title: '로그인 확인',
+          content: '로그인이 필요합니다',
+          onPressed: () => login(context),
+        ),
+      )();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (getToken(context) != null) {
-        verifyToken();
-      } else {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (widget.needCheck) {
+        if (getToken(context) == null) {
+          //* 로그인 팝업
+          await showLoginModal();
+        } else {
+          try {
+            //* 토큰 유효성 검사
+            await verifyToken();
+          } catch (error) {
+            //* 로그인 팝업
+            await showLoginModal();
+          }
+        }
+      }
+
+      if (!widget.isPublic) {
+        // ignore: use_build_context_synchronously
         showModal(
           context,
-          page: const CustomAlert(
-            title: '로그인 확인',
-            content: '로그인이 필요합니다',
+          page: WillPopScope(
+            onWillPop: () {
+              toBack(context);
+              toBack(context);
+              return Future.value(false);
+            },
+            child: InputModal(
+              title: '비밀번호 입력',
+              type: '비밀번호',
+              setValue: (value) => password['value'] = value.trim(),
+              onPressed: () => verifyPassword(password['value']),
+              onCancelPressed: () {
+                toBack(context);
+                toBack(context);
+              },
+            ),
           ),
         )();
-      }
-      if (!widget.isPublic) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return WillPopScope(
-              onWillPop: () {
-                toBack(context);
-                toBack(context);
-                return Future.value(false);
-              },
-              child: InputModal(
-                title: '비밀번호 입력',
-                type: '비밀번호',
-                setValue: (value) => password['value'] = value.trim(),
-                onPressed: () => verifyPassword(password['value']),
-                onCancelPressed: () {
-                  toBack(context);
-                  toBack(context);
-                },
-              ),
-            );
-          },
-        );
       } else {
         GroupProvider().readGroupDetail(widget.groupId, '').then((data) {
           setGroupData(context, data);
@@ -81,30 +92,18 @@ class _InputPasswordState extends State<InputPassword> {
     });
   }
 
-  void verifyToken() async {
+  FutureBool verifyToken() async {
     try {
       await context.read<AuthProvider>().initVar();
-      UserProvider().confirmToken().then((result) {
-        if (result.isNotEmpty) {
-          setToken(context, result['token']);
-        } else {
-          showModal(
-            context,
-            page: const CustomAlert(
-              title: '로그인 확인',
-              content: '로그인이 필요합니다',
-            ),
-          )();
-        }
+      final answer = UserProvider().confirmToken().then((_) {
+        return Future.value(true);
+      }).catchError((error) {
+        throw Error();
       });
+      return answer;
     } catch (error) {
-      showModal(
-        context,
-        page: const CustomAlert(
-          title: '로그인 확인',
-          content: '로그인이 필요합니다',
-        ),
-      )();
+      showLoginModal();
+      return Future.value(false);
     }
   }
 

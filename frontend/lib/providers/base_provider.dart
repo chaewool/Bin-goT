@@ -5,10 +5,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 //* dio
 class DioClass extends AuthProvider {
   static final _baseUrl = dotenv.env['baseUrl'];
-
+  static const _refreshUrl = '/accounts/token/refresh/';
+  //* dio
   final dio = Dio(BaseOptions(baseUrl: _baseUrl!));
 
-  Dio dioWithToken() {
+  //* verify token
+  Dio dioForVerify() {
     final dioWithAccess = Dio(
       BaseOptions(
         baseUrl: _baseUrl!,
@@ -27,18 +29,71 @@ class DioClass extends AuthProvider {
           print('----------');
           print('error message : $e ${e.response?.data}');
           print('token => $token');
-          if (e.response?.statusCode == 401) {
-            print('access => 401 Error => 갱신 시도');
-            try {
-              //* refresh token
-              tempDio.post(
-                '/accounts/token/refresh/',
-                data: {'refresh': refresh},
-              ).then((tokenData) async {
-                // print('tokenData: $tokenData');
+          //* access token 만료 (401 오류)
+          try {
+            if (e.response?.statusCode == 401) {
+              print('access => 401 Error => 갱신 시도');
+              //* access, refresh 갱신
+              tempDio.post(_refreshUrl, data: {'token': refresh}).then(
+                  (tokenData) async {
+                print('tokenData => $tokenData');
                 final access = tokenData.data['access'];
+                final refresh = tokenData.data['refresh'];
                 print('accessToken => $access');
                 setStoreToken(access);
+                setStoreRefresh(refresh);
+                return handler.resolve(tokenData);
+              }).catchError((error) {
+                print('Error : $error');
+                deleteVar();
+                return handler.next(error);
+              });
+            } else {
+              print('not 401 error => $e');
+              return handler.next(e);
+            }
+          } catch (error) {
+            print('not try : $error');
+            deleteVar();
+          }
+        },
+      ),
+    );
+    return dioWithAccess;
+  }
+
+  //* with access token
+  Dio dioWithToken() {
+    final dioWithAccess = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl!,
+        headers: {'Authorization': 'JWT $token'},
+      ),
+    );
+    final tempDio = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl!,
+        headers: {'Authorization': 'JWT $token'},
+      ),
+    );
+    dioWithAccess.interceptors.add(
+      InterceptorsWrapper(
+        onError: (e, handler) async {
+          try {
+            print('----------');
+            print('error message : $e ${e.response?.data}');
+            print('token => $token');
+            if (e.response?.statusCode == 401) {
+              print('access => 401 Error => 갱신 시도');
+              //* refresh token
+              tempDio.post(_refreshUrl, data: {'token': refresh}).then(
+                  (tokenData) async {
+                // print('tokenData: $tokenData');
+                final access = tokenData.data['access'];
+                final refresh = tokenData.data['refresh'];
+                print('accessToken => $access');
+                setStoreToken(access);
+                setStoreRefresh(refresh);
                 e.requestOptions.headers['Authorization'] = 'JWT $access';
                 final secondRes = await dio.fetch(e.requestOptions);
                 // print('secondRes : $secondRes');
@@ -49,13 +104,13 @@ class DioClass extends AuthProvider {
                 return handler.next(error);
               });
               //* 재요청
-            } catch (error) {
-              print('not try : $error');
-              deleteVar();
+            } else {
+              print('not 401 error => $e');
+              return handler.next(e);
             }
-          } else {
-            print('not 401 error => $e');
-            return handler.next(e);
+          } catch (error) {
+            print('not try : $error');
+            deleteVar();
           }
         },
       ),
@@ -63,6 +118,7 @@ class DioClass extends AuthProvider {
     return dioWithAccess;
   }
 
+  //* content type == form data
   Dio dioWithTokenForm() {
     final dioWithForm = Dio(
       BaseOptions(
@@ -75,7 +131,6 @@ class DioClass extends AuthProvider {
       BaseOptions(
         baseUrl: _baseUrl!,
         headers: {'Authorization': 'JWT $token'},
-        contentType: 'multipart/form-data',
       ),
     );
     dioWithForm.interceptors.add(
@@ -89,7 +144,7 @@ class DioClass extends AuthProvider {
             try {
               //* refresh token
               tempDio.post(
-                '/accounts/token/refresh/',
+                _refreshUrl,
                 data: {'refresh': refresh},
               ).then((tokenData) async {
                 // print('tokenData: $tokenData');

@@ -5,41 +5,35 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 
 class UserInfoProvider extends ApiProvider {
   //* public
-  FutureDynamic changeBadge(DynamicMap data) => _changeBadge(data);
-  FutureDynamic getProfile() => _getProfile();
+  FutureBool changeBadge(DynamicMap data) => _changeBadge(data);
+  Future<ProfilModel> getProfile() => _getProfile();
   FutureDynamic getBadges() => _getBadges();
   FutureDynamic checkName(String name) => _checkName(name);
   FutureDynamic changeName(String name) => _changeName(name);
-  FutureDynamic getMainGroupData(DynamicMap queryParameters) =>
+  Future<MainGroupListModel> getMainGroupData(DynamicMap queryParameters) =>
       _getMainGroupData(queryParameters);
-  FutureDynamic getMainBingoData(DynamicMap queryParameters) =>
+  Future<MyBingoList> getMainBingoData(DynamicMap queryParameters) =>
       _getMainBingoData(queryParameters);
   FutureDynamic changeNoti(DynamicMap data) => _changeNoti(data);
 
   //* private
-  FutureDynamic _changeBadge(DynamicMap data) async {
+  FutureBool _changeBadge(DynamicMap data) async {
     try {
       await updateApi(changeBadgeUrl, data: data);
       return true;
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       print(error);
       throw Error();
     }
   }
 
-  FutureDynamic _getProfile() async {
+  Future<ProfilModel> _getProfile() async {
     try {
       final response = await dioWithToken().get(profileUrl);
       print(response.data);
       ProfilModel profile = ProfilModel.fromJson(response.data);
       return profile;
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }
@@ -53,9 +47,6 @@ class UserInfoProvider extends ApiProvider {
           .toList();
       return badgeList;
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }
@@ -68,7 +59,8 @@ class UserInfoProvider extends ApiProvider {
   FutureDynamic _changeName(String name) =>
       createApi(changeNameUrl, data: {'username': name});
 
-  FutureDynamic _getMainGroupData(DynamicMap queryParameters) async {
+  Future<MainGroupListModel> _getMainGroupData(
+      DynamicMap queryParameters) async {
     try {
       print('url : $mainGroupTabUrl, query : $queryParameters');
       final response = await dioWithToken()
@@ -81,21 +73,18 @@ class UserInfoProvider extends ApiProvider {
             .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
             .toList();
         bool hasNotGroup = data['is_recommend'];
-        GlobalBingoProvider().setTotalPage(data['last_page']);
+        GlobalGroupProvider().setTotalPage(data['last_page']);
         return MainGroupListModel.fromJson(
             {'groups': myGroupList, 'is_recommend': hasNotGroup});
       }
       return MainGroupListModel.fromJson({'groups': [], 'is_recommend': true});
     } catch (error) {
       print('mainTabGroupError: $error');
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }
 
-  FutureDynamic _getMainBingoData(DynamicMap queryParameters) async {
+  Future<MyBingoList> _getMainBingoData(DynamicMap queryParameters) async {
     try {
       print('in!!');
       final response = await dioWithToken()
@@ -113,9 +102,6 @@ class UserInfoProvider extends ApiProvider {
       return [];
     } catch (error) {
       print('mainTabBingoError: $error');
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       // UserProvider.logout();
       throw Error();
     }

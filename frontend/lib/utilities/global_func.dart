@@ -97,12 +97,12 @@ void shareBingo({required int bingoId}) async {
   }
 }
 
-Future<String> buildDynamicLink(String whereNotice, String noticeId) async {
-  String url = dotenv.env['baseUrl']!;
+Future<String> buildDynamicLink(bool isPublic, int groupId) async {
+  String uriPrefix = dotenv.env['dynamicLinkPrefix']!;
 
   final DynamicLinkParameters parameters = DynamicLinkParameters(
-    uriPrefix: url,
-    link: Uri.parse('$url/$whereNotice/$noticeId'),
+    uriPrefix: uriPrefix,
+    link: Uri.parse('https://groups?isPublic=$isPublic&groupId=$groupId'),
     androidParameters:
         AndroidParameters(packageName: dotenv.env['packageName']!),
   );
@@ -149,8 +149,9 @@ ReturnVoid showAlert(
 }
 
 //* modal 띄우기
-ReturnVoid showModal(BuildContext context, {required Widget page}) {
-  return () => showDialog(
+Future<bool?> Function() showModal(BuildContext context,
+    {required Widget page}) {
+  return () => showDialog<bool>(
         barrierDismissible: false,
         context: context,
         builder: (context) => page,
@@ -336,6 +337,9 @@ int? getBingoSize(BuildContext context) =>
 
 String? getStart(BuildContext context) =>
     context.read<GlobalGroupProvider>().start;
+
+void setStart(BuildContext context, String newStart) =>
+    context.read<GlobalGroupProvider>().setStart(newStart);
 
 void setGroupData(BuildContext context, dynamic newVal) =>
     context.read<GlobalGroupProvider>().setData(newVal);

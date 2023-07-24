@@ -19,9 +19,7 @@ class GroupAdmin extends StatelessWidget {
       appBar: AdminAppBar(groupId: groupId),
       body: CustomBoxContainer(
         height: getHeight(context),
-        child: GroupAdminTabBar(
-          groupId: groupId,
-        ),
+        child: GroupAdminTabBar(groupId: groupId),
       ),
       bottomNavigationBar: BottomBar(
         isMember: true,

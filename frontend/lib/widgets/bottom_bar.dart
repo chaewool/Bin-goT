@@ -98,7 +98,7 @@ class FormBottomBar extends StatelessWidget {
 //* 그룹 채팅 입력 하단 바
 class GroupChatBottomBar extends StatefulWidget {
   final int groupId;
-  final void Function(StringMap, XFile?) addChat;
+  final void Function(String?, XFile?) addChat;
   const GroupChatBottomBar({
     super.key,
     required this.groupId,
@@ -138,13 +138,13 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
               filled: true,
               explain: '내용을 입력하세요',
               setValue: (value) {
-                data['content'] = value;
+                data['content'] = value.trim();
               },
             ),
           ),
           Flexible(
             child: CustomIconButton(
-              onPressed: () => widget.addChat(data, selectedImage),
+              onPressed: () => widget.addChat(data['content'], selectedImage),
               icon: sendIcon,
             ),
           ),

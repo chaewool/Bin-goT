@@ -1,5 +1,4 @@
 import 'package:bin_got/models/group_model.dart';
-import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
@@ -177,12 +176,7 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
   @override
   void initState() {
     super.initState();
-    final tempData = GroupProvider().getAdminTabData(widget.groupId);
-    if (tempData is Future<GroupAdminTabModel>) {
-      tabData = tempData;
-    } else {
-      showErrorModal(context);
-    }
+    tabData = GroupProvider().getAdminTabData(widget.groupId);
   }
 
   void changeTab(int index) {
@@ -325,8 +319,12 @@ class _MyTabBarState extends State<MyTabBar> {
     if (presentIdx == 0) {
       //* 그룹이 있을 경우에만 적용
       // if (!groupTabData.hasNotGroup && groupTabData.)
+      initLoadingData(context, 1);
+      groupTabData.clear();
       setGroupTabData();
     } else {
+      initLoadingData(context, 2);
+      bingoTabData.clear();
       setBingoTabData();
     }
   }
@@ -349,22 +347,20 @@ class _MyTabBarState extends State<MyTabBar> {
       'filter': idxList[0][1],
       'page': getPage(context, 1),
     }).then((groupData) {
-      if (groupData is MainGroupListModel) {
-        setState(() {
-          groupTabData.addAll(groupData.groups);
-          hasNotGroup = groupData.hasNotGroup;
-        });
-        setLoading(context, false);
-        if (more) {
-          setWorking(context, false);
-          setAdditional(context, false);
-        }
-        increasePage(context, 1);
-      } else if (groupData['statusCode'] == 401) {
-        showLoginModal(context);
-      } else {
-        showErrorModal(context);
+      print('--------------------------');
+      print(idxList[0]);
+      print('group tab bar : ${groupData.groups.length}');
+      // setState(() {
+      // });
+      groupTabData.addAll(groupData.groups);
+      hasNotGroup = groupData.hasNotGroup;
+      setLoading(context, false);
+      if (more) {
+        setWorking(context, false);
+        setAdditional(context, false);
       }
+      increasePage(context, 1);
+
       return true;
     }).catchError((error) {
       showErrorModal(context);
@@ -385,8 +381,8 @@ class _MyTabBarState extends State<MyTabBar> {
         setWorking(context, false);
         setAdditional(context, false);
       }
+      increasePage(context, 2);
     });
-    increasePage(context, 1);
   }
 
   @override

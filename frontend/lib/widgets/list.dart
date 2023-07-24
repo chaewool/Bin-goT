@@ -6,6 +6,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -47,6 +48,7 @@ class GroupListItem extends StatelessWidget {
         page: InputPassword(
           groupId: groupInfo.id,
           isPublic: public ?? groupInfo.isPublic!,
+          needCheck: false,
         ),
       ),
       child: Row(
@@ -171,34 +173,51 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomList(
-      height: 70,
-      boxShadow: [shadowWithOpacity],
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Padding(
+      padding: EdgeInsets.only(
+        left: data.userId == getId(context) ? 80 : 0,
+        right: data.userId == getId(context) ? 0 : 80,
+      ),
+      child: CustomList(
+        boxShadow: [shadowWithOpacity],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: Image.network(
-                    '${dotenv.env['fileUrl']}/badges/${data.badgeId}',
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: '${dotenv.env['fileUrl']}/badges/${data.badgeId}',
+                    width: 30,
+                    height: 30,
+                    placeholder: (context, url) =>
+                        const CustomBoxContainer(color: greyColor),
+                  ),
+                  const SizedBox(width: 10),
+                  CustomText(
+                    content: data.username,
+                    fontSize: FontSize.smallSize,
+                  ),
+                ],
+              ),
+              if (data.hasImage == true)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${data.chatId}',
                   ),
                 ),
-              ),
-              CustomText(content: data.username),
+              if (data.content != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: CustomText(content: data.content!),
+                ),
             ],
           ),
-          if (data.hasImage == true)
-            Image.network(
-              '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${data.chatId}',
-            ),
-          if (data.content != null) CustomText(content: data.content!),
-        ],
+        ),
       ),
     );
   }

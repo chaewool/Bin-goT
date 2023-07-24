@@ -10,10 +10,11 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class GroupMain extends StatefulWidget {
+class GroupMain extends StatefulWidget with WidgetsBindingObserver {
   final int groupId;
   final GroupDetailModel data;
   const GroupMain({
@@ -37,6 +38,13 @@ class _GroupMainState extends State<GroupMain> {
     size = widget.data.bingoSize;
     needAuth = widget.data.needAuth;
     bingoId = widget.data.bingoId;
+    // WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // WidgetsBinding.instance.removeObserver(this);
   }
 
   @override
@@ -64,8 +72,12 @@ class _GroupMainState extends State<GroupMain> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               widget.data.hasImage
-                  ? Image.network(
-                      '${dotenv.env['fileUrl']}/groups/${widget.groupId}')
+                  ? CachedNetworkImage(
+                      imageUrl:
+                          '${dotenv.env['fileUrl']}/groups/${widget.groupId}',
+                      placeholder: (context, url) =>
+                          const SizedBox(width: 200, height: 200),
+                    )
                   : const SizedBox(),
               groupHeader(widget.data),
               const SizedBox(height: 20),

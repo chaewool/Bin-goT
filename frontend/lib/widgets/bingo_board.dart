@@ -67,7 +67,7 @@ class _BingoBoardState extends State<BingoBoard> {
                       Flexible(
                         child: Padding(
                           padding: EdgeInsets.all(applyGap()),
-                          child: DragTarget<Offset>(
+                          child: DragTarget<int>(
                             builder: (context, candidateData, rejectedData) =>
                                 EachBingo(
                               size: size!,
@@ -75,7 +75,12 @@ class _BingoBoardState extends State<BingoBoard> {
                               index: size! * i + j,
                             ),
                             onAccept: (data) {
-                              print(data);
+                              if (!widget.isDetail) {
+                                final index = size! * i + j;
+                                context
+                                    .read<GlobalBingoProvider>()
+                                    .changeItem(data, index);
+                              }
                             },
                           ),
                         ),
@@ -108,90 +113,99 @@ class EachBingo extends StatefulWidget {
 }
 
 class _EachBingoState extends State<EachBingo> {
-  final eachBoxKey = GlobalKey();
-  Offset? position;
+  // final eachBoxKey = GlobalKey();
+  // Offset? position;
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getOffset();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   getOffset();
+    // });
   }
 
-  void getOffset() {
-    if (eachBoxKey.currentContext != null) {
-      final renderBox =
-          eachBoxKey.currentContext!.findRenderObject() as RenderBox;
-      setState(() {
-        position = renderBox.localToGlobal(Offset.zero);
-      });
-    }
-  }
+  // void getOffset() {
+  //   if (eachBoxKey.currentContext != null) {
+  //     final renderBox =
+  //         eachBoxKey.currentContext!.findRenderObject() as RenderBox;
+  //     setState(() {
+  //       position = renderBox.localToGlobal(Offset.zero);
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     Color convertedColor() => getHasBlackBox(context) ? whiteColor : blackColor;
-    return Draggable<Offset>(
-      feedback: Transform.translate(
-        offset: const Offset(50, 50),
-        child: CustomBoxContainer(
-          key: eachBoxKey,
-          color: whiteColor,
-          borderColor: greyColor,
-          width: 100,
-          height: 100,
-          hasRoundEdge: false,
-          child: Center(
-            child: DefaultTextStyle(
-              style: TextStyle(
-                color: blackColor,
-                fontFamily: getStringFont(context),
-              ),
-              child: Text(
-                getItemTitle(context, widget.index) ?? '빙고칸 제목',
-              ),
-            ),
-          ),
-        ),
-      ),
-      childWhenDragging: const CustomBoxContainer(color: whiteColor),
-      data: position,
-      child: CustomBoxContainer(
-        onTap: showModal(
-          context,
-          page: BingoModal(
-            index: widget.index,
-            cnt: widget.size * widget.size,
-            isDetail: widget.isDetail,
-          ),
-        ),
-        child: CustomBoxContainer(
-          color: getHasBlackBox(context) ? blackColor : whiteColor,
-          hasRoundEdge: getHasRoundEdge(context),
-          borderColor: getHasBorder(context) == true ? convertedColor() : null,
-          child: Stack(
-            children: [
-              Center(
-                child: CustomText(
-                  color: convertedColor(),
-                  content: getItemTitle(context, widget.index) ?? '빙고칸 제목',
-                  font: getStringFont(context),
-                  center: true,
-                  maxLines: 2,
-                  cutText: true,
+    return Draggable<int>(
+      feedback: widget.isDetail
+          ? const SizedBox()
+          : Transform.translate(
+              offset: const Offset(50, 50),
+              child: CustomBoxContainer(
+                // key: eachBoxKey,
+                color: whiteColor,
+                borderColor: greyColor,
+                width: 100,
+                height: 100,
+                hasRoundEdge: false,
+                child: Center(
+                  child: DefaultTextStyle(
+                    style: TextStyle(
+                      color: blackColor,
+                      fontFamily: getStringFont(context),
+                    ),
+                    child: Text(
+                      getItemTitle(context, widget.index) ?? '빙고칸 제목',
+                    ),
+                  ),
                 ),
               ),
-              context.watch<GlobalBingoProvider>().isCheckTheme
-                  ? Center(
-                      child: CustomIcon(
-                        icon: getCheckIconData(context),
-                        size: 80,
-                        color: convertedColor(),
-                      ),
-                    )
-                  : const SizedBox(),
-            ],
-          ),
+            ),
+      childWhenDragging: widget.isDetail
+          ? draggableBox(context, convertedColor)
+          : const CustomBoxContainer(color: whiteColor),
+      data: widget.index,
+      child: draggableBox(context, convertedColor),
+    );
+  }
+
+  CustomBoxContainer draggableBox(
+      BuildContext context, Color Function() convertedColor) {
+    return CustomBoxContainer(
+      onTap: showModal(
+        context,
+        page: BingoModal(
+          index: widget.index,
+          cnt: widget.size * widget.size,
+          isDetail: widget.isDetail,
+        ),
+      ),
+      child: CustomBoxContainer(
+        color: getHasBlackBox(context) ? blackColor : whiteColor,
+        hasRoundEdge: getHasRoundEdge(context),
+        borderColor: getHasBorder(context) == true ? convertedColor() : null,
+        child: Stack(
+          children: [
+            Center(
+              child: CustomText(
+                color: convertedColor(),
+                content: getItemTitle(context, widget.index) ?? '빙고칸 제목',
+                font: getStringFont(context),
+                center: true,
+                maxLines: 2,
+                cutText: true,
+              ),
+            ),
+            context.watch<GlobalBingoProvider>().isCheckTheme
+                ? Center(
+                    child: CustomIcon(
+                      icon: getCheckIconData(context),
+                      size: 80,
+                      color: convertedColor(),
+                    ),
+                  )
+                : const SizedBox(),
+          ],
         ),
       ),
     );

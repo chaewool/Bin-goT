@@ -55,6 +55,16 @@
                 <data android:host="kakaolink"
                     android:scheme="kakaoea92a1dc805d50e7c75555e658fa925e" />
             </intent-filter>
+
+            <!-- dynamic links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:host="bingot.page.link"
+                    android:scheme="https"/>
+            </intent-filter>
             
         </activity>
 

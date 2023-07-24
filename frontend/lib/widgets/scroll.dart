@@ -143,6 +143,7 @@ class InfiniteScroll extends StatelessWidget {
                         ? GroupListItem(
                             isSearchMode: mode == 0,
                             groupInfo: data[i],
+                            public: mode == 1 ? true : null,
                           )
                         : mode == 2
                             ? Row(

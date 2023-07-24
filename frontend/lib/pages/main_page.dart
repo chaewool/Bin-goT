@@ -76,6 +76,7 @@ class _MainState extends State<Main> {
                       child: Center(
                         child: CustomText(
                           content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다',
+                          height: 1.5,
                           center: true,
                           color: whiteColor,
                         ),

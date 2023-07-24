@@ -86,9 +86,6 @@ class GroupProvider extends ApiProvider {
       // return response;
       return GroupDetailModel.fromJson(response.data);
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }
@@ -101,9 +98,6 @@ class GroupProvider extends ApiProvider {
       print(response);
       return Future.value(true);
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       print(error);
       throw Error();
     }
@@ -138,9 +132,6 @@ class GroupProvider extends ApiProvider {
           await dioWithToken().put(editGroupUrl(groupId), data: groupData);
       return response.data.groupId;
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       print(error);
       throw Error();
     }
@@ -163,17 +154,15 @@ class GroupProvider extends ApiProvider {
       }).toList();
       return rankList;
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       throw Error();
     }
   }
 
   //* group members
-  FutureDynamic getAdminTabData(int groupId) => _getAdminTabData(groupId);
+  Future<GroupAdminTabModel> getAdminTabData(int groupId) =>
+      _getAdminTabData(groupId);
 
-  FutureDynamic _getAdminTabData(int groupId) async {
+  Future<GroupAdminTabModel> _getAdminTabData(int groupId) async {
     try {
       print(getMembersUrl(groupId));
       final response = await dioWithToken().get(getMembersUrl(groupId));
@@ -199,9 +188,6 @@ class GroupProvider extends ApiProvider {
         'need_auth': false,
       });
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       print('mainTabError: $error');
       // UserProvider.logout();
       throw Error();
@@ -223,13 +209,11 @@ class GroupProvider extends ApiProvider {
         GroupChatList chats = data
             .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
             .toList();
+
         return chats;
       }
       return [];
     } catch (error) {
-      if (error.toString().contains('401')) {
-        return {'statusCode': 401};
-      }
       print(error);
       throw Error();
     }
@@ -239,6 +223,7 @@ class GroupProvider extends ApiProvider {
   FutureDynamicMap createGroupChatChat(
       int groupId, FormData groupChatData) async {
     try {
+      print(groupChatCreateUrl(groupId));
       final response = await dioWithTokenForm()
           .post(groupChatCreateUrl(groupId), data: groupChatData);
       if (response.statusCode == 200) {

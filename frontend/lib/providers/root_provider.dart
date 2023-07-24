@@ -191,7 +191,7 @@ class GlobalScrollProvider extends ChangeNotifier {
 
   void setTotalPage(int value) => _setTotalPage(value);
 
-  void initPage() => _setTotalPage(1);
+  void initPage() => _setPage(1);
   void increasePage() {
     _setPage(_page + 1);
     notifyListeners();
@@ -211,11 +211,12 @@ class GlobalGroupProvider extends ChangeNotifier {
   static int? _groupId;
   static int? _lastPage;
   static int _page = 1;
+  static String? _start;
 
   int? get count => _data?.count;
   int? get headCount => _data?.headCount;
   int? get groupId => _groupId;
-  String? get start => _data?.start;
+  String? get start => _data?.start ?? _start;
   String? get groupName => _data?.groupName;
   String? get description => _data?.description;
   String? get rule => _data?.rule;
@@ -231,7 +232,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   void _setPage(int value) => _page = value;
 
   // void _setCount(int newVal) => _count = newVal;
-  // void _setStart(String newVal) => _start = newVal;
+  void _setStart(String newVal) => _start = newVal;
   // void _setHeadCount(int newVal) => _headCount = newVal;
   // void _setGroupName(String newVal) => _groupName = newVal;
   // void _setDescription(String newVal) => _description = newVal;
@@ -243,7 +244,7 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void setTotalPage(int value) => _setTotalPage(value);
 
-  void initPage() => _setTotalPage(1);
+  void initPage() => _setPage(1);
   void increasePage() {
     _setPage(_page + 1);
     notifyListeners();
@@ -259,10 +260,10 @@ class GlobalGroupProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  // void setStart(String newVal) {
-  //   _setStart(newVal);
-  //   notifyListeners();
-  // }
+  void setStart(String newVal) {
+    _setStart(newVal);
+    notifyListeners();
+  }
 
   // void setHeadCount(int newVal) {
   //   _setHeadCount(newVal);
@@ -370,7 +371,7 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   void setTotalPage(int value) => _setTotalPage(value);
 
-  void initPage() => _setTotalPage(1);
+  void initPage() => _setPage(1);
   void increasePage() {
     _setPage(_page + 1);
     notifyListeners();
@@ -423,6 +424,13 @@ class GlobalBingoProvider extends ChangeNotifier {
     _data['items'][index] = {...item};
   }
 
+  void _changeItem(int index1, int index2) {
+    final content1 = _data['items'][index1];
+    final content2 = _data['items'][index2];
+    _setItem(index1, content2);
+    _setItem(index2, content1);
+  }
+
   //* public
   DynamicMap item(int index) => _item(index);
 
@@ -433,6 +441,11 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   void setItem(int index, DynamicMap item) {
     _setItem(index, item);
+    notifyListeners();
+  }
+
+  void changeItem(int index1, int index2) {
+    _changeItem(index1, index2);
     notifyListeners();
   }
 
