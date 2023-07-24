@@ -233,7 +233,7 @@ LOGGING = {
 CRONJOBS = [
     ('0 0 * * *', 'groups.cron.every_day', '>> ./files/log/cron.log'),
     ('0 0 * * 1', 'groups.cron.every_monday', '>> ./files/log/cron.log'),
-    ('0 * * * *', 'groups.cron.test', '>> ./files/log/cron.log'),
+    ('* * * * *', 'groups.cron.test', '>> ./files/log/cron.log'),
 ]
 
 
