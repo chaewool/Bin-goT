@@ -1,10 +1,10 @@
-import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/providers/user_info_provider.dart';
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 //* 메인 페이지
@@ -16,14 +16,8 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  late Future<MainTabModel> groups;
   bool isSearchMode = false;
-
-  @override
-  void initState() {
-    super.initState();
-    groups = UserInfoProvider().getMainTabData();
-  }
+  double paddingTop = 0;
 
   void changeSearchMode() {
     setState(() {
@@ -36,19 +30,61 @@ class _MainState extends State<Main> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        setState(() {
+          paddingTop = MediaQuery.of(context).padding.top;
+        });
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: MainBar(onPressed: changeSearchMode),
-      body: CustomBoxContainer(
-        height: MediaQuery.of(context).size.height,
-        color: backgroundColor,
-        hasRoundEdge: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
+    return WillPopScope(
+      onWillPop: () => exitApp(context),
+      child: Scaffold(
+        appBar: MainBar(onPressed: changeSearchMode),
+        body: Stack(
           children: [
-            isSearchMode ? const SearchBar() : const SizedBox(),
-            const SizedBox(height: 15),
-            const Expanded(child: MyTabBar()),
+            Expanded(
+              child: CustomBoxContainer(
+                height: getHeight(context) - 50 - paddingTop,
+                // color: backgroundColor,
+                hasRoundEdge: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    isSearchMode
+                        ? const CustomSearchBar(isMain: true)
+                        : const SizedBox(),
+                    const SizedBox(height: 15),
+                    const Expanded(
+                      // height: MediaQuery.of(context).size.height - 200,
+                      child: MyTabBar(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            watchPressed(context)
+                ? const Center(
+                    child: CustomBoxContainer(
+                      height: 80,
+                      width: 300,
+                      color: Color.fromRGBO(0, 0, 0, 0.8),
+                      child: Center(
+                        child: CustomText(
+                          content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다',
+                          center: true,
+                          color: whiteColor,
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
           ],
         ),
       ),

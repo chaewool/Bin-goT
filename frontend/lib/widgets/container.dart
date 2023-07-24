@@ -5,6 +5,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //* 그룹 메인 내용 출력
 class ShowContentBox extends StatelessWidget {
@@ -46,14 +47,21 @@ class BingoGallery extends StatelessWidget {
     return GestureDetector(
       onTap: toOtherPage(
         context,
-        page: BingoDetail(
-          bingoId: bingo.id,
-        ),
+        page: BingoDetail(bingoId: bingo.id, size: bingo.size),
       ),
-      child: const CustomBoxContainer(
-        width: 150,
-        height: 200,
-        color: greenColor,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: CustomBoxContainer(
+          // width: 150,
+          // height: 200,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Image.network('${dotenv.env['fileUrl']}/boards/${bingo.id}'),
+              CustomText(content: bingo.groupName)
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -61,7 +69,7 @@ class BingoGallery extends StatelessWidget {
 
 //* Box Container 기본 틀
 class CustomBoxContainer extends StatelessWidget {
-  final bool hasRoundEdge;
+  final bool hasRoundEdge, center;
   final Color? borderColor;
   final Color color;
   final BoxShadowList? boxShadow;
@@ -81,6 +89,7 @@ class CustomBoxContainer extends StatelessWidget {
     this.child,
     this.onTap,
     this.onLongPress,
+    this.center = false,
   });
 
   @override
@@ -91,12 +100,49 @@ class CustomBoxContainer extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
+        alignment: center ? Alignment.center : null,
         decoration: BoxDecoration(
           borderRadius: hasRoundEdge ? BorderRadius.circular(10) : null,
           color: color,
           boxShadow: boxShadow,
           border: borderColor != null ? Border.all(color: borderColor!) : null,
           image: image,
+        ),
+        child: child,
+      ),
+    );
+  }
+}
+
+//* 원 모양 Container
+class CircleContainer extends StatelessWidget {
+  final double radius;
+  final Widget child;
+  final bool center;
+  final List<BoxShadow>? boxShadow;
+  final ReturnVoid? onTap;
+
+  const CircleContainer({
+    super.key,
+    this.radius = 25,
+    required this.child,
+    this.center = true,
+    this.boxShadow,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: radius * 2,
+        height: radius * 2,
+        alignment: center ? Alignment.center : null,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: greyColor),
+          boxShadow: boxShadow,
         ),
         child: child,
       ),

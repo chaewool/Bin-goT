@@ -1,7 +1,12 @@
+import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
+import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:provider/provider.dart';
 
@@ -9,30 +14,34 @@ import 'package:provider/provider.dart';
 
 //* 공유 템플릿
 TextTemplate defaultText({
-  required int groupId,
+  required int id,
+  required bool isGroup,
   String? password,
 }) {
   return TextTemplate(
-    text: 'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요',
+    text: isGroup
+        ? 'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요'
+        : 'ㅇㅇㅇ 님이 빙고판을 공유했어요! 자세히 살펴보세요.',
     link: Link(
-      webUrl: Uri.parse(''),
       mobileWebUrl: Uri.parse(''),
     ),
   );
 }
 
 //* 공유
-void shareToFriends({required int groupId, String? password}) async {
+void shareGroup({required int groupId, String? password}) async {
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
 
   if (isKakaoTalkSharingAvailable) {
     try {
       Uri uri = await ShareClient.instance.shareDefault(
-          template: defaultText(
-        groupId: groupId,
-        password: password,
-      ));
+        template: defaultText(
+          isGroup: true,
+          id: groupId,
+          password: password,
+        ),
+      );
       await ShareClient.instance.launchKakaoTalk(uri);
       print('카카오톡 공유 완료');
     } catch (error) {
@@ -41,15 +50,63 @@ void shareToFriends({required int groupId, String? password}) async {
   } else {
     try {
       Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
-          template: defaultText(
-        groupId: groupId,
-        password: password,
-      ));
+        template: defaultText(
+          isGroup: true,
+          id: groupId,
+          password: password,
+        ),
+      );
       await launchBrowserTab(shareUrl, popupOpen: true);
     } catch (error) {
       print('카카오톡 공유 실패 $error');
     }
   }
+}
+
+void shareBingo({required int bingoId}) async {
+  bool isKakaoTalkSharingAvailable =
+      await ShareClient.instance.isKakaoTalkSharingAvailable();
+
+  if (isKakaoTalkSharingAvailable) {
+    try {
+      Uri uri = await ShareClient.instance.shareDefault(
+        template: defaultText(
+          id: bingoId,
+          isGroup: false,
+        ),
+      );
+      await ShareClient.instance.launchKakaoTalk(uri);
+      print('카카오톡 공유 완료');
+    } catch (error) {
+      print('카카오톡 공유 실패 $error');
+    }
+  } else {
+    try {
+      Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
+        template: defaultText(
+          id: bingoId,
+          isGroup: false,
+        ),
+      );
+      await launchBrowserTab(shareUrl, popupOpen: true);
+    } catch (error) {
+      print('카카오톡 공유 실패 $error');
+    }
+  }
+}
+
+Future<String> buildDynamicLink(String whereNotice, String noticeId) async {
+  String url = dotenv.env['baseUrl']!;
+
+  final DynamicLinkParameters parameters = DynamicLinkParameters(
+    uriPrefix: url,
+    link: Uri.parse('$url/$whereNotice/$noticeId'),
+    androidParameters:
+        AndroidParameters(packageName: dotenv.env['packageName']!),
+  );
+  final dynamicLink =
+      await FirebaseDynamicLinks.instance.buildShortLink(parameters);
+  return dynamicLink.shortUrl.toString();
 }
 
 //* 페이지 이동
@@ -58,10 +115,17 @@ ReturnVoid toOtherPage(BuildContext context, {required Widget page}) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => page));
 }
 
-//* 뒤로 가기
-ReturnVoid toBack(BuildContext context) {
-  return () => Navigator.pop(context);
+//* 인트로 페이지 이동 (기록 X)
+Future<bool?> toOtherPageWithoutPath(BuildContext context, {Widget? page}) {
+  return Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => page ?? const Intro()),
+    (router) => false,
+  );
 }
+
+//* 뒤로 가기
+void toBack(BuildContext context) => Navigator.pop(context);
 
 //* alert 띄우기
 ReturnVoid showAlert(
@@ -91,24 +155,156 @@ ReturnVoid showModal(BuildContext context, {required Widget page}) {
       );
 }
 
-//*
+//* token
 String? getToken(BuildContext context) => context.read<AuthProvider>().token;
 
-void setToken(BuildContext context, String? newToken) =>
+void setToken(BuildContext context, String newToken) =>
     context.read<AuthProvider>().setStoreToken(newToken);
 
-void setTokens(BuildContext context, String? newToken, String? newRefresh) {
+void setTokens(BuildContext context, String newToken, String newRefresh) {
   final auth = context.read<AuthProvider>();
   auth.setStoreToken(newToken);
   auth.setStoreRefresh(newRefresh);
 }
 
-void setNoti(BuildContext context, {bool? rank, bool? due, bool? chat}) {
-  final noti = context.read<NotiProvider>();
-  noti.setStoreRank(rank);
-  noti.setStoreDue(due);
-  noti.setStoreChat(chat);
+void deleteVar(BuildContext context) {
+  context.read<AuthProvider>().deleteVar();
+  context.read<NotiProvider>().deleteVar();
 }
 
+//* id
+int? getId(BuildContext context) => context.read<AuthProvider>().id;
+
+//* notifications
+void setNoti(
+  BuildContext context, {
+  required bool rank,
+  required bool due,
+  required bool chat,
+  required bool complete,
+}) {
+  context.read<NotiProvider>().setStoreRank(rank);
+  context.read<NotiProvider>().setStoreDue(due);
+  context.read<NotiProvider>().setStoreChat(chat);
+  context.read<NotiProvider>().setStoreComplete(complete);
+}
+
+//* size
+double getWidth(BuildContext context) => MediaQuery.of(context).size.width;
+double getHeight(BuildContext context) => MediaQuery.of(context).size.height;
+
+//* exit app
+FutureBool exitApp(BuildContext context) =>
+    context.read<NotiProvider>().changePressed();
+
+//* 뒤로 가기 버튼 눌림 여부
+bool watchPressed(BuildContext context) =>
+    context.watch<NotiProvider>().beforeExit;
+
+//* scroll
+int? getTotal(BuildContext context) =>
+    context.read<GlobalScrollProvider>().totalPages;
+
+void setTotal(BuildContext context, int? newTotal) =>
+    context.read<GlobalScrollProvider>().setTotal(newTotal);
+
+bool readLoading(BuildContext context) =>
+    context.read<GlobalScrollProvider>().loading;
+
+bool getLoading(BuildContext context) =>
+    context.watch<GlobalScrollProvider>().loading;
+
+void setLoading(BuildContext context, bool value) =>
+    context.read<GlobalScrollProvider>().setLoading(value);
+
+int getPage(BuildContext context) => context.read<GlobalScrollProvider>().page;
+
+void increasePage(BuildContext context) =>
+    context.read<GlobalScrollProvider>().increasePage();
+
+void initPage(BuildContext context) =>
+    context.read<GlobalScrollProvider>().initPage();
+
+bool getWorking(BuildContext context) =>
+    context.read<GlobalScrollProvider>().working;
+
+void setWorking(BuildContext context, bool value) =>
+    context.read<GlobalScrollProvider>().setWorking(value);
+
+bool getAdditional(BuildContext context) =>
+    context.read<GlobalScrollProvider>().additional;
+
+void setAdditional(BuildContext context, bool value) =>
+    context.read<GlobalScrollProvider>().setAdditional(value);
+
+void initLoadingData(BuildContext context) {
+  setLoading(context, true);
+  initPage(context);
+  setAdditional(context, false);
+  setWorking(context, false);
+}
+
+//* group data
 int? getGroupId(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupId;
+
+int? getBingoSize(BuildContext context) =>
+    context.read<GlobalGroupProvider>().bingoSize;
+
+// void setGroupData(BuildContext context, dynamic newVal) =>
+//     context.read<GlobalGroupProvider>().setData(newVal);
+
+//* bingo data
+
+//* function
+void changeBingoData(BuildContext context, int tabIndex, int i) =>
+    context.read<GlobalBingoProvider>().changeData(tabIndex, i);
+
+void setOption(BuildContext context, String key, dynamic value) =>
+    context.read<GlobalBingoProvider>().setOption(key, value);
+
+void setBingoData(BuildContext context, DynamicMap data) =>
+    context.read<GlobalBingoProvider>().setData(data);
+
+void setItem(BuildContext context, int index, DynamicMap item) =>
+    context.read<GlobalBingoProvider>().setItem(index, item);
+
+//* var
+DynamicMap getBingoData(BuildContext context) =>
+    context.read<GlobalBingoProvider>().data;
+
+String? getTitle(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().title;
+
+int? getBackground(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().background;
+
+bool getHasBlackBox(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().hasBlackBox;
+
+bool getHasRoundEdge(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().hasRoundEdge;
+
+bool getHasBorder(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().hasBorder;
+
+int? getGap(BuildContext context) => context.watch<GlobalBingoProvider>().gap;
+
+int? getFont(BuildContext context) => context.watch<GlobalBingoProvider>().font;
+
+int? getCheckIcon(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().checkIcon;
+
+List getItems(BuildContext context) =>
+    context.read<GlobalBingoProvider>().items;
+
+String? getItemTitle(BuildContext context, int index) =>
+    context.watch<GlobalBingoProvider>().item(index)['title'];
+
+DynamicMap readItem(BuildContext context, int index) =>
+    context.read<GlobalBingoProvider>().item(index);
+
+String getStringFont(BuildContext context) => matchFont[getFont(context)!];
+
+IconData getCheckIconData(BuildContext context) =>
+    iconList[getCheckIcon(context)!];

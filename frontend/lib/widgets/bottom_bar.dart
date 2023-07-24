@@ -6,10 +6,13 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:bin_got/providers/group_provider.dart';
 
 //* 그룹에서의 하단 바
 class BottomBar extends StatelessWidget {
@@ -28,7 +31,11 @@ class BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const IconDataList bottomBarIcons = [homeIcon, myPageIcon, chatIcon];
-    const WidgetList nextPages = [Main(), MyPage(), GroupChat()];
+    const WidgetList nextPages = [
+      Main(),
+      MyPage(),
+      GroupChat(page: 1, groupId: 2)
+    ];
 
     return isMember
         ? BottomNavigationBar(
@@ -62,6 +69,7 @@ class BottomBar extends StatelessWidget {
                   page: BingoForm(
                     bingoSize: size!,
                     needAuth: needAuth!,
+                    beforeJoin: true,
                   ),
                 ),
               ),
@@ -82,7 +90,7 @@ class FormBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          CustomButton(onPressed: toBack(context), content: '취소'),
+          CustomButton(onPressed: () => toBack(context), content: '취소'),
           CustomButton(
             onPressed: createOrUpdate,
             content: '완료',
@@ -94,27 +102,61 @@ class FormBottomBar extends StatelessWidget {
 }
 
 //* 그룹 채팅 입력 하단 바
-class GroupChatBottomBar extends StatelessWidget {
-  const GroupChatBottomBar({super.key});
+class GroupChatBottomBar extends StatefulWidget {
+  final int groupId;
+  const GroupChatBottomBar({super.key, required this.groupId});
 
   @override
+  State<GroupChatBottomBar> createState() => _GroupChatBottomBarState();
+}
+
+class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
+  @override
   Widget build(BuildContext context) {
+    XFile? selectedImage;
+    String? content;
+
+    void imagePicker() async {
+      final ImagePicker picker = ImagePicker();
+      final localImage = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 50,
+      );
+      selectedImage = localImage;
+    }
+
     return CustomBoxContainer(
       hasRoundEdge: false,
       color: greyColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Flexible(child: CustomIconButton(onPressed: () {}, icon: addIcon)),
+          Flexible(
+              child: CustomIconButton(onPressed: imagePicker, icon: addIcon)),
           Flexible(
             flex: 5,
             child: CustomInput(
               filled: true,
               explain: '내용을 입력하세요',
-              setValue: (p0) {},
+              setValue: (value) {
+                content = value;
+              },
             ),
           ),
-          Flexible(child: CustomIconButton(onPressed: () {}, icon: sendIcon)),
+          Flexible(
+              child: CustomIconButton(
+                  onPressed: () {
+                    print(content);
+                    GroupProvider()
+                        .createGroupChatChat(
+                            widget.groupId,
+                            FormData.fromMap({
+                              'content': content,
+                              'img': selectedImage,
+                            }))
+                        .then((result) => print('결과: $result'));
+                  },
+                  icon: sendIcon)),
         ],
       ),
     );

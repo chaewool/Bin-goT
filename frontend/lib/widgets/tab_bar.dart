@@ -1,14 +1,14 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/pages/group_main_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/accordian.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/image.dart';
@@ -17,12 +17,11 @@ import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //* 빙고 생성 탭
 class BingoTabBar extends StatefulWidget {
-  final DynamicMap data;
-  final void Function(int tabIndex, int i) changeData;
-  const BingoTabBar({super.key, required this.data, required this.changeData});
+  const BingoTabBar({super.key});
 
   @override
   State<BingoTabBar> createState() => _BingoTabBarState();
@@ -39,6 +38,18 @@ class _BingoTabBarState extends State<BingoTabBar> {
           for (IconData icon in iconList) Tab(child: CustomIcon(icon: icon)),
         ],
         views: [paintTab(), optionOrFontTab(1), optionOrFontTab(2), checkTab()],
+        onChange: (index) {
+          final isCheckTheme = context.read<GlobalBingoProvider>().isCheckTheme;
+          void setCheckTheme(bool value) =>
+              context.read<GlobalBingoProvider>().setIsCheckTheme(value);
+          if (index == 3) {
+            if (!isCheckTheme) {
+              setCheckTheme(true);
+            }
+          } else if (isCheckTheme) {
+            setCheckTheme(false);
+          }
+        },
       ),
     );
   }
@@ -53,11 +64,10 @@ class _BingoTabBarState extends State<BingoTabBar> {
       children: [
         for (int i = 2 * page; i < 2 * page + 2; i += 1)
           GestureDetector(
-            onTap: () => widget.changeData(0, i),
+            onTap: () => changeBingoData(context, 0, i),
             child: ModifiedImage(
               image: backgroundList[i],
-              boxShadow:
-                  widget.data['background'] == i ? [selectedShadow] : null,
+              boxShadow: getBackground(context) == i ? [selectedShadow] : null,
             ),
           ),
       ],
@@ -67,25 +77,24 @@ class _BingoTabBarState extends State<BingoTabBar> {
   //* 빙고칸 & font 변경
   Column optionOrFontTab(int index) {
     StringList gapList = ['좁은', '보통', '넓은'];
-    String convertedColor() => widget.data['is_black'] ? '흰색' : '검은색';
-    String presentGap(int i) => gapList[i];
 
     StringList optionList = [
       '둥근 모서리 적용',
       '테두리 적용',
-      '${convertedColor()}으로 변경',
-      '${presentGap(widget.data['around_kan'])} 간격'
+      '${getHasBlackBox(context) ? '흰색' : '검은색'}으로 변경',
+      '${gapList[getGap(context)!]} 간격'
     ];
+
     BoxShadowList applyBoxShadow(int i, int j) {
       final elementIdx = 2 * i + j;
       switch (index) {
         case 1:
           final keyList = ['has_round_edge', 'has_border'];
-          return i == 0 && widget.data[keyList[j]]
+          return i == 0 && getBingoData(context)[keyList[j]]
               ? [selectedShadow]
               : [defaultShadow];
         default:
-          return widget.data['font'] != elementIdx
+          return getFont(context) != elementIdx
               ? const [defaultShadow]
               : const [selectedShadow];
       }
@@ -101,16 +110,23 @@ class _BingoTabBarState extends State<BingoTabBar> {
             children: [
               for (int j = 0; j < 2; j += 1)
                 CustomBoxContainer(
-                  onTap: () => widget.changeData(index, 2 * i + j),
+                  onTap: () => changeBingoData(context, index, 2 * i + j),
                   width: 150,
                   height: 40,
                   boxShadow: applyBoxShadow(i, j),
                   child: Center(
-                    child: CustomText(
-                      content: index == 2
-                          ? showedFont[2 * i + j]
-                          : optionList[2 * i + j],
-                      font: index == 2 ? matchFont[2 * i + j] : 'RIDIBatang',
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: CustomText(
+                          content: index == 2
+                              ? showedFont[2 * i + j]
+                              : optionList[2 * i + j],
+                          font:
+                              index == 2 ? matchFont[2 * i + j] : 'RIDIBatang',
+                        ),
+                      ),
                     ),
                   ),
                   // width: MediaQuery.of(context).size.width,
@@ -123,17 +139,17 @@ class _BingoTabBarState extends State<BingoTabBar> {
 
   Column checkTab() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             for (int i = 0; i < 3; i += 1)
               CustomIconButton(
-                onPressed: () => widget.changeData(3, i),
+                onPressed: () => changeBingoData(context, 3, i),
                 icon: iconList[i],
                 size: 70,
-                color:
-                    i == widget.data['complete_icon'] ? greenColor : blackColor,
+                color: i == getCheckIcon(context) ? greenColor : blackColor,
               ),
           ],
         ),
@@ -145,7 +161,10 @@ class _BingoTabBarState extends State<BingoTabBar> {
 //* 그룹 관리 탭
 class GroupAdminTabBar extends StatefulWidget {
   final int groupId;
-  const GroupAdminTabBar({super.key, required this.groupId});
+  const GroupAdminTabBar({
+    super.key,
+    required this.groupId,
+  });
 
   @override
   State<GroupAdminTabBar> createState() => _GroupAdminTabBarState();
@@ -184,22 +203,32 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
                   if (snapshot.hasData) {
                     final needAuth = snapshot.data!.needAuth;
                     final applicants = snapshot.data!.applicants;
-                    print('needAuth: $needAuth');
                     return Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         needAuth
-                            ? ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: applicants.length,
-                                itemBuilder: (context, index) {
-                                  var applicant = applicants[index];
-                                  return MemberList(
-                                    id: applicant.id,
-                                    bingoId: applicant.bingoId,
-                                    nickname: applicant.username,
-                                    isMember: false,
-                                  );
-                                },
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                child: ListView.separated(
+                                  shrinkWrap: true,
+                                  itemCount: applicants.length,
+                                  itemBuilder: (context, index) {
+                                    var applicant = applicants[index];
+                                    return MemberList(
+                                      id: applicant.id,
+                                      bingoId: applicant.bingoId,
+                                      nickname: applicant.username,
+                                      isMember: false,
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(
+                                    height: 10,
+                                  ),
+                                ),
                               )
                             : const CustomText(content: '자동 가입 그룹입니다.'),
                       ],
@@ -255,15 +284,16 @@ class MyTabBar extends StatefulWidget {
 }
 
 class _MyTabBarState extends State<MyTabBar> {
-  late Future<MainTabModel> tabData;
+  late Future<MainGroupListModel> groupTabData;
+  Future<MyBingoList>? bingoTabData;
   List<List<StringList>> buttonOptions = [
     [
-      ['그룹명 순', '그룹명 역순'],
+      ['종료일 ▼', '종료일 ▲'],
       ['전체', '진행 중', '완료'],
       ['캘린더로 보기', '리스트로 보기']
     ],
     [
-      ['최신순', '오래된순'],
+      ['종료일 ▼', '종료일 ▲'],
       ['전체', '진행 중', '완료'],
       ['', '']
     ]
@@ -272,8 +302,8 @@ class _MyTabBarState extends State<MyTabBar> {
   late int presentIdx;
 
   List<IntList> idxList = [
-    [0, 0, 0],
-    [0, 0, 0]
+    [1, 0, 0],
+    [1, 0, 0]
   ];
   void changeIdx(int idx) {
     if (idxList[presentIdx][idx] < presentOptions[idx].length - 1) {
@@ -285,6 +315,14 @@ class _MyTabBarState extends State<MyTabBar> {
         idxList[presentIdx][idx] = 0;
       });
     }
+
+    if (presentIdx == 0) {
+      //* 그룹이 있을 경우에만 적용
+      // if (!groupTabData.hasNotGroup && groupTabData.)
+      setGroupTabData();
+    } else {
+      setBingoTabData();
+    }
   }
 
   void changeTab(int index) {
@@ -293,7 +331,26 @@ class _MyTabBarState extends State<MyTabBar> {
         presentIdx = index;
         presentOptions = buttonOptions[presentIdx];
       });
+      if (index == 1 && bingoTabData == null) {
+        setBingoTabData();
+      }
     }
+  }
+
+  void setGroupTabData() {
+    groupTabData = UserInfoProvider().getMainGroupData({
+      'order': idxList[0][0],
+      'filter': idxList[0][1],
+      'page': 1,
+    });
+  }
+
+  void setBingoTabData() {
+    bingoTabData = UserInfoProvider().getMainBingoData({
+      'order': idxList[1][0],
+      'filter': idxList[1][1],
+      'page': 1,
+    });
   }
 
   @override
@@ -301,7 +358,7 @@ class _MyTabBarState extends State<MyTabBar> {
     super.initState();
     presentOptions = buttonOptions[0];
     presentIdx = 0;
-    tabData = UserInfoProvider().getMainTabData();
+    setGroupTabData();
   }
 
   @override
@@ -310,7 +367,7 @@ class _MyTabBarState extends State<MyTabBar> {
       tabTitles: const ['내 그룹', '내 빙고'],
       onChange: changeTab,
       upperView: RowWithPadding(
-        vertical: 20,
+        vertical: 10,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           for (int i = 0; i < 3; i += 1)
@@ -325,51 +382,49 @@ class _MyTabBarState extends State<MyTabBar> {
       ),
       listItems: [
         [
-          SingleChildScrollView(
-            child: FutureBuilder(
-              future: tabData,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final hasNotGroup = snapshot.data!.hasNotGroup;
-                  return Column(
-                    children: [
-                      hasNotGroup
-                          ? Column(children: [
-                              const CustomText(
+          // Expanded(child: Column(children: [
+
+          // ],))
+          FutureBuilder(
+            future: groupTabData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final hasNotGroup = snapshot.data!.hasNotGroup;
+                return Column(
+                  children: [
+                    hasNotGroup
+                        ? Column(
+                            children: const [
+                              CustomText(
                                 center: true,
                                 content:
                                     '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
                                 height: 1.7,
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 height: 70,
                               ),
-                              GestureDetector(
-                                onTap: toOtherPage(context,
-                                    page: const GroupMain(
-                                        groupId: 1, isPublic: true)),
-                                child: const CustomText(
-                                  content: '추천그룹',
-                                  fontSize: FontSize.titleSize,
-                                ),
+                              CustomText(
+                                content: '추천그룹',
+                                fontSize: FontSize.titleSize,
                               ),
-                            ])
-                          : const SizedBox(),
-                      groupList(snapshot.data!.groups, hasNotGroup)
-                    ],
-                  );
-                }
-                return const CustomText(content: '그룹 정보를 불러오는 중입니다');
-              },
-            ),
+                            ],
+                          )
+                        : const SizedBox(),
+                    groupList(snapshot.data!.groups, hasNotGroup)
+                  ],
+                );
+              }
+              return const CustomText(content: '그룹 정보를 불러오는 중입니다');
+            },
           )
         ],
         [
           FutureBuilder(
-            future: tabData,
+            future: bingoTabData,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                final bingos = snapshot.data!.bingos;
+                final bingos = snapshot.data!;
                 if (bingos.isNotEmpty) {
                   return bingoList(bingos);
                 }
@@ -393,11 +448,20 @@ class _MyTabBarState extends State<MyTabBar> {
     final remain = length % 2;
     return ListView.builder(
         shrinkWrap: true,
-        itemCount: quot + 1,
+        itemCount: quot + remain,
         itemBuilder: (context, index) {
-          var bingo = bingos[index];
-          return BingoGallery(
-            bingo: bingo,
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Flexible(
+                child: BingoGallery(bingo: bingos[index * 2]),
+              ),
+              Flexible(
+                child: index != quot || remain == 0
+                    ? BingoGallery(bingo: bingos[index * 2 + 1])
+                    : const SizedBox(),
+              )
+            ],
           );
         });
   }
@@ -412,6 +476,7 @@ class _MyTabBarState extends State<MyTabBar> {
             return GroupListItem(
               isSearchMode: isSearchMode,
               groupInfo: group,
+              public: true,
             );
           });
     }
@@ -482,6 +547,7 @@ class CustomTextTabBar extends StatelessWidget {
     return CustomBoxContainer(
       hasRoundEdge: false,
       child: ContainedTabBarView(
+        tabBarProperties: const TabBarProperties(indicatorColor: greenColor),
         tabs: [
           for (String tabTitle in tabTitles)
             Tab(
@@ -491,13 +557,11 @@ class CustomTextTabBar extends StatelessWidget {
         ],
         views: [
           for (int i = 0; i < tabTitles.length; i += 1)
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  upperView ?? const SizedBox(),
-                  for (Widget listItem in listItems[i]) listItem
-                ],
-              ),
+            Column(
+              children: [
+                upperView ?? const SizedBox(),
+                for (Widget listItem in listItems[i]) listItem
+              ],
             ),
         ],
         onChange: onChange,
