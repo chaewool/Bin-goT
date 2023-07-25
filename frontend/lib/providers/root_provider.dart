@@ -38,10 +38,10 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   FutureBool initVar() async {
     final userInfo = await _readStorage();
     print('initVar: $userInfo');
-    if (userInfo != null) {
-      _setToken(userInfo!['token']);
-      _setRefresh(userInfo!['refresh']);
-      _setId(int.parse(userInfo['id']));
+    if (userInfo.isNotEmpty) {
+      _setToken(userInfo?['token']);
+      _setRefresh(userInfo?['refresh']);
+      _setId(int.parse(userInfo?['id']));
       notifyListeners();
     }
     return true;

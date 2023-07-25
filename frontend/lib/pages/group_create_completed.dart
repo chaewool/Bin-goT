@@ -77,7 +77,6 @@ class GroupCreateCompleted extends StatelessWidget {
               page: InputPassword(
                 isPublic: true,
                 groupId: groupId,
-                needCheck: false,
               ),
             ),
           )

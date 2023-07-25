@@ -221,14 +221,18 @@ void deleteVar(BuildContext context) {
 void saveFCMToken() async {
   // 기기의 등록 토큰 액세스
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  print('messaging => $messaging');
   final fcmToken = await messaging.getToken();
+  print('fcmToken => $fcmToken');
   FCMProvider().saveFCMToken(fcmToken!);
   print('fcm 토큰 $fcmToken');
 
   // 토큰이 업데이트될 때마다 서버에 저장
   messaging.onTokenRefresh.listen((fcmToken) {
+    print('update');
     FCMProvider().saveFCMToken(fcmToken);
   }).onError((err) {
+    print('error => $err');
     throw Error();
   });
 }

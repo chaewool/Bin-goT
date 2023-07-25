@@ -210,7 +210,6 @@ class _BingoFormState extends State<BingoForm> {
               page: InputPassword(
                 isPublic: true,
                 groupId: groupId,
-                needCheck: false,
               ),
             ),
           )();
