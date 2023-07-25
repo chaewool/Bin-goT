@@ -220,16 +220,16 @@ class MainGroupsView(APIView):
         user = request.user
         order = request.GET.get('order')
         filter = request.GET.get('filter')
-        page = int(request.GET.get('page'))
+        idx = int(request.GET.get('idx'))
         
         is_recommend = False
-        last_page = page
+        last_idx = idx
 
         # 가입한 그룹이 없음 => 그룹 추천
         if not user.groups.all():
             is_recommend = True
 
-            recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
+            recommends = Group.objects.filter(is_public=True, start__gt=date.today()).order_by('-start')
             groups = GroupSerializer(recommends, many=True).data
         else:            
             groups = GroupSerializer(user.groups, many=True).data
@@ -250,26 +250,22 @@ class MainGroupsView(APIView):
             else:
                 groups.sort(key=lambda x: (x['end'], x['start']))
             
-            last_page = len(groups) // 10
-            
-            if len(groups) % 10:
-                last_page += 1
+            last_idx = len(groups)
 
-            groups = groups[10 * (page - 1):10 * page]
-
-        for group in groups:
-            count = 0
-
-            for p in Participate.objects.filter(group=group['id']):
-                if p.is_banned == 0:
-                    count += 1
-        
-            group['count'] = count
+            if idx == 0:
+                groups = groups[:10]
+            else:
+                cut = 0
+                for i in range(last_idx):
+                    if groups[i]['id'] == idx:
+                        cut = i + 1
+                        break
+                groups = groups[cut:cut + 10]
         
         if is_recommend:
             groups = [group for group in groups if group['count'] < group['headcount']][:10]
         
-        return Response(data={'groups': groups, 'is_recommend': is_recommend, 'last_page': last_page}, status=status.HTTP_200_OK)
+        return Response(data={'groups': groups, 'is_recommend': is_recommend, 'last_idx': last_idx}, status=status.HTTP_200_OK)
 
 
 class MainBoardsView(APIView):
@@ -277,9 +273,9 @@ class MainBoardsView(APIView):
         user = request.user
         order = request.GET.get('order')
         filter = request.GET.get('filter')
-        page = int(request.GET.get('page'))
+        idx = int(request.GET.get('idx'))
 
-        last_page = page
+        last_idx = idx
 
         boards = BoardSerializer(user.boards.all(), many=True).data
 
@@ -298,15 +294,20 @@ class MainBoardsView(APIView):
             boards.sort(key=lambda x: (x['end'], x['start']), reverse=True)
         else:
             boards.sort(key=lambda x: (x['end'], x['start']))
+
+        last_idx = len(boards)
             
-        last_page = len(boards) // 10
+        if idx == 0:
+            boards = boards[:10]
+        else:
+            cut = 0
+            for i in range(last_idx):
+                if boards[i]['group_id'] == idx:
+                    cut = i + 1
+                    break
+            boards = boards[cut:cut + 10]
         
-        if len(boards) % 10:
-            last_page += 1
-            
-        boards = boards[10 * (page - 1):10 * page]
-        
-        return Response(data={'boards': boards, 'last_page': last_page}, status=status.HTTP_200_OK)
+        return Response(data={'boards': boards, 'last_idx': last_idx}, status=status.HTTP_200_OK)
 
 
 class ProfileView(APIView):
