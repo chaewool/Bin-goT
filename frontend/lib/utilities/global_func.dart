@@ -1,10 +1,14 @@
 import 'package:bin_got/pages/intro_page.dart';
+import 'package:bin_got/pages/main_page.dart';
+import 'package:bin_got/providers/fcm_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
+import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
@@ -95,12 +99,12 @@ void shareBingo({required int bingoId}) async {
   }
 }
 
-Future<String> buildDynamicLink(String whereNotice, String noticeId) async {
-  String url = dotenv.env['baseUrl']!;
+Future<String> buildDynamicLink(bool isPublic, int groupId) async {
+  String uriPrefix = dotenv.env['dynamicLinkPrefix']!;
 
   final DynamicLinkParameters parameters = DynamicLinkParameters(
-    uriPrefix: url,
-    link: Uri.parse('$url/$whereNotice/$noticeId'),
+    uriPrefix: uriPrefix,
+    link: Uri.parse('https://groups?isPublic=$isPublic&groupId=$groupId'),
     androidParameters:
         AndroidParameters(packageName: dotenv.env['packageName']!),
   );
@@ -147,13 +151,55 @@ ReturnVoid showAlert(
 }
 
 //* modal 띄우기
-ReturnVoid showModal(BuildContext context, {required Widget page}) {
-  return () => showDialog(
+Future<bool?> Function() showModal(BuildContext context,
+    {required Widget page}) {
+  return () => showDialog<bool>(
         barrierDismissible: false,
         context: context,
         builder: (context) => page,
       );
 }
+
+//* login
+void login(BuildContext context) async {
+  try {
+    UserProvider().login().then((data) {
+      setTokens(context, data['access_token'], data['refresh_token']);
+      setNoti(
+        context,
+        rank: data['noti_rank'],
+        due: data['noti_due'],
+        chat: data['noti_chat'],
+        complete: data['noti_check'],
+      );
+      context.read<AuthProvider>().setStoreId(data['id']);
+      saveFCMToken();
+      if (data['is_login']) {
+        toOtherPage(context, page: const Main())();
+      } else {
+        showModal(context, page: const ChangeNameModal())();
+      }
+    }).catchError((error) {
+      showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
+    });
+  } catch (error) {
+    showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
+  }
+}
+
+void showLoginModal(BuildContext context) => showAlert(
+      context,
+      title: '토큰 만료',
+      content: '토큰이 만료되었습니다. 재로그인하시겠습니까?',
+      onPressed: () => login(context),
+    )();
+
+void showErrorModal(BuildContext context) => showAlert(
+      context,
+      title: '오류 발생',
+      content: '오류가 발생했습니다.',
+      hasCancel: false,
+    )();
 
 //* token
 String? getToken(BuildContext context) => context.read<AuthProvider>().token;
@@ -162,14 +208,29 @@ void setToken(BuildContext context, String newToken) =>
     context.read<AuthProvider>().setStoreToken(newToken);
 
 void setTokens(BuildContext context, String newToken, String newRefresh) {
-  final auth = context.read<AuthProvider>();
-  auth.setStoreToken(newToken);
-  auth.setStoreRefresh(newRefresh);
+  context.read<AuthProvider>().setStoreToken(newToken);
+  context.read<AuthProvider>().setStoreRefresh(newRefresh);
 }
 
 void deleteVar(BuildContext context) {
   context.read<AuthProvider>().deleteVar();
   context.read<NotiProvider>().deleteVar();
+}
+
+//* fcm token
+void saveFCMToken() async {
+  // 기기의 등록 토큰 액세스
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final fcmToken = await messaging.getToken();
+  FCMProvider().saveFCMToken(fcmToken!);
+  print('fcm 토큰 $fcmToken');
+
+  // 토큰이 업데이트될 때마다 서버에 저장
+  messaging.onTokenRefresh.listen((fcmToken) {
+    FCMProvider().saveFCMToken(fcmToken);
+  }).onError((err) {
+    throw Error();
+  });
 }
 
 //* id
@@ -202,11 +263,28 @@ bool watchPressed(BuildContext context) =>
     context.watch<NotiProvider>().beforeExit;
 
 //* scroll
-int? getTotal(BuildContext context) =>
-    context.read<GlobalScrollProvider>().totalPages;
+int? getTotal(BuildContext context, int mode) {
+  switch (mode) {
+    case 0:
+      return context.read<GlobalScrollProvider>().lastPage;
+    case 1:
+      return context.read<GlobalGroupProvider>().lastPage;
+    default:
+      return context.read<GlobalBingoProvider>().lastPage;
+  }
+}
 
-void setTotal(BuildContext context, int? newTotal) =>
-    context.read<GlobalScrollProvider>().setTotal(newTotal);
+// void setTotal(BuildContext context,
+//     {required int mode, required int newTotal}) {
+//   switch (mode) {
+//     case 0:
+//       return context.read<GlobalScrollProvider>().setTotal(newTotal);
+//     case 1:
+//       return context.read<GlobalGroupProvider>().setTotalPage(newTotal);
+//     default:
+//       return context.read<GlobalBingoProvider>().setTotalPage(newTotal);
+//   }
+// }
 
 bool readLoading(BuildContext context) =>
     context.read<GlobalScrollProvider>().loading;
@@ -217,13 +295,38 @@ bool getLoading(BuildContext context) =>
 void setLoading(BuildContext context, bool value) =>
     context.read<GlobalScrollProvider>().setLoading(value);
 
-int getPage(BuildContext context) => context.read<GlobalScrollProvider>().page;
+int getPage(BuildContext context, int mode) {
+  switch (mode) {
+    case 0:
+      return context.read<GlobalScrollProvider>().page;
+    case 1:
+      return context.read<GlobalGroupProvider>().page;
+    default:
+      return context.read<GlobalBingoProvider>().page;
+  }
+}
 
-void increasePage(BuildContext context) =>
-    context.read<GlobalScrollProvider>().increasePage();
+void increasePage(BuildContext context, int mode) {
+  switch (mode) {
+    case 0:
+      return context.read<GlobalScrollProvider>().increasePage();
+    case 1:
+      return context.read<GlobalGroupProvider>().increasePage();
+    default:
+      return context.read<GlobalBingoProvider>().increasePage();
+  }
+}
 
-void initPage(BuildContext context) =>
-    context.read<GlobalScrollProvider>().initPage();
+void initPage(BuildContext context, int mode) {
+  switch (mode) {
+    case 0:
+      return context.read<GlobalScrollProvider>().initPage();
+    case 1:
+      return context.read<GlobalGroupProvider>().initPage();
+    default:
+      return context.read<GlobalBingoProvider>().initPage();
+  }
+}
 
 bool getWorking(BuildContext context) =>
     context.read<GlobalScrollProvider>().working;
@@ -237,9 +340,9 @@ bool getAdditional(BuildContext context) =>
 void setAdditional(BuildContext context, bool value) =>
     context.read<GlobalScrollProvider>().setAdditional(value);
 
-void initLoadingData(BuildContext context) {
+void initLoadingData(BuildContext context, int mode) {
   setLoading(context, true);
-  initPage(context);
+  initPage(context, mode);
   setAdditional(context, false);
   setWorking(context, false);
 }
@@ -251,8 +354,17 @@ int? getGroupId(BuildContext context) =>
 int? getBingoSize(BuildContext context) =>
     context.read<GlobalGroupProvider>().bingoSize;
 
-// void setGroupData(BuildContext context, dynamic newVal) =>
-//     context.read<GlobalGroupProvider>().setData(newVal);
+String? getStart(BuildContext context) =>
+    context.read<GlobalGroupProvider>().start;
+
+void setStart(BuildContext context, String newStart) =>
+    context.read<GlobalGroupProvider>().setStart(newStart);
+
+void setGroupData(BuildContext context, dynamic newVal) =>
+    context.read<GlobalGroupProvider>().setData(newVal);
+
+void setGroupId(BuildContext context, int newVal) =>
+    context.read<GlobalGroupProvider>().setGroupId(newVal);
 
 //* bingo data
 

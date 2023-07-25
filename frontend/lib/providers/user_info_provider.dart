@@ -1,19 +1,20 @@
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 
 class UserInfoProvider extends ApiProvider {
   //* public
   FutureBool changeBadge(DynamicMap data) => _changeBadge(data);
   Future<ProfilModel> getProfile() => _getProfile();
-  Future<BadgeList> getBadges() => _getBadges();
-  FutureBool checkName(String name) => _checkName(name);
-  FutureBool changeName(String name) => _changeName(name);
+  FutureDynamic getBadges() => _getBadges();
+  FutureDynamic checkName(String name) => _checkName(name);
+  FutureDynamic changeName(String name) => _changeName(name);
   Future<MainGroupListModel> getMainGroupData(DynamicMap queryParameters) =>
       _getMainGroupData(queryParameters);
   Future<MyBingoList> getMainBingoData(DynamicMap queryParameters) =>
       _getMainBingoData(queryParameters);
-  FutureBool changeNoti(DynamicMap data) => _changeNoti(data);
+  FutureDynamic changeNoti(DynamicMap data) => _changeNoti(data);
 
   //* private
   FutureBool _changeBadge(DynamicMap data) async {
@@ -33,14 +34,14 @@ class UserInfoProvider extends ApiProvider {
       ProfilModel profile = ProfilModel.fromJson(response.data);
       return profile;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
 
-  Future<BadgeList> _getBadges() async {
+  FutureDynamic _getBadges() async {
     try {
       final response = await dioWithToken().get(badgeListUrl);
+
       BadgeList badgeList = response.data
           .map<BadgeModel>((json) => BadgeModel.fromJson(json))
           .toList();
@@ -50,30 +51,13 @@ class UserInfoProvider extends ApiProvider {
     }
   }
 
-  FutureBool _changeNoti(DynamicMap data) async {
-    print('noti url : $notiUrl, data : $data');
-    await updateApi(notiUrl, data: data);
-    return Future.value(true);
-  }
+  FutureDynamic _changeNoti(DynamicMap data) => updateApi(notiUrl, data: data);
 
-  FutureBool _checkName(String name) async {
-    try {
-      print('$checkNameUrl => $name');
-      await createApi(checkNameUrl, data: {'username': name});
-      return true;
-    } catch (error) {
-      throw Error();
-    }
-  }
+  FutureDynamic _checkName(String name) =>
+      createApi(checkNameUrl, data: {'username': name});
 
-  FutureBool _changeName(String name) async {
-    try {
-      await createApi(changeNameUrl, data: {'username': name});
-      return true;
-    } catch (error) {
-      throw Error();
-    }
-  }
+  FutureDynamic _changeName(String name) =>
+      createApi(changeNameUrl, data: {'username': name});
 
   Future<MainGroupListModel> _getMainGroupData(
       DynamicMap queryParameters) async {
@@ -81,24 +65,21 @@ class UserInfoProvider extends ApiProvider {
       print('url : $mainGroupTabUrl, query : $queryParameters');
       final response = await dioWithToken()
           .get(mainGroupTabUrl, queryParameters: queryParameters);
-      if (response.statusCode == 200) {
-        final data = response.data;
-        print('data : $data');
-        if (data.isNotEmpty) {
-          MyGroupList myGroupList = data['groups']
-              .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
-              .toList();
-          bool hasNotGroup = data['is_recommend'];
-          return MainGroupListModel.fromJson(
-              {'groups': myGroupList, 'is_recommend': hasNotGroup});
-        }
+
+      final data = response.data;
+      print('data : $data');
+      if (data.isNotEmpty) {
+        MyGroupList myGroupList = data['groups']
+            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
+            .toList();
+        bool hasNotGroup = data['is_recommend'];
+        GlobalGroupProvider().setTotalPage(data['last_page']);
         return MainGroupListModel.fromJson(
-            {'groups': [], 'is_recommend': true});
+            {'groups': myGroupList, 'is_recommend': hasNotGroup});
       }
-      throw Error();
+      return MainGroupListModel.fromJson({'groups': [], 'is_recommend': true});
     } catch (error) {
       print('mainTabGroupError: $error');
-      // UserProvider.logout();
       throw Error();
     }
   }
@@ -109,18 +90,16 @@ class UserInfoProvider extends ApiProvider {
       final response = await dioWithToken()
           .get(mainBingoTabUrl, queryParameters: queryParameters);
       print(response);
-      if (response.statusCode == 200) {
-        final data = response.data;
-        print('data : $data');
-        if (data.isNotEmpty) {
-          MyBingoList myBingoList = data
-              .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
-              .toList();
-          return myBingoList;
-        }
-        return [];
+      final data = response.data['boards'];
+      GlobalBingoProvider().setTotalPage(response.data['last_page']);
+      print('data : $data');
+      if (data.isNotEmpty) {
+        MyBingoList myBingoList = data
+            .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
+            .toList();
+        return myBingoList;
       }
-      throw Error();
+      return [];
     } catch (error) {
       print('mainTabBingoError: $error');
       // UserProvider.logout();

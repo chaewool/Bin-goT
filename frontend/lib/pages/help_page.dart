@@ -1,5 +1,4 @@
 //* 도움말 페이지
-import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -10,7 +9,6 @@ import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Help extends StatelessWidget {
   const Help({super.key});
@@ -26,8 +24,7 @@ class Help extends StatelessWidget {
 
     void exitService() {
       UserProvider().exitService().then((_) {
-        context.read<AuthProvider>().deleteVar();
-        context.read<NotiProvider>().deleteVar();
+        deleteVar(context);
         showAlert(
           context,
           title: '탈퇴 완료',
