@@ -1,5 +1,6 @@
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/pages/main_page.dart';
+import 'package:bin_got/providers/fcm_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
@@ -7,6 +8,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
@@ -171,6 +173,7 @@ void login(BuildContext context) async {
         complete: data['noti_check'],
       );
       context.read<AuthProvider>().setStoreId(data['id']);
+      saveFCMToken();
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
@@ -212,6 +215,22 @@ void setTokens(BuildContext context, String newToken, String newRefresh) {
 void deleteVar(BuildContext context) {
   context.read<AuthProvider>().deleteVar();
   context.read<NotiProvider>().deleteVar();
+}
+
+//* fcm token
+void saveFCMToken() async {
+  // 기기의 등록 토큰 액세스
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final fcmToken = await messaging.getToken();
+  FCMProvider().saveFCMToken(fcmToken!);
+  print('fcm 토큰 $fcmToken');
+
+  // 토큰이 업데이트될 때마다 서버에 저장
+  messaging.onTokenRefresh.listen((fcmToken) {
+    FCMProvider().saveFCMToken(fcmToken);
+  }).onError((err) {
+    throw Error();
+  });
 }
 
 //* id
