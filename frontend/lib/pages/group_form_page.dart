@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:bin_got/pages/group_create_completed.dart';
+import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -9,7 +8,7 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/input.dart';
@@ -19,8 +18,8 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 //* 그룹 생성/수정 페이지
@@ -58,12 +57,12 @@ class _GroupFormState extends State<GroupForm> {
         'groupname': '',
         'start': '',
         'end': '',
-        'size': 0, // 0
+        'size': 2,
         'is_public': true,
         'password': '',
         'description': '',
         'rule': '',
-        'need_auth': true, // true
+        'need_auth': true,
         'headcount': 0
       };
     } else {
@@ -101,23 +100,32 @@ class _GroupFormState extends State<GroupForm> {
       showAlert(context,
           title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
     } else if (widget.groupId == null) {
-      GroupProvider()
-          .createOwnGroup(FormData.fromMap({
-        'data': jsonEncode(groupData),
-        'img': selectedImage != null
-            ? MultipartFile.fromFileSync(selectedImage!.path,
-                contentType: MediaType('image', 'jpg'))
-            : null,
-      }))
-          .then((groupId) {
-        toOtherPage(
-          context,
-          page: GroupCreateCompleted(
-            groupId: groupId,
-            password: groupData['password'],
-          ),
-        )();
-      });
+      print(groupData['size']);
+      toOtherPage(
+        context,
+        page: BingoForm(
+          beforeData: groupData,
+          bingoSize: groupData['size'],
+          needAuth: groupData['need_auth'],
+        ),
+      )();
+      // GroupProvider()
+      //     .createOwnGroup(FormData.fromMap({
+      //   'data': jsonEncode(groupData),
+      //   'img': selectedImage != null
+      //       ? MultipartFile.fromFileSync(selectedImage!.path,
+      //           contentType: MediaType('image', 'png'))
+      //       : null,
+      // }))
+      //     .then((groupId) {
+      //   toOtherPage(
+      //     context,
+      //     page: GroupCreateCompleted(
+      //       groupId: groupId,
+      //       password: groupData['password'],
+      //     ),
+      //   )();
+      // });
     } else {
       print(groupData);
       GroupProvider()
@@ -130,20 +138,35 @@ class _GroupFormState extends State<GroupForm> {
                     : null,
               }))
           .then((groupId) {
-        toBack(context)();
+        toBack(context);
       });
     }
   }
 
   void imagePicker() async {
-    final ImagePicker picker = ImagePicker();
-    final localImage = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 50,
-    );
-    setState(() {
-      selectedImage = localImage;
-      isImageUpdated = true;
+    Permission.storage.request().then((value) {
+      if (value == PermissionStatus.denied ||
+          value == PermissionStatus.permanentlyDenied) {
+        showAlert(
+          context,
+          title: '미디어 접근 권한 거부',
+          content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 허용해주세요',
+          hasCancel: false,
+        )();
+      } else {
+        final ImagePicker picker = ImagePicker();
+        picker
+            .pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 50,
+        )
+            .then((localImage) {
+          setState(() {
+            selectedImage = localImage;
+            isImageUpdated = true;
+          });
+        });
+      }
     });
   }
 

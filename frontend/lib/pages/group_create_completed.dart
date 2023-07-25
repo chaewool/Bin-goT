@@ -1,9 +1,9 @@
 //* 그룹 생성 완료 페이지
-import 'package:bin_got/pages/group_main_page.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -23,13 +23,8 @@ class GroupCreateCompleted extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String privateInvitation = isPublic ? '' : '비밀번호 : $password';
     String message =
-        'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요\n $privateInvitation';
-    void copyText() {
-      Clipboard.setData(ClipboardData(text: message));
-    }
-
+        'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요\n${isPublic ? '' : '비밀번호 : $password'}';
     return Scaffold(
       body: ColWithPadding(
         vertical: 60,
@@ -62,14 +57,15 @@ class GroupCreateCompleted extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButtonInRow(
-                onPressed: () => shareToFriends(
+                onPressed: () => shareGroup(
                   groupId: groupId,
                   password: password,
                 ),
                 icon: shareIcon,
               ),
               IconButtonInRow(
-                onPressed: copyText,
+                onPressed: () =>
+                    Clipboard.setData(ClipboardData(text: message)),
                 icon: copyIcon,
               ),
             ],
@@ -78,10 +74,7 @@ class GroupCreateCompleted extends StatelessWidget {
             content: '생성된 그룹으로 가기',
             onPressed: toOtherPage(
               context,
-              page: GroupMain(
-                groupId: groupId,
-                isPublic: isPublic,
-              ),
+              page: InputPassword(isPublic: true, groupId: groupId),
             ),
           )
         ],

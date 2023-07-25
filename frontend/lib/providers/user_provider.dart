@@ -8,7 +8,7 @@ class UserProvider extends ApiProvider {
   //* public function
   FutureDynamicMap login() async => _login();
   FutureDynamicMap confirmToken() => _confirmToken();
-  FutureVoid exitService() => _exitService();
+  FutureDynamicMap exitService() => _exitService();
 
   //* private function
   //* login
@@ -38,15 +38,9 @@ class UserProvider extends ApiProvider {
   //* verify token
   FutureDynamicMap _confirmToken() async {
     try {
-      print('confirm token function $token, $refresh');
       if (token == null || token == '') return {};
-      print('토큰 유효성 검사');
+      print('토큰 유효성 검사 => $token');
       final data = await createApi(verifyTokenUrl, data: {'token': token});
-      print('tokenData: $data');
-      if (data.isNotEmpty) {
-        final result = await tokenRefresh();
-        return {'token': result['access']};
-      }
       return {'token': token};
     } catch (error) {
       throw Error();
@@ -54,9 +48,10 @@ class UserProvider extends ApiProvider {
   }
 
   //* exit
-  FutureVoid _exitService() {
+  FutureDynamicMap _exitService() async {
     try {
-      return deleteApi(exitServiceUrl);
+      await deleteApi(exitServiceUrl);
+      return {};
     } catch (error) {
       throw Error();
     }

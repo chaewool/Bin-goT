@@ -5,13 +5,55 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 //* dio
 class DioClass extends AuthProvider {
   static final _baseUrl = dotenv.env['baseUrl'];
+
   Dio dio = Dio(BaseOptions(baseUrl: _baseUrl!));
-  Dio dioWithToken() => Dio(
-        BaseOptions(
-          baseUrl: _baseUrl!,
-          headers: {'Authorization': 'JWT $token'},
-        ),
-      );
+
+  Dio dioWithToken() {
+    final tempDio = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl!,
+        headers: {'Authorization': 'JWT $token'},
+      ),
+    );
+    tempDio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (e, handler) async {
+          print('----------');
+          print('error message : $e ${e.response}');
+          if (e.response?.statusCode == 401) {
+            print('401 Error');
+            try {
+              //* refresh token
+              dio.post(
+                '/accounts/token/refresh/',
+                data: {'refresh': refresh},
+              ).then((tokenData) async {
+                print('tokenData: $tokenData');
+                final access = tokenData.data['access'];
+                setStoreToken(access);
+                e.requestOptions.headers['Authorization'] = 'JWT $access';
+                final secondRes = await dio.fetch(e.requestOptions);
+                print('secondRes : $secondRes');
+                return handler.resolve(secondRes);
+              }).catchError((error) {
+                print('Error : $error');
+                deleteVar();
+                return handler.reject(error);
+                // return handler.resolve(error);
+              });
+              //* 재요청
+            } catch (error) {
+              print('not try : $error');
+              deleteVar();
+            }
+          } else {
+            return handler.next(e);
+          }
+        },
+      ),
+    );
+    return tempDio;
+  }
 }
 
 //* url
@@ -24,7 +66,8 @@ class UrlClass extends DioClass {
   static const _badgeUrl = '$_accountUrl/badge';
 
   //* main
-  static const _mainTabUrl = '$_accountUrl/main/';
+  static const _mainGroupTabUrl = '$_accountUrl/main/groups';
+  static const _mainBingoTabUrl = '$_accountUrl/main/boards';
 
   //* username
   static const _checkNameUrl = '$_usernameUrl/check/';
@@ -44,6 +87,9 @@ class UrlClass extends DioClass {
   static const _verifyTokenUrl = '$_tokenUrl/verify/';
   static const _refreshTokenUrl = '$_tokenUrl/refresh/';
 
+  //* fcm
+  static const _saveFCMTokentUrl = '$_tokenUrl/fcm/';
+
   //! group
   static const _groupUrl = '/groups';
 
@@ -62,6 +108,16 @@ class UrlClass extends DioClass {
   String _exitGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}resign/';
   String _groupRankUrl(int groupId) => '${_groupDetailUrl(groupId)}rank/';
   String _getMembersUrl(int groupId) => '${_groupDetailUrl(groupId)}admin/';
+
+  //* chat & review
+  String _groupChatListUrl(int groupId) =>
+      '${_groupDetailUrl(groupId)}chat/list/';
+  String _groupChatCreateUrl(int groupId) =>
+      '${_groupDetailUrl(groupId)}chat/create/';
+  String _groupReviewCreateUrl(int groupId) =>
+      '${_groupDetailUrl(groupId)}review/create/';
+  String _groupReviewCheckUrl(int groupId) =>
+      '${_groupDetailUrl(groupId)}review/check/';
 
   //! bingo
   static const _bingoUrl = '/boards';
@@ -90,6 +146,10 @@ class UrlClass extends DioClass {
   String exitGroupUrl(int groupId) => _exitGroupUrl(groupId);
   String groupRankUrl(int groupId) => _groupRankUrl(groupId);
   String getMembersUrl(int groupId) => _getMembersUrl(groupId);
+  String groupChatListUrl(int groupId) => _groupChatListUrl(groupId);
+  String groupChatCreateUrl(int groupId) => _groupChatCreateUrl(groupId);
+  String groupReviewCreateUrl(int groupId) => _groupReviewCreateUrl(groupId);
+  String groupReviewCheckUrl(int groupId) => _groupReviewCheckUrl(groupId);
 
   //* bingo
   String get createBingoUrl => _createBingoUrl;
@@ -102,11 +162,15 @@ class UrlClass extends DioClass {
   String get changeNameUrl => _changeNameUrl;
 
   //* main
-  String get mainTabUrl => _mainTabUrl;
+  String get mainGroupTabUrl => _mainGroupTabUrl;
+  String get mainBingoTabUrl => _mainBingoTabUrl;
 
   //* my page
   String get badgeListUrl => _badgeListUrl;
   String get changeBadgeUrl => _changeBadgeUrl;
   String get notiUrl => _notiUrl;
   String get profileUrl => _profileUrl;
+
+  //* fcm
+  String get saveFCMTokentUrl => _saveFCMTokentUrl;
 }

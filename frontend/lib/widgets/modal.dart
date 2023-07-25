@@ -1,27 +1,26 @@
+import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/box_container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
-import 'package:bin_got/widgets/badge.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //* 빙고
 class BingoModal extends StatefulWidget {
   final bool isDetail;
   final int index, cnt;
-  final List<dynamic>? items;
   const BingoModal({
     super.key,
     required this.index,
     required this.cnt,
     required this.isDetail,
-    this.items,
   });
 
   @override
@@ -29,58 +28,75 @@ class BingoModal extends StatefulWidget {
 }
 
 class _BingoModalState extends State<BingoModal> {
-  late int newIdx;
   late DynamicMap item;
+  late int newIdx;
+
   @override
   void initState() {
     super.initState();
     newIdx = widget.index;
+    item = {...readItem(context, newIdx)};
+  }
+
+  void initialize() {
+    setState(() {
+      item['title'] = null;
+      item['content'] = null;
+      item['check'] = false;
+      item['check_goal'] = '0';
+      item['item_id'] = newIdx;
+    });
+    setItem(context, newIdx, item);
   }
 
   @override
   Widget build(BuildContext context) {
     void moveBingo(bool toRight) {
+      setItem(context, newIdx, item);
       if (toRight) {
         if (newIdx < widget.cnt - 1) {
           setState(() {
             newIdx += 1;
-            item = widget.items![newIdx];
+            item = {...readItem(context, newIdx)};
           });
         }
       } else if (newIdx > 0) {
         setState(() {
           newIdx -= 1;
-          item = widget.items![newIdx];
+          item = {...readItem(context, newIdx)};
         });
       }
     }
 
-    bool isChecked = false;
     void Function(bool?) changeCheckState(bool? state) {
       return (bool? state) => setState(() {
-            isChecked = !isChecked;
+            item['check'] = state;
           });
     }
 
+    void applyItem() {
+      setItem(context, newIdx, item);
+      print(readItem(context, newIdx));
+      toBack(context);
+    }
+
     return CustomModal(
-      buttonText: '저장',
-      additionalButton: widget.isDetail
-          ? null
-          : CustomButton(
-              content: '저장 후 닫기',
-              onPressed: toBack(context),
-            ),
+      buttonText: '초기화',
+      cancelText: widget.isDetail ? '확인' : '적용',
+      onPressed: widget.isDetail ? null : initialize,
+      onCancelPressed: widget.isDetail ? null : applyItem,
+      hasConfirm: !widget.isDetail,
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             CustomText(content: '${newIdx + 1}/${widget.cnt}'),
             CustomInput(
-              width: 200,
+              width: 170,
               height: 50,
               explain: '제목',
-              setValue: (p0) {},
-              initialValue: widget.isDetail ? item[newIdx]['title'] : null,
+              setValue: (value) => item['title'] = value,
+              initialValue: item['title'],
               enabled: !widget.isDetail,
             ),
             Row(
@@ -89,46 +105,49 @@ class _BingoModalState extends State<BingoModal> {
                 CustomIconButton(
                   onPressed: () => moveBingo(false),
                   icon: leftIcon,
-                  size: 50,
+                  size: 40,
                 ),
                 CustomInput(
                   explain: '이루고 싶은 목표를 설정해주세요',
                   needMore: true,
-                  width: 200,
+                  width: 150,
                   height: 200,
                   enabled: !widget.isDetail,
                   fontSize: FontSize.textSize,
-                  initialValue:
-                      widget.isDetail ? item[newIdx]['content'] : null,
-                  setValue: (p0) {},
+                  initialValue: item['content'],
+                  setValue: (value) => item['content'] = value,
                 ),
                 CustomIconButton(
                   onPressed: () => moveBingo(true),
                   icon: rightIcon,
-                  size: 50,
+                  size: 40,
                 )
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CustomCheckBox(
-                  label: '횟수 체크',
-                  onChange: changeCheckState(!isChecked),
-                  value: isChecked,
-                ),
-                isChecked
-                    ? CustomBoxContainer(
-                        child: CustomInput(
-                          width: 100,
-                          height: 40,
-                          onlyNum: true,
-                          explain: '숫자 입력',
-                          setValue: (p0) {},
-                        ),
+                !widget.isDetail || item['check']
+                    ? CustomCheckBox(
+                        label: widget.isDetail ? '달성/목표' : '횟수 체크',
+                        onChange:
+                            widget.isDetail ? null : changeCheckState(false),
+                        value: item['check'] ?? false,
                       )
                     : const SizedBox(),
-                isChecked
+                item['check']
+                    ? CustomInput(
+                        enabled: !widget.isDetail,
+                        width: 60,
+                        height: 30,
+                        onlyNum: true,
+                        setValue: (value) => item['check_goal'] = value,
+                        initialValue: widget.isDetail
+                            ? '${item['check_cnt'] ?? 0}/${item['check_goal']}'
+                            : item['check_goal'].toString(),
+                      )
+                    : const SizedBox(),
+                item['check']
                     ? const CustomText(
                         content: '회',
                         fontSize: FontSize.smallSize,
@@ -137,8 +156,47 @@ class _BingoModalState extends State<BingoModal> {
               ],
             ),
           ],
-        ),
+        )
       ],
+    );
+  }
+}
+
+//* 닉네임
+class ChangeNameModal extends StatelessWidget {
+  final String? username;
+  const ChangeNameModal({
+    super.key,
+    this.username,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final newName = {'value': username};
+
+    void changeName() {
+      final newVal = newName['value'];
+      if (newVal == null || newVal.trim() == '') {
+        showAlert(context, title: '닉네임 오류', content: '올바른 닉네임을 입력해주세요')();
+      } else if (username != newVal) {
+        UserInfoProvider().changeName(newVal).then((_) {
+          toBack(context);
+          showAlert(context, title: '닉네임 변경 완료', content: '닉네임이 변경되었습니다.')();
+        });
+      } else {
+        showAlert(context, title: '닉네임 오류', content: '닉네임이 변경되지 않았습니다')();
+      }
+    }
+
+    void setName(String newVal) {
+      newName['value'] = newVal.trim();
+    }
+
+    return InputModal(
+      title: '닉네임 설정',
+      type: '닉네임',
+      setValue: setName,
+      onPressed: changeName,
     );
   }
 }
@@ -218,7 +276,8 @@ class CustomAlert extends StatelessWidget {
       title: CustomText(content: title),
       content: CustomText(content: content),
       actions: [
-        CustomButton(onPressed: onPressed ?? toBack(context), content: '확인'),
+        CustomButton(
+            onPressed: onPressed ?? () => toBack(context), content: '확인'),
         hasCancel
             ? const ExitButton(isIconType: false, buttonText: '취소')
             : const SizedBox(),
@@ -230,59 +289,149 @@ class CustomAlert extends StatelessWidget {
 //* 배지 선택
 class SelectBadgeModal extends StatefulWidget {
   final int presentBadge;
-  const SelectBadgeModal({super.key, this.presentBadge = 0});
+  final void Function(int) onPressed;
+  const SelectBadgeModal({
+    super.key,
+    required this.presentBadge,
+    required this.onPressed,
+  });
 
   @override
   State<SelectBadgeModal> createState() => _SelectBadgeModalState();
 }
 
 class _SelectBadgeModalState extends State<SelectBadgeModal> {
-  late int badgeIdx;
-  void selectBadge(int idx) {
-    if (idx != badgeIdx) {
+  late int badgeId;
+  void selectBadge(int id) {
+    if (id != badgeId) {
       setState(() {
-        badgeIdx = idx;
+        badgeId = id;
       });
     }
+  }
+
+  void changeBadge() {
+    UserInfoProvider().changeBadge({'badge_id': badgeId}).then((data) {
+      print('성공 => $data');
+      toBack(context);
+      widget.onPressed(badgeId);
+    }).catchError((_) {
+      showAlert(
+        context,
+        title: '배지 변경 오류',
+        content: '오류가 발생해 배지가 변경되지 않았습니다.',
+      )();
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    badgeIdx = widget.presentBadge;
+    badgeId = widget.presentBadge;
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(title: '배지 선택', onPressed: toBack(context), children: [
-      for (int i = 0; i < 4; i += 1)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (int j = 0; j < 3; j += 1)
-              ColWithPadding(
-                vertical: 8,
-                horizontal: 8,
-                children: [
-                  CustomBadge(
-                    onTap: () => selectBadge(3 * i + j),
-                    boxShadow: 3 * i + j == badgeIdx
-                        ? [
-                            const BoxShadow(
-                                blurRadius: 3,
-                                spreadRadius: 3,
-                                color: blueColor)
-                          ]
-                        : null,
+    return CustomModal(title: '배지 선택', onPressed: changeBadge, children: [
+      FutureBuilder(
+          future: UserInfoProvider().getBadges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var data = snapshot.data;
+              return SingleChildScrollView(
+                child: CustomBoxContainer(
+                  height: getHeight(context) * 0.6,
+                  color: greyColor,
+                  hasRoundEdge: false,
+                  child: ListView.separated(
+                    itemCount: data!.length ~/ 2,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 20),
+                    itemBuilder: (context, index) {
+                      return Flexible(
+                        child: RowWithPadding(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          vertical: 8,
+                          horizontal: 8,
+                          children: [
+                            for (int di = 0; di < 2; di += 1)
+                              Column(
+                                children: [
+                                  CircleContainer(
+                                    onTap: () =>
+                                        selectBadge(data[2 * index + di].id),
+                                    boxShadow:
+                                        data[2 * index + di].id == badgeId
+                                            ? [
+                                                const BoxShadow(
+                                                  blurRadius: 3,
+                                                  spreadRadius: 3,
+                                                  color: blueColor,
+                                                )
+                                              ]
+                                            : null,
+                                    child: Image.network(
+                                      '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
+                                      opacity: AlwaysStoppedAnimation(
+                                        data[2 * index + di].hasBadge ? 1 : 0.2,
+                                      ),
+                                      // opacity: data[index].hasBadge ? 1 : 0.5,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CustomText(
+                                      content: data[2 * index + di].name,
+                                      fontSize: FontSize.smallSize,
+                                    ),
+                                  )
+                                ],
+                              )
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CustomText(content: '배지명'),
-                  )
-                ],
+                ),
+              );
+            }
+            return const Flexible(
+              fit: FlexFit.loose,
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
-          ],
-        ),
+            );
+          }),
+      // for (int i = 0; i < 4; i += 1)
+      //   Row(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     children: [
+      //       for (int j = 0; j < 3; j += 1)
+      //         ColWithPadding(
+      //           vertical: 8,
+      //           horizontal: 8,
+      //           children: [
+      //             CircleContainer(
+      //               onTap: () => selectBadge(3 * i + j),
+      //               boxShadow: 3 * i + j == badgeIdx
+      //                   ? [
+      //                       const BoxShadow(
+      //                           blurRadius: 3,
+      //                           spreadRadius: 3,
+      //                           color: blueColor)
+      //                     ]
+      //                   : null,
+      //               child: Image.network(
+      //                   '${dotenv.env['fileUrl']}/badges/${3 * i + j}'),
+      //             ),
+      //             const Padding(
+      //               padding: EdgeInsets.all(8.0),
+      //               child: CustomText(content: '배지명'),
+      //             )
+      //           ],
+      //         ),
+      //     ],
+      //   ),
     ]);
   }
 }
@@ -292,9 +441,8 @@ class CustomModal extends StatelessWidget {
   final String? title;
   final bool hasConfirm;
   final WidgetList children;
-  final ReturnVoid? onPressed;
-  final String buttonText;
-  final Widget? additionalButton;
+  final ReturnVoid? onPressed, onCancelPressed;
+  final String buttonText, cancelText;
   const CustomModal({
     super.key,
     this.title,
@@ -302,7 +450,8 @@ class CustomModal extends StatelessWidget {
     required this.children,
     this.onPressed,
     this.buttonText = '적용',
-    this.additionalButton,
+    this.cancelText = '취소',
+    this.onCancelPressed,
   });
 
   @override
@@ -319,29 +468,24 @@ class CustomModal extends StatelessWidget {
       children: [
         ...children,
         RowWithPadding(
-          horizontal: additionalButton != null ? 30 : 50,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: additionalButton != null
-              ? [
-                  additionalButton!,
-                  hasConfirm
-                      ? CustomButton(
-                          onPressed: onPressed ?? toBack(context),
-                          content: buttonText,
-                        )
-                      : const SizedBox(),
-                  const ExitButton(isIconType: false, buttonText: '취소'),
-                ]
-              : [
-                  hasConfirm
-                      ? CustomButton(
-                          onPressed: onPressed ?? toBack(context),
-                          content: buttonText,
-                        )
-                      : const SizedBox(),
-                  const ExitButton(isIconType: false, buttonText: '취소'),
-                ],
-        )
+            horizontal: 50,
+            mainAxisAlignment: hasConfirm
+                ? MainAxisAlignment.spaceAround
+                : MainAxisAlignment.center,
+            children: [
+              hasConfirm
+                  ? CustomButton(
+                      onPressed: onPressed ?? () => toBack(context),
+                      content: buttonText,
+                    )
+                  : const SizedBox(),
+              onCancelPressed == null
+                  ? ExitButton(isIconType: false, buttonText: cancelText)
+                  : CustomButton(
+                      onPressed: onCancelPressed!,
+                      content: cancelText,
+                    ),
+            ])
       ],
     );
   }
@@ -410,17 +554,32 @@ class _NotificationModalState extends State<NotificationModal> {
 
 //* 입력창이 있는 모달
 class InputModal extends StatelessWidget {
-  final String title;
-  const InputModal({super.key, required this.title});
+  final String title, type;
+  final void Function(String value) setValue;
+  final ReturnVoid onPressed;
+  final ReturnVoid? onCancelPressed;
+  const InputModal({
+    super.key,
+    required this.title,
+    required this.type,
+    required this.setValue,
+    required this.onPressed,
+    this.onCancelPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(title: title, children: [
-      CustomInput(
-        explain: '닉네임을 입력해주세요',
-        maxLength: 20,
-        setValue: (p0) {},
-      ),
-    ]);
+    return CustomModal(
+      title: title,
+      onPressed: onPressed,
+      onCancelPressed: onCancelPressed,
+      children: [
+        CustomInput(
+          explain: '$type을 입력해주세요',
+          maxLength: 20,
+          setValue: setValue,
+        ),
+      ],
+    );
   }
 }

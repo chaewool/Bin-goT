@@ -9,6 +9,9 @@ import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:bin_got/providers/fcm_provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 
 class Intro extends StatefulWidget {
   const Intro({super.key});
@@ -26,7 +29,6 @@ class _IntroState extends State<Intro> {
   void login() async {
     try {
       final data = await UserProvider().login();
-      print('data: $data');
       if (!mounted) return;
       setTokens(context, data['access_token'], data['refresh_token']);
       setNoti(
@@ -34,14 +36,16 @@ class _IntroState extends State<Intro> {
         rank: data['noti_rank'],
         due: data['noti_due'],
         chat: data['noti_chat'],
+        complete: data['noti_check'],
       );
+      context.read<AuthProvider>().setStoreId(data['id']);
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
-        showModal(context, page: const InputModal(title: '닉네임 설정'));
+        showModal(context, page: const ChangeNameModal())();
       }
     } catch (error) {
-      showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.');
+      showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
     }
   }
 
@@ -52,19 +56,33 @@ class _IntroState extends State<Intro> {
       if (result.isNotEmpty) {
         if (!mounted) return;
         setToken(context, result['token']);
+
+        // 기기의 등록 토큰 액세스
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+        final fcmToken = await messaging.getToken();
+        FCMProvider().saveFCMToken(fcmToken!);
+        print('fcm 토큰 ${fcmToken}');
+
+        // 토큰이 업데이트될 때마다 서버에 저장
+        messaging.onTokenRefresh.listen((fcmToken) {
+        FCMProvider().saveFCMToken(fcmToken);
+        }).onError((err) {
+        throw Error();
+        });
       } else {
         showLoginBtn = true;
       }
     } catch (error) {
-      setState(() {
-        showLoginBtn = true;
-      });
-      return;
+      showLoginBtn = true;
     }
   }
 
-  void afterFewSec(int sec, ReturnVoid changeVar) {
-    Future.delayed(Duration(seconds: sec), () {
+  void initNoti() async {
+    await context.read<NotiProvider>().initNoti();
+  }
+
+  void afterFewSec(int millisec, ReturnVoid changeVar) {
+    Future.delayed(Duration(milliseconds: millisec), () {
       setState(changeVar);
     });
   }
@@ -72,20 +90,20 @@ class _IntroState extends State<Intro> {
   @override
   void initState() {
     super.initState();
-
-    afterFewSec(1, () {
+    afterFewSec(500, () {
       showLogo = true;
     });
-    afterFewSec(2, () {
+    afterFewSec(1000, () {
       showExplain = true;
     });
-    afterFewSec(3, () {
+    afterFewSec(1500, () {
       showTitle = true;
     });
     verifyToken();
-    afterFewSec(4, () {
+    initNoti();
+    afterFewSec(2000, () {
       if (!showLoginBtn) {
-        toOtherPage(context, page: const Main())();
+        toOtherPageWithoutPath(context, page: const Main());
       }
     });
   }
@@ -97,7 +115,7 @@ class _IntroState extends State<Intro> {
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 100),
         child: SizedBox(
-          width: MediaQuery.of(context).size.width,
+          width: getWidth(context),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,12 +125,16 @@ class _IntroState extends State<Intro> {
                 children: [
                   showExplain
                       ? const CustomText(
-                          content: '당신을 채울', fontSize: FontSize.sloganSize)
+                          content: '당신을 채울',
+                          fontSize: FontSize.sloganSize,
+                        )
                       : const SizedBox(),
                   const SizedBox(height: 20),
                   showTitle
                       ? const CustomText(
-                          content: 'Bin:goT', fontSize: FontSize.sloganSize)
+                          content: 'Bin:goT',
+                          fontSize: FontSize.sloganSize,
+                        )
                       : const SizedBox(),
                 ],
               ),

@@ -45,7 +45,7 @@ class GroupProvider extends ApiProvider {
       final response = await dioWithToken().get(
         searchGroupUrl,
         queryParameters: {
-          'period': 1,
+          'period': period,
           'keyword': keyword,
           'order': order,
           'public': public,
@@ -55,7 +55,8 @@ class GroupProvider extends ApiProvider {
       );
       if (response.statusCode == 200) {
         MyGroupList groupList = response.data
-            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json));
+            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
+            .toList();
         return groupList;
       }
       throw Error();
@@ -73,29 +74,37 @@ class GroupProvider extends ApiProvider {
       final response = await dioWithToken().get(
         groupDetailUrl(groupId),
         queryParameters: {'password': password},
-      );
+      ).catchError((error) {
+        // print('catch error => ${error.response!.data}');
+      });
       print('response: $response');
-      switch (response.statusCode) {
-        case 200:
-          return GroupDetailModel.fromJson(response.data);
-        case 401:
-          //* 토큰 리프레시
-          final token = await tokenRefresh();
-          break;
-        default:
-          throw Error();
+      // return response;
+      if (response.statusCode == 200) {
+        return GroupDetailModel.fromJson(response.data);
       }
+      throw Error();
+    } catch (error) {
+      throw Error();
+    }
+  }
 
+  //* join
+  FutureBool joinGroup(int groupId, FormData groupData) async {
+    try {
+      final dioWithForm = dioWithToken();
+      dioWithForm.options.contentType = 'multipart/form-data';
+      final response =
+          await dioWithForm.post(joinGroupUrl(groupId), data: groupData);
+      print(response);
+      if (response.statusCode == 200) {
+        return Future.value(true);
+      }
       throw Error();
     } catch (error) {
       print(error);
       throw Error();
     }
   }
-
-  //* join
-  FutureDynamicMap joinGroup(int groupId) async =>
-      deliverApi(joinGroupUrl(groupId));
 
   //* create
   FutureInt createOwnGroup(FormData groupData) async {
@@ -170,11 +179,11 @@ class GroupProvider extends ApiProvider {
         case 200:
           final data = response.data;
           if (data.isNotEmpty) {
-            GroupMemberModel applicants = data['applicants']
+            GroupMemberList applicants = data['applicants']
                 .map<GroupMemberModel>(
                     (json) => GroupMemberModel.fromJson(json))
                 .toList();
-            MyBingoList members = data['members']
+            GroupMemberList members = data['members']
                 .map<GroupMemberModel>(
                     (json) => GroupMemberModel.fromJson(json))
                 .toList();
@@ -196,6 +205,51 @@ class GroupProvider extends ApiProvider {
     } catch (error) {
       print('mainTabError: $error');
       // UserProvider.logout();
+      throw Error();
+    }
+  }
+
+  //* chat list
+  Future<GroupChatList> readGroupChatList(int groupId, int page) async {
+    try {
+      final response = await dioWithToken().get(
+        groupChatListUrl(groupId),
+        queryParameters: {
+          'page': page,
+        },
+      );
+      switch (response.statusCode) {
+        case 200:
+          final data = response.data;
+          if (data.isNotEmpty) {
+            GroupChatList chats = data
+                .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
+                .toList();
+            return chats;
+          }
+          return [];
+        default:
+          throw Error();
+      }
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
+  }
+
+  //* create chat
+  FutureBool createGroupChatChat(int groupId, FormData groupChatData) async {
+    try {
+      final dioWithForm = dioWithToken();
+      dioWithForm.options.contentType = 'multipart/form-data';
+      final response = await dioWithForm.post(groupChatCreateUrl(groupId),
+          data: groupChatData);
+      if (response.statusCode == 200) {
+        return Future.value(true);
+      }
+      throw Error();
+    } catch (error) {
+      print(error);
       throw Error();
     }
   }

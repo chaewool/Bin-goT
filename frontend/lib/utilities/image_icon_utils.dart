@@ -43,7 +43,7 @@ const leftIcon = Icons.chevron_left_rounded;
 const rightIcon = Icons.chevron_right_rounded;
 const downIcon = Icons.arrow_drop_down;
 
-final iconList = [confirmIcon, closeIcon, circleIcon];
+const iconList = [confirmIcon, closeIcon, circleIcon];
 
 //* background image
 var iceBall = 'assets/images/aaron-burden.jpg';

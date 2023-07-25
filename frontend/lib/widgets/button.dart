@@ -34,22 +34,29 @@ class ExitButton extends StatelessWidget {
   final bool isIconType;
   final IconData icon;
   final String buttonText;
-  const ExitButton(
-      {super.key,
-      required this.isIconType,
-      this.icon = backIcon,
-      this.buttonText = '닫기'});
+  final ReturnVoid? onPressed;
+  const ExitButton({
+    super.key,
+    required this.isIconType,
+    this.onPressed,
+    this.icon = backIcon,
+    this.buttonText = '닫기',
+  });
 
   @override
   Widget build(BuildContext context) {
     return isIconType
-        ? IconButton(onPressed: toBack(context), icon: CustomIcon(icon: icon))
+        ? IconButton(
+            onPressed: onPressed ?? () => toBack(context),
+            icon: CustomIcon(icon: icon),
+          )
         : OutlinedButton(
-            onPressed: toBack(context),
+            onPressed: onPressed ?? () => toBack(context),
             child: CustomText(
               content: buttonText,
               fontSize: FontSize.smallSize,
-            ));
+            ),
+          );
   }
 }
 
@@ -126,9 +133,12 @@ class CustomTextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: CustomText(
-        content: content,
-        fontSize: fontSize,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        child: CustomText(
+          content: content,
+          fontSize: fontSize,
+        ),
       ),
     );
   }
