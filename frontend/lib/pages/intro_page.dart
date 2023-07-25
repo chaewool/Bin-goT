@@ -1,3 +1,4 @@
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
@@ -10,7 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Intro extends StatefulWidget {
-  const Intro({super.key});
+  final bool? isPublic;
+  final int? groupId;
+  const Intro({
+    super.key,
+    this.isPublic,
+    this.groupId,
+  });
 
   @override
   State<Intro> createState() => _IntroState();
@@ -27,8 +34,11 @@ class _IntroState extends State<Intro> {
       await context.read<AuthProvider>().initVar();
       UserProvider().confirmToken().then((result) async {
         print('intro => $result');
-
-        saveFCMToken();
+        if (result.isEmpty) {
+          saveFCMToken();
+        } else {
+          throw Error();
+        }
       }).catchError((error) {
         print('intro error => $error');
         setState(() {
@@ -36,7 +46,7 @@ class _IntroState extends State<Intro> {
         });
       });
     } catch (error) {
-      print('오류 오류');
+      print('오류 오류 => $error');
       setState(() {
         showLoginBtn = true;
       });
@@ -69,7 +79,15 @@ class _IntroState extends State<Intro> {
     initNoti();
     afterFewSec(2000, () {
       if (!showLoginBtn) {
-        toOtherPageWithoutPath(context, page: const Main());
+        toOtherPageWithoutPath(
+          context,
+          page: widget.groupId == null
+              ? const Main()
+              : InputPassword(
+                  isPublic: widget.isPublic!,
+                  groupId: widget.groupId!,
+                ),
+        );
       }
     });
   }

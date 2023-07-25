@@ -498,60 +498,53 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
                     separatorBuilder: (context, index) =>
                         const SizedBox(height: 20),
                     itemBuilder: (context, index) {
-                      return Flexible(
-                        child: RowWithPadding(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          vertical: 8,
-                          horizontal: 8,
-                          children: [
-                            for (int di = 0; di < 2; di += 1)
-                              Column(
-                                children: [
-                                  CircleContainer(
-                                    onTap: () =>
-                                        selectBadge(data[2 * index + di].id),
-                                    boxShadow:
-                                        data[2 * index + di].id == badgeId
-                                            ? [
-                                                const BoxShadow(
-                                                  blurRadius: 3,
-                                                  spreadRadius: 3,
-                                                  color: blueColor,
-                                                )
-                                              ]
-                                            : null,
-                                    child: Opacity(
-                                      opacity: data[2 * index + di].hasBadge
-                                          ? 1
-                                          : 0.2,
-                                      child: CachedNetworkImage(
-                                        imageUrl:
-                                            '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
-                                      ),
+                      return RowWithPadding(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        vertical: 8,
+                        horizontal: 8,
+                        children: [
+                          for (int di = 0; di < 2; di += 1)
+                            Column(
+                              children: [
+                                CircleContainer(
+                                  onTap: () =>
+                                      selectBadge(data[2 * index + di].id),
+                                  boxShadow: data[2 * index + di].id == badgeId
+                                      ? [
+                                          const BoxShadow(
+                                            blurRadius: 3,
+                                            spreadRadius: 3,
+                                            color: blueColor,
+                                          )
+                                        ]
+                                      : null,
+                                  child: Opacity(
+                                    opacity:
+                                        data[2 * index + di].hasBadge ? 1 : 0.2,
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: CustomText(
-                                      content: data[2 * index + di].name,
-                                      fontSize: FontSize.smallSize,
-                                    ),
-                                  )
-                                ],
-                              )
-                          ],
-                        ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: CustomText(
+                                    content: data[2 * index + di].name,
+                                    fontSize: FontSize.smallSize,
+                                  ),
+                                )
+                              ],
+                            )
+                        ],
                       );
                     },
                   ),
                 ),
               );
             }
-            return const Flexible(
-              fit: FlexFit.loose,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           }),
       // for (int i = 0; i < 4; i += 1)

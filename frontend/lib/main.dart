@@ -13,6 +13,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:path/path.dart';
 
+int? groupId;
+int? isPublic;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -34,15 +37,24 @@ void main() async {
     final Uri deepLink = initialLink.link;
     print('deep link => $deepLink');
     toOtherPage(context as BuildContext,
-        page: const InputPassword(isPublic: true, groupId: 2))();
+        page: const InputPassword(
+          isPublic: true,
+          groupId: 2,
+          needCheck: true,
+        ))();
   }
 
   FirebaseDynamicLinks.instance.onLink.listen(
     (pendingDynamicLinkData) {
       // Set up the `onLink` event listener next as it may be received here
       final Uri deepLink = pendingDynamicLinkData.link;
+      print(deepLink);
       // Example of using the dynamic link to push the user to a different screen
-      Navigator.pushNamed(context as BuildContext, deepLink.path);
+      toOtherPage(context as BuildContext,
+          page: const Intro(
+            isPublic: true,
+            groupId: 2,
+          ))();
     },
   );
 
