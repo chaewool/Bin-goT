@@ -559,13 +559,13 @@ class GroupSearchView(APIView):
 
         groups = [d for d in groups if d['count'] < d['headcount'] and not Participate.objects.filter(group=d['id'], user=user).exists()]
            
-        last_idx = len(groups)
+        last_idx = groups[-1]['id']
 
         if idx == 0:
             groups = groups[:10]
         else:
             cut = 0
-            for i in range(last_idx):
+            for i in range(len(groups)):
                 if groups[i]['id'] == idx:
                     cut = i + 1
                     break

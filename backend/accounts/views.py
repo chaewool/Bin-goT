@@ -250,13 +250,13 @@ class MainGroupsView(APIView):
             else:
                 groups.sort(key=lambda x: (x['end'], x['start']))
             
-            last_idx = len(groups)
+            last_idx = groups[-1]['id']
 
             if idx == 0:
                 groups = groups[:10]
             else:
                 cut = 0
-                for i in range(last_idx):
+                for i in range(len(groups)):
                     if groups[i]['id'] == idx:
                         cut = i + 1
                         break
@@ -274,8 +274,6 @@ class MainBoardsView(APIView):
         order = request.GET.get('order')
         filter = request.GET.get('filter')
         idx = int(request.GET.get('idx'))
-
-        last_idx = idx
 
         boards = BoardSerializer(user.boards.all(), many=True).data
 
@@ -295,14 +293,17 @@ class MainBoardsView(APIView):
         else:
             boards.sort(key=lambda x: (x['end'], x['start']))
 
-        last_idx = len(boards)
+        if not boards:
+            last_idx = 0
+        else:
+            last_idx = boards[-1]['id']
             
         if idx == 0:
             boards = boards[:10]
         else:
             cut = 0
-            for i in range(last_idx):
-                if boards[i]['group_id'] == idx:
+            for i in range(len(boards)):
+                if boards[i]['id'] == idx:
                     cut = i + 1
                     break
             boards = boards[cut:cut + 10]
