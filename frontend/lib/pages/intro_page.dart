@@ -1,3 +1,4 @@
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
@@ -5,16 +6,18 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:bin_got/providers/fcm_provider.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-
 
 class Intro extends StatefulWidget {
-  const Intro({super.key});
+  final bool? isPublic;
+  final int? groupId;
+  const Intro({
+    super.key,
+    this.isPublic,
+    this.groupId,
+  });
 
   @override
   State<Intro> createState() => _IntroState();
@@ -26,54 +29,27 @@ class _IntroState extends State<Intro> {
   var showTitle = false;
   var showLoginBtn = false;
 
-  void login() async {
-    try {
-      final data = await UserProvider().login();
-      if (!mounted) return;
-      setTokens(context, data['access_token'], data['refresh_token']);
-      setNoti(
-        context,
-        rank: data['noti_rank'],
-        due: data['noti_due'],
-        chat: data['noti_chat'],
-        complete: data['noti_check'],
-      );
-      context.read<AuthProvider>().setStoreId(data['id']);
-      if (data['is_login']) {
-        toOtherPage(context, page: const Main())();
-      } else {
-        showModal(context, page: const ChangeNameModal())();
-      }
-    } catch (error) {
-      showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
-    }
-  }
-
   void verifyToken() async {
     try {
       await context.read<AuthProvider>().initVar();
-      final result = await UserProvider().confirmToken();
-      if (result.isNotEmpty) {
-        if (!mounted) return;
-        setToken(context, result['token']);
-
-        // 기기의 등록 토큰 액세스
-        FirebaseMessaging messaging = FirebaseMessaging.instance;
-        final fcmToken = await messaging.getToken();
-        FCMProvider().saveFCMToken(fcmToken!);
-        print('fcm 토큰 ${fcmToken}');
-
-        // 토큰이 업데이트될 때마다 서버에 저장
-        messaging.onTokenRefresh.listen((fcmToken) {
-        FCMProvider().saveFCMToken(fcmToken);
-        }).onError((err) {
-        throw Error();
+      UserProvider().confirmToken().then((result) async {
+        print('intro => $result');
+        if (result.isEmpty) {
+          saveFCMToken();
+        } else {
+          throw Error();
+        }
+      }).catchError((error) {
+        print('intro error => $error');
+        setState(() {
+          showLoginBtn = true;
         });
-      } else {
-        showLoginBtn = true;
-      }
+      });
     } catch (error) {
-      showLoginBtn = true;
+      print('오류 오류 => $error');
+      setState(() {
+        showLoginBtn = true;
+      });
     }
   }
 
@@ -103,7 +79,15 @@ class _IntroState extends State<Intro> {
     initNoti();
     afterFewSec(2000, () {
       if (!showLoginBtn) {
-        toOtherPageWithoutPath(context, page: const Main());
+        toOtherPageWithoutPath(
+          context,
+          page: widget.groupId == null
+              ? const Main()
+              : InputPassword(
+                  isPublic: widget.isPublic!,
+                  groupId: widget.groupId!,
+                ),
+        );
       }
     });
   }
@@ -140,7 +124,7 @@ class _IntroState extends State<Intro> {
               ),
               showLoginBtn
                   ? GestureDetector(
-                      onTap: login,
+                      onTap: () => login(context),
                       child: kakaoLogin,
                     )
                   : const SizedBox(),

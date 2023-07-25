@@ -22,12 +22,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final WidgetList? actions;
   final String? title;
   final double elevation;
-  const CustomAppBar(
-      {super.key,
-      this.leadingChild,
-      this.actions,
-      this.title,
-      this.elevation = 0});
+  const CustomAppBar({
+    super.key,
+    this.leadingChild,
+    this.actions,
+    this.title,
+    this.elevation = 0,
+  });
 
   @override
   PreferredSizeWidget build(BuildContext context) {
@@ -129,6 +130,8 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final start = DateTime.parse(getStart(context)!);
+    final today = DateTime.now();
     void exitThisGroup() async {
       try {
         GroupProvider().exitThisGroup(groupId).then((_) {
@@ -163,13 +166,11 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       icon: settingsIcon,
                       onPressed: toOtherPage(
                         context,
-                        page: GroupAdmin(
-                          groupId: groupId,
-                        ),
+                        page: GroupAdmin(groupId: groupId),
                       ),
                     )
                   : const SizedBox(),
-              isAdmin || isMember
+              isMember && today.difference(start) < Duration.zero
                   ? IconButtonInRow(
                       icon: shareIcon,
                       onPressed: () => shareGroup(
@@ -178,7 +179,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     )
                   : const SizedBox(),
-              isMember && !isAdmin
+              isMember && !isAdmin && today.difference(start) < Duration.zero
                   ? IconButtonInRow(
                       icon: exitIcon,
                       onPressed: showAlert(
@@ -207,7 +208,8 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final start = context.read<GlobalGroupProvider>().start!;
+    final start = DateTime.parse(getStart(context)!);
+    final today = DateTime.now();
     void deleteGroup() async {
       try {
         GroupProvider().deleteOwnGroup(groupId).then((_) {
@@ -230,14 +232,15 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     void onDeleteAction() {
-      if (DateTime.parse(start).difference(DateTime.now()).inDays <= 0) {
-        showAlert(
-          context,
-          title: '그룹 삭제',
-          content: '시작일이 지난 그룹은 삭제할 수 없습니다',
-          hasCancel: false,
-        )();
-      } else if (context.read<GlobalGroupProvider>().count! >= 2) {
+      // if (DateTime.parse(start).difference(DateTime.now()).inDays <= 0) {
+      //   showAlert(
+      //     context,
+      //     title: '그룹 삭제',
+      //     content: '시작일이 지난 그룹은 삭제할 수 없습니다',
+      //     hasCancel: false,
+      //   )();
+      // } else
+      if (context.read<GlobalGroupProvider>().count! >= 2) {
         showAlert(
           context,
           title: '그룹 삭제',
@@ -255,26 +258,28 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     void onEditAction() {
-      if (DateTime.parse(start).difference(DateTime.now()).inDays <= 0) {
-        showAlert(
-          context,
-          title: '그룹 수정',
-          content: '시작일이 지난 그룹은 수정할 수 없습니다',
-          hasCancel: false,
-        )();
-      } else {
-        toOtherPage(
-          context,
-          page: GroupForm(groupId: groupId),
-        )();
-      }
+      // if (DateTime.parse(start).difference(DateTime.now()).inDays <= 0) {
+      //   showAlert(
+      //     context,
+      //     title: '그룹 수정',
+      //     content: '시작일이 지난 그룹은 수정할 수 없습니다',
+      //     hasCancel: false,
+      //   )();
+      // } else {
+      // }
+      toOtherPage(
+        context,
+        page: GroupForm(groupId: groupId),
+      )();
     }
 
     return AppBarWithBack(
-      actions: [
-        IconButtonInRow(icon: editIcon, onPressed: onEditAction),
-        IconButtonInRow(icon: deleteIcon, onPressed: onDeleteAction),
-      ],
+      actions: today.difference(start) < Duration.zero
+          ? [
+              IconButtonInRow(icon: editIcon, onPressed: onEditAction),
+              IconButtonInRow(icon: deleteIcon, onPressed: onDeleteAction),
+            ]
+          : null,
     );
   }
 

@@ -38,11 +38,14 @@ class UserProvider extends ApiProvider {
   //* verify token
   FutureDynamicMap _confirmToken() async {
     try {
-      if (token == null || token == '') return {};
+      if (token == null || token == '') return {'token': null};
       print('토큰 유효성 검사 => $token');
-      final data = await createApi(verifyTokenUrl, data: {'token': token});
-      return {'token': token};
+
+      await dioForVerify().post(verifyTokenUrl, data: {'token': token});
+
+      return {};
     } catch (error) {
+      print('오류 발생');
       throw Error();
     }
   }

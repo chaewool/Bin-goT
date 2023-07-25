@@ -11,6 +11,7 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -95,8 +96,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   void logout() {
-    context.read<AuthProvider>().deleteVar();
-    context.read<NotiProvider>().deleteVar();
+    deleteVar(context);
     toOtherPageWithoutPath(context);
   }
 
@@ -109,6 +109,8 @@ class _MyPageState extends State<MyPage> {
         newName['value'] = data.username;
         badgeId = data.badgeId;
       });
+    }).catchError((error) {
+      showErrorModal(context);
     });
     optionList.add(context.read<NotiProvider>().rankNoti);
     optionList.add(context.read<NotiProvider>().dueNoti);
@@ -348,8 +350,10 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
             ),
             child: badgeId != 0
                 ? Center(
-                    child: Image.network(
-                      '${dotenv.env['fileUrl']}/badges/$badgeId',
+                    child: CachedNetworkImage(
+                      imageUrl: '${dotenv.env['fileUrl']}/badges/$badgeId',
+                      placeholder: (context, url) =>
+                          const SizedBox(width: 50, height: 50),
                     ),
                   )
                 : const SizedBox(),

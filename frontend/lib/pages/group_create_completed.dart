@@ -74,7 +74,10 @@ class GroupCreateCompleted extends StatelessWidget {
             content: '생성된 그룹으로 가기',
             onPressed: toOtherPage(
               context,
-              page: InputPassword(isPublic: true, groupId: groupId),
+              page: InputPassword(
+                isPublic: true,
+                groupId: groupId,
+              ),
             ),
           )
         ],

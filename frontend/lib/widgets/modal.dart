@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
@@ -9,8 +13,13 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 //* 빙고
 class BingoModal extends StatefulWidget {
@@ -81,11 +90,19 @@ class _BingoModalState extends State<BingoModal> {
     }
 
     return CustomModal(
-      buttonText: '초기화',
-      cancelText: widget.isDetail ? '확인' : '적용',
-      onPressed: widget.isDetail ? null : initialize,
+      buttonText: widget.isDetail ? '인증하기' : '초기화',
+      cancelText: widget.isDetail ? '닫기' : '적용',
+      onPressed: widget.isDetail
+          ? showModal(context,
+              page: RequestBingoModal(
+                itemId: newIdx,
+                // check: item['check'],
+                checkGoal: item['check_goal'],
+                afterClose: () => toBack(context),
+              ))
+          : initialize,
       onCancelPressed: widget.isDetail ? null : applyItem,
-      hasConfirm: !widget.isDetail,
+      hasConfirm: true,
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -157,6 +174,139 @@ class _BingoModalState extends State<BingoModal> {
             ),
           ],
         )
+      ],
+    );
+  }
+}
+
+class RequestBingoModal extends StatefulWidget {
+  final int itemId, checkGoal;
+  final ReturnVoid afterClose;
+  const RequestBingoModal({
+    super.key,
+    required this.itemId,
+    // required this.check,
+    required this.checkGoal,
+    required this.afterClose,
+  });
+
+  @override
+  State<RequestBingoModal> createState() => _RequestBingoModalState();
+}
+
+class _RequestBingoModalState extends State<RequestBingoModal> {
+  XFile? selectedImage;
+  late DynamicMap data;
+
+  @override
+  void initState() {
+    super.initState();
+    data = {
+      'item_id': widget.itemId,
+      'content': '',
+    };
+  }
+
+  void imagePicker() async {
+    Permission.storage.request().then((value) {
+      if (value == PermissionStatus.denied ||
+          value == PermissionStatus.permanentlyDenied) {
+        showAlert(
+          context,
+          title: '미디어 접근 권한 거부',
+          content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 허용해주세요',
+          hasCancel: false,
+        )();
+      } else {
+        final ImagePicker picker = ImagePicker();
+        picker
+            .pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 50,
+        )
+            .then((localImage) {
+          setState(() {
+            selectedImage = localImage;
+          });
+        });
+      }
+    });
+  }
+
+  void sendCompleteMessage() {
+    BingoProvider()
+        .makeCompleteMessage(
+      getGroupId(context)!,
+      FormData.fromMap({
+        'data': jsonEncode(data),
+        'img': selectedImage != null
+            ? MultipartFile.fromFileSync(
+                selectedImage!.path,
+                contentType: MediaType('image', 'png'),
+              )
+            : null,
+      }),
+    )
+        .then((value) {
+      if (value['statusCode'] == 401) {
+        showLoginModal(context);
+      } else {
+        toBack(context);
+        widget.afterClose();
+      }
+    });
+  }
+
+  void deleteImage() {
+    setState(() {
+      selectedImage = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomModal(
+      buttonText: '인증',
+      onPressed: sendCompleteMessage,
+      hasConfirm: true,
+      children: [
+        Center(child: CustomText(content: '총 달성 횟수 : ${widget.checkGoal}')),
+        CustomInput(
+          explain: '내용을 입력해주세요',
+          needMore: true,
+          width: 150,
+          height: 200,
+          fontSize: FontSize.textSize,
+          initialValue: '',
+          setValue: (value) => data['content'] = value,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: selectedImage == null
+              ? CustomBoxContainer(
+                  onTap: imagePicker,
+                  borderColor: greyColor,
+                  hasRoundEdge: false,
+                  width: 270,
+                  height: 150,
+                  child: CustomIconButton(
+                    icon: addIcon,
+                    onPressed: imagePicker,
+                    color: greyColor,
+                  ),
+                )
+              : CustomBoxContainer(
+                  onTap: imagePicker,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: FileImage(File(selectedImage!.path)),
+                  ),
+                  child: CustomIconButton(
+                    onPressed: deleteImage,
+                    icon: closeIcon,
+                  ),
+                ),
+        ),
       ],
     );
   }
@@ -348,58 +498,53 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
                     separatorBuilder: (context, index) =>
                         const SizedBox(height: 20),
                     itemBuilder: (context, index) {
-                      return Flexible(
-                        child: RowWithPadding(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          vertical: 8,
-                          horizontal: 8,
-                          children: [
-                            for (int di = 0; di < 2; di += 1)
-                              Column(
-                                children: [
-                                  CircleContainer(
-                                    onTap: () =>
-                                        selectBadge(data[2 * index + di].id),
-                                    boxShadow:
-                                        data[2 * index + di].id == badgeId
-                                            ? [
-                                                const BoxShadow(
-                                                  blurRadius: 3,
-                                                  spreadRadius: 3,
-                                                  color: blueColor,
-                                                )
-                                              ]
-                                            : null,
-                                    child: Image.network(
-                                      '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
-                                      opacity: AlwaysStoppedAnimation(
+                      return RowWithPadding(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        vertical: 8,
+                        horizontal: 8,
+                        children: [
+                          for (int di = 0; di < 2; di += 1)
+                            Column(
+                              children: [
+                                CircleContainer(
+                                  onTap: () =>
+                                      selectBadge(data[2 * index + di].id),
+                                  boxShadow: data[2 * index + di].id == badgeId
+                                      ? [
+                                          const BoxShadow(
+                                            blurRadius: 3,
+                                            spreadRadius: 3,
+                                            color: blueColor,
+                                          )
+                                        ]
+                                      : null,
+                                  child: Opacity(
+                                    opacity:
                                         data[2 * index + di].hasBadge ? 1 : 0.2,
-                                      ),
-                                      // opacity: data[index].hasBadge ? 1 : 0.5,
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: CustomText(
-                                      content: data[2 * index + di].name,
-                                      fontSize: FontSize.smallSize,
-                                    ),
-                                  )
-                                ],
-                              )
-                          ],
-                        ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: CustomText(
+                                    content: data[2 * index + di].name,
+                                    fontSize: FontSize.smallSize,
+                                  ),
+                                )
+                              ],
+                            )
+                        ],
                       );
                     },
                   ),
                 ),
               );
             }
-            return const Flexible(
-              fit: FlexFit.loose,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           }),
       // for (int i = 0; i < 4; i += 1)
