@@ -1,5 +1,4 @@
 import 'package:bin_got/models/group_model.dart';
-import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
@@ -12,8 +11,8 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/image.dart';
-import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/row_col.dart';
+import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/material.dart';
@@ -284,26 +283,27 @@ class MyTabBar extends StatefulWidget {
 }
 
 class _MyTabBarState extends State<MyTabBar> {
-  late Future<MainGroupListModel> groupTabData;
-  Future<MyBingoList>? bingoTabData;
+  final groupController = ScrollController();
+  final bingoController = ScrollController();
+  MyGroupList groupTabData = [];
+  bool hasNotGroup = false;
+  MyBingoList bingoTabData = [];
   List<List<StringList>> buttonOptions = [
     [
       ['종료일 ▼', '종료일 ▲'],
       ['전체', '진행 중', '완료'],
-      ['캘린더로 보기', '리스트로 보기']
     ],
     [
       ['종료일 ▼', '종료일 ▲'],
       ['전체', '진행 중', '완료'],
-      ['', '']
     ]
   ];
   late List<StringList> presentOptions;
   late int presentIdx;
 
   List<IntList> idxList = [
-    [1, 0, 0],
-    [1, 0, 0]
+    [1, 0],
+    [1, 0]
   ];
   void changeIdx(int idx) {
     if (idxList[presentIdx][idx] < presentOptions[idx].length - 1) {
@@ -319,8 +319,12 @@ class _MyTabBarState extends State<MyTabBar> {
     if (presentIdx == 0) {
       //* 그룹이 있을 경우에만 적용
       // if (!groupTabData.hasNotGroup && groupTabData.)
+      initLoadingData(context, 1);
+      groupTabData.clear();
       setGroupTabData();
     } else {
+      initLoadingData(context, 2);
+      bingoTabData.clear();
       setBingoTabData();
     }
   }
@@ -331,25 +335,53 @@ class _MyTabBarState extends State<MyTabBar> {
         presentIdx = index;
         presentOptions = buttonOptions[presentIdx];
       });
-      if (index == 1 && bingoTabData == null) {
-        setBingoTabData();
-      }
+      // if (index == 1 && bingoTabData == null) {
+      //   setBingoTabData();
+      // }
     }
   }
 
-  void setGroupTabData() {
-    groupTabData = UserInfoProvider().getMainGroupData({
+  FutureBool setGroupTabData([bool more = true]) {
+    final answer = UserInfoProvider().getMainGroupData({
       'order': idxList[0][0],
       'filter': idxList[0][1],
-      'page': 1,
+      'page': getPage(context, 1),
+    }).then((groupData) {
+      print('--------------------------');
+      print(idxList[0]);
+      print('group tab bar : ${groupData.groups.length}');
+      // setState(() {
+      // });
+      groupTabData.addAll(groupData.groups);
+      hasNotGroup = groupData.hasNotGroup;
+      setLoading(context, false);
+      if (more) {
+        setWorking(context, false);
+        setAdditional(context, false);
+      }
+      increasePage(context, 1);
+
+      return true;
+    }).catchError((error) {
+      showErrorModal(context);
+      return false;
     });
+    return Future.value(answer);
   }
 
-  void setBingoTabData() {
-    bingoTabData = UserInfoProvider().getMainBingoData({
+  void setBingoTabData([bool more = true]) {
+    UserInfoProvider().getMainBingoData({
       'order': idxList[1][0],
       'filter': idxList[1][1],
-      'page': 1,
+      'page': getPage(context, 2),
+    }).then((bingoData) {
+      bingoTabData = bingoData;
+      setLoading(context, false);
+      if (more) {
+        setWorking(context, false);
+        setAdditional(context, false);
+      }
+      increasePage(context, 2);
     });
   }
 
@@ -358,7 +390,61 @@ class _MyTabBarState extends State<MyTabBar> {
     super.initState();
     presentOptions = buttonOptions[0];
     presentIdx = 0;
-    setGroupTabData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initLoadingData(context, 1);
+      if (readLoading(context)) {
+        setGroupTabData(false).then((_) {
+          initLoadingData(context, 2);
+          if (readLoading(context)) {
+            setBingoTabData(false);
+          }
+        });
+      }
+
+      groupController.addListener(
+        () {
+          if (groupController.position.pixels >=
+              groupController.position.maxScrollExtent * 0.9) {
+            print('${getPage(context, 1)}, ${getTotal(context, 1)}');
+            if (getPage(context, 1) < getTotal(context, 1)!) {
+              if (!getWorking(context)) {
+                setWorking(context, true);
+                Future.delayed(const Duration(seconds: 3), () {
+                  if (!getAdditional(context)) {
+                    setAdditional(context, true);
+                    if (getAdditional(context)) {
+                      setGroupTabData();
+                    }
+                  }
+                });
+              }
+            }
+          }
+        },
+      );
+    });
+
+    bingoController.addListener(
+      () {
+        if (bingoController.position.pixels >=
+            bingoController.position.maxScrollExtent * 0.9) {
+          print('${getPage(context, 2)}, ${getTotal(context, 2)}');
+          if (getPage(context, 2) < getTotal(context, 2)!) {
+            if (!getWorking(context)) {
+              setWorking(context, true);
+              Future.delayed(const Duration(seconds: 2), () {
+                if (!getAdditional(context)) {
+                  setAdditional(context, true);
+                  if (getAdditional(context)) {
+                    setBingoTabData();
+                  }
+                }
+              });
+            }
+          }
+        }
+      },
+    );
   }
 
   @override
@@ -368,9 +454,10 @@ class _MyTabBarState extends State<MyTabBar> {
       onChange: changeTab,
       upperView: RowWithPadding(
         vertical: 10,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        horizontal: 25,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          for (int i = 0; i < 3; i += 1)
+          for (int i = 0; i < 2; i += 1)
             Center(
               child: CustomTextButton(
                 content: presentOptions[i][idxList[presentIdx][i]],
@@ -382,150 +469,59 @@ class _MyTabBarState extends State<MyTabBar> {
       ),
       listItems: [
         [
-          // Expanded(child: Column(children: [
-
-          // ],))
-          FutureBuilder(
-            future: groupTabData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final hasNotGroup = snapshot.data!.hasNotGroup;
-                return Column(
-                  children: [
-                    hasNotGroup
-                        ? Column(
-                            children: const [
-                              CustomText(
-                                center: true,
-                                content:
-                                    '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                                height: 1.7,
-                              ),
-                              SizedBox(
-                                height: 70,
-                              ),
-                              CustomText(
-                                content: '추천그룹',
-                                fontSize: FontSize.titleSize,
-                              ),
-                            ],
-                          )
-                        : const SizedBox(),
-                    groupList(snapshot.data!.groups, hasNotGroup)
-                  ],
-                );
-              }
-              return const CustomText(content: '그룹 정보를 불러오는 중입니다');
-            },
-          )
+          Expanded(
+              child: InfiniteScroll(
+            data: groupTabData,
+            isGroupMode: true,
+            mode: 1,
+            emptyWidget: Column(
+              children: const [
+                CustomText(
+                  center: true,
+                  content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                  height: 1.7,
+                ),
+              ],
+            ),
+            hasNotGroupWidget: hasNotGroup
+                ? Column(
+                    children: const [
+                      CustomText(
+                        center: true,
+                        content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                        height: 1.7,
+                      ),
+                      SizedBox(
+                        height: 70,
+                      ),
+                      CustomText(
+                        content: '추천그룹',
+                        fontSize: FontSize.titleSize,
+                      ),
+                    ],
+                  )
+                : null,
+          ))
         ],
         [
-          FutureBuilder(
-            future: bingoTabData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final bingos = snapshot.data!;
-                if (bingos.isNotEmpty) {
-                  return bingoList(bingos);
-                }
-                return const CustomText(
+          Expanded(
+            child: InfiniteScroll(
+              data: bingoTabData,
+              mode: 2,
+              emptyWidget: const Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: CustomText(
                   center: true,
                   height: 1.7,
                   content: '아직 생성한 빙고가 없어요.\n그룹 내에서\n빙고를 생성해보세요.',
-                );
-              }
-              return const CustomText(content: '빙고 정보를 불러오는 중입니다');
-            },
+                ),
+              ),
+            ),
           )
         ]
       ],
     );
   }
-
-  ListView bingoList(MyBingoList bingos) {
-    final length = bingos.length;
-    final quot = length ~/ 2;
-    final remain = length % 2;
-    return ListView.builder(
-        shrinkWrap: true,
-        itemCount: quot + remain,
-        itemBuilder: (context, index) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Flexible(
-                child: BingoGallery(bingo: bingos[index * 2]),
-              ),
-              Flexible(
-                child: index != quot || remain == 0
-                    ? BingoGallery(bingo: bingos[index * 2 + 1])
-                    : const SizedBox(),
-              )
-            ],
-          );
-        });
-  }
-
-  Widget groupList(MyGroupList groups, bool isSearchMode) {
-    if (idxList[0][2] == 0) {
-      return ListView.builder(
-          shrinkWrap: true,
-          itemCount: groups.length,
-          itemBuilder: (context, index) {
-            var group = groups[index];
-            return GroupListItem(
-              isSearchMode: isSearchMode,
-              groupInfo: group,
-              public: true,
-            );
-          });
-    }
-    return const SizedBox();
-  }
-
-  // Column emptyGroup() {
-  //   return Column(
-  //     children: [
-  //       const Center(
-  //         child: CustomText(
-  //           center: true,
-  //           fontSize: FontSize.titleSize,
-  //           content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-  //         ),
-  //       ),
-  //       Center(
-  //         child: FutureBuilder(
-  //           future: GroupProvider().recommendGroupList(),
-  //           builder: (context, snapshot) {
-  //             if (snapshot.hasData) {
-  //               if (snapshot.data!.isNotEmpty) {
-  //                 return ColWithPadding(
-  //                   children: [
-  //                     const CustomText(content: '추천 그룹'),
-  //                     ListView.builder(
-  //                         shrinkWrap: true,
-  //                         itemCount: snapshot.data!.length,
-  //                         itemBuilder: (context, index) {
-  //                           var group = snapshot.data![index];
-  //                           return GroupListItem(
-  //                             isSearchMode: false,
-  //                             groupInfo: group,
-  //                           );
-  //                         })
-  //                   ],
-  //                 );
-  //               }
-  //               return const CustomText(
-  //                 content: '추천 그룹을 불러올 수 없습니다.\n 직접 그룹을 만들어보세요',
-  //               );
-  //             }
-  //             return const CircularProgressIndicator();
-  //           },
-  //         ),
-  //       )
-  //     ],
-  //   );
-  // }
 }
 
 //* tab bar 기본 틀

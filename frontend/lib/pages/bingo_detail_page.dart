@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:bin_got/pages/bingo_form_page.dart';
@@ -15,6 +14,7 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -58,9 +58,11 @@ class BingoDetail extends StatelessWidget {
         final image = await boundary.toImage();
         final byteData = await image.toByteData(format: ImageByteFormat.png);
         final pngBytes = byteData?.buffer.asUint8List();
-        print(pngBytes);
-        final imgFile = File('image_file.png');
-        imgFile.writeAsBytes(pngBytes!);
+        await ImageGallerySaver.saveImage(
+          pngBytes!,
+          name: context.read<GlobalBingoProvider>().title,
+        );
+        print('성공!!!');
         return true;
       }
       return false;
@@ -98,9 +100,11 @@ class BingoDetail extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final DynamicMap data = snapshot.data!;
+              print('bingo data => $data');
               final int achieve = (data['achieve']! * 100).toInt();
               groupId = data['group'];
               setBingoData(context, data);
+
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -127,17 +131,22 @@ class BingoDetail extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        IconButtonInRow(
-                          onPressed: toOtherPage(
-                            context,
-                            page: BingoForm(
-                              bingoId: bingoId,
-                              bingoSize: bingoSize,
-                              needAuth: false,
-                            ),
-                          ),
-                          icon: editIcon,
-                        ),
+                        DateTime.now().difference(
+                                  DateTime.parse(getStart(context)!),
+                                ) <
+                                Duration.zero
+                            ? IconButtonInRow(
+                                onPressed: toOtherPage(
+                                  context,
+                                  page: BingoForm(
+                                    bingoId: bingoId,
+                                    bingoSize: bingoSize,
+                                    needAuth: false,
+                                  ),
+                                ),
+                                icon: editIcon,
+                              )
+                            : const SizedBox(),
                         const SizedBox(width: 20)
                       ],
                     ),

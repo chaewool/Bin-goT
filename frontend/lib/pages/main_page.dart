@@ -49,24 +49,22 @@ class _MainState extends State<Main> {
         appBar: MainBar(onPressed: changeSearchMode),
         body: Stack(
           children: [
-            Expanded(
-              child: CustomBoxContainer(
-                height: getHeight(context) - 50 - paddingTop,
-                // color: backgroundColor,
-                hasRoundEdge: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    isSearchMode
-                        ? const CustomSearchBar(isMain: true)
-                        : const SizedBox(),
-                    const SizedBox(height: 15),
-                    const Expanded(
-                      // height: MediaQuery.of(context).size.height - 200,
-                      child: MyTabBar(),
-                    ),
-                  ],
-                ),
+            CustomBoxContainer(
+              height: getHeight(context) - 50 - paddingTop,
+              // color: backgroundColor,
+              hasRoundEdge: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  isSearchMode
+                      ? const CustomSearchBar(isMain: true)
+                      : const SizedBox(),
+                  const SizedBox(height: 15),
+                  const Expanded(
+                    // height: MediaQuery.of(context).size.height - 200,
+                    child: MyTabBar(),
+                  ),
+                ],
               ),
             ),
             watchPressed(context)
@@ -78,6 +76,7 @@ class _MainState extends State<Main> {
                       child: Center(
                         child: CustomText(
                           content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다',
+                          height: 1.5,
                           center: true,
                           color: whiteColor,
                         ),

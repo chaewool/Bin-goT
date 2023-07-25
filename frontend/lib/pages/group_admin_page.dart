@@ -16,14 +16,10 @@ class GroupAdmin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AdminAppBar(
-        groupId: groupId,
-      ),
+      appBar: AdminAppBar(groupId: groupId),
       body: CustomBoxContainer(
         height: getHeight(context),
-        child: GroupAdminTabBar(
-          groupId: groupId,
-        ),
+        child: GroupAdminTabBar(groupId: groupId),
       ),
       bottomNavigationBar: BottomBar(
         isMember: true,

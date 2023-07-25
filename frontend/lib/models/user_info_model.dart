@@ -5,7 +5,7 @@ class MyGroupModel {
   final bool? isPublic;
   final String? status;
   final String name, start, end;
-  MyGroupModel.fromJson(Map<String, dynamic> json)
+  MyGroupModel.fromJson(DynamicMap json)
       : id = json['id'],
         headCount = json['headcount'],
         count = json['count'],
@@ -18,10 +18,11 @@ class MyGroupModel {
 
 class MyBingoModel {
   // final int id;
-  final int id, size;
+  final int id, size, groupId;
   final String groupName, status, start;
-  MyBingoModel.fromJson(Map<String, dynamic> json)
+  MyBingoModel.fromJson(DynamicMap json)
       : id = json['id'],
+        groupId = json['group_id'],
         size = json['size'],
         groupName = json['groupname'],
         start = json['start'],
