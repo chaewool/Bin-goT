@@ -12,12 +12,12 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class SearchGroup extends StatefulWidget {
-  final int public, order, page, cnt, period;
+  final int public, order, cnt, period;
   final String? query;
   const SearchGroup({
     super.key,
     required this.public,
-    this.page = 1,
+    // this.page = 1,
     this.order = 0,
     required this.cnt,
     required this.period,
@@ -49,7 +49,6 @@ class _SearchGroupState extends State<SearchGroup> {
     keyword: ${widget.query},
       public: ${widget.public},
       cnt: ${widget.cnt},
-      page: ${widget.page},
       order: ${widget.order},
       period: ${widget.period},
 ''');
@@ -66,8 +65,10 @@ class _SearchGroupState extends State<SearchGroup> {
         () {
           if (controller.position.pixels >=
               controller.position.maxScrollExtent * 0.9) {
-            print('${getPage(context, 0)}, ${getTotal(context, 0)}');
-            if (getPage(context, 1) < getTotal(context, 1)!) {
+            // print('${getPage(context, 0)}, ${getTotal(context, 0)}');
+            print('last id => ${getLastId(context, 0)}');
+            if (getLastId(context, 0) != -1) {
+              // if (getPage(context, 1) < getTotal(context, 1)!) {
               if (!getWorking(context)) {
                 setWorking(context, true);
                 Future.delayed(const Duration(seconds: 3), () {
@@ -92,7 +93,8 @@ class _SearchGroupState extends State<SearchGroup> {
       keyword: widget.query,
       public: widget.public,
       cnt: widget.cnt,
-      page: widget.page,
+      lastId: getLastId(context, 0),
+      // page: widget.page,
       order: widget.order,
       period: widget.period,
     )
@@ -106,7 +108,7 @@ class _SearchGroupState extends State<SearchGroup> {
         }
       }
     });
-    increasePage(context, 0);
+    // increasePage(context, 0);
   }
 
   // void getOffset() {
@@ -210,9 +212,9 @@ class _SearchGroupState extends State<SearchGroup> {
                   ],
                 ),
                 Expanded(
-                  child: InfiniteScroll(
+                  child: GroupInfiniteScroll(
+                    controller: controller,
                     data: groups,
-                    isGroupMode: true,
                     mode: 0,
                     emptyWidget: const Padding(
                       padding: EdgeInsets.only(top: 40),

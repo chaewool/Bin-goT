@@ -68,16 +68,18 @@ class UserInfoProvider extends ApiProvider {
 
       final data = response.data;
       print('data : $data');
-      if (data.isNotEmpty) {
-        MyGroupList myGroupList = data['groups']
-            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
-            .toList();
-        bool hasNotGroup = data['is_recommend'];
-        GlobalGroupProvider().setTotalPage(data['last_page']);
-        return MainGroupListModel.fromJson(
-            {'groups': myGroupList, 'is_recommend': hasNotGroup});
-      }
-      return MainGroupListModel.fromJson({'groups': [], 'is_recommend': true});
+      // if (data.isNotEmpty) {
+      MyGroupList myGroupList = data['groups']
+          .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
+          .toList();
+      bool hasNotGroup = data['is_recommend'];
+      // GlobalGroupProvider().setTotalPage(data['last_page']);
+      GlobalGroupProvider().setLastId(data['last_idx']);
+      return MainGroupListModel.fromJson(
+          {'groups': myGroupList, 'is_recommend': hasNotGroup});
+      // }
+      // GlobalGroupProvider().setLastId(data['last_idx']);
+      // return MainGroupListModel.fromJson({'groups': [], 'is_recommend': true});
     } catch (error) {
       print('mainTabGroupError: $error');
       throw Error();
@@ -91,15 +93,16 @@ class UserInfoProvider extends ApiProvider {
           .get(mainBingoTabUrl, queryParameters: queryParameters);
       print(response);
       final data = response.data['boards'];
-      GlobalBingoProvider().setTotalPage(response.data['last_page']);
+      // GlobalBingoProvider().setTotalPage(response.data['last_page']);
+      GlobalBingoProvider().setLastId(response.data['last_idx']);
       print('data : $data');
-      if (data.isNotEmpty) {
-        MyBingoList myBingoList = data
-            .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
-            .toList();
-        return myBingoList;
-      }
-      return [];
+      // if (data.isNotEmpty) {
+      MyBingoList myBingoList = data
+          .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
+          .toList();
+      return myBingoList;
+      // }
+      // return [];
     } catch (error) {
       print('mainTabBingoError: $error');
       // UserProvider.logout();

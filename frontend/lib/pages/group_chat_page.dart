@@ -42,8 +42,10 @@ class _GroupChatState extends State<GroupChat> {
       () {
         if (controller.position.pixels >=
             controller.position.maxScrollExtent * 0.9) {
-          print('${getPage(context, 0)}, ${getTotal(context, 0)}');
-          if (getPage(context, 1) < getTotal(context, 1)!) {
+          print('last id => ${getLastId(context, 0)}');
+          if (getLastId(context, 0) != -1) {
+            // print('${getPage(context, 0)}, ${getTotal(context, 0)}');
+            // if (getPage(context, 1) < getTotal(context, 1)!) {
             if (!getWorking(context)) {
               setWorking(context, true);
               Future.delayed(const Duration(seconds: 3), () {
@@ -63,10 +65,10 @@ class _GroupChatState extends State<GroupChat> {
 
   void readChats([bool more = true]) {
     GroupProvider()
-        .readGroupChatList(groupId, getPage(context, 0))
+        .readGroupChatList(groupId, getLastId(context, 0))
         .then((data) {
       print('chat data => $data');
-      print('total ${getTotal(context, 0)} page ${getPage(context, 0)}');
+      print('last id => ${getLastId(context, 0)}');
 
       chats.addAll(data);
       setLoading(context, false);
@@ -75,7 +77,6 @@ class _GroupChatState extends State<GroupChat> {
         setAdditional(context, false);
       }
     }).catchError((error) {});
-    increasePage(context, 0);
   }
 
   void addChat(String? content, XFile? image) {
@@ -118,6 +119,7 @@ class _GroupChatState extends State<GroupChat> {
           children: [
             Expanded(
               child: InfiniteScroll(
+                controller: controller,
                 cnt: 50,
                 reverse: true,
                 data: chats,

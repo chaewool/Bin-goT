@@ -87,6 +87,12 @@ class _InputPasswordState extends State<InputPassword> {
               data: data,
             ),
           )();
+        }).catchError((_) {
+          showAlert(
+            context,
+            title: '오류 발생',
+            content: '오류가 발생해 그룹 정보를 받아올 수 없습니다',
+          )();
         });
       }
     });
