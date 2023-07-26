@@ -223,7 +223,7 @@ class MainGroupsView(APIView):
         idx = int(request.GET.get('idx'))
         
         is_recommend = False
-        last_idx = idx
+        last_idx = -1
 
         # 가입한 그룹이 없음 => 그룹 추천
         if not user.groups.all():
@@ -261,6 +261,9 @@ class MainGroupsView(APIView):
                         cut = i + 1
                         break
                 groups = groups[cut:cut + 10]
+            
+            if not groups:
+                last_idx = -1
         
         if is_recommend:
             groups = [group for group in groups if group['count'] < group['headcount']][:10]
@@ -293,9 +296,8 @@ class MainBoardsView(APIView):
         else:
             boards.sort(key=lambda x: (x['end'], x['start']))
 
-        if not boards:
-            last_idx = 0
-        else:
+        last_idx = -1
+        if boards:
             last_idx = boards[-1]['id']
             
         if idx == 0:
@@ -307,6 +309,9 @@ class MainBoardsView(APIView):
                     cut = i + 1
                     break
             boards = boards[cut:cut + 10]
+        
+        if not boards:
+            last_idx = -1
         
         return Response(data={'boards': boards, 'last_idx': last_idx}, status=status.HTTP_200_OK)
 

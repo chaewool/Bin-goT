@@ -386,12 +386,12 @@ class GroupChatListView(APIView):
     def get(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        page = int(request.GET.get('page'))
+        idx = int(request.GET.get('idx'))
         
         if not Participate.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        data = RedisChat(group_id).getChatList(page)
+        data = RedisChat(group_id).getChatList(idx)
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -534,7 +534,7 @@ class GroupSearchView(APIView):
         public = request.GET.get('public')
         idx = int(request.GET.get('idx'))
 
-        last_idx = idx
+        last_idx = -1
 
         if order == '0':
             order = '-start'
@@ -570,5 +570,8 @@ class GroupSearchView(APIView):
                     cut = i + 1
                     break
             groups = groups[cut:cut + 10]
+        
+        if not groups:
+            last_idx = -1
         
         return Response(data={'groups': groups, 'last_idx': last_idx}, status=status.HTTP_200_OK)
