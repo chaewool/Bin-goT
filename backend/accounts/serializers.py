@@ -32,7 +32,7 @@ class GroupSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Group
-        fields = ('id', 'groupname', 'is_public', 'start', 'end', 'headcount', 'status')
+        fields = ('id', 'groupname', 'is_public', 'start', 'end', 'headcount', 'status', 'count')
 
 
 class BoardSerializer(serializers.ModelSerializer):

@@ -16,7 +16,7 @@ class InputPassword extends StatefulWidget {
     super.key,
     required this.isPublic,
     required this.groupId,
-    this.needCheck = true,
+    this.needCheck = false,
   });
 
   @override

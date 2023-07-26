@@ -138,14 +138,8 @@ class GroupDetailView(APIView):
                 'achieve': ranker.getScore(ranker_id) / (group.size ** 2), 
                 'board_id': Board.objects.get(group=group, user=r).id
                 })
-
-        count = 0
-
-        for p in Participate.objects.filter(group=group):
-            if p.is_banned == 0:
-                count += 1
         
-        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank, 'count': count}
+        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank}
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -209,6 +203,9 @@ class GroupJoinView(APIView):
                 
                 user.cnt_groups += 1
                 user.save()
+
+                group.count += 1
+                group.save()
                 
                 check_cnt_groups(user)
             else:
@@ -261,6 +258,9 @@ class GroupGrantView(APIView):
                 
                 applicant.cnt_groups += 1
                 applicant.save()
+
+                group.count += 1
+                group.save()
                 
                 check_cnt_groups(applicant)
                 send_to_fcm(applicant, '', '가입 승인!', f'{group.groupname} 그룹에 가입되셨습니다.', '그룹 가입 후 이동할 경로')
@@ -532,16 +532,16 @@ class GroupSearchView(APIView):
         keyword = request.GET.get('keyword')
         order = request.GET.get('order')
         public = request.GET.get('public')
-        page = int(request.GET.get('page'))
+        idx = int(request.GET.get('idx'))
 
-        last_page = page
+        last_idx = idx
 
         if order == '0':
             order = '-start'
         else:
             order = 'start'
 
-        groups = Group.objects.filter(start__gte=date.today())
+        groups = Group.objects.filter(start__gt=date.today())
 
         if public == '1':
             groups = groups.filter(is_public=True)
@@ -557,22 +557,18 @@ class GroupSearchView(APIView):
         groups = groups.order_by(order)
         groups = GroupSerializer(groups, many=True).data
 
-        for group in groups:
-            count = 0
-
-            for p in Participate.objects.filter(group=group['id']):
-                if p.is_banned == 0:
-                    count += 1
-            
-            group['count'] = count
-
         groups = [d for d in groups if d['count'] < d['headcount'] and not Participate.objects.filter(group=d['id'], user=user).exists()]
            
-        last_page = len(groups) // 10
-        
-        if len(groups) % 10:
-            last_page += 1
+        last_idx = groups[-1]['id']
 
-        groups = groups[10 * (page - 1):10 * page]
+        if idx == 0:
+            groups = groups[:10]
+        else:
+            cut = 0
+            for i in range(len(groups)):
+                if groups[i]['id'] == idx:
+                    cut = i + 1
+                    break
+            groups = groups[cut:cut + 10]
         
-        return Response(data={'groups': groups, 'last_page': last_page}, status=status.HTTP_200_OK)
+        return Response(data={'groups': groups, 'last_idx': last_idx}, status=status.HTTP_200_OK)

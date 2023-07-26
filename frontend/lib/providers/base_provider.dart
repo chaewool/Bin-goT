@@ -11,13 +11,8 @@ class DioClass extends AuthProvider {
 
   //* verify token
   Dio dioForVerify() {
+    print('verify Token => $token');
     final dioWithAccess = Dio(
-      BaseOptions(
-        baseUrl: _baseUrl!,
-        headers: {'Authorization': 'JWT $token'},
-      ),
-    );
-    final tempDio = Dio(
       BaseOptions(
         baseUrl: _baseUrl!,
         headers: {'Authorization': 'JWT $token'},
@@ -30,15 +25,16 @@ class DioClass extends AuthProvider {
           print('error message : $e ${e.response?.data}');
           print('token => $token');
           //* access token 만료 (401 오류)
+          print('verify token ---------');
           try {
             if (e.response?.statusCode == 401) {
               print('access => 401 Error => 갱신 시도');
               //* access, refresh 갱신
-              tempDio.post(_refreshUrl, data: {'token': refresh}).then(
+              dio.post(_refreshUrl, data: {'token': refresh}).then(
                   (tokenData) async {
-                print('tokenData => $tokenData');
-                final access = tokenData.data['access'];
-                final refresh = tokenData.data['refresh'];
+                // print('tokenData => $tokenData');
+                final access = tokenData.data['access_token'];
+                final refresh = tokenData.data['refresh_token'];
                 print('accessToken => $access');
                 setStoreToken(access);
                 setStoreRefresh(refresh);
@@ -70,12 +66,6 @@ class DioClass extends AuthProvider {
         headers: {'Authorization': 'JWT $token'},
       ),
     );
-    final tempDio = Dio(
-      BaseOptions(
-        baseUrl: _baseUrl!,
-        headers: {'Authorization': 'JWT $token'},
-      ),
-    );
     dioWithAccess.interceptors.add(
       InterceptorsWrapper(
         onError: (e, handler) async {
@@ -86,11 +76,11 @@ class DioClass extends AuthProvider {
             if (e.response?.statusCode == 401) {
               print('access => 401 Error => 갱신 시도');
               //* refresh token
-              tempDio.post(_refreshUrl, data: {'token': refresh}).then(
+              dio.post(_refreshUrl, data: {'token': refresh}).then(
                   (tokenData) async {
-                // print('tokenData: $tokenData');
-                final access = tokenData.data['access'];
-                final refresh = tokenData.data['refresh'];
+                print('tokenData: $tokenData');
+                final access = tokenData.data['access_token'];
+                final refresh = tokenData.data['refresh_token'];
                 print('accessToken => $access');
                 setStoreToken(access);
                 setStoreRefresh(refresh);
