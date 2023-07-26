@@ -161,17 +161,17 @@ class NotiProvider extends ChangeNotifier {
 
 //* scroll
 class GlobalScrollProvider extends ChangeNotifier {
-  static int? _lastPage;
+  static int _lastId = 0;
   static bool _loading = true;
-  static int _page = 1;
+  // static int _page = 1;
   static bool _working = false;
   static bool _additional = false;
 
   bool get loading => _loading;
   bool get working => _working;
   bool get additional => _additional;
-  int? get lastPage => _lastPage;
-  int get page => _page;
+  int? get lastId => _lastId;
+  // int get page => _page;
 
   void setWorking(bool newVal) {
     _setWorking(newVal);
@@ -189,19 +189,19 @@ class GlobalScrollProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setTotalPage(int value) => _setTotalPage(value);
+  void setLastId(int value) => _setLastId(value);
 
-  void initPage() => _setPage(1);
-  void increasePage() {
-    _setPage(_page + 1);
-    notifyListeners();
-  }
+  // void initPage() => _setPage(1);
+  // void increasePage() {
+  //   _setPage(_page + 1);
+  //   notifyListeners();
+  // }
 
   //* private
   void _setWorking(bool newVal) => _working = newVal;
   void _setAdditional(bool newVal) => _additional = newVal;
-  void _setPage(int newVal) => _page = newVal;
-  void _setTotalPage(int? newVal) => _lastPage = newVal;
+  // void _setPage(int newVal) => _page = newVal;
+  void _setLastId(int newVal) => _lastId = newVal;
   void _setLoading(bool value) => _loading = value;
 }
 
@@ -209,8 +209,8 @@ class GlobalScrollProvider extends ChangeNotifier {
 class GlobalGroupProvider extends ChangeNotifier {
   static GroupDetailModel? _data;
   static int? _groupId;
-  static int? _lastPage;
-  static int _page = 1;
+  static int _lastId = 0;
+  // static int _page = 1;
   static String? _start;
 
   int? get count => _data?.count;
@@ -223,13 +223,13 @@ class GlobalGroupProvider extends ChangeNotifier {
   bool? get hasImage => _data?.hasImage;
   int? get bingoSize => _data?.bingoSize;
   bool? get needAuth => _data?.needAuth;
-  int? get lastPage => _lastPage;
-  int get page => _page;
+  int? get lastId => _lastId;
+  // int get page => _page;
 
   void _setData(GroupDetailModel detailModel) => _data = detailModel;
 
-  void _setTotalPage(int value) => _lastPage = value;
-  void _setPage(int value) => _page = value;
+  void _setLastId(int value) => _lastId = value;
+  // void _setPage(int value) => _page = value;
 
   // void _setCount(int newVal) => _count = newVal;
   void _setStart(String newVal) => _start = newVal;
@@ -242,13 +242,13 @@ class GlobalGroupProvider extends ChangeNotifier {
   void _setGroupId(int newVal) => _groupId = newVal;
   // void _setNeedAuth(bool newVal) => _needAuth = newVal;
 
-  void setTotalPage(int value) => _setTotalPage(value);
+  void setLastId(int value) => _setLastId(value);
 
-  void initPage() => _setPage(1);
-  void increasePage() {
-    _setPage(_page + 1);
-    notifyListeners();
-  }
+  // void initPage() => _setPage(1);
+  // void increasePage() {
+  //   _setPage(_page + 1);
+  //   notifyListeners();
+  // }
 
   void setData(GroupDetailModel detailModel) {
     _setData(detailModel);
@@ -328,8 +328,8 @@ class GlobalBingoProvider extends ChangeNotifier {
   // static DynamicMap _tempData = {..._data};
   static int? _bingoId;
   static bool _isCheckTheme = false;
-  static int? _lastPage;
-  static int _page = 1;
+  static int _lastId = 0;
+  // static int _page = 1;
 
   //* getter
   DynamicMap get data => _data;
@@ -346,8 +346,8 @@ class GlobalBingoProvider extends ChangeNotifier {
   List get items => _data['items'];
   int? get bingoId => _bingoId;
   bool get isCheckTheme => _isCheckTheme;
-  int? get lastPage => _lastPage;
-  int get page => _page;
+  int? get lastId => _lastId;
+  // int get page => _page;
 
   //* private
   DynamicMap _item(int index) => items[index];
@@ -366,16 +366,16 @@ class GlobalBingoProvider extends ChangeNotifier {
     }
   }
 
-  void _setTotalPage(int value) => _lastPage = value;
-  void _setPage(int value) => _page = value;
+  void _setLastId(int value) => _lastId = value;
+  // void _setPage(int value) => _page = value;
 
-  void setTotalPage(int value) => _setTotalPage(value);
+  void setLastId(int value) => _setLastId(value);
 
-  void initPage() => _setPage(1);
-  void increasePage() {
-    _setPage(_page + 1);
-    notifyListeners();
-  }
+  // void initPage() => _setPage(1);
+  // void increasePage() {
+  //   _setPage(_page + 1);
+  //   notifyListeners();
+  // }
 
   void _changeData(int tabIndex, int i) {
     switch (tabIndex) {

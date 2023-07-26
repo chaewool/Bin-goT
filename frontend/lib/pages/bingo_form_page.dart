@@ -169,10 +169,17 @@ class _BingoFormState extends State<BingoForm> {
         context,
         page: GroupCreateCompleted(
           groupId: groupId,
-          password: '',
+          password: widget.beforeData?['password'] ?? '',
         ),
       )();
-    }).catchError((error) {});
+    }).catchError((error) {
+      showAlert(
+        context,
+        title: '그룹 생성 오류',
+        content: '오류가 발생해 그룹이 생성되지 않았습니다.',
+        hasCancel: false,
+      )();
+    });
   }
 
   void joinGroup(DynamicMap bingoData) async {

@@ -221,15 +221,11 @@ void deleteVar(BuildContext context) {
 void saveFCMToken() async {
   // 기기의 등록 토큰 액세스
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  print('messaging => $messaging');
   final fcmToken = await messaging.getToken();
-  print('fcmToken => $fcmToken');
   FCMProvider().saveFCMToken(fcmToken!);
-  print('fcm 토큰 $fcmToken');
 
   // 토큰이 업데이트될 때마다 서버에 저장
   messaging.onTokenRefresh.listen((fcmToken) {
-    print('update');
     FCMProvider().saveFCMToken(fcmToken);
   }).onError((err) {
     print('error => $err');
@@ -267,16 +263,9 @@ bool watchPressed(BuildContext context) =>
     context.watch<NotiProvider>().beforeExit;
 
 //* scroll
-int? getTotal(BuildContext context, int mode) {
-  switch (mode) {
-    case 0:
-      return context.read<GlobalScrollProvider>().lastPage;
-    case 1:
-      return context.read<GlobalGroupProvider>().lastPage;
-    default:
-      return context.read<GlobalBingoProvider>().lastPage;
-  }
-}
+// int? getTotal(BuildContext context, int mode) => mode == 0
+//     ? context.read<GlobalScrollProvider>().lastPage
+//     : context.read<GlobalGroupProvider>().lastPage;
 
 // void setTotal(BuildContext context,
 //     {required int mode, required int newTotal}) {
@@ -299,38 +288,49 @@ bool getLoading(BuildContext context) =>
 void setLoading(BuildContext context, bool value) =>
     context.read<GlobalScrollProvider>().setLoading(value);
 
-int getPage(BuildContext context, int mode) {
+int getLastId(BuildContext context, int mode) {
   switch (mode) {
     case 0:
-      return context.read<GlobalScrollProvider>().page;
+      return context.read<GlobalScrollProvider>().lastId!;
     case 1:
-      return context.read<GlobalGroupProvider>().page;
+      return context.read<GlobalGroupProvider>().lastId!;
     default:
-      return context.read<GlobalBingoProvider>().page;
+      return context.read<GlobalBingoProvider>().lastId!;
   }
 }
 
-void increasePage(BuildContext context, int mode) {
+void setLastId(BuildContext context, int mode, int lastId) {
   switch (mode) {
     case 0:
-      return context.read<GlobalScrollProvider>().increasePage();
+      return context.read<GlobalScrollProvider>().setLastId(lastId);
     case 1:
-      return context.read<GlobalGroupProvider>().increasePage();
+      return context.read<GlobalGroupProvider>().setLastId(lastId);
     default:
-      return context.read<GlobalBingoProvider>().increasePage();
+      return context.read<GlobalBingoProvider>().setLastId(lastId);
   }
 }
 
-void initPage(BuildContext context, int mode) {
-  switch (mode) {
-    case 0:
-      return context.read<GlobalScrollProvider>().initPage();
-    case 1:
-      return context.read<GlobalGroupProvider>().initPage();
-    default:
-      return context.read<GlobalBingoProvider>().initPage();
-  }
-}
+// void increasePage(BuildContext context, int mode) {
+//   switch (mode) {
+//     case 0:
+//       return context.read<GlobalScrollProvider>().increasePage();
+//     case 1:
+//       return context.read<GlobalGroupProvider>().increasePage();
+//     default:
+//       return context.read<GlobalBingoProvider>().increasePage();
+//   }
+// }
+
+// void initPage(BuildContext context, int mode) {
+//   switch (mode) {
+//     case 0:
+//       return context.read<GlobalScrollProvider>().initPage();
+//     case 1:
+//       return context.read<GlobalGroupProvider>().initPage();
+//     default:
+//       return context.read<GlobalBingoProvider>().initPage();
+//   }
+// }
 
 bool getWorking(BuildContext context) =>
     context.read<GlobalScrollProvider>().working;
@@ -346,7 +346,8 @@ void setAdditional(BuildContext context, bool value) =>
 
 void initLoadingData(BuildContext context, int mode) {
   setLoading(context, true);
-  initPage(context, mode);
+  setLastId(context, mode, 0);
+  // initPage(context, mode);
   setAdditional(context, false);
   setWorking(context, false);
 }

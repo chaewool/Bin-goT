@@ -14,7 +14,7 @@ class GroupProvider extends ApiProvider {
     int? order,
     required int public,
     required int cnt,
-    required int page,
+    required int lastId,
   }) =>
       _searchGroupList(
         period: period,
@@ -22,7 +22,8 @@ class GroupProvider extends ApiProvider {
         order: order,
         public: public,
         cnt: cnt,
-        page: page,
+        lastId: lastId,
+        // page: page,
       );
 
   FutureDynamic _searchGroupList({
@@ -31,7 +32,7 @@ class GroupProvider extends ApiProvider {
     int? order,
     required int public,
     required int cnt,
-    required int page,
+    required int lastId,
   }) async {
     try {
       print(searchGroupUrl);
@@ -41,7 +42,7 @@ class GroupProvider extends ApiProvider {
         'order': order,
         'public': public,
         'cnt': cnt,
-        'page': page,
+        'last_idx': lastId,
       }}');
       final response = await dioWithToken().get(
         searchGroupUrl,
@@ -50,21 +51,19 @@ class GroupProvider extends ApiProvider {
           'keyword': keyword,
           'order': order,
           'public': public,
-          'page': page,
+          'idx': lastId,
           'cnt': cnt,
         },
       );
-      if (response.statusCode == 200) {
-        print('data => ${response.data}');
-        MyGroupList groupList = response.data['groups']
-            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
-            .toList();
-        print('group list => $groupList');
+      print('data => ${response.data}');
+      MyGroupList groupList = response.data['groups']
+          .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
+          .toList();
+      print('group list => $groupList');
 
-        GlobalScrollProvider().setTotalPage(response.data['last_page']);
-        return groupList;
-      }
-      throw Error();
+      // GlobalScrollProvider().setTotalPage(response.data['last_page']);
+      GlobalScrollProvider().setLastId(response.data['last_idx']);
+      return groupList;
     } catch (error) {
       print(error);
       throw Error();
@@ -146,7 +145,7 @@ class GroupProvider extends ApiProvider {
       deleteApi(exitGroupUrl(groupId));
 
   //* rank
-  FutureDynamic groupRank(int groupId) async {
+  Future<RankList> groupRank(int groupId) async {
     try {
       final response = await dioWithToken().get(groupRankUrl(groupId));
       RankList rankList = response.data.map<GroupRankModel>((json) {
@@ -195,24 +194,22 @@ class GroupProvider extends ApiProvider {
   }
 
   //* chat list
-  FutureDynamic readGroupChatList(int groupId, int page) async {
+  FutureDynamic readGroupChatList(int groupId, int lastId) async {
     try {
       final response = await dioWithToken().get(
         groupChatListUrl(groupId),
-        queryParameters: {
-          'page': page,
-        },
+        queryParameters: {'last_idx': lastId},
       );
       final data = response.data;
       print('chatdata => $data');
-      if (data.isNotEmpty) {
-        GroupChatList chats = data
-            .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
-            .toList();
+      // if (data.isNotEmpty) {
+      GroupChatList chats = data
+          .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
+          .toList();
 
-        return chats;
-      }
-      return [];
+      return chats;
+      // }
+      // return [];
     } catch (error) {
       print(error);
       throw Error();
