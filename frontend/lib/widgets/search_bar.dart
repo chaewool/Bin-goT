@@ -67,7 +67,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
         context,
         page: SearchGroup(
           public: result,
-          cnt: 20,
           period: end.toInt(),
           query: keyword['value'],
         ),

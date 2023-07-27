@@ -14,12 +14,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class GroupListItem extends StatelessWidget {
   final bool isSearchMode;
   final MyGroupModel groupInfo;
-  final bool? public;
+  final bool public;
   const GroupListItem({
     super.key,
     required this.isSearchMode,
     required this.groupInfo,
-    this.public,
+    required this.public,
   });
 
   @override
@@ -47,8 +47,9 @@ class GroupListItem extends StatelessWidget {
         context,
         page: InputPassword(
           groupId: groupInfo.id,
-          isPublic: public ?? groupInfo.isPublic!,
+          isPublic: public,
           needCheck: false,
+          isSearchMode: isSearchMode,
         ),
       ),
       child: Row(

@@ -212,18 +212,22 @@ class GlobalGroupProvider extends ChangeNotifier {
   static int _lastId = 0;
   // static int _page = 1;
   static String? _start;
+  static bool? _isPublic;
 
   int? get count => _data?.count;
   int? get headCount => _data?.headCount;
   int? get groupId => _groupId;
+  int? get bingoSize => _data?.bingoSize;
+  int? get lastId => _lastId;
+  bool? get isPublic => _isPublic;
+  bool? get hasImage => _data?.hasImage;
+  bool? get needAuth => _data?.needAuth;
   String? get start => _data?.start ?? _start;
+  String? get end => _data?.end;
   String? get groupName => _data?.groupName;
   String? get description => _data?.description;
   String? get rule => _data?.rule;
-  bool? get hasImage => _data?.hasImage;
-  int? get bingoSize => _data?.bingoSize;
-  bool? get needAuth => _data?.needAuth;
-  int? get lastId => _lastId;
+  String? get password => _data?.password;
   // int get page => _page;
 
   void _setData(GroupDetailModel detailModel) => _data = detailModel;
@@ -242,6 +246,9 @@ class GlobalGroupProvider extends ChangeNotifier {
   void _setGroupId(int newVal) => _groupId = newVal;
   // void _setNeedAuth(bool newVal) => _needAuth = newVal;
 
+  void _setPublic(bool? newVal) => _isPublic = newVal;
+
+//* public
   void setLastId(int value) => _setLastId(value);
 
   // void initPage() => _setPage(1);
@@ -249,6 +256,8 @@ class GlobalGroupProvider extends ChangeNotifier {
   //   _setPage(_page + 1);
   //   notifyListeners();
   // }
+
+  void setPublic(bool? val) => _setPublic(val);
 
   void setData(GroupDetailModel detailModel) {
     _setData(detailModel);

@@ -52,6 +52,7 @@ class _BingoFormState extends State<BingoForm> {
   @override
   void initState() {
     super.initState();
+    print('before data => ${widget.beforeData}');
     size = widget.bingoSize;
     // ?? getBingoSize(context);
     // if (getGroupId(context) != null) {

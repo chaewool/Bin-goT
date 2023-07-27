@@ -13,7 +13,6 @@ class GroupProvider extends ApiProvider {
     String? keyword,
     int? order,
     required int public,
-    required int cnt,
     required int lastId,
   }) =>
       _searchGroupList(
@@ -21,7 +20,6 @@ class GroupProvider extends ApiProvider {
         keyword: keyword,
         order: order,
         public: public,
-        cnt: cnt,
         lastId: lastId,
         // page: page,
       );
@@ -31,7 +29,6 @@ class GroupProvider extends ApiProvider {
     String? keyword,
     int? order,
     required int public,
-    required int cnt,
     required int lastId,
   }) async {
     try {
@@ -41,8 +38,7 @@ class GroupProvider extends ApiProvider {
         'keyword': keyword,
         'order': order,
         'public': public,
-        'cnt': cnt,
-        'last_idx': lastId,
+        'idx': lastId,
       }}');
       final response = await dioWithToken().get(
         searchGroupUrl,
@@ -52,7 +48,6 @@ class GroupProvider extends ApiProvider {
           'order': order,
           'public': public,
           'idx': lastId,
-          'cnt': cnt,
         },
       );
       print('data => ${response.data}');
@@ -78,12 +73,11 @@ class GroupProvider extends ApiProvider {
       final response = await dioWithToken().get(
         groupDetailUrl(groupId),
         queryParameters: {'password': password},
-      ).catchError((error) {
-        // print('catch error => ${error.response!.data}');
-      });
+      );
       print('response: $response');
+      final groupDetail = GroupDetailModel.fromJson(response.data);
       // return response;
-      return GroupDetailModel.fromJson(response.data);
+      return groupDetail;
     } catch (error) {
       throw Error();
     }
@@ -223,10 +217,8 @@ class GroupProvider extends ApiProvider {
       print(groupChatCreateUrl(groupId));
       final response = await dioWithTokenForm()
           .post(groupChatCreateUrl(groupId), data: groupChatData);
-      if (response.statusCode == 200) {
-        return response.data;
-      }
-      throw Error();
+
+      return response.data;
     } catch (error) {
       print(error);
       throw Error();

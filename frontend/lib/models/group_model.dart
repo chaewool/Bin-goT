@@ -46,7 +46,7 @@ class GroupRankModel {
 class GroupDetailModel {
   final int headCount, count, bingoSize, memberState;
   final int? bingoId;
-  final String groupName, nickname, start, end;
+  final String groupName, nickname, start, end, password;
   final String? description, rule;
   final bool hasImage, needAuth;
   // final GroupRankModel rank;
@@ -63,6 +63,7 @@ class GroupDetailModel {
         end = json['end'],
         description = json['description'],
         rule = json['rule'],
+        password = json['password'],
         hasImage = json['has_img'],
         needAuth = json['need_auth'],
         memberState = json['is_participant'];

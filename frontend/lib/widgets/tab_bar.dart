@@ -345,7 +345,7 @@ class _MyTabBarState extends State<MyTabBar> {
     final answer = UserInfoProvider().getMainGroupData({
       'order': idxList[0][0],
       'filter': idxList[0][1],
-      'idx': getLastId(context, 0)
+      'idx': getLastId(context, 1)
       // 'page': getPage(context, 1),
     }).then((groupData) {
       print('--------------------------');

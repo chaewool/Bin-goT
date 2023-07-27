@@ -26,7 +26,12 @@ import 'package:provider/provider.dart';
 //* 그룹 생성/수정 페이지
 class GroupForm extends StatefulWidget {
   final int? groupId;
-  const GroupForm({super.key, this.groupId});
+  final String? password;
+  const GroupForm({
+    super.key,
+    this.groupId,
+    this.password,
+  });
 
   @override
   State<GroupForm> createState() => _GroupFormState();
@@ -36,7 +41,7 @@ class _GroupFormState extends State<GroupForm> {
   //* select box
   final printedValues = [
     ['2 * 2', '3 * 3', '4 * 4', '5 * 5'],
-    ['그룹장의 승인 필요', '자동 가입']
+    ['그룹장의\n승인 필요', '자동 가입']
   ];
   final convertedValues = [
     [2, 3, 4, 5],
@@ -46,7 +51,7 @@ class _GroupFormState extends State<GroupForm> {
 
   XFile? selectedImage;
   bool isChecked = true;
-  BoolList showList = [false, false];
+  // BoolList showList = [false, false];
   bool isImageUpdated = false;
 
   @override
@@ -63,28 +68,34 @@ class _GroupFormState extends State<GroupForm> {
         'description': '',
         'rule': '',
         'need_auth': true,
-        'headcount': 0
+        'headcount': ''
       };
     } else {
       groupData = {};
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        selectedIndex[0] = getBingoSize(context)! - 1;
+        selectedIndex[1] =
+            context.read<GlobalGroupProvider>().needAuth! ? 0 : 1;
+        isChecked = getPublic(context)!;
+      });
     }
   }
 
   late final Map<String, dynamic> groupData;
 
-  void Function(dynamic) setGroupData(BuildContext context, String key) {
+  void Function(dynamic) setGroupData(String key) {
     return (value) => groupData[key] = value;
   }
 
-  void changeShowState(int index) {
-    setState(() {
-      if (!showList[index]) {
-        showList[index] = true;
-      } else {
-        showList[index] = false;
-      }
-    });
-  }
+  // void changeShowState(int index) {
+  //   setState(() {
+  //     if (!showList[index]) {
+  //       showList[index] = true;
+  //     } else {
+  //       showList[index] = false;
+  //     }
+  //   });
+  // }
 
   void createOrUpdate() async {
     if (groupData['headcount'].runtimeType != int) {
@@ -208,7 +219,7 @@ class _GroupFormState extends State<GroupForm> {
     setState(() {
       selectedIndex[i] = j;
     });
-    setGroupData(context, i == 0 ? 'size' : 'need_auth')(convertedValues[i][j]);
+    setGroupData(i == 0 ? 'size' : 'need_auth')(convertedValues[i][j]);
   }
 
   void applyDay(List<DateTime?> dateList) {
@@ -248,18 +259,20 @@ class _GroupFormState extends State<GroupForm> {
               CustomInput(
                 title: '그룹명 *',
                 explain: '그룹명을 입력하세요',
-                setValue: setGroupData(context, 'groupname'),
-                initialValue: widget.groupId != null
-                    ? context.read<GlobalGroupProvider>().groupName
-                    : null,
+                setValue: setGroupData('groupname'),
+                initialValue: groupData.containsKey('groupname')
+                    ? groupData['groupname']
+                    : getGroupName(context),
               ),
               CustomInput(
                 title: '참여인원 *',
                 explain: '참여인원',
                 onlyNum: true,
-                setValue: setGroupData(context, 'headcount'),
-                initialValue:
-                    context.read<GlobalGroupProvider>().headCount?.toString(),
+                setValue: setGroupData('headcount'),
+                initialValue: groupData.containsKey('headcount')
+                    ? groupData['headcount'].toString()
+                    : context.read<GlobalGroupProvider>().headCount?.toString(),
+                needSubmit: false,
               ),
               if (widget.groupId == null)
                 Column(
@@ -267,6 +280,12 @@ class _GroupFormState extends State<GroupForm> {
                     InputDate(
                       title: '기간 *',
                       explain: selectedDate(),
+                      start: groupData.containsKey('start')
+                          ? groupData['start']
+                          : getStart(context) ?? '',
+                      end: groupData.containsKey('end')
+                          ? groupData['end']
+                          : context.read<GlobalGroupProvider>().end ?? '',
                       // onSubmit: setGroupData,
                       applyDay: applyDay,
                     ),
@@ -337,7 +356,7 @@ class _GroupFormState extends State<GroupForm> {
                         setState(() {
                           isChecked = !isChecked;
                         });
-                        setGroupData(context, 'is_public')(isChecked);
+                        setGroupData('is_public')(isChecked);
                       },
                     ),
                     if (!isChecked)
@@ -345,7 +364,10 @@ class _GroupFormState extends State<GroupForm> {
                         title: '그룹 가입 시 비밀번호 *',
                         explain: '비밀번호',
                         maxLength: 20,
-                        setValue: setGroupData(context, 'password'),
+                        setValue: setGroupData('password'),
+                        initialValue: groupData.containsKey('password')
+                            ? groupData['password']
+                            : context.read<GlobalGroupProvider>().password,
                       )
                   ],
                 ),
@@ -423,15 +445,19 @@ class _GroupFormState extends State<GroupForm> {
                 title: '그룹 설명',
                 needMore: true,
                 maxLength: 1000,
-                setValue: setGroupData(context, 'description'),
-                initialValue: context.read<GlobalGroupProvider>().description,
+                setValue: setGroupData('description'),
+                initialValue: groupData.containsKey('description')
+                    ? groupData['description']
+                    : context.read<GlobalGroupProvider>().description,
               ),
               CustomInput(
                 title: '그룹 규칙',
                 needMore: true,
                 maxLength: 1000,
-                setValue: setGroupData(context, 'rule'),
-                initialValue: context.read<GlobalGroupProvider>().rule,
+                setValue: setGroupData('rule'),
+                initialValue: groupData.containsKey('rule')
+                    ? groupData['rule']
+                    : context.read<GlobalGroupProvider>().rule,
               ),
               const CustomText(content: '그룹 배경'),
               groupImage(),

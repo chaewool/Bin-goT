@@ -27,11 +27,14 @@ void main() async {
 
   // firebase 초기화
   await Firebase.initializeApp(
+    // options: DefaultFirebaseOptions.currentPlatform,
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  print(await KakaoSdk.origin);
   initFCM();
   final PendingDynamicLinkData? initialLink =
       await FirebaseDynamicLinks.instance.getInitialLink();
+  print('initial link => $initialLink');
 
   if (initialLink != null) {
     final Uri deepLink = initialLink.link;
@@ -44,8 +47,10 @@ void main() async {
         ))();
   }
 
+  //* 앱이 실행 중인 경우
   FirebaseDynamicLinks.instance.onLink.listen(
     (pendingDynamicLinkData) {
+      print(pendingDynamicLinkData);
       // Set up the `onLink` event listener next as it may be received here
       final Uri deepLink = pendingDynamicLinkData.link;
       print(deepLink);

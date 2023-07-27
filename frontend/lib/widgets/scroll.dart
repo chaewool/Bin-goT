@@ -140,7 +140,7 @@ class GroupInfiniteScroll extends StatelessWidget {
                                 child: GroupListItem(
                                   isSearchMode: mode == 0,
                                   groupInfo: data[i],
-                                  public: mode == 1 ? true : null,
+                                  public: data[i].isPublic,
                                 ),
                               )
                             : Column(
@@ -151,7 +151,7 @@ class GroupInfiniteScroll extends StatelessWidget {
                                     child: GroupListItem(
                                       isSearchMode: mode == 0,
                                       groupInfo: data[i],
-                                      public: mode == 1 ? true : null,
+                                      public: data[i].isPublic,
                                     ),
                                   ),
                                   if (getLastId(context, mode) != -1)

@@ -63,6 +63,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
                     android:host="bingot.page.link"
+                    android:path="/groups"
                     android:scheme="https"/>
             </intent-filter>
             
