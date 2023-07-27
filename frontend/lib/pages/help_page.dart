@@ -31,6 +31,12 @@ class Help extends StatelessWidget {
           content: '성공적으로 탈퇴되었습니다',
           onPressed: () => toOtherPageWithoutPath(context),
         )();
+      }).catchError((_) {
+        showAlert(
+          context,
+          title: '탈퇴 실패',
+          content: '오류가 발생해 탈퇴에 실패했습니다',
+        )();
       });
     }
 

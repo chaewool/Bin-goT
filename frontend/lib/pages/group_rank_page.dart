@@ -1,6 +1,5 @@
 //* 그룹 내 달성률 랭킹
 import 'package:bin_got/providers/group_provider.dart';
-import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
@@ -28,12 +27,6 @@ class _GroupRankState extends State<GroupRank> {
   @override
   void initState() {
     super.initState();
-    final tempList = GroupProvider().groupRank(widget.groupId);
-    if (tempList is Future<RankList>) {
-      rankList = tempList;
-    } else {
-      showErrorModal(context);
-    }
   }
 
   @override
@@ -54,7 +47,7 @@ class _GroupRankState extends State<GroupRank> {
                     CustomText(content: '그룹 랭킹', fontSize: FontSize.titleSize),
               ),
               FutureBuilder(
-                future: rankList,
+                future: GroupProvider().groupRank(widget.groupId),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return groupRankList(snapshot);

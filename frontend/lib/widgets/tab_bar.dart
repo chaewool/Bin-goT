@@ -345,7 +345,8 @@ class _MyTabBarState extends State<MyTabBar> {
     final answer = UserInfoProvider().getMainGroupData({
       'order': idxList[0][0],
       'filter': idxList[0][1],
-      'page': getPage(context, 1),
+      'idx': getLastId(context, 0)
+      // 'page': getPage(context, 1),
     }).then((groupData) {
       print('--------------------------');
       print(idxList[0]);
@@ -359,7 +360,7 @@ class _MyTabBarState extends State<MyTabBar> {
         setWorking(context, false);
         setAdditional(context, false);
       }
-      increasePage(context, 1);
+      // increasePage(context, 1);
 
       return true;
     }).catchError((error) {
@@ -373,7 +374,7 @@ class _MyTabBarState extends State<MyTabBar> {
     UserInfoProvider().getMainBingoData({
       'order': idxList[1][0],
       'filter': idxList[1][1],
-      'page': getPage(context, 2),
+      'idx': getLastId(context, 2),
     }).then((bingoData) {
       bingoTabData = bingoData;
       setLoading(context, false);
@@ -381,7 +382,7 @@ class _MyTabBarState extends State<MyTabBar> {
         setWorking(context, false);
         setAdditional(context, false);
       }
-      increasePage(context, 2);
+      // increasePage(context, 2);
     });
   }
 
@@ -405,8 +406,8 @@ class _MyTabBarState extends State<MyTabBar> {
         () {
           if (groupController.position.pixels >=
               groupController.position.maxScrollExtent * 0.9) {
-            print('${getPage(context, 1)}, ${getTotal(context, 1)}');
-            if (getPage(context, 1) < getTotal(context, 1)!) {
+            print('last id => ${getLastId(context, 1)}');
+            if (getLastId(context, 1) != -1) {
               if (!getWorking(context)) {
                 setWorking(context, true);
                 Future.delayed(const Duration(seconds: 3), () {
@@ -428,8 +429,10 @@ class _MyTabBarState extends State<MyTabBar> {
       () {
         if (bingoController.position.pixels >=
             bingoController.position.maxScrollExtent * 0.9) {
-          print('${getPage(context, 2)}, ${getTotal(context, 2)}');
-          if (getPage(context, 2) < getTotal(context, 2)!) {
+          print('last id => ${getLastId(context, 2)}');
+          if (getLastId(context, 2) != -1) {
+            // print('${getPage(context, 2)}, ${getTotal(context, 2)}');
+            // if (getPage(context, 2) < getTotal(context, 2)!) {
             if (!getWorking(context)) {
               setWorking(context, true);
               Future.delayed(const Duration(seconds: 2), () {
@@ -470,9 +473,9 @@ class _MyTabBarState extends State<MyTabBar> {
       listItems: [
         [
           Expanded(
-              child: InfiniteScroll(
+              child: GroupInfiniteScroll(
+            controller: groupController,
             data: groupTabData,
-            isGroupMode: true,
             mode: 1,
             emptyWidget: Column(
               children: const [
@@ -506,6 +509,7 @@ class _MyTabBarState extends State<MyTabBar> {
         [
           Expanded(
             child: InfiniteScroll(
+              controller: bingoController,
               data: bingoTabData,
               mode: 2,
               emptyWidget: const Padding(
