@@ -16,7 +16,7 @@ class GroupCreateSerializer(serializers.ModelSerializer):
 class GroupDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        exclude = ('id', 'leader', 'password', 'period', 'is_public', 'users', 'count', 'password')
+        exclude = ('id', 'leader', 'period', 'is_public', 'users', 'count')
 
 
 class GroupUpdateSerializer(serializers.ModelSerializer):
