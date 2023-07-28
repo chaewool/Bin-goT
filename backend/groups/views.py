@@ -23,7 +23,8 @@ class GroupCreateView(APIView):
         img = request.FILES.get('img')
         data = json.loads(request.data.get('data'))
 
-        logger.info('넘어오는 데이터: ' + data)
+        logger.info(f'넘어오는 데이터 start: {data.get("start")}')
+        logger.info(f'넘어오는 데이터 end: {data.get("end")}')
         
         period = (datetime.strptime(data.get('end'), '%Y-%m-%d') - datetime.strptime(data.get('start'), '%Y-%m-%d')).days
 
