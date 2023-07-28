@@ -250,7 +250,8 @@ class MainGroupsView(APIView):
             else:
                 groups.sort(key=lambda x: (x['end'], x['start']))
             
-            last_idx = groups[-1]['id']
+            if groups:
+                last_idx = groups[-1]['id']
 
             if idx == 0:
                 groups = groups[:10]
