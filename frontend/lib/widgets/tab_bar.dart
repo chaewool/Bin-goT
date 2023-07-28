@@ -229,7 +229,10 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
                                   ),
                                 ),
                               )
-                            : const CustomText(content: '자동 가입 그룹입니다.'),
+                            : const Padding(
+                                padding: EdgeInsets.only(top: 20),
+                                child: CustomText(content: '자동 가입 그룹입니다.'),
+                              ),
                       ],
                     );
                   }
@@ -345,7 +348,7 @@ class _MyTabBarState extends State<MyTabBar> {
     final answer = UserInfoProvider().getMainGroupData({
       'order': idxList[0][0],
       'filter': idxList[0][1],
-      'idx': getLastId(context, 1)
+      'idx': getLastId(context, 1),
       // 'page': getPage(context, 1),
     }).then((groupData) {
       print('--------------------------');
@@ -481,7 +484,7 @@ class _MyTabBarState extends State<MyTabBar> {
               children: const [
                 CustomText(
                   center: true,
-                  content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                  content: '조건을 만족하는 그룹이 없어요.',
                   height: 1.7,
                 ),
               ],
@@ -517,7 +520,7 @@ class _MyTabBarState extends State<MyTabBar> {
                 child: CustomText(
                   center: true,
                   height: 1.7,
-                  content: '아직 생성한 빙고가 없어요.\n그룹 내에서\n빙고를 생성해보세요.',
+                  content: '조건을 만족하는 빙고가 없어요.',
                 ),
               ),
             ),

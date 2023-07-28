@@ -74,9 +74,13 @@ class UserInfoProvider extends ApiProvider {
           .toList();
       bool hasNotGroup = data['is_recommend'];
       // GlobalGroupProvider().setTotalPage(data['last_page']);
-      print('요청 last_id => ${data['last_idx']}');
+      print(
+          '요청 last_id => ${data['last_idx']}, length = ${myGroupList.length}');
+
+      // GlobalGroupProvider()
+      //     .setLastId(myGroupList.length == 10 ? data['last_idx'] : -1);
       GlobalGroupProvider()
-          .setLastId(myGroupList.length == 10 ? data['last_idx'] : -1);
+          .setLastId(myGroupList.length == 10 ? myGroupList.last.id : -1);
 
       return MainGroupListModel.fromJson(
           {'groups': myGroupList, 'is_recommend': hasNotGroup});
@@ -98,14 +102,14 @@ class UserInfoProvider extends ApiProvider {
       final data = response.data['boards'];
       // GlobalBingoProvider().setTotalPage(response.data['last_page']);
 
-      GlobalBingoProvider()
-          .setLastId(data.length == 10 ? data['last_idx'] : -1);
-
-      print('data : $data');
       // if (data.isNotEmpty) {
       MyBingoList myBingoList = data
           .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
           .toList();
+      GlobalBingoProvider()
+          .setLastId(myBingoList.length == 10 ? myBingoList.last.id : -1);
+
+      print('data : $data');
       return myBingoList;
       // }
       // return [];

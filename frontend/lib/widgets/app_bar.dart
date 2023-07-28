@@ -273,7 +273,10 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
       // }
       toOtherPage(
         context,
-        page: GroupForm(groupId: groupId),
+        page: GroupForm(
+          groupId: groupId,
+          hasImg: context.read<GlobalGroupProvider>().hasImage!,
+        ),
       )();
     }
 

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bin_got/pages/bingo_form_page.dart';
@@ -27,10 +28,12 @@ import 'package:provider/provider.dart';
 class GroupForm extends StatefulWidget {
   final int? groupId;
   final String? password;
+  final bool hasImg;
   const GroupForm({
     super.key,
     this.groupId,
     this.password,
+    this.hasImg = false,
   });
 
   @override
@@ -53,10 +56,12 @@ class _GroupFormState extends State<GroupForm> {
   bool isChecked = true;
   // BoolList showList = [false, false];
   bool isImageUpdated = false;
+  late bool hasImg;
 
   @override
   void initState() {
     super.initState();
+    hasImg = widget.hasImg;
     if (widget.groupId == null) {
       groupData = {
         'groupname': '',
@@ -101,6 +106,9 @@ class _GroupFormState extends State<GroupForm> {
     if (groupData['headcount'].runtimeType != int) {
       groupData['headcount'] = int.parse(groupData['headcount']);
     }
+    if (groupData['size'].runtimeType != int) {
+      groupData['size'] = int.parse(groupData['size']);
+    }
 
     if (widget.groupId == null) {
       if (groupData['groupname'].length < 3) {
@@ -108,6 +116,8 @@ class _GroupFormState extends State<GroupForm> {
       } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
         showAlert(context,
             title: '인원 수 오류', content: '인원 수는 1명 이상 30명 이하로 입력해주세요.')();
+      } else if (groupData['start'] == '' || groupData['end'] == '') {
+        showAlert(context, title: '기간 미선택', content: '달성 목표 기간을 설정해주세요.')();
       } else if (!groupData['is_public'] && groupData['password'].length < 4) {
         showAlert(context,
             title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
@@ -152,7 +162,7 @@ class _GroupFormState extends State<GroupForm> {
             .editOwnGroup(
                 widget.groupId!,
                 FormData.fromMap({
-                  'data': groupData,
+                  'data': jsonEncode(groupData),
                   'img': isImageUpdated && selectedImage != null
                       ? MultipartFile.fromFileSync(
                           selectedImage!.path,
@@ -201,6 +211,9 @@ class _GroupFormState extends State<GroupForm> {
     setState(() {
       selectedImage = null;
       if (widget.groupId != null) {
+        if (hasImg) {
+          hasImg = false;
+        }
         isImageUpdated = true;
       }
     });
@@ -229,12 +242,15 @@ class _GroupFormState extends State<GroupForm> {
     if (dateList.isNotEmpty) {
       setState(() {
         groupData['start'] =
-            dateList[0].toString().replaceAll('00:00:00.000', '');
+            dateList[0].toString().replaceAll('00:00:00.000', '').trim();
         groupData['end'] = dateList.length > 1
-            ? dateList[1].toString().replaceAll('00:00:00.000', '')
+            ? dateList[1].toString().replaceAll('00:00:00.000', '').trim()
             : '';
       });
-      print('start => ${groupData['start']}, end => ${groupData['end']}');
+      print(
+          'start => ${groupData['start']}-----, end => ${groupData['end']}------');
+      print(
+          '${groupData['start'].runtimeType} ${groupData['end'].runtimeType}');
     }
   }
 
@@ -371,76 +387,6 @@ class _GroupFormState extends State<GroupForm> {
                       )
                   ],
                 ),
-
-              // widget.groupId == null
-              //     ? InputDate(
-              //         title: '기간 *',
-              //         explain: selectedDate(),
-              //         onSubmit: setGroupData,
-              //       )
-              //     : const SizedBox(),
-              // widget.groupId == null
-              //     ? CustomText(content: labelList[0])
-              //     : const SizedBox(),
-              // for (int i = 0; i < 2; i += 1)
-              //   widget.groupId == null
-              //       ? Padding(
-              //           padding: const EdgeInsets.symmetric(horizontal: 20),
-              //           child: Column(
-              //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //             children: [
-              //               Row(
-              //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //                 children: [
-              //                   for (int j = 0; j < 2; j += 1)
-              //                     Padding(
-              //                       padding: const EdgeInsets.symmetric(
-              //                           vertical: 10),
-              //                       child: CustomBoxContainer(
-              //                         onTap: () =>
-              //                             changeGroupData(0, 2 * i + j),
-              //                         width: 120,
-              //                         height: 30,
-              //                         boxShadow: applyBoxShadow(0, 2 * i + j),
-              //                         child: Padding(
-              //                           padding: const EdgeInsets.symmetric(
-              //                             horizontal: 10,
-              //                           ),
-              //                           child: Center(
-              //                             child: CustomText(
-              //                               content: printedValues[0]
-              //                                   [2 * i + j],
-              //                             ),
-              //                           ),
-              //                         ),
-              //                       ),
-              //                     ),
-              //                 ],
-              //               )
-              //             ],
-              //           ),
-              //         )
-              //       : const SizedBox(),
-              // widget.groupId == null
-              //     ? CustomCheckBox(
-              //         label: '공개 여부 *',
-              //         value: isChecked,
-              //         onChange: (_) {
-              //           setState(() {
-              //             isChecked = !isChecked;
-              //           });
-              //           setGroupData(context, 'is_public')(isChecked);
-              //         },
-              //       )
-              //     : const SizedBox(),
-              // widget.groupId == null && !isChecked
-              //     ? CustomInput(
-              //         title: '그룹 가입 시 비밀번호 *',
-              //         explain: '비밀번호',
-              //         maxLength: 20,
-              //         setValue: setGroupData(context, 'password'),
-              //       )
-              //     : const SizedBox(),
               CustomInput(
                 title: '그룹 설명',
                 needMore: true,
@@ -468,43 +414,54 @@ class _GroupFormState extends State<GroupForm> {
   }
 
   CustomBoxContainer groupImage() {
-    return selectedImage == null
-        ? CustomBoxContainer(
-            onTap: imagePicker,
-            borderColor: greyColor,
-            hasRoundEdge: false,
-            width: 270,
-            height: 150,
-            child: CustomIconButton(
-              icon: addIcon,
-              onPressed: imagePicker,
-              color: greyColor,
-            ),
-          )
-        : widget.groupId == null
-            ? CustomBoxContainer(
-                width: 270,
-                height: 150,
-                onTap: imagePicker,
-                image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: FileImage(File(selectedImage!.path)),
-                ),
-                child: CustomIconButton(
-                  onPressed: deleteImage,
-                  icon: closeIcon,
-                ),
-              )
-            : CustomBoxContainer(
-                width: 270,
-                height: 150,
-                child: CachedNetworkImage(
-                  placeholder: (context, url) =>
-                      const SizedBox(width: 100, height: 100),
-                  imageUrl: '${dotenv.env['fileUrl']}/groups/${widget.groupId}',
-                  // errorWidget: ,
-                ),
-              );
+    if (selectedImage == null) {
+      if (hasImg) {
+        return CustomBoxContainer(
+          width: 270,
+          height: 150,
+          child: Stack(
+            children: [
+              CachedNetworkImage(
+                placeholder: (context, url) =>
+                    const SizedBox(width: 270, height: 150),
+                imageUrl: '${dotenv.env['fileUrl']}/groups/${widget.groupId}',
+                // errorWidget: ,
+              ),
+              CustomIconButton(
+                onPressed: deleteImage,
+                icon: closeIcon,
+              ),
+            ],
+          ),
+        );
+      }
+      return CustomBoxContainer(
+        width: 270,
+        height: 150,
+        onTap: imagePicker,
+        borderColor: greyColor,
+        hasRoundEdge: false,
+        child: CustomIconButton(
+          icon: addIcon,
+          onPressed: imagePicker,
+          color: greyColor,
+        ),
+      );
+    } else {
+      return CustomBoxContainer(
+        width: 270,
+        height: 150,
+        onTap: imagePicker,
+        image: DecorationImage(
+          fit: BoxFit.fill,
+          image: FileImage(File(selectedImage!.path)),
+        ),
+        child: CustomIconButton(
+          onPressed: deleteImage,
+          icon: closeIcon,
+        ),
+      );
+    }
   }
 
   BoxShadowList applyBoxShadow(int i, int j) {

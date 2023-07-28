@@ -1,3 +1,4 @@
+import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/fcm_provider.dart';
@@ -202,6 +203,7 @@ void login(BuildContext context) async {
   }
 }
 
+//* modal
 void showLoginModal(BuildContext context) => showAlert(
       context,
       title: '토큰 만료',
@@ -215,6 +217,9 @@ void showErrorModal(BuildContext context) => showAlert(
       content: '오류가 발생했습니다.',
       hasCancel: false,
     )();
+
+//* date
+String returnDate(GroupChatModel data) => data.createdAt.split(' ')[0];
 
 //* token
 String? getToken(BuildContext context) => context.read<AuthProvider>().token;

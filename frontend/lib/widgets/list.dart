@@ -167,59 +167,79 @@ class CustomList extends StatelessWidget {
 //* 채팅 목록
 class ChatListItem extends StatelessWidget {
   final GroupChatModel data;
+  final String? date;
   const ChatListItem({
     super.key,
     required this.data,
+    required this.date,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: data.userId == getId(context) ? 80 : 0,
-        right: data.userId == getId(context) ? 0 : 80,
-      ),
-      child: CustomList(
-        boxShadow: [shadowWithOpacity],
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (date != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: CustomBoxContainer(
+              child: CustomText(content: date!),
+            ),
+          ),
+        Padding(
+          padding: EdgeInsets.only(
+            left: data.userId == getId(context) ? 80 : 0,
+            right: data.userId == getId(context) ? 0 : 80,
+          ),
+          child: Row(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: '${dotenv.env['fileUrl']}/badges/${data.badgeId}',
-                    width: 30,
-                    height: 30,
-                    placeholder: (context, url) =>
-                        const CustomBoxContainer(color: greyColor),
+              CustomList(
+                boxShadow: [shadowWithOpacity],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl:
+                                '${dotenv.env['fileUrl']}/badges/${data.badgeId}',
+                            width: 30,
+                            height: 30,
+                            placeholder: (context, url) =>
+                                const CustomBoxContainer(color: greyColor),
+                          ),
+                          const SizedBox(width: 10),
+                          CustomText(
+                            content: data.username,
+                            fontSize: FontSize.smallSize,
+                          ),
+                        ],
+                      ),
+                      if (data.hasImage == true)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${data.chatId}',
+                          ),
+                        ),
+                      if (data.content != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: CustomText(content: data.content!),
+                        ),
+                    ],
                   ),
-                  const SizedBox(width: 10),
-                  CustomText(
-                    content: data.username,
-                    fontSize: FontSize.smallSize,
-                  ),
-                ],
+                ),
               ),
-              if (data.hasImage == true)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${data.chatId}',
-                  ),
-                ),
-              if (data.content != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: CustomText(content: data.content!),
-                ),
+              CustomText(content: data.createdAt.split(' ')[1].substring(0, 5))
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 }

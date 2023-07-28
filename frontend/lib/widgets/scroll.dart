@@ -222,6 +222,7 @@ class InfiniteScroll extends StatelessWidget {
                   // hasNotGroupWidget ?? const SizedBox(),
                   itemCount: mode != 2 ? data.length : (data.length / 2).ceil(),
                   itemBuilder: (context, i) {
+                    print('length => ${data.length} i => $i');
                     final returnedWidget = mode == 2
                         ? Row(
                             children: [
@@ -229,14 +230,21 @@ class InfiniteScroll extends StatelessWidget {
                                 child: BingoGallery(bingo: data[2 * i]),
                               ),
                               Flexible(
-                                child:
-                                    (i != data.length || data.length % 2 == 0)
-                                        ? BingoGallery(bingo: data[2 * i + 1])
-                                        : const SizedBox(),
+                                child: (i != (data.length / 2).ceil() - 1 ||
+                                        data.length % 2 == 0)
+                                    ? BingoGallery(bingo: data[2 * i + 1])
+                                    : const SizedBox(),
                               ),
                             ],
                           )
-                        : ChatListItem(data: data[i]);
+                        : ChatListItem(
+                            data: data[i],
+                            date: i == data.length - 1 ||
+                                    returnDate(data[i]) !=
+                                        returnDate(data[i + 1])
+                                ? returnDate(data[i])
+                                : null,
+                          );
                     return Column(
                       children: [
                         // i < getPage(context, mode) * cnt
