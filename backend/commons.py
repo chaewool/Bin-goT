@@ -75,8 +75,10 @@ class RedisChat:
         self.conn_redis = conn_chat
         self.key = key
 
+    def getLength(self):
+        return self.conn_redis.llen(self.key)
+
     def addChat(self, data):
-        data['id'] = self.conn_redis.llen(self.key)
         self.conn_redis.rpush(self.key, json.dumps(data))
 
     def getChatList(self, idx):

@@ -364,13 +364,14 @@ class GroupChatCreateView(APIView):
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
-            'item_id': -1
+            'item_id': -1,
+            'id': RedisChat(group_id).getLength()
         }
 
         if img:
             chat['has_img'] = True
 
-            url = 'chats' + '/' + str(chat.id)
+            url = 'chats' + '/' + str(group_id) + '/' + str(chat['id'])
             
             upload_image(url, img)
         else:
@@ -421,13 +422,14 @@ class GroupReviewCreateView(APIView):
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
-            'item_id': item_id
+            'item_id': item_id,
+            'id': RedisChat(group_id).getLength()
         }
 
         if img:
             chat['has_img'] = True
 
-            url = 'chats' + '/' + str(chat.id)
+            url = 'chats' + '/' + str(group_id) + '/' + str(chat['id'])
             
             upload_image(url, img)
         else:
