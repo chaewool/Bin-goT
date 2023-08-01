@@ -75,15 +75,18 @@ class RedisChat:
         self.conn_redis = conn_chat
         self.key = key
 
+    def getLength(self):
+        return self.conn_redis.llen(self.key)
+
     def addChat(self, data):
-        data['id'] = self.conn_redis.llen(self.key)
         self.conn_redis.rpush(self.key, json.dumps(data))
 
-    def getChatList(self, page):
-        if page == 1:
+    def getChatList(self, idx):
+        if idx == 0:
             return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50, -1)][::-1]
         else:
-            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50 * page, -50 * (page - 1))][::-1]
+            length = self.conn_redis.llen(self.key)
+            return [json.loads(item) for item in self.conn_redis.lrange(self.key, idx - length - 51, idx - length - 1)][::-1]
     
     def getChatItem(self, chat_id):
         return json.loads(self.conn_redis.lindex(self.key, chat_id))
