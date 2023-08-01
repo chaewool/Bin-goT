@@ -421,7 +421,7 @@ class GroupReviewCreateView(APIView):
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
-            'item_id': item_id
+            'item_id': int(item_id)
         }
 
         if img:
