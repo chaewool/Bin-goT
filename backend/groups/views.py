@@ -309,6 +309,9 @@ class GroupResignView(APIView):
         if user == group.leader:
             return Response(data={'message': '그룹장은 탈퇴할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        group.count -= 1
+        group.save()
+
         participate.delete()
         
         board = Board.objects.filter(group=group, user=user)
