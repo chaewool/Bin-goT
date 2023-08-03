@@ -198,6 +198,7 @@ class _BingoFormState extends State<BingoForm> {
         print('빙고 생성 성공');
         if (widget.needAuth == true) {
           toBack(context);
+          toBack(context);
           showAlert(
             context,
             title: '가입 신청',

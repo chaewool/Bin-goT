@@ -192,20 +192,25 @@ class GroupProvider extends ApiProvider {
     try {
       final response = await dioWithToken().get(
         groupChatListUrl(groupId),
-        queryParameters: {'last_idx': lastId},
+        queryParameters: {'idx': lastId},
       );
       final data = response.data;
-      print('chatdata => $data');
-      // if (data.isNotEmpty) {
-      GroupChatList chats = data
-          .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
-          .toList();
+      if (data.isNotEmpty) {
+        GroupChatList chats = data
+            .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
+            .toList();
 
-      return chats;
-      // }
-      // return [];
+        int id = chats.last.id;
+
+        print('provider last id => $id');
+        GlobalScrollProvider().setLastId(id != 0 ? id : -1);
+        return chats;
+      } else {
+        GlobalScrollProvider().setLastId(-1);
+        return [];
+      }
     } catch (error) {
-      print(error);
+      print('chat error => $error');
       throw Error();
     }
   }
@@ -217,6 +222,20 @@ class GroupProvider extends ApiProvider {
       print(groupChatCreateUrl(groupId));
       final response = await dioWithTokenForm()
           .post(groupChatCreateUrl(groupId), data: groupChatData);
+
+      return response.data;
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
+  }
+
+  //* check review
+  FutureBool checkReview(int groupId, int reviewId) async {
+    try {
+      print(groupReviewCheckUrl(groupId));
+      final response = await dioWithToken()
+          .put(groupReviewCheckUrl(groupId), data: {'review_id': reviewId});
 
       return response.data;
     } catch (error) {

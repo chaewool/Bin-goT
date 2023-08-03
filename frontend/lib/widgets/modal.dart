@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:bin_got/providers/bingo_provider.dart';
@@ -238,7 +237,7 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
         .makeCompleteMessage(
       getGroupId(context)!,
       FormData.fromMap({
-        'data': jsonEncode(data),
+        ...data,
         'img': selectedImage != null
             ? MultipartFile.fromFileSync(
                 selectedImage!.path,
@@ -248,12 +247,9 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
       }),
     )
         .then((value) {
-      if (value['statusCode'] == 401) {
-        showLoginModal(context);
-      } else {
-        toBack(context);
-        widget.afterClose();
-      }
+      showToast(context);
+      // toBack(context);
+      // widget.afterClose();
     });
   }
 
@@ -277,7 +273,7 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
           width: 150,
           height: 200,
           fontSize: FontSize.textSize,
-          initialValue: '',
+          initialValue: data['content'],
           setValue: (value) => data['content'] = value,
         ),
         Padding(

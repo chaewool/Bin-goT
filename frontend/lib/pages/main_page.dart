@@ -1,10 +1,9 @@
 import 'package:bin_got/utilities/global_func.dart';
-import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
-import 'package:bin_got/widgets/text.dart';
+import 'package:bin_got/widgets/toast.dart';
 import 'package:flutter/material.dart';
 
 //* 메인 페이지
@@ -17,7 +16,7 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   bool isSearchMode = false;
-  double paddingTop = 0;
+  double boxHeight = 0;
 
   void changeSearchMode() {
     setState(() {
@@ -35,7 +34,8 @@ class _MainState extends State<Main> {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         setState(() {
-          paddingTop = MediaQuery.of(context).padding.top;
+          boxHeight =
+              getHeight(context) - 50 - MediaQuery.of(context).padding.top;
         });
       },
     );
@@ -50,15 +50,14 @@ class _MainState extends State<Main> {
         body: Stack(
           children: [
             CustomBoxContainer(
-              height: getHeight(context) - 50 - paddingTop,
+              height:
+                  getHeight(context) - 50 - MediaQuery.of(context).padding.top,
               // color: backgroundColor,
               hasRoundEdge: false,
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  isSearchMode
-                      ? const CustomSearchBar(isMain: true)
-                      : const SizedBox(),
+                  if (isSearchMode) const CustomSearchBar(isMain: true),
                   const SizedBox(height: 15),
                   const Expanded(
                     // height: MediaQuery.of(context).size.height - 200,
@@ -68,21 +67,7 @@ class _MainState extends State<Main> {
               ),
             ),
             watchPressed(context)
-                ? const Center(
-                    child: CustomBoxContainer(
-                      height: 80,
-                      width: 300,
-                      color: Color.fromRGBO(0, 0, 0, 0.8),
-                      child: Center(
-                        child: CustomText(
-                          content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다',
-                          height: 1.5,
-                          center: true,
-                          color: whiteColor,
-                        ),
-                      ),
-                    ),
-                  )
+                ? const CustomToast(content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다')
                 : const SizedBox(),
           ],
         ),

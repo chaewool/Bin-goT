@@ -4,7 +4,6 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -15,6 +14,7 @@ class CustomSearchBar extends StatefulWidget {
   final int period;
   final String? query;
   final bool isMain;
+  final int sortIdx;
 
   const CustomSearchBar({
     super.key,
@@ -22,6 +22,7 @@ class CustomSearchBar extends StatefulWidget {
     this.period = 0,
     this.query,
     this.isMain = false,
+    this.sortIdx = 0,
   });
 
   @override
@@ -54,6 +55,17 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   }
 
   void onSearchAction() {
+    if (!publicGroup && !privateGroup) {
+      showModal(
+        context,
+        page: const CustomModal(
+          title: '필수 항목 누락',
+          hasConfirm: false,
+          cancelText: '확인',
+          children: [Center(child: CustomText(content: '그룹 필터를 설정해 주세요.'))],
+        ),
+      )();
+    }
     if (keyword['value'] != '' || end != 0) {
       int result = 3;
       if (publicGroup) {
@@ -156,16 +168,20 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           ),
           Row(
             children: [
-              CustomCheckBox(
-                label: '공개 그룹',
-                onChange: (_) => changePublic(),
-                value: publicGroup,
+              CustomBoxContainer(
+                color: publicGroup ? greenColor : whiteColor,
+                child: CustomText(
+                  content: '공개 그룹',
+                  color: publicGroup ? whiteColor : blackColor,
+                ),
               ),
-              CustomCheckBox(
-                label: '비공개 그룹',
-                onChange: (_) => changePrivate(),
-                value: privateGroup,
-              )
+              CustomBoxContainer(
+                color: privateGroup ? greenColor : whiteColor,
+                child: CustomText(
+                  content: '비공개 그룹',
+                  color: privateGroup ? whiteColor : blackColor,
+                ),
+              ),
             ],
           )
         ],

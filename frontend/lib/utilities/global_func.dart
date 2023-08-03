@@ -193,7 +193,9 @@ void login(BuildContext context) async {
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
-        showModal(context, page: const ChangeNameModal())();
+        showModal(context, page: const ChangeNameModal())().then((value) {
+          toOtherPage(context, page: const Main())();
+        });
       }
     }).catchError((error) {
       showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
@@ -281,6 +283,13 @@ FutureBool exitApp(BuildContext context) =>
 //* 뒤로 가기 버튼 눌림 여부
 bool watchPressed(BuildContext context) =>
     context.watch<NotiProvider>().beforeExit;
+
+bool watchAfterWork(BuildContext context) =>
+    context.watch<NotiProvider>().afterWork;
+
+//* toast
+void showToast(BuildContext context) =>
+    context.watch<NotiProvider>().showToast();
 
 //* scroll
 // int? getTotal(BuildContext context, int mode) => mode == 0

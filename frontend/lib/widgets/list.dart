@@ -1,9 +1,11 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/input_password_page.dart';
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -165,7 +167,7 @@ class CustomList extends StatelessWidget {
 // }
 
 //* 채팅 목록
-class ChatListItem extends StatelessWidget {
+class ChatListItem extends StatefulWidget {
   final GroupChatModel data;
   final String? date;
   const ChatListItem({
@@ -175,37 +177,70 @@ class ChatListItem extends StatelessWidget {
   });
 
   @override
+  State<ChatListItem> createState() => _ChatListItemState();
+}
+
+class _ChatListItemState extends State<ChatListItem> {
+  late bool isMine = widget.data.userId == getId(context);
+  void confirmMessage() async {
+    if (isMine) {
+      showAlert(context, title: '인증 불가', content: '자신의 채팅에 인증 확인할 수 없습니다')();
+    } else {
+      await GroupProvider().checkReview(getGroupId(context)!, widget.data.id);
+      changeReviewed();
+    }
+  }
+
+  late bool reviewed = widget.data.reviewed;
+  void changeReviewed() {
+    if (!reviewed) {
+      setState(() {
+        reviewed = true;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (date != null)
+        if (widget.date != null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: CustomBoxContainer(
-              child: CustomText(content: date!),
+              child: CustomText(content: widget.date!),
             ),
           ),
-        Padding(
-          padding: EdgeInsets.only(
-            left: data.userId == getId(context) ? 80 : 0,
-            right: data.userId == getId(context) ? 0 : 80,
-          ),
-          child: Row(
-            children: [
-              CustomList(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment:
+              isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+            if (isMine)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: CustomText(
+                  color: greyColor,
+                  content: widget.data.createdAt.split(' ')[1].substring(0, 5),
+                  fontSize: FontSize.smallSize,
+                ),
+              ),
+            Flexible(
+              child: CustomList(
                 boxShadow: [shadowWithOpacity],
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           CachedNetworkImage(
                             imageUrl:
-                                '${dotenv.env['fileUrl']}/badges/${data.badgeId}',
+                                '${dotenv.env['fileUrl']}/badges/${widget.data.badgeId}',
                             width: 30,
                             height: 30,
                             placeholder: (context, url) =>
@@ -213,31 +248,58 @@ class ChatListItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 10),
                           CustomText(
-                            content: data.username,
+                            content: widget.data.username,
                             fontSize: FontSize.smallSize,
                           ),
                         ],
                       ),
-                      if (data.hasImage == true)
+                      // if (widget.data.itemId != -1)
+                      // CustomText(content: widget.data.),
+                      if (widget.data.hasImage == true)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${data.chatId}',
+                          child: SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${widget.data.id}',
+                            ),
                           ),
                         ),
-                      if (data.content != null)
+                      if (widget.data.content != null)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: CustomText(content: data.content!),
+                          child: CustomText(content: widget.data.content!),
                         ),
+                      if (widget.data.itemId != -1)
+                        reviewed
+                            ? const CustomText(
+                                content: '인증된 채팅입니다',
+                                color: greyColor,
+                              )
+                            : Center(
+                                child: CustomButton(
+                                  onPressed: confirmMessage,
+                                  content: '인증 확인',
+                                  enabled: !isMine,
+                                ),
+                              )
                     ],
                   ),
                 ),
               ),
-              CustomText(content: data.createdAt.split(' ')[1].substring(0, 5))
-            ],
-          ),
+            ),
+            if (!isMine)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: CustomText(
+                  color: greyColor,
+                  content: widget.data.createdAt.split(' ')[1].substring(0, 5),
+                  fontSize: FontSize.smallSize,
+                ),
+              )
+          ],
         ),
       ],
     );

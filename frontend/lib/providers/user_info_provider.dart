@@ -73,14 +73,17 @@ class UserInfoProvider extends ApiProvider {
           .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
           .toList();
       bool hasNotGroup = data['is_recommend'];
+      print('recommend => $hasNotGroup');
       // GlobalGroupProvider().setTotalPage(data['last_page']);
       print(
-          '요청 last_id => ${data['last_idx']}, length = ${myGroupList.length}');
+          '요청 last_id => ${myGroupList.last.id}, length = ${myGroupList.length}');
 
       // GlobalGroupProvider()
       //     .setLastId(myGroupList.length == 10 ? data['last_idx'] : -1);
       GlobalGroupProvider()
           .setLastId(myGroupList.length == 10 ? myGroupList.last.id : -1);
+
+      print(GlobalGroupProvider().lastId);
 
       return MainGroupListModel.fromJson(
           {'groups': myGroupList, 'is_recommend': hasNotGroup});

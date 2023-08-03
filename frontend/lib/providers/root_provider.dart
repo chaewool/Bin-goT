@@ -81,6 +81,7 @@ class NotiProvider extends ChangeNotifier {
   static bool _chatNoti = true;
   static bool _completeNoti = true;
   static bool _beforeExit = false;
+  static bool _afterWork = false;
 
   //* getter
   bool get rankNoti => _rankNoti;
@@ -88,6 +89,7 @@ class NotiProvider extends ChangeNotifier {
   bool get chatNoti => _chatNoti;
   bool get completeNoti => _completeNoti;
   bool get beforeExit => _beforeExit;
+  bool get afterWork => _afterWork;
 
   //* private
   FutureBool initNoti() async {
@@ -120,6 +122,17 @@ class NotiProvider extends ChangeNotifier {
       return Future.value(false);
     }
     return Future.value(true);
+  }
+
+  void _showToast() {
+    if (!_afterWork) {
+      _afterWork = true;
+      notifyListeners();
+      Future.delayed(const Duration(seconds: 2), () {
+        _afterWork = false;
+        notifyListeners();
+      });
+    }
   }
 
   //* public
@@ -157,6 +170,7 @@ class NotiProvider extends ChangeNotifier {
   }
 
   FutureBool changePressed() => _changePressed();
+  void showToast() => _showToast();
 }
 
 //* scroll
@@ -185,7 +199,6 @@ class GlobalScrollProvider extends ChangeNotifier {
 
   void setLoading(bool value) {
     _setLoading(value);
-    print('loading => $_loading');
     notifyListeners();
   }
 

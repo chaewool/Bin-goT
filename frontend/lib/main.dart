@@ -30,7 +30,6 @@ void main() async {
     // options: DefaultFirebaseOptions.currentPlatform,
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  print(await KakaoSdk.origin);
   initFCM();
   final PendingDynamicLinkData? initialLink =
       await FirebaseDynamicLinks.instance.getInitialLink();

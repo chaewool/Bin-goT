@@ -125,65 +125,67 @@ class GroupInfiniteScroll extends StatelessWidget {
       color: backgroundColor,
       child: !getLoading(context)
           ? data.isNotEmpty
-              ? ListView.builder(
-                  controller: controller,
-                  // hasNotGroupWidget ?? const SizedBox(),
-                  itemCount: data.length,
-                  itemBuilder: (context, i) {
-                    return Column(
-                      children: [
-                        // i < getPage(context, mode) * 10
-                        //     ?
-                        data[i].id != getLastId(context, mode)
-                            ? Padding(
-                                padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-                                child: GroupListItem(
-                                  isSearchMode: mode == 0,
-                                  groupInfo: data[i],
-                                  public: data[i].isPublic,
-                                ),
-                              )
-                            : Column(
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(5, 0, 5, 5),
-                                    child: GroupListItem(
-                                      isSearchMode: mode == 0,
-                                      groupInfo: data[i],
-                                      public: data[i].isPublic,
-                                    ),
+              ? hasNotGroupWidget ??
+                  ListView.builder(
+                    controller: controller,
+                    // hasNotGroupWidget ?? const SizedBox(),
+                    itemCount: data.length,
+                    itemBuilder: (context, i) {
+                      return Column(
+                        children: [
+                          // i < getPage(context, mode) * 10
+                          //     ?
+                          data[i].id != getLastId(context, mode)
+                              ? Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                                  child: GroupListItem(
+                                    isSearchMode: mode == 0,
+                                    groupInfo: data[i],
+                                    public: data[i].isPublic,
                                   ),
-                                  if (getLastId(context, mode) != -1)
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 40,
+                                )
+                              : Column(
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                                      child: GroupListItem(
+                                        isSearchMode: mode == 0,
+                                        groupInfo: data[i],
+                                        public: data[i].isPublic,
                                       ),
-                                      child: Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    )
-                                ],
-                              ),
+                                    ),
+                                    if (getLastId(context, mode) != -1)
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 40,
+                                        ),
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )
+                                  ],
+                                ),
 
-                        // getLastId(context, mode) != -1 &&
-                        //         data[i].id == getLastId(context, mode)
-                        //     // &&
-                        //     //         getTotal(context, mode)! >
-                        //     //             getPage(context, mode)
-                        //     ? const Padding(
-                        //         padding: EdgeInsets.symmetric(
-                        //           vertical: 40,
-                        //         ),
-                        //         child: Center(
-                        //           child: CircularProgressIndicator(),
-                        //         ),
-                        //       )
-                        //     : const SizedBox()
-                      ],
-                    );
-                  },
-                )
+                          // getLastId(context, mode) != -1 &&
+                          //         data[i].id == getLastId(context, mode)
+                          //     // &&
+                          //     //         getTotal(context, mode)! >
+                          //     //             getPage(context, mode)
+                          //     ? const Padding(
+                          //         padding: EdgeInsets.symmetric(
+                          //           vertical: 40,
+                          //         ),
+                          //         child: Center(
+                          //           child: CircularProgressIndicator(),
+                          //         ),
+                          //       )
+                          //     : const SizedBox()
+                        ],
+                      );
+                    },
+                  )
               : emptyWidget
           : const Center(child: CircularProgressIndicator()),
       // CustomText(content: '빙고 정보를 불러오는 중입니다')
@@ -212,6 +214,7 @@ class InfiniteScroll extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('scroll data => $data, loading => ${getLoading(context)}');
     return CustomBoxContainer(
       color: backgroundColor,
       child: !getLoading(context)
@@ -222,7 +225,6 @@ class InfiniteScroll extends StatelessWidget {
                   // hasNotGroupWidget ?? const SizedBox(),
                   itemCount: mode != 2 ? data.length : (data.length / 2).ceil(),
                   itemBuilder: (context, i) {
-                    print('length => ${data.length} i => $i');
                     final returnedWidget = mode == 2
                         ? Row(
                             children: [
@@ -249,12 +251,8 @@ class InfiniteScroll extends StatelessWidget {
                       children: [
                         // i < getPage(context, mode) * cnt
                         // ?
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-                          child: returnedWidget,
-                        ),
-                        // : const SizedBox(),
-                        data[i].id == getLastId(context, mode)
+                        getLastId(context, mode) > 0 &&
+                                data[i].id == getLastId(context, mode)
                             // i == data.length - 1 &&
                             //         getTotal(context, mode)! >
                             //             getPage(context, mode)
@@ -266,7 +264,12 @@ class InfiniteScroll extends StatelessWidget {
                                   child: CircularProgressIndicator(),
                                 ),
                               )
-                            : const SizedBox()
+                            : const SizedBox(),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                          child: returnedWidget,
+                        ),
+                        // : const SizedBox(),
                       ],
                     );
                   },
