@@ -247,9 +247,9 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
       }),
     )
         .then((value) {
-      showToast(context);
-      // toBack(context);
-      // widget.afterClose();
+      // showToast(context);
+      toBack(context);
+      widget.afterClose();
     });
   }
 
