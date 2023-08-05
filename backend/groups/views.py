@@ -466,7 +466,7 @@ class GroupReviewCheckView(APIView):
         if review_user == user:
             return Response(data={'message': '자신의 인증 요청은 인증할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if review.reviewed:
+        if review['reviewed']:
             return Response(data={'message': '이미 인증된 요청입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         board = Board.objects.filter(user=review_user, group=group)[0]
@@ -485,7 +485,7 @@ class GroupReviewCheckView(APIView):
         else:    
             check_cnt_boarditems_complete(review_user, group, board_item)
         
-        review.reviewed = True
+        review['reviewed'] = True
         chat.setChatItem(review_id, review)
 
         send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', '인증 확인 후 이동할 경로')
