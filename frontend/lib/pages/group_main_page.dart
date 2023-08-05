@@ -53,6 +53,7 @@ class _GroupMainState extends State<GroupMain> {
       onWillPop: () {
         toBack(context);
         toBack(context);
+        setPublic(context, null);
         return Future.value(false);
       },
       child: Scaffold(
@@ -62,6 +63,7 @@ class _GroupMainState extends State<GroupMain> {
             groupId: widget.groupId,
             isMember: memberState != 0,
             isAdmin: memberState == 2,
+            password: widget.data.password,
           ),
         ),
         body: SingleChildScrollView(
@@ -132,6 +134,7 @@ class _GroupMainState extends State<GroupMain> {
                         page: GroupRank(
                           groupId: widget.groupId,
                           isMember: memberState != 0,
+                          password: widget.data.password,
                         ),
                       )
                     : null,

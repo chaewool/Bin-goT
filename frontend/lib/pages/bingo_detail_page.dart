@@ -11,6 +11,7 @@ import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bingo_board.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:bin_got/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:flutter/rendering.dart';
@@ -95,47 +96,49 @@ class BingoDetail extends StatelessWidget {
           save: saveBingoImg,
           bingoId: bingoId,
         ),
-        body: FutureBuilder(
-          future: BingoProvider().readBingoDetail(bingoId),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final DynamicMap data = snapshot.data!;
-              print('bingo data => $data');
-              final int achieve = (data['achieve']! * 100).toInt();
-              groupId = data['group'];
-              setBingoData(context, data);
+        body: Stack(
+          children: [
+            FutureBuilder(
+              future: BingoProvider().readBingoDetail(bingoId),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final DynamicMap data = snapshot.data!;
+                  print('bingo data => $data');
+                  final int achieve = (data['achieve']! * 100).toInt();
+                  groupId = data['group'];
+                  setBingoData(context, data);
 
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: CustomText(
-                      content: data['title'],
-                      fontSize: FontSize.titleSize,
-                    ),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: CustomText(
-                        content: data['username'],
-                        fontSize: FontSize.smallSize,
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: CustomText(
+                          content: data['title'],
+                          fontSize: FontSize.titleSize,
+                        ),
                       ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        DateTime.now().difference(
+                      Flexible(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: CustomText(
+                            content: data['username'],
+                            fontSize: FontSize.smallSize,
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            if (DateTime.now().difference(
                                   DateTime.parse(getStart(context)!),
                                 ) <
-                                Duration.zero
-                            ? IconButtonInRow(
+                                Duration.zero)
+                              IconButtonInRow(
                                 onPressed: toOtherPage(
                                   context,
                                   page: BingoForm(
@@ -145,37 +148,41 @@ class BingoDetail extends StatelessWidget {
                                   ),
                                 ),
                                 icon: editIcon,
-                              )
-                            : const SizedBox(),
-                        const SizedBox(width: 20)
-                      ],
-                    ),
-                  ),
-                  Flexible(
-                    flex: 6,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: RepaintBoundary(
-                        key: globalKey,
-                        child: BingoBoard(
-                          isDetail: true,
-                          bingoSize: bingoSize,
+                              ),
+                            const SizedBox(width: 20)
+                          ],
                         ),
                       ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    child: CustomText(
-                      content: '달성률 : $achieve%',
-                      fontSize: FontSize.largeSize,
-                    ),
-                  )
-                ],
-              );
-            }
-            return const Center(child: CustomText(content: '정보를 불러오는 중입니다'));
-          },
+                      Flexible(
+                        flex: 6,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: RepaintBoundary(
+                            key: globalKey,
+                            child: BingoBoard(
+                              isDetail: true,
+                              bingoSize: bingoSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 2,
+                        child: CustomText(
+                          content: '달성률 : $achieve%',
+                          fontSize: FontSize.largeSize,
+                        ),
+                      )
+                    ],
+                  );
+                }
+                return const Center(
+                    child: CustomText(content: '정보를 불러오는 중입니다'));
+              },
+            ),
+            if (watchAfterWork(context))
+              const CustomToast(content: '인증 요청되었습니다.')
+          ],
         ),
         bottomNavigationBar: BottomBar(
           isMember: true,

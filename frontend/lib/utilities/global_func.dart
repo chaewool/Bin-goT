@@ -1,3 +1,4 @@
+import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/fcm_provider.dart';
@@ -21,21 +22,32 @@ TextTemplate defaultText({
   required int id,
   required bool isGroup,
   String? password,
+  String? groupName,
+  required String url,
 }) {
+  print(url);
   return TextTemplate(
     text: isGroup
-        ? 'ㅇㅇㅇ 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요'
+        ? '$groupName 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요'
         : 'ㅇㅇㅇ 님이 빙고판을 공유했어요! 자세히 살펴보세요.',
+    buttonTitle: '앱으로 이동하기/앱 설치하기',
     link: Link(
-      mobileWebUrl: Uri.parse(''),
+      mobileWebUrl: Uri.parse(url),
     ),
   );
 }
 
 //* 공유
-void shareGroup({required int groupId, String? password}) async {
+void shareGroup({
+  required int groupId,
+  String? password,
+  required bool isPublic,
+  required groupName,
+}) async {
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
+
+  String url = await buildDynamicLink(isPublic, groupId);
 
   if (isKakaoTalkSharingAvailable) {
     try {
@@ -44,6 +56,8 @@ void shareGroup({required int groupId, String? password}) async {
           isGroup: true,
           id: groupId,
           password: password,
+          groupName: groupName,
+          url: url,
         ),
       );
       await ShareClient.instance.launchKakaoTalk(uri);
@@ -58,6 +72,7 @@ void shareGroup({required int groupId, String? password}) async {
           isGroup: true,
           id: groupId,
           password: password,
+          url: url,
         ),
       );
       await launchBrowserTab(shareUrl, popupOpen: true);
@@ -68,35 +83,35 @@ void shareGroup({required int groupId, String? password}) async {
 }
 
 void shareBingo({required int bingoId}) async {
-  bool isKakaoTalkSharingAvailable =
-      await ShareClient.instance.isKakaoTalkSharingAvailable();
+  // bool isKakaoTalkSharingAvailable =
+  //     await ShareClient.instance.isKakaoTalkSharingAvailable();
 
-  if (isKakaoTalkSharingAvailable) {
-    try {
-      Uri uri = await ShareClient.instance.shareDefault(
-        template: defaultText(
-          id: bingoId,
-          isGroup: false,
-        ),
-      );
-      await ShareClient.instance.launchKakaoTalk(uri);
-      print('카카오톡 공유 완료');
-    } catch (error) {
-      print('카카오톡 공유 실패 $error');
-    }
-  } else {
-    try {
-      Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
-        template: defaultText(
-          id: bingoId,
-          isGroup: false,
-        ),
-      );
-      await launchBrowserTab(shareUrl, popupOpen: true);
-    } catch (error) {
-      print('카카오톡 공유 실패 $error');
-    }
-  }
+  // if (isKakaoTalkSharingAvailable) {
+  //   try {
+  //     Uri uri = await ShareClient.instance.shareDefault(
+  //       template: defaultText(
+  //         id: bingoId,
+  //         isGroup: false,
+  //       ),
+  //     );
+  //     await ShareClient.instance.launchKakaoTalk(uri);
+  //     print('카카오톡 공유 완료');
+  //   } catch (error) {
+  //     print('카카오톡 공유 실패 $error');
+  //   }
+  // } else {
+  //   try {
+  //     Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
+  //       template: defaultText(
+  //         id: bingoId,
+  //         isGroup: false,
+  //       ),
+  //     );
+  //     await launchBrowserTab(shareUrl, popupOpen: true);
+  //   } catch (error) {
+  //     print('카카오톡 공유 실패 $error');
+  //   }
+  // }
 }
 
 Future<String> buildDynamicLink(bool isPublic, int groupId) async {
@@ -104,13 +119,14 @@ Future<String> buildDynamicLink(bool isPublic, int groupId) async {
 
   final DynamicLinkParameters parameters = DynamicLinkParameters(
     uriPrefix: uriPrefix,
-    link: Uri.parse('https://groups?isPublic=$isPublic&groupId=$groupId'),
+    link: Uri.parse('$uriPrefix/firebase/dynamicLinks/first'),
     androidParameters:
         AndroidParameters(packageName: dotenv.env['packageName']!),
   );
-  final dynamicLink =
-      await FirebaseDynamicLinks.instance.buildShortLink(parameters);
-  return dynamicLink.shortUrl.toString();
+  // final dynamicLink =
+  //     await FirebaseDynamicLinks.instance.buildShortLink(parameters);
+  final dynamicLink = await FirebaseDynamicLinks.instance.buildLink(parameters);
+  return dynamicLink.toString();
 }
 
 //* 페이지 이동
@@ -177,7 +193,9 @@ void login(BuildContext context) async {
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
-        showModal(context, page: const ChangeNameModal())();
+        showModal(context, page: const ChangeNameModal())().then((value) {
+          toOtherPage(context, page: const Main())();
+        });
       }
     }).catchError((error) {
       showAlert(context, title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
@@ -187,6 +205,7 @@ void login(BuildContext context) async {
   }
 }
 
+//* modal
 void showLoginModal(BuildContext context) => showAlert(
       context,
       title: '토큰 만료',
@@ -200,6 +219,9 @@ void showErrorModal(BuildContext context) => showAlert(
       content: '오류가 발생했습니다.',
       hasCancel: false,
     )();
+
+//* date
+String returnDate(GroupChatModel data) => data.createdAt.split(' ')[0];
 
 //* token
 String? getToken(BuildContext context) => context.read<AuthProvider>().token;
@@ -261,6 +283,13 @@ FutureBool exitApp(BuildContext context) =>
 //* 뒤로 가기 버튼 눌림 여부
 bool watchPressed(BuildContext context) =>
     context.watch<NotiProvider>().beforeExit;
+
+bool watchAfterWork(BuildContext context) =>
+    context.watch<NotiProvider>().afterWork;
+
+//* toast
+void showToast(BuildContext context) =>
+    context.watch<NotiProvider>().showToast();
 
 //* scroll
 // int? getTotal(BuildContext context, int mode) => mode == 0
@@ -362,6 +391,12 @@ int? getBingoSize(BuildContext context) =>
 String? getStart(BuildContext context) =>
     context.read<GlobalGroupProvider>().start;
 
+bool? getPublic(BuildContext context) =>
+    context.read<GlobalGroupProvider>().isPublic;
+
+String? getGroupName(BuildContext context) =>
+    context.read<GlobalGroupProvider>().groupName;
+
 void setStart(BuildContext context, String newStart) =>
     context.read<GlobalGroupProvider>().setStart(newStart);
 
@@ -370,6 +405,9 @@ void setGroupData(BuildContext context, dynamic newVal) =>
 
 void setGroupId(BuildContext context, int newVal) =>
     context.read<GlobalGroupProvider>().setGroupId(newVal);
+
+void setPublic(BuildContext context, bool? newVal) =>
+    context.read<GlobalGroupProvider>().setPublic(newVal);
 
 //* bingo data
 

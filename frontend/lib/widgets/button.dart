@@ -11,11 +11,14 @@ class CustomButton extends StatelessWidget {
   final ReturnVoid onPressed;
   final String content;
   final FontSize fontSize;
-  const CustomButton(
-      {super.key,
-      required this.onPressed,
-      required this.content,
-      this.fontSize = FontSize.smallSize});
+  final bool enabled;
+  const CustomButton({
+    super.key,
+    required this.onPressed,
+    required this.content,
+    this.fontSize = FontSize.smallSize,
+    this.enabled = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +27,7 @@ class CustomButton extends StatelessWidget {
       child: CustomText(
         content: content,
         fontSize: fontSize,
+        color: enabled ? blackColor : greyColor,
       ),
     );
   }

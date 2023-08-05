@@ -13,7 +13,6 @@ class GroupProvider extends ApiProvider {
     String? keyword,
     int? order,
     required int public,
-    required int cnt,
     required int lastId,
   }) =>
       _searchGroupList(
@@ -21,7 +20,6 @@ class GroupProvider extends ApiProvider {
         keyword: keyword,
         order: order,
         public: public,
-        cnt: cnt,
         lastId: lastId,
         // page: page,
       );
@@ -31,7 +29,6 @@ class GroupProvider extends ApiProvider {
     String? keyword,
     int? order,
     required int public,
-    required int cnt,
     required int lastId,
   }) async {
     try {
@@ -41,8 +38,7 @@ class GroupProvider extends ApiProvider {
         'keyword': keyword,
         'order': order,
         'public': public,
-        'cnt': cnt,
-        'last_idx': lastId,
+        'idx': lastId,
       }}');
       final response = await dioWithToken().get(
         searchGroupUrl,
@@ -52,7 +48,6 @@ class GroupProvider extends ApiProvider {
           'order': order,
           'public': public,
           'idx': lastId,
-          'cnt': cnt,
         },
       );
       print('data => ${response.data}');
@@ -78,12 +73,11 @@ class GroupProvider extends ApiProvider {
       final response = await dioWithToken().get(
         groupDetailUrl(groupId),
         queryParameters: {'password': password},
-      ).catchError((error) {
-        // print('catch error => ${error.response!.data}');
-      });
+      );
       print('response: $response');
+      final groupDetail = GroupDetailModel.fromJson(response.data);
       // return response;
-      return GroupDetailModel.fromJson(response.data);
+      return groupDetail;
     } catch (error) {
       throw Error();
     }
@@ -198,20 +192,25 @@ class GroupProvider extends ApiProvider {
     try {
       final response = await dioWithToken().get(
         groupChatListUrl(groupId),
-        queryParameters: {'last_idx': lastId},
+        queryParameters: {'idx': lastId},
       );
       final data = response.data;
-      print('chatdata => $data');
-      // if (data.isNotEmpty) {
-      GroupChatList chats = data
-          .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
-          .toList();
+      if (data.isNotEmpty) {
+        GroupChatList chats = data
+            .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
+            .toList();
 
-      return chats;
-      // }
-      // return [];
+        int id = chats.last.id;
+
+        print('provider last id => $id');
+        GlobalScrollProvider().setLastId(id != 0 ? id : -1);
+        return chats;
+      } else {
+        GlobalScrollProvider().setLastId(-1);
+        return [];
+      }
     } catch (error) {
-      print(error);
+      print('chat error => $error');
       throw Error();
     }
   }
@@ -223,10 +222,22 @@ class GroupProvider extends ApiProvider {
       print(groupChatCreateUrl(groupId));
       final response = await dioWithTokenForm()
           .post(groupChatCreateUrl(groupId), data: groupChatData);
-      if (response.statusCode == 200) {
-        return response.data;
-      }
+
+      return response.data;
+    } catch (error) {
+      print(error);
       throw Error();
+    }
+  }
+
+  //* check review
+  FutureBool checkReview(int groupId, int reviewId) async {
+    try {
+      print(groupReviewCheckUrl(groupId));
+      final response = await dioWithToken()
+          .put(groupReviewCheckUrl(groupId), data: {'review_id': reviewId});
+
+      return response.data;
     } catch (error) {
       print(error);
       throw Error();

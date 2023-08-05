@@ -10,13 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class InputPassword extends StatefulWidget {
-  final bool isPublic, needCheck;
+  final bool isPublic, needCheck, isSearchMode;
   final int groupId;
   const InputPassword({
     super.key,
     required this.isPublic,
     required this.groupId,
     this.needCheck = false,
+    this.isSearchMode = true,
   });
 
   @override
@@ -53,7 +54,7 @@ class _InputPasswordState extends State<InputPassword> {
         }
       }
 
-      if (!widget.isPublic) {
+      if (!widget.isPublic && widget.isSearchMode) {
         // ignore: use_build_context_synchronously
         showModal(
           context,
@@ -76,10 +77,15 @@ class _InputPasswordState extends State<InputPassword> {
           ),
         )();
       } else {
+        print('public==========');
         GroupProvider().readGroupDetail(widget.groupId, '').then((data) {
+          print('1-------');
           setGroupData(context, data);
+          print('2-------');
           setGroupId(context, widget.groupId);
-          print('group id : ${widget.groupId}');
+          print('3-------');
+          setPublic(context, widget.isPublic);
+          print('4-------');
           toOtherPage(
             context,
             page: GroupMain(
@@ -87,11 +93,17 @@ class _InputPasswordState extends State<InputPassword> {
               data: data,
             ),
           )();
-        }).catchError((_) {
+        }).catchError((error) {
+          print(error);
           showAlert(
             context,
             title: '오류 발생',
             content: '오류가 발생해 그룹 정보를 받아올 수 없습니다',
+            hasCancel: false,
+            onPressed: () {
+              toBack(context);
+              toBack(context);
+            },
           )();
         });
       }
@@ -123,6 +135,7 @@ class _InputPasswordState extends State<InputPassword> {
         toBack(context);
         setGroupData(context, data);
         setGroupId(context, widget.groupId);
+        setPublic(context, widget.isPublic);
         toOtherPage(
           context,
           page: GroupMain(
@@ -147,6 +160,7 @@ class _InputPasswordState extends State<InputPassword> {
       onWillPop: () {
         toBack(context);
         toBack(context);
+        setPublic(context, null);
         return Future.value(false);
       },
       child: const CustomBoxContainer(),

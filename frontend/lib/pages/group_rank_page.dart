@@ -11,10 +11,12 @@ import 'package:flutter/material.dart';
 class GroupRank extends StatefulWidget {
   final int groupId;
   final bool isMember;
+  final String password;
   const GroupRank({
     super.key,
     required this.groupId,
     required this.isMember,
+    required this.password,
   });
 
   @override
@@ -35,6 +37,7 @@ class _GroupRankState extends State<GroupRank> {
       appBar: GroupAppBar(
         onlyBack: true,
         groupId: widget.groupId,
+        password: widget.password,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),

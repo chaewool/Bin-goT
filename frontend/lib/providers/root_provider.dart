@@ -81,6 +81,7 @@ class NotiProvider extends ChangeNotifier {
   static bool _chatNoti = true;
   static bool _completeNoti = true;
   static bool _beforeExit = false;
+  static bool _afterWork = false;
 
   //* getter
   bool get rankNoti => _rankNoti;
@@ -88,6 +89,7 @@ class NotiProvider extends ChangeNotifier {
   bool get chatNoti => _chatNoti;
   bool get completeNoti => _completeNoti;
   bool get beforeExit => _beforeExit;
+  bool get afterWork => _afterWork;
 
   //* private
   FutureBool initNoti() async {
@@ -120,6 +122,17 @@ class NotiProvider extends ChangeNotifier {
       return Future.value(false);
     }
     return Future.value(true);
+  }
+
+  void _showToast() {
+    if (!_afterWork) {
+      _afterWork = true;
+      notifyListeners();
+      Future.delayed(const Duration(seconds: 2), () {
+        _afterWork = false;
+        notifyListeners();
+      });
+    }
   }
 
   //* public
@@ -157,6 +170,7 @@ class NotiProvider extends ChangeNotifier {
   }
 
   FutureBool changePressed() => _changePressed();
+  void showToast() => _showToast();
 }
 
 //* scroll
@@ -185,7 +199,6 @@ class GlobalScrollProvider extends ChangeNotifier {
 
   void setLoading(bool value) {
     _setLoading(value);
-    print('loading => $_loading');
     notifyListeners();
   }
 
@@ -212,18 +225,22 @@ class GlobalGroupProvider extends ChangeNotifier {
   static int _lastId = 0;
   // static int _page = 1;
   static String? _start;
+  static bool? _isPublic;
 
   int? get count => _data?.count;
   int? get headCount => _data?.headCount;
   int? get groupId => _groupId;
+  int? get bingoSize => _data?.bingoSize;
+  int? get lastId => _lastId;
+  bool? get isPublic => _isPublic;
+  bool? get hasImage => _data?.hasImage;
+  bool? get needAuth => _data?.needAuth;
   String? get start => _data?.start ?? _start;
+  String? get end => _data?.end;
   String? get groupName => _data?.groupName;
   String? get description => _data?.description;
   String? get rule => _data?.rule;
-  bool? get hasImage => _data?.hasImage;
-  int? get bingoSize => _data?.bingoSize;
-  bool? get needAuth => _data?.needAuth;
-  int? get lastId => _lastId;
+  String? get password => _data?.password;
   // int get page => _page;
 
   void _setData(GroupDetailModel detailModel) => _data = detailModel;
@@ -242,6 +259,9 @@ class GlobalGroupProvider extends ChangeNotifier {
   void _setGroupId(int newVal) => _groupId = newVal;
   // void _setNeedAuth(bool newVal) => _needAuth = newVal;
 
+  void _setPublic(bool? newVal) => _isPublic = newVal;
+
+//* public
   void setLastId(int value) => _setLastId(value);
 
   // void initPage() => _setPage(1);
@@ -249,6 +269,8 @@ class GlobalGroupProvider extends ChangeNotifier {
   //   _setPage(_page + 1);
   //   notifyListeners();
   // }
+
+  void setPublic(bool? val) => _setPublic(val);
 
   void setData(GroupDetailModel detailModel) {
     _setData(detailModel);

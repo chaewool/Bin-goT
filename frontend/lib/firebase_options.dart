@@ -17,15 +17,24 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,41 +52,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBfm5hN0s_IQBnU2tAvl1AQLk8zcJD9cPo',
-    appId: '1:225967626004:web:3e60d9854d54f98c929401',
-    messagingSenderId: '225967626004',
-    projectId: 'bingot-2c712',
-    authDomain: 'bingot-2c712.firebaseapp.com',
-    storageBucket: 'bingot-2c712.appspot.com',
-    measurementId: 'G-F51ZJFR387',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCkP4mMtJTQb_uGWn-FYw69IRIGpd90ON4',
     appId: '1:225967626004:android:94eb1ff0570125ad929401',
     messagingSenderId: '225967626004',
     projectId: 'bingot-2c712',
     storageBucket: 'bingot-2c712.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCM_jc1SzJjO_hhtTATYx7qBarrU3uNrQA',
-    appId: '1:225967626004:ios:0f5e6d380175cd0d929401',
-    messagingSenderId: '225967626004',
-    projectId: 'bingot-2c712',
-    storageBucket: 'bingot-2c712.appspot.com',
-    iosClientId: '225967626004-c8djb8dqut5avcc7df1pa657ciq7nr25.apps.googleusercontent.com',
-    iosBundleId: 'com.example.binGot',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCM_jc1SzJjO_hhtTATYx7qBarrU3uNrQA',
-    appId: '1:225967626004:ios:0f5e6d380175cd0d929401',
-    messagingSenderId: '225967626004',
-    projectId: 'bingot-2c712',
-    storageBucket: 'bingot-2c712.appspot.com',
-    iosClientId: '225967626004-c8djb8dqut5avcc7df1pa657ciq7nr25.apps.googleusercontent.com',
-    iosBundleId: 'com.example.binGot',
   );
 }

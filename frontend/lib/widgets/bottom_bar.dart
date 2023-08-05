@@ -6,7 +6,6 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:flutter/material.dart';
@@ -97,12 +96,14 @@ class FormBottomBar extends StatelessWidget {
 
 //* 그룹 채팅 입력 하단 바
 class GroupChatBottomBar extends StatefulWidget {
-  final int groupId;
-  final void Function(String?, XFile?) addChat;
+  final void Function(StringMap, XFile?) addChat;
+  final XFile? selectedImage;
+  final ReturnVoid imagePicker;
   const GroupChatBottomBar({
     super.key,
-    required this.groupId,
     required this.addChat,
+    required this.selectedImage,
+    required this.imagePicker,
   });
 
   @override
@@ -112,26 +113,23 @@ class GroupChatBottomBar extends StatefulWidget {
 class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
   @override
   Widget build(BuildContext context) {
-    XFile? selectedImage;
     StringMap data = {'content': ''};
 
-    void imagePicker() async {
-      final ImagePicker picker = ImagePicker();
-      final localImage = await picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 50,
-      );
-      selectedImage = localImage;
+    void addChat() {
+      widget.addChat(data, widget.selectedImage);
+      setState(() {
+        data['content'] = '';
+      });
     }
 
-    return CustomBoxContainer(
-      hasRoundEdge: false,
+    return BottomAppBar(
       color: greyColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Flexible(
-              child: CustomIconButton(onPressed: imagePicker, icon: addIcon)),
+              child: CustomIconButton(
+                  onPressed: widget.imagePicker, icon: addIcon)),
           Flexible(
             flex: 5,
             child: CustomInput(
@@ -144,7 +142,7 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
           ),
           Flexible(
             child: CustomIconButton(
-              onPressed: () => widget.addChat(data['content'], selectedImage),
+              onPressed: addChat,
               icon: sendIcon,
             ),
           ),
