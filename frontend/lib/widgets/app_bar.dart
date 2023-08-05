@@ -9,7 +9,6 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -120,11 +119,13 @@ class MainBar extends StatelessWidget implements PreferredSizeWidget {
 class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool onlyBack, isMember, isAdmin;
   final int groupId;
+  final String password;
   const GroupAppBar({
     super.key,
     this.onlyBack = false,
     this.isMember = false,
     this.isAdmin = false,
+    required this.password,
     required this.groupId,
   });
 
@@ -157,6 +158,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
       onPressed: () {
         toBack(context);
         toBack(context);
+        setPublic(context, null);
       },
       actions: onlyBack
           ? null
@@ -176,6 +178,8 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       onPressed: () => shareGroup(
                         groupId: groupId,
                         password: '',
+                        isPublic: getPublic(context)!,
+                        groupName: getGroupName(context),
                       ),
                     )
                   : const SizedBox(),
@@ -269,7 +273,10 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
       // }
       toOtherPage(
         context,
-        page: GroupForm(groupId: groupId),
+        page: GroupForm(
+          groupId: groupId,
+          hasImg: context.read<GlobalGroupProvider>().hasImage!,
+        ),
       )();
     }
 
@@ -329,10 +336,16 @@ class MyPageAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBarWithBack(
       actions: [
         IconButtonInRow(
-          onPressed: showModal(
-            context,
-            page: const NotificationModal(),
+          onPressed: () => shareGroup(
+            groupId: 2,
+            password: '1234',
+            isPublic: false,
+            groupName: '미라클 모닝 2',
           ),
+          // onPressed: showModal(
+          //   context,
+          //   page: shareGroup,
+          // ),
           icon: bellIcon,
         ),
         // IconButtonInRow(

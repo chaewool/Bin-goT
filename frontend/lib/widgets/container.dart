@@ -64,11 +64,14 @@ class BingoGallery extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              CachedNetworkImage(
-                imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
-                placeholder: (context, url) => const SizedBox(
-                  width: 50,
-                  height: 50,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: CachedNetworkImage(
+                  imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
+                  placeholder: (context, url) => const SizedBox(
+                    width: 50,
+                    height: 50,
+                  ),
                 ),
               ),
               CustomText(content: bingo.groupName)

@@ -60,6 +60,8 @@ class GroupCreateCompleted extends StatelessWidget {
                 onPressed: () => shareGroup(
                   groupId: groupId,
                   password: password,
+                  isPublic: getPublic(context)!,
+                  groupName: getGroupName(context),
                 ),
                 icon: shareIcon,
               ),

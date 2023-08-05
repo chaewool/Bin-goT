@@ -4,11 +4,10 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 //* input
 class CustomInput extends StatelessWidget {
   final String? explain;
-  final bool needMore, onlyNum, enabled;
+  final bool needMore, onlyNum, enabled, needSubmit;
   final double? width, height, vertical, horizontal;
   final bool filled;
   final Color filledColor;
@@ -36,6 +35,7 @@ class CustomInput extends StatelessWidget {
     this.horizontal = 20.0,
     this.vertical = 10.0,
     this.initialValue,
+    this.needSubmit = true,
     // required this.returnValue,
   });
 
@@ -70,7 +70,8 @@ class CustomInput extends StatelessWidget {
               textAlign: TextAlign.start,
               textAlignVertical: TextAlignVertical.center,
               onChanged: setValue,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              onSubmitted:
+                  needSubmit ? (_) => FocusScope.of(context).nextFocus() : null,
               textInputAction: TextInputAction.next,
               // focusNode: inputFocus,
             ),
@@ -84,12 +85,15 @@ class CustomInput extends StatelessWidget {
 //* date input
 class InputDate extends StatefulWidget {
   final String explain, title;
+  final String? start, end;
   // final Function(BuildContext, String) onSubmit;
   final Function(List<DateTime?>) applyDay;
   const InputDate({
     super.key,
     required this.explain,
     required this.title,
+    required this.start,
+    required this.end,
     // required this.onSubmit,
     required this.applyDay,
   });
@@ -101,10 +105,16 @@ class InputDate extends StatefulWidget {
 class _InputDateState extends State<InputDate> {
   final now = DateTime.now();
   DateTime? endDate, startDate;
-  List<DateTime?> _dialogCalendarPickerValue = [
-    null,
-    null,
-  ];
+  late List<DateTime?> calendarPickerValue;
+
+  @override
+  void initState() {
+    super.initState();
+    calendarPickerValue = [
+      widget.start != '' ? DateTime.parse(widget.start!) : null,
+      widget.end != '' ? DateTime.parse(widget.end!) : null,
+    ];
+  }
 
   // String _getValueText(
   //   CalendarDatePicker2Type datePickerType,
@@ -257,7 +267,7 @@ class _InputDateState extends State<InputDate> {
             config: config,
             dialogSize: const Size(325, 400),
             borderRadius: BorderRadius.circular(15),
-            value: _dialogCalendarPickerValue,
+            value: calendarPickerValue,
             dialogBackgroundColor: whiteColor,
           );
           if (values != null) {
@@ -267,13 +277,14 @@ class _InputDateState extends State<InputDate> {
             //   values,
             // ));
             setState(() {
-              _dialogCalendarPickerValue = values;
+              calendarPickerValue = values;
             });
           }
         },
         child: CustomInput(
           explain: widget.explain,
           enabled: false,
+          needSubmit: false,
           setValue: (value) {},
         ),
       ),

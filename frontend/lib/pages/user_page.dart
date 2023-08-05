@@ -328,9 +328,10 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
             ),
           ),
           const Flexible(
-              child: SizedBox(
-            height: 10,
-          ))
+            child: SizedBox(
+              height: 10,
+            ),
+          )
         ],
       ),
     );

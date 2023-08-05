@@ -172,14 +172,17 @@ class _EachBingoState extends State<EachBingo> {
   CustomBoxContainer draggableBox(
       BuildContext context, Color Function() convertedColor) {
     return CustomBoxContainer(
-      onTap: showModal(
-        context,
-        page: BingoModal(
-          index: widget.index,
-          cnt: widget.size * widget.size,
-          isDetail: widget.isDetail,
-        ),
-      ),
+      onTap: DateTime.now().difference(DateTime.parse(getStart(context)!)) <
+              Duration.zero
+          ? null
+          : showModal(
+              context,
+              page: BingoModal(
+                index: widget.index,
+                cnt: widget.size * widget.size,
+                isDetail: widget.isDetail,
+              ),
+            ),
       child: CustomBoxContainer(
         color: getHasBlackBox(context) ? blackColor : whiteColor,
         hasRoundEdge: getHasRoundEdge(context),

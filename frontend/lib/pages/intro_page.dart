@@ -96,38 +96,37 @@ class _IntroState extends State<Intro> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 100),
-        child: SizedBox(
-          width: getWidth(context),
+      body: SizedBox(
+        height: getHeight(context),
+        width: getWidth(context),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 100),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
             children: [
-              showLogo ? halfLogo : const SizedBox(),
+              if (showLogo) halfLogo,
               Column(
                 children: [
-                  showExplain
-                      ? const CustomText(
-                          content: '당신을 채울',
-                          fontSize: FontSize.sloganSize,
-                        )
-                      : const SizedBox(),
+                  if (showExplain)
+                    const CustomText(
+                      content: '당신을 채울',
+                      fontSize: FontSize.sloganSize,
+                    ),
                   const SizedBox(height: 20),
-                  showTitle
-                      ? const CustomText(
-                          content: 'Bin:goT',
-                          fontSize: FontSize.sloganSize,
-                        )
-                      : const SizedBox(),
+                  if (showTitle)
+                    const CustomText(
+                      content: 'Bin:goT',
+                      fontSize: FontSize.sloganSize,
+                    ),
                 ],
               ),
-              showLoginBtn
-                  ? GestureDetector(
-                      onTap: () => login(context),
-                      child: kakaoLogin,
-                    )
-                  : const SizedBox(),
+              if (showLoginBtn)
+                GestureDetector(
+                  onTap: () => login(context),
+                  child: kakaoLogin,
+                )
             ],
           ),
         ),

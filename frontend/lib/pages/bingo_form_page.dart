@@ -52,6 +52,7 @@ class _BingoFormState extends State<BingoForm> {
   @override
   void initState() {
     super.initState();
+    print('before data => ${widget.beforeData}');
     size = widget.bingoSize;
     // ?? getBingoSize(context);
     // if (getGroupId(context) != null) {
@@ -64,39 +65,37 @@ class _BingoFormState extends State<BingoForm> {
 
   void createOrEditBingo() async {
     if (changed) {
+      final data = context.read<GlobalBingoProvider>().data;
+      if (data['title'] == null) {
+        return showAlert(
+          context,
+          title: '필수 항목 누락',
+          content: '빙고명을 입력해주세요',
+        )();
+      }
+      int cnt = 0;
+      for (var element in (data['items'] as List)) {
+        final title = element['title'].trim();
+        final content = element['content'].trim();
+        if (title != null && title != '' && content != null && content != '') {
+          cnt += 1;
+        }
+      }
+
+      if (cnt != size * size) {
+        return showAlert(
+          context,
+          title: '필수 항목 누락',
+          content: '빙고칸 내부를 채워주세요',
+        )();
+      }
+      print('bingo data => $data');
+
       bingoToThumb().then((_) {
-        final data = context.read<GlobalBingoProvider>().data;
-        if (data['title'] == null) {
-          return showAlert(
-            context,
-            title: '필수 항목 누락',
-            content: '빙고명을 입력해주세요',
-          )();
-        }
-        int cnt = 0;
-        for (var element in (data['items'] as List)) {
-          final title = element['title'].trim();
-          final content = element['content'].trim();
-          if (title != null &&
-              title != '' &&
-              content != null &&
-              content != '') {
-            cnt += 1;
-          }
-        }
-
-        if (cnt != size * size) {
-          return showAlert(
-            context,
-            title: '필수 항목 누락',
-            content: '빙고칸 내부를 채워주세요',
-          )();
-        }
-        print('bingo data => $data');
-
         if (widget.bingoId == null) {
           widget.beforeJoin ? joinGroup(data) : createGroup(data);
         } else {
+          //* 빙고 수정
           final bingoData = FormData.fromMap({
             'data': jsonEncode(data),
             'thumbnail': MultipartFile.fromBytes(
@@ -104,10 +103,6 @@ class _BingoFormState extends State<BingoForm> {
               filename: 'thumbnail.png',
               contentType: MediaType('image', 'png'),
             ),
-            'img': widget.groupImg != null
-                ? MultipartFile.fromFileSync(widget.groupImg!.path,
-                    contentType: MediaType('image', 'png'))
-                : null,
           });
           print(widget.bingoId);
           BingoProvider()
@@ -151,6 +146,7 @@ class _BingoFormState extends State<BingoForm> {
   }
 
   void createGroup(DynamicMap bingoData) {
+    print('data => ${widget.beforeData}, ㅠㅐㅁ');
     final formData = FormData.fromMap({
       'data': jsonEncode(widget.beforeData),
       'board_data': jsonEncode(bingoData),
@@ -160,8 +156,10 @@ class _BingoFormState extends State<BingoForm> {
         contentType: MediaType('image', 'png'),
       ),
       'img': widget.groupImg != null
-          ? MultipartFile.fromFileSync(widget.groupImg!.path,
-              contentType: MediaType('image', 'png'))
+          ? MultipartFile.fromFileSync(
+              widget.groupImg!.path,
+              contentType: MediaType('image', 'png'),
+            )
           : null,
     });
     GroupProvider().createOwnGroup(formData).then((groupId) {
@@ -199,6 +197,7 @@ class _BingoFormState extends State<BingoForm> {
         print('form data : $bingoData');
         print('빙고 생성 성공');
         if (widget.needAuth == true) {
+          toBack(context);
           toBack(context);
           showAlert(
             context,
