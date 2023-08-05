@@ -368,6 +368,7 @@ class GroupChatCreateView(APIView):
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
             'item_id': -1,
+            'title': '',
             'id': RedisChat(group_id).getLength()
         }
 
@@ -426,6 +427,7 @@ class GroupReviewCreateView(APIView):
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
             'item_id': item_id,
+            'title': BoardItem.objects.get(id=item_id).title,
             'id': RedisChat(group_id).getLength()
         }
 
