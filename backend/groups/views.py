@@ -426,8 +426,7 @@ class GroupReviewCreateView(APIView):
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
-            'item_id': item_id,
-            'title': BoardItem.objects.get(id=item_id).title,
+            'item_id': int(item_id),
             'id': RedisChat(group_id).getLength()
         }
 
