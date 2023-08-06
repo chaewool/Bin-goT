@@ -131,7 +131,7 @@ class GroupDetailView(APIView):
         ranker = RedisRanker(group_id)
         rank = []
         for ranker_id in ranker.getTops(3):
-            r = get_user_model.objects.get(id=ranker_id)
+            r = get_user_model().objects.get(id=ranker_id)
             rank.append({
                 'user_id': ranker_id, 
                 'nickname': Participate.objects.get(group=group, user=r).rand_name, 
