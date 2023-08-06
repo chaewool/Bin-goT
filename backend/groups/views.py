@@ -418,7 +418,7 @@ class GroupReviewCreateView(APIView):
         
         if not participate.exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         chat = {
             'user_id': user.id,
             'badge_id': user.badge,
@@ -427,7 +427,7 @@ class GroupReviewCreateView(APIView):
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
             'item_id': item_id,
-            'title': BoardItem.objects.get(board=Board.objects.get(user=user, group=group), id=item_id),
+            'title': BoardItem.objects.get(board=Board.objects.get(user=user, group=group), item_id=item_id).title,
             'id': RedisChat(group_id).getLength()
         }
 
