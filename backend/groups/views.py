@@ -406,7 +406,7 @@ class GroupReviewCreateView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         content = request.data.get('content')
-        item_id = request.data.get('item_id')
+        item_id = int(request.data.get('item_id'))
         img = request.FILES.get('img')
         participate = Participate.objects.filter(user=user, group=group)
 
@@ -426,7 +426,8 @@ class GroupReviewCreateView(APIView):
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
-            'item_id': int(item_id),
+            'item_id': item_id,
+            'title': BoardItem.objects.get(board=Board.objects.get(user=user, group=group), id=item_id),
             'id': RedisChat(group_id).getLength()
         }
 
@@ -469,8 +470,8 @@ class GroupReviewCheckView(APIView):
         if review['reviewed']:
             return Response(data={'message': '이미 인증된 요청입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        board = Board.objects.filter(user=review_user, group=group)[0]
-        board_item = BoardItem.objects.filter(board=board)
+        board = Board.objects.get(user=review_user, group=group)
+        board_item = BoardItem.objects.get(board=board, item_id=int(review['item_id']))
         
         if board_item.finished:
             return Response(data={'message': '이미 완료된 항목입니다.'}, status=status.HTTP_400_BAD_REQUEST)

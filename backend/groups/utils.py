@@ -37,11 +37,11 @@ def check_cnt_boarditems_complete(user, group, board_item):
     board = Board.objects.get(user=user, group=group)
     
     cnt = 0
-    for item in board.items:
+    for item in board.items.all():
         if item.finished:
             cnt += 1
     
-    if cnt == board.size ** 2:
+    if cnt == group.size ** 2:
         board.finished = True
         board.save()
         
