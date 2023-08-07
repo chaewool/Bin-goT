@@ -1,5 +1,4 @@
 import 'package:bin_got/fcm_settings.dart';
-import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -27,24 +26,25 @@ void main() async {
 
   // firebase 초기화
   await Firebase.initializeApp(
-    // options: DefaultFirebaseOptions.currentPlatform,
     options: DefaultFirebaseOptions.currentPlatform,
   );
   initFCM();
-  final PendingDynamicLinkData? initialLink =
-      await FirebaseDynamicLinks.instance.getInitialLink();
-  print('initial link => $initialLink');
 
-  if (initialLink != null) {
-    final Uri deepLink = initialLink.link;
-    print('deep link => $deepLink');
-    toOtherPage(context as BuildContext,
-        page: const InputPassword(
-          isPublic: true,
-          groupId: 2,
-          needCheck: true,
-        ))();
-  }
+  //* 외부 링크를 통해 앱에 들어올 경우
+  // final PendingDynamicLinkData? initialLink =
+  //     await FirebaseDynamicLinks.instance.getInitialLink();
+  // print('initial link => $initialLink');
+
+  // if (initialLink != null) {
+  //   final Uri deepLink = initialLink.link;
+  //   print('deep link => $deepLink');
+  //   toOtherPage(context as BuildContext,
+  //       page: const InputPassword(
+  //         isPublic: true,
+  //         groupId: 2,
+  //         needCheck: true,
+  //       ))();
+  // }
 
   //* 앱이 실행 중인 경우
   FirebaseDynamicLinks.instance.onLink.listen(

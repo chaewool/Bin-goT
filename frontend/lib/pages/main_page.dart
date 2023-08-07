@@ -16,7 +16,8 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   bool isSearchMode = false;
-  double boxHeight = 0;
+  double boxHeight = 100;
+  double radius = 40;
 
   void changeSearchMode() {
     setState(() {
@@ -50,8 +51,7 @@ class _MainState extends State<Main> {
         body: Stack(
           children: [
             CustomBoxContainer(
-              height:
-                  getHeight(context) - 50 - MediaQuery.of(context).padding.top,
+              height: boxHeight,
               // color: backgroundColor,
               hasRoundEdge: false,
               child: Column(
@@ -66,6 +66,47 @@ class _MainState extends State<Main> {
                 ],
               ),
             ),
+
+            //* bottom bar
+            // Positioned(
+            //   top: getHeight(context) - 4 * radius,
+            //   child: Stack(
+            //     children: [
+            //       Positioned(
+            //         // top: getHeight(context) - 3.5 * radius,
+            //         // top: radius,
+            //         child: CustomBoxContainer(
+            //           width: getWidth(context),
+            //           color: whiteColor,
+            //           boxShadow: const [defaultShadow],
+            //           child: Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             children: [
+            //               IconButtonInRow(
+            //                 icon: settingsIcon,
+            //                 onPressed:
+            //                     toOtherPage(context, page: const MyPage()),
+            //               ),
+            //               IconButtonInRow(onPressed: () {}, icon: searchIcon)
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //       Positioned(
+            //         left: (getWidth(context) - 2 * radius) / 2,
+            //         child: CircleContainer(
+            //             radius: radius,
+            //             child: IconButtonInRow(
+            //               onPressed: toOtherPage(
+            //                 context,
+            //                 page: const GroupForm(),
+            //               ),
+            //               icon: createGroupIcon,
+            //             )),
+            //       )
+            //     ],
+            //   ),
+            // ),
             watchPressed(context)
                 ? const CustomToast(content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다')
                 : const SizedBox(),

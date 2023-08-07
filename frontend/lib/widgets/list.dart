@@ -254,7 +254,7 @@ class _ChatListItemState extends State<ChatListItem> {
                         ],
                       ),
                       // if (widget.data.itemId != -1)
-                      // CustomText(content: widget.data.),
+                      //   CustomText(content: widget.data.title),
                       if (widget.data.hasImage == true)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -274,9 +274,12 @@ class _ChatListItemState extends State<ChatListItem> {
                         ),
                       if (widget.data.itemId != -1)
                         reviewed
-                            ? const CustomText(
-                                content: '인증된 채팅입니다',
-                                color: greyColor,
+                            ? const Center(
+                                child: CustomText(
+                                  content: '인증된 채팅입니다',
+                                  color: greyColor,
+                                  fontSize: FontSize.smallSize,
+                                ),
                               )
                             : Center(
                                 child: CustomButton(

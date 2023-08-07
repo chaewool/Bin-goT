@@ -289,17 +289,10 @@ class _MyTabBarState extends State<MyTabBar> {
   MyGroupList groupTabData = [];
   bool hasNotGroup = false;
   MyBingoList bingoTabData = [];
-  List<List<StringList>> buttonOptions = [
-    [
-      ['종료일 ▼', '종료일 ▲'],
-      ['전체', '진행 중', '완료'],
-    ],
-    [
-      ['종료일 ▼', '종료일 ▲'],
-      ['전체', '진행 중', '완료'],
-    ]
+  List<StringList> buttonOptions = [
+    ['종료일 ▼', '종료일 ▲'],
+    ['전체', '진행 중', '완료'],
   ];
-  late List<StringList> presentOptions;
   late int presentIdx;
 
   List<IntList> idxList = [
@@ -307,7 +300,7 @@ class _MyTabBarState extends State<MyTabBar> {
     [1, 0]
   ];
   void changeIdx(int idx) {
-    if (idxList[presentIdx][idx] < presentOptions[idx].length - 1) {
+    if (idxList[presentIdx][idx] < buttonOptions[idx].length - 1) {
       setState(() {
         idxList[presentIdx][idx] += 1;
       });
@@ -319,12 +312,15 @@ class _MyTabBarState extends State<MyTabBar> {
 
     if (presentIdx == 0) {
       //* 그룹이 있을 경우에만 적용
-      // if (!groupTabData.hasNotGroup && groupTabData.)
-      initLoadingData(context, 1);
-      groupTabData.clear();
-      setGroupTabData();
-    } else {
+      if (idx == 1 || groupTabData.isNotEmpty) {
+        initLoadingData(context, 1);
+        setLastId(context, 1, 0);
+        groupTabData.clear();
+        setGroupTabData();
+      }
+    } else if (idx == 1 || bingoTabData.isNotEmpty) {
       initLoadingData(context, 2);
+      setLastId(context, 2, 0);
       bingoTabData.clear();
       setBingoTabData();
     }
@@ -334,7 +330,6 @@ class _MyTabBarState extends State<MyTabBar> {
     if (presentIdx != index) {
       setState(() {
         presentIdx = index;
-        presentOptions = buttonOptions[presentIdx];
       });
       // if (index == 1 && bingoTabData == null) {
       //   setBingoTabData();
@@ -343,6 +338,7 @@ class _MyTabBarState extends State<MyTabBar> {
   }
 
   FutureBool setGroupTabData([bool more = true]) {
+    print('last id => ${getLastId(context, 1)}');
     final answer = UserInfoProvider().getMainGroupData({
       'order': idxList[0][0],
       'filter': idxList[0][1],
@@ -354,7 +350,9 @@ class _MyTabBarState extends State<MyTabBar> {
       print('group tab bar : ${groupData.groups.length}');
       // setState(() {
       // });
-      groupTabData.addAll(groupData.groups);
+      if (groupData.groups.isNotEmpty) {
+        groupTabData.addAll(groupData.groups);
+      }
       hasNotGroup = groupData.hasNotGroup;
       setLoading(context, false);
       if (more) {
@@ -372,12 +370,15 @@ class _MyTabBarState extends State<MyTabBar> {
   }
 
   void setBingoTabData([bool more = true]) {
+    print('--------------- bingo tab last id => ${getLastId(context, 2)}');
     UserInfoProvider().getMainBingoData({
       'order': idxList[1][0],
       'filter': idxList[1][1],
       'idx': getLastId(context, 2),
     }).then((bingoData) {
-      bingoTabData = bingoData;
+      if (bingoData.isNotEmpty) {
+        bingoTabData.addAll(bingoData);
+      }
       setLoading(context, false);
       if (more) {
         setWorking(context, false);
@@ -390,7 +391,6 @@ class _MyTabBarState extends State<MyTabBar> {
   @override
   void initState() {
     super.initState();
-    presentOptions = buttonOptions[0];
     presentIdx = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initLoadingData(context, 1);
@@ -464,7 +464,7 @@ class _MyTabBarState extends State<MyTabBar> {
           for (int i = 0; i < 2; i += 1)
             Center(
               child: CustomTextButton(
-                content: presentOptions[i][idxList[presentIdx][i]],
+                content: buttonOptions[i][idxList[presentIdx][i]],
                 fontSize: FontSize.smallSize,
                 onTap: () => changeIdx(i),
               ),
