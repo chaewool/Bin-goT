@@ -66,7 +66,6 @@ class _MainState extends State<Main> {
                 ],
               ),
             ),
-
             //* bottom bar
             // Positioned(
             //   top: getHeight(context) - 4 * radius,
@@ -112,6 +111,9 @@ class _MainState extends State<Main> {
                 : const SizedBox(),
           ],
         ),
+        // bottomNavigationBar: SnakeNavigationBar.color(
+
+        // ),
       ),
     );
   }

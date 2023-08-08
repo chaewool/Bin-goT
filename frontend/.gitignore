@@ -46,5 +46,6 @@ app.*.map.json
 # private information
 /lib/widgets/better_ui.dart
 /lib/models/tab_icon_data.dart
+/lib/widgets/bottombar_example.dart
 .env
 /android/keystore/
