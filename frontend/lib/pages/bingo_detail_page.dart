@@ -107,73 +107,81 @@ class BingoDetail extends StatelessWidget {
                   final int achieve = (data['achieve']! * 100).toInt();
                   groupId = data['group'];
                   setBingoData(context, data);
+                  final size = getBingoSize(context)!;
+                  final length = size * size;
+                  initFinished(context, length);
+                  for (int i = 0; i < length; i += 1) {
+                    setFinished(context, i, data['items'][i]['finished']);
+                  }
 
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        flex: 2,
-                        child: CustomText(
-                          content: data['title'],
-                          fontSize: FontSize.titleSize,
-                        ),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
+                  return RepaintBoundary(
+                    key: globalKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          flex: 2,
                           child: CustomText(
-                            content: data['username'],
-                            fontSize: FontSize.smallSize,
+                            content: data['title'],
+                            fontSize: FontSize.titleSize,
                           ),
                         ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            if (DateTime.now().difference(
-                                  DateTime.parse(getStart(context)!),
-                                ) <
-                                Duration.zero)
-                              IconButtonInRow(
-                                onPressed: toOtherPage(
-                                  context,
-                                  page: BingoForm(
-                                    bingoId: bingoId,
-                                    bingoSize: bingoSize,
-                                    needAuth: false,
-                                  ),
-                                ),
-                                icon: editIcon,
-                              ),
-                            const SizedBox(width: 20)
-                          ],
+                        Flexible(
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: CustomText(
+                              content: data['username'],
+                              fontSize: FontSize.smallSize,
+                            ),
+                          ),
                         ),
-                      ),
-                      Flexible(
-                        flex: 6,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: RepaintBoundary(
-                            key: globalKey,
+                        Flexible(
+                          flex: 1,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (DateTime.now().difference(
+                                    DateTime.parse(getStart(context)!),
+                                  ) <
+                                  Duration.zero)
+                                IconButtonInRow(
+                                  onPressed: toOtherPage(
+                                    context,
+                                    page: BingoForm(
+                                      bingoId: bingoId,
+                                      bingoSize: bingoSize,
+                                      needAuth: false,
+                                    ),
+                                  ),
+                                  icon: editIcon,
+                                ),
+                              const SizedBox(width: 20)
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          flex: 6,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
                             child: BingoBoard(
                               isDetail: true,
                               bingoSize: bingoSize,
                             ),
                           ),
                         ),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        child: CustomText(
-                          content: '달성률 : $achieve%',
-                          fontSize: FontSize.largeSize,
-                        ),
-                      )
-                    ],
+                        Flexible(
+                          flex: 2,
+                          child: Center(
+                            child: CustomText(
+                              content: '달성률 : $achieve%',
+                              fontSize: FontSize.largeSize,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   );
                 }
                 return const Center(
@@ -184,9 +192,10 @@ class BingoDetail extends StatelessWidget {
               const CustomToast(content: '인증 요청되었습니다.')
           ],
         ),
-        bottomNavigationBar: BottomBar(
-          isMember: true,
+        bottomNavigationBar: GroupMainBottomBar(
           groupId: groupId,
+          selectedIndex: 1,
+          bingoId: bingoId,
         ) // 수정 필요,
         );
   }

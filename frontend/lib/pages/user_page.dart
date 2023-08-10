@@ -6,6 +6,7 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
+import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/modal.dart';
@@ -195,6 +196,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: whiteColor,
       resizeToAvoidBottomInset: false,
       appBar: const MyPageAppBar(),
       body: Column(
@@ -334,6 +336,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
           )
         ],
       ),
+      bottomNavigationBar: const MainBottomBar(selectedIndex: 1),
     );
   }
 

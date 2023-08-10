@@ -1,9 +1,6 @@
 import 'package:bin_got/fcm_settings.dart';
-import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
-import 'package:bin_got/utilities/global_func.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -11,7 +8,6 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:path/path.dart';
 
 int? groupId;
 int? isPublic;
@@ -27,40 +23,41 @@ void main() async {
 
   // firebase 초기화
   await Firebase.initializeApp(
-    // options: DefaultFirebaseOptions.currentPlatform,
     options: DefaultFirebaseOptions.currentPlatform,
   );
   initFCM();
-  final PendingDynamicLinkData? initialLink =
-      await FirebaseDynamicLinks.instance.getInitialLink();
-  print('initial link => $initialLink');
 
-  if (initialLink != null) {
-    final Uri deepLink = initialLink.link;
-    print('deep link => $deepLink');
-    toOtherPage(context as BuildContext,
-        page: const InputPassword(
-          isPublic: true,
-          groupId: 2,
-          needCheck: true,
-        ))();
-  }
+  //* 외부 링크를 통해 앱에 들어올 경우
+  // final PendingDynamicLinkData? initialLink =
+  //     await FirebaseDynamicLinks.instance.getInitialLink();
+  // print('initial link => $initialLink');
+
+  // if (initialLink != null) {
+  //   final Uri deepLink = initialLink.link;
+  //   print('deep link => $deepLink');
+  //   toOtherPage(context as BuildContext,
+  //       page: const InputPassword(
+  //         isPublic: true,
+  //         groupId: 2,
+  //         needCheck: true,
+  //       ))();
+  // }
 
   //* 앱이 실행 중인 경우
-  FirebaseDynamicLinks.instance.onLink.listen(
-    (pendingDynamicLinkData) {
-      print(pendingDynamicLinkData);
-      // Set up the `onLink` event listener next as it may be received here
-      final Uri deepLink = pendingDynamicLinkData.link;
-      print(deepLink);
-      // Example of using the dynamic link to push the user to a different screen
-      toOtherPage(context as BuildContext,
-          page: const Intro(
-            isPublic: true,
-            groupId: 2,
-          ))();
-    },
-  );
+  // FirebaseDynamicLinks.instance.onLink.listen(
+  //   (pendingDynamicLinkData) {
+  //     print(pendingDynamicLinkData);
+  //     // Set up the `onLink` event listener next as it may be received here
+  //     final Uri deepLink = pendingDynamicLinkData.link;
+  //     print(deepLink);
+  //     // Example of using the dynamic link to push the user to a different screen
+  //     toOtherPage(context as BuildContext,
+  //         page: const Intro(
+  //           isPublic: true,
+  //           groupId: 2,
+  //         ))();
+  //   },
+  // );
 
   runApp(const App());
 }

@@ -62,7 +62,7 @@ class BingoProvider extends ApiProvider {
     try {
       final response = await dioWithTokenForm()
           .post(groupReviewCreateUrl(groupId), data: completeData);
-
+      print('------------ response => $response');
       return response.data;
     } catch (error) {
       print(error);

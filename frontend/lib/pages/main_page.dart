@@ -1,6 +1,9 @@
 import 'package:bin_got/utilities/global_func.dart';
-import 'package:bin_got/widgets/app_bar.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
+import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/container.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/toast.dart';
@@ -16,7 +19,8 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   bool isSearchMode = false;
-  double boxHeight = 0;
+  double boxHeight = 100;
+  double radius = 40;
 
   void changeSearchMode() {
     setState(() {
@@ -46,31 +50,82 @@ class _MainState extends State<Main> {
     return WillPopScope(
       onWillPop: () => exitApp(context),
       child: Scaffold(
-        appBar: MainBar(onPressed: changeSearchMode),
-        body: Stack(
-          children: [
-            CustomBoxContainer(
-              height:
-                  getHeight(context) - 50 - MediaQuery.of(context).padding.top,
-              // color: backgroundColor,
-              hasRoundEdge: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  if (isSearchMode) const CustomSearchBar(isMain: true),
-                  const SizedBox(height: 15),
-                  const Expanded(
-                    // height: MediaQuery.of(context).size.height - 200,
-                    child: MyTabBar(),
-                  ),
-                ],
+        // appBar: MainBar(onPressed: changeSearchMode),
+        body: Padding(
+          padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+          child: Stack(
+            children: [
+              CustomBoxContainer(
+                height: boxHeight,
+                // color: backgroundColor,
+                hasRoundEdge: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    if (isSearchMode) const CustomSearchBar(isMain: true),
+                    const SizedBox(height: 15),
+                    const Expanded(
+                      // height: MediaQuery.of(context).size.height - 200,
+                      child: MyTabBar(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            watchPressed(context)
-                ? const CustomToast(content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다')
-                : const SizedBox(),
-          ],
+              //* bottom bar
+              // Positioned(
+              //   top: getHeight(context) - 4 * radius,
+              //   child: Stack(
+              //     children: [
+              //       Positioned(
+              //         // top: getHeight(context) - 3.5 * radius,
+              //         // top: radius,
+              //         child: CustomBoxContainer(
+              //           width: getWidth(context),
+              //           color: whiteColor,
+              //           boxShadow: const [defaultShadow],
+              //           child: Row(
+              //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //             children: [
+              //               IconButtonInRow(
+              //                 icon: settingsIcon,
+              //                 onPressed:
+              //                     toOtherPage(context, page: const MyPage()),
+              //               ),
+              //               IconButtonInRow(onPressed: () {}, icon: searchIcon)
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //       Positioned(
+              //         left: (getWidth(context) - 2 * radius) / 2,
+              //         child: CircleContainer(
+              //             radius: radius,
+              //             child: IconButtonInRow(
+              //               onPressed: toOtherPage(
+              //                 context,
+              //                 page: const GroupForm(),
+              //               ),
+              //               icon: createGroupIcon,
+              //             )),
+              //       )
+              //     ],
+              //   ),
+              // ),
+              Positioned(
+                left: getWidth(context) - 100,
+                top: getHeight(context) - 200,
+                child: FloatingActionButton(
+                  backgroundColor: whiteColor,
+                  onPressed: changeSearchMode,
+                  child: const CustomIcon(icon: searchIcon),
+                ),
+              ),
+              if (watchPressed(context))
+                const CustomToast(content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다')
+            ],
+          ),
         ),
+        bottomNavigationBar: const MainBottomBar(selectedIndex: 0),
       ),
     );
   }

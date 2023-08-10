@@ -351,24 +351,26 @@ class GlobalBingoProvider extends ChangeNotifier {
   static int? _bingoId;
   static bool _isCheckTheme = false;
   static int _lastId = 0;
+  static BoolList _finished = [];
   // static int _page = 1;
 
   //* getter
   DynamicMap get data => _data;
   // DynamicMap get tempData => _tempData;
   int? get groupId => _data['group'];
-  String? get title => _data['title'];
-  int? get background => _data['background'];
-  bool get hasBlackBox => _data['is_black'];
-  bool get hasBorder => _data['has_border'];
-  bool get hasRoundEdge => _data['has_round_edge'];
   int? get gap => _data['around_kan'];
   int? get checkIcon => _data['complete_icon'];
   int? get font => _data['font'];
-  List get items => _data['items'];
+  int? get background => _data['background'];
   int? get bingoId => _bingoId;
-  bool get isCheckTheme => _isCheckTheme;
   int? get lastId => _lastId;
+  String? get title => _data['title'];
+  bool get hasBlackBox => _data['is_black'];
+  bool get hasBorder => _data['has_border'];
+  bool get hasRoundEdge => _data['has_round_edge'];
+  bool get isCheckTheme => _isCheckTheme;
+  BoolList get finished => _finished;
+  List get items => _data['items'];
   // int get page => _page;
 
   //* private
@@ -398,6 +400,11 @@ class GlobalBingoProvider extends ChangeNotifier {
   //   _setPage(_page + 1);
   //   notifyListeners();
   // }
+  void initFinished(int size) =>
+      _finished = List.generate(size, (index) => false);
+
+  void setFinished(int index, bool value) => _setFinished(index, value);
+  void _setFinished(int index, bool value) => _finished[index] = value;
 
   void _changeData(int tabIndex, int i) {
     switch (tabIndex) {
@@ -448,7 +455,9 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   void _changeItem(int index1, int index2) {
     final content1 = _data['items'][index1];
+    content1['item_id'] = index2;
     final content2 = _data['items'][index2];
+    content2['item_id'] = index1;
     _setItem(index1, content2);
     _setItem(index2, content1);
   }

@@ -1,20 +1,19 @@
 import 'package:bin_got/models/group_model.dart';
-import 'package:bin_got/pages/bingo_detail_page.dart';
-import 'package:bin_got/pages/bingo_form_page.dart';
 import 'package:bin_got/pages/group_rank_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/container.dart';
-import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class GroupMain extends StatefulWidget with WidgetsBindingObserver {
+class GroupMain extends StatefulWidget
+// with WidgetsBindingObserver
+{
   final int groupId;
   final GroupDetailModel data;
   const GroupMain({
@@ -41,11 +40,11 @@ class _GroupMainState extends State<GroupMain> {
     // WidgetsBinding.instance.addObserver(this);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    // WidgetsBinding.instance.removeObserver(this);
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   // WidgetsBinding.instance.removeObserver(this);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -68,49 +67,52 @@ class _GroupMainState extends State<GroupMain> {
         ),
         body: SingleChildScrollView(
           child: CustomBoxContainer(
-              child: ColWithPadding(
-            vertical: 30,
-            horizontal: 30,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              widget.data.hasImage
-                  ? CachedNetworkImage(
-                      imageUrl:
-                          '${dotenv.env['fileUrl']}/groups/${widget.groupId}',
-                      placeholder: (context, url) =>
-                          const SizedBox(width: 200, height: 200),
-                    )
-                  : const SizedBox(),
-              groupHeader(widget.data),
-              const SizedBox(height: 20),
-              memberState != 0
-                  ? CustomButton(
-                      onPressed: toOtherPage(
-                        context,
-                        page: widget.data.bingoId != 0
-                            ? BingoDetail(bingoId: bingoId!)
-                            : BingoForm(
-                                bingoSize: size,
-                                needAuth: needAuth,
-                                beforeJoin: true,
-                              ),
-                      ),
-                      content: bingoId != 0 ? '내 빙고 보기' : '내 빙고 만들기',
-                    )
-                  : const SizedBox(),
-              ShowContentBox(
-                  contentTitle: '설명', content: widget.data.description ?? ''),
-              ShowContentBox(
-                  contentTitle: '규칙', content: widget.data.rule ?? ''),
-              // groupRankTop3(context, data),
-            ],
-          )),
+            child: ColWithPadding(
+              vertical: 30,
+              horizontal: 30,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                widget.data.hasImage
+                    ? CachedNetworkImage(
+                        imageUrl:
+                            '${dotenv.env['fileUrl']}/groups/${widget.groupId}',
+                        placeholder: (context, url) =>
+                            const SizedBox(width: 200, height: 200),
+                      )
+                    : const SizedBox(),
+                groupHeader(widget.data),
+                const SizedBox(height: 20),
+                // memberState != 0
+                //     ? CustomButton(
+                //         onPressed: toOtherPage(
+                //           context,
+                //           page: widget.data.bingoId != 0
+                //               ? BingoDetail(bingoId: bingoId!)
+                //               : BingoForm(
+                //                   bingoSize: size,
+                //                   needAuth: needAuth,
+                //                   beforeJoin: true,
+                //                 ),
+                //         ),
+                //         content: bingoId != 0 ? '내 빙고 보기' : '내 빙고 만들기',
+                //       )
+                //     : const SizedBox(),
+                ShowContentBox(
+                    contentTitle: '설명', content: widget.data.description ?? ''),
+                ShowContentBox(
+                    contentTitle: '규칙', content: widget.data.rule ?? ''),
+                // groupRankTop3(context, data),
+              ],
+            ),
+          ),
         ),
-        bottomNavigationBar: BottomBar(
+        bottomNavigationBar: GroupMainBottomBar(
           isMember: memberState != 0,
           groupId: widget.groupId,
           needAuth: needAuth,
           size: size,
+          selectedIndex: 0,
+          bingoId: bingoId,
         ),
       ),
     );
