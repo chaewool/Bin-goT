@@ -15,8 +15,20 @@ class BoardItemCreateSerializer(serializers.ModelSerializer):
         exclude = ('board', 'id', 'check_cnt', 'finished')
 
 
+class BoardItemCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BoardItem
+        exclude = ('board', 'id', 'check_cnt', 'finished')
+
+
+class BoardItemDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BoardItem
+        exclude = ('board', 'id')
+
+
 class BoardDetailSerializer(serializers.ModelSerializer):
-    items = BoardItemCreateSerializer(many=True, read_only=True)
+    items = BoardItemDetailSerializer(many=True, read_only=True)
     
     class Meta:
         model = Board
