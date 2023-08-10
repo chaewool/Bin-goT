@@ -67,21 +67,26 @@ class UserInfoProvider extends ApiProvider {
           .get(mainGroupTabUrl, queryParameters: queryParameters);
 
       final data = response.data;
-      print('data : $data');
-      // if (data.isNotEmpty) {
-      MyGroupList myGroupList = data['groups']
-          .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
-          .toList();
+      // print('data : $data');
+      MyGroupList myGroupList;
+      if (data['groups'].isNotEmpty) {
+        myGroupList = data['groups']
+            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
+            .toList();
+        print(
+            '요청 last_id => ${myGroupList.last.id}, length = ${myGroupList.length}');
+        GlobalGroupProvider()
+            .setLastId(myGroupList.length == 10 ? myGroupList.last.id : -1);
+      } else {
+        myGroupList = [];
+        GlobalGroupProvider().setLastId(-1);
+      }
       bool hasNotGroup = data['is_recommend'];
       print('recommend => $hasNotGroup');
       // GlobalGroupProvider().setTotalPage(data['last_page']);
-      print(
-          '요청 last_id => ${myGroupList.last.id}, length = ${myGroupList.length}');
 
       // GlobalGroupProvider()
       //     .setLastId(myGroupList.length == 10 ? data['last_idx'] : -1);
-      GlobalGroupProvider()
-          .setLastId(myGroupList.length == 10 ? myGroupList.last.id : -1);
 
       print(GlobalGroupProvider().lastId);
 
@@ -105,15 +110,17 @@ class UserInfoProvider extends ApiProvider {
       final data = response.data['boards'];
       // GlobalBingoProvider().setTotalPage(response.data['last_page']);
 
-      // if (data.isNotEmpty) {
-      MyBingoList myBingoList = data
-          .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
-          .toList();
-      GlobalBingoProvider()
-          .setLastId(myBingoList.length == 10 ? myBingoList.last.id : -1);
+      if (data.isNotEmpty) {
+        MyBingoList myBingoList = data
+            .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
+            .toList();
+        GlobalBingoProvider()
+            .setLastId(myBingoList.length == 10 ? myBingoList.last.id : -1);
 
-      print('data : $data');
-      return myBingoList;
+        print('data : $data');
+        return myBingoList;
+      }
+      return [];
       // }
       // return [];
     } catch (error) {

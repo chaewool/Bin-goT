@@ -30,25 +30,24 @@ class CustomSearchBar extends StatefulWidget {
 }
 
 class _CustomSearchBarState extends State<CustomSearchBar> {
-  final List<String> period = <String>[
+  final StringList period = <String>[
     '기간 미선택',
-    '한 달',
-    '세 달',
-    '여섯 달',
-    '아홉 달',
-    '1년',
-    '하루',
+    '하루 ~ 한 달',
+    '한 달 ~ 세 달',
+    '세 달 ~ 여섯 달',
+    '여섯 달 ~ 아홉 달',
+    '아홉 달 ~ 1년',
   ];
   late bool privateGroup, publicGroup;
   StringMap keyword = {};
-  late double end;
-  late double start;
+  late double index;
+  late int sortIdx;
 
   @override
   void initState() {
     super.initState();
-    end = widget.period.toDouble();
-    start = end == 0.0 ? 0 : end - 1;
+    index = widget.period.toDouble();
+    sortIdx = widget.sortIdx;
     privateGroup = widget.public % 2 == 0;
     publicGroup = widget.public < 2;
     keyword['value'] = widget.query ?? '';
@@ -66,7 +65,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
         ),
       )();
     }
-    if (keyword['value'] != '' || end != 0) {
+    if (keyword['value'] != '' || index != 0) {
       int result = 3;
       if (publicGroup) {
         result -= 2;
@@ -79,8 +78,9 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
         context,
         page: SearchGroup(
           public: result,
-          period: end.toInt(),
+          period: index.toInt(),
           query: keyword['value'],
+          order: sortIdx,
         ),
       )();
     } else {
@@ -110,6 +110,12 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     });
   }
 
+  void changeSort(int value) {
+    setState(() {
+      sortIdx = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
@@ -134,31 +140,77 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const SizedBox(),
-              RangeSlider(
+              Slider(
                 min: 0,
                 max: 5,
-                values: RangeValues(start, end),
-                divisions: 5,
-                labels: RangeLabels(
-                    period[start == 0.0 && end != 0.0 ? 6 : start.toInt()],
-                    period[end.toInt()]),
+                value: index,
                 onChanged: (value) {
-                  final newStart = value.start;
-                  final newEnd = value.end;
                   setState(() {
-                    if (newEnd == 0) {
-                      end = 0;
-                      start = 0;
-                    } else if (end != newEnd) {
-                      end = newEnd;
-                      start = newEnd - 1;
-                    } else if (start < 5 && start != newStart) {
-                      start = newStart;
-                      end = newStart + 1;
-                    }
+                    index = value;
                   });
                 },
+              ),
+              CustomText(
+                content: index.toInt() != 0 ? period[index.toInt()] : '',
+                fontSize: FontSize.smallSize,
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CustomBoxContainer(
+                onTap: () => changeSort(0),
+                color: sortIdx == 0 ? greenColor : whiteColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomText(
+                    content: '시작일 ▲',
+                    color: sortIdx == 0 ? whiteColor : blackColor,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              CustomBoxContainer(
+                onTap: () => changeSort(1),
+                color: sortIdx == 1 ? greenColor : whiteColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomText(
+                    content: '시작일 ▼',
+                    color: sortIdx == 1 ? whiteColor : blackColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomBoxContainer(
+                onTap: changePublic,
+                color: publicGroup ? greenColor : whiteColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomText(
+                    content: '공개 그룹',
+                    color: publicGroup ? whiteColor : blackColor,
+                    fontSize: FontSize.smallSize,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              CustomBoxContainer(
+                onTap: changePrivate,
+                color: privateGroup ? greenColor : whiteColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomText(
+                    content: '비공개 그룹',
+                    color: privateGroup ? whiteColor : blackColor,
+                    fontSize: FontSize.smallSize,
+                  ),
+                ),
               ),
               CustomButton(
                 onPressed: onSearchAction,
@@ -166,24 +218,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               ),
             ],
           ),
-          Row(
-            children: [
-              CustomBoxContainer(
-                color: publicGroup ? greenColor : whiteColor,
-                child: CustomText(
-                  content: '공개 그룹',
-                  color: publicGroup ? whiteColor : blackColor,
-                ),
-              ),
-              CustomBoxContainer(
-                color: privateGroup ? greenColor : whiteColor,
-                child: CustomText(
-                  content: '비공개 그룹',
-                  color: privateGroup ? whiteColor : blackColor,
-                ),
-              ),
-            ],
-          )
         ],
       ),
     );

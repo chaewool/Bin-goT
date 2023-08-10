@@ -96,7 +96,7 @@ class _BingoBoardState extends State<BingoBoard> {
 }
 
 //* 빙고칸
-class EachBingo extends StatefulWidget {
+class EachBingo extends StatelessWidget {
   final bool isDetail;
   final int index;
   final int size;
@@ -109,62 +109,31 @@ class EachBingo extends StatefulWidget {
   });
 
   @override
-  State<EachBingo> createState() => _EachBingoState();
-}
-
-class _EachBingoState extends State<EachBingo> {
-  // final eachBoxKey = GlobalKey();
-  // Offset? position;
-  @override
-  void initState() {
-    super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   getOffset();
-    // });
-  }
-
-  // void getOffset() {
-  //   if (eachBoxKey.currentContext != null) {
-  //     final renderBox =
-  //         eachBoxKey.currentContext!.findRenderObject() as RenderBox;
-  //     setState(() {
-  //       position = renderBox.localToGlobal(Offset.zero);
-  //     });
-  //   }
-  // }
-
-  @override
   Widget build(BuildContext context) {
     Color convertedColor() => getHasBlackBox(context) ? whiteColor : blackColor;
     return Draggable<int>(
-      feedback: widget.isDetail
+      feedback: isDetail
           ? const SizedBox()
           : Transform.translate(
               offset: const Offset(50, 50),
               child: CustomBoxContainer(
-                // key: eachBoxKey,
                 color: whiteColor,
                 borderColor: greyColor,
                 width: 100,
                 height: 100,
                 hasRoundEdge: false,
                 child: Center(
-                  child: DefaultTextStyle(
-                    style: TextStyle(
-                      color: blackColor,
-                      fontFamily: getStringFont(context),
-                    ),
-                    child: Text(
-                      getItemTitle(context, widget.index) ?? '빙고칸 제목',
-                    ),
+                  child: CustomText(
+                    content: getItemTitle(context, index) ?? '빙고칸 제목',
+                    font: getStringFont(context),
                   ),
                 ),
               ),
             ),
-      childWhenDragging: widget.isDetail
+      childWhenDragging: isDetail
           ? draggableBox(context, convertedColor)
           : const CustomBoxContainer(color: whiteColor),
-      data: widget.index,
+      data: index,
       child: draggableBox(context, convertedColor),
     );
   }
@@ -173,14 +142,15 @@ class _EachBingoState extends State<EachBingo> {
       BuildContext context, Color Function() convertedColor) {
     return CustomBoxContainer(
       onTap: DateTime.now().difference(DateTime.parse(getStart(context)!)) <
-              Duration.zero
+                  Duration.zero ||
+              getFinished(context)![index]
           ? null
           : showModal(
               context,
               page: BingoModal(
-                index: widget.index,
-                cnt: widget.size * widget.size,
-                isDetail: widget.isDetail,
+                index: index,
+                cnt: size * size,
+                isDetail: isDetail,
               ),
             ),
       child: CustomBoxContainer(
@@ -192,22 +162,22 @@ class _EachBingoState extends State<EachBingo> {
             Center(
               child: CustomText(
                 color: convertedColor(),
-                content: getItemTitle(context, widget.index) ?? '빙고칸 제목',
+                content: getItemTitle(context, index) ?? '빙고칸 제목',
                 font: getStringFont(context),
                 center: true,
                 maxLines: 2,
                 cutText: true,
               ),
             ),
-            context.watch<GlobalBingoProvider>().isCheckTheme
-                ? Center(
-                    child: CustomIcon(
-                      icon: getCheckIconData(context),
-                      size: 80,
-                      color: convertedColor(),
-                    ),
-                  )
-                : const SizedBox(),
+            if (context.watch<GlobalBingoProvider>().isCheckTheme ||
+                (isDetail && getFinished(context)![index]))
+              Center(
+                child: CustomIcon(
+                  icon: getCheckIconData(context),
+                  size: 80,
+                  color: convertedColor(),
+                ),
+              ),
           ],
         ),
       ),

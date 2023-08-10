@@ -174,8 +174,8 @@ class _GroupChatState extends State<GroupChat> {
                     reverse: true,
                     data: chats,
                     mode: 0,
-                    emptyWidget: Column(
-                      children: const [
+                    emptyWidget: const Column(
+                      children: [
                         CustomText(
                           center: true,
                           fontSize: FontSize.titleSize,

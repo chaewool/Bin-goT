@@ -123,7 +123,7 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
     }
 
     return BottomAppBar(
-      color: greyColor,
+      color: greyColor.withOpacity(0.5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

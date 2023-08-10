@@ -424,6 +424,12 @@ void setBingoData(BuildContext context, DynamicMap data) =>
 void setItem(BuildContext context, int index, DynamicMap item) =>
     context.read<GlobalBingoProvider>().setItem(index, item);
 
+void initFinished(BuildContext context, int size) =>
+    context.read<GlobalBingoProvider>().initFinished(size);
+
+void setFinished(BuildContext context, int index, bool value) =>
+    context.read<GlobalBingoProvider>().setFinished(index, value);
+
 //* var
 DynamicMap getBingoData(BuildContext context) =>
     context.read<GlobalBingoProvider>().data;
@@ -442,6 +448,9 @@ bool getHasRoundEdge(BuildContext context) =>
 
 bool getHasBorder(BuildContext context) =>
     context.watch<GlobalBingoProvider>().hasBorder;
+
+BoolList? getFinished(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().finished;
 
 int? getGap(BuildContext context) => context.watch<GlobalBingoProvider>().gap;
 
