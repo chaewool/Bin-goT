@@ -18,7 +18,7 @@ def check_cnt_groups(user):
 
 
 def check_cnt_boarditems_complete(user, group, board_item):
-    board_item.finish = True
+    board_item.finished = True
     board_item.save()
     
     ranker = RedisRanker(group.id)
