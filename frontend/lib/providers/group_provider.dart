@@ -196,6 +196,7 @@ class GroupProvider extends ApiProvider {
       );
       final data = response.data;
       if (data.isNotEmpty) {
+        print(data);
         GroupChatList chats = data
             .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
             .toList();
@@ -236,8 +237,8 @@ class GroupProvider extends ApiProvider {
       print(groupReviewCheckUrl(groupId));
       final response = await dioWithToken()
           .put(groupReviewCheckUrl(groupId), data: {'review_id': reviewId});
-
-      return response.data;
+      print(response.data);
+      return true;
     } catch (error) {
       print(error);
       throw Error();

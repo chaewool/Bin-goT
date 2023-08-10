@@ -1,11 +1,8 @@
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
-import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
-import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -18,7 +15,7 @@ class SearchGroup extends StatefulWidget {
     super.key,
     required this.public,
     // this.page = 1,
-    this.order = 0,
+    required this.order,
     required this.period,
     required this.query,
   });
@@ -28,13 +25,13 @@ class SearchGroup extends StatefulWidget {
 }
 
 class _SearchGroupState extends State<SearchGroup> {
-  final StringList sortList = ['시작일 ▲', '시작일 ▼'];
-  final StringList filterList = ['공개', '비공개', '전체'];
+  // final StringList sortList = ['시작일 ▲', '시작일 ▼'];
+  // final StringList filterList = ['공개', '비공개', '전체'];
   MyGroupList groups = [];
   // bool showSort = false;
   // bool showFilter = false;
-  late int sortIdx;
-  late int filterIdx;
+  // late int sortIdx;
+  // late int filterIdx;
   // final filterKey = GlobalKey();
   // final sortKey = GlobalKey();
   // Offset? filterPosition;
@@ -50,8 +47,8 @@ class _SearchGroupState extends State<SearchGroup> {
       order: ${widget.order},
       period: ${widget.period},
 ''');
-    sortIdx = widget.order;
-    filterIdx = widget.public;
+    // sortIdx = widget.order;
+    // filterIdx = widget.public;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initLoadingData(context, 0);
@@ -93,14 +90,14 @@ class _SearchGroupState extends State<SearchGroup> {
       period: widget.period,
     )
         .then((newGroups) {
-      if (newGroups is MyGroupList) {
-        groups.addAll(newGroups);
-        setLoading(context, false);
-        if (more) {
-          setWorking(context, false);
-          setAdditional(context, false);
-        }
+      // if (newGroups is MyGroupList) {
+      groups.addAll(newGroups);
+      setLoading(context, false);
+      if (more) {
+        setWorking(context, false);
+        setAdditional(context, false);
       }
+      // }
     });
     // increasePage(context, 0);
   }
@@ -127,11 +124,11 @@ class _SearchGroupState extends State<SearchGroup> {
   //   });
   // }
 
-  void changeSort() {
-    setState(() {
-      sortIdx = 1 - sortIdx;
-    });
-  }
+  // void changeSort() {
+  //   setState(() {
+  //     sortIdx = 1 - sortIdx;
+  //   });
+  // }
 
   // void changeShowFilter() {
   //   setState(() {
@@ -139,15 +136,15 @@ class _SearchGroupState extends State<SearchGroup> {
   //   });
   // }
 
-  void changeFilter() {
-    setState(() {
-      if (filterIdx == 2) {
-        filterIdx = 0;
-      } else {
-        filterIdx += 1;
-      }
-    });
-  }
+  // void changeFilter() {
+  //   setState(() {
+  //     if (filterIdx == 2) {
+  //       filterIdx = 0;
+  //     } else {
+  //       filterIdx += 1;
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -169,42 +166,42 @@ class _SearchGroupState extends State<SearchGroup> {
                   period: widget.period,
                   query: widget.query,
                 ),
-                RowWithPadding(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  vertical: 10,
-                  horizontal: 25,
-                  children: [
-                    Center(
-                      child: CustomTextButton(
-                        content: sortList[sortIdx],
-                        fontSize: FontSize.smallSize,
-                        onTap: changeSort,
-                      ),
-                    ),
-                    Center(
-                      child: CustomTextButton(
-                        content: filterList[filterIdx],
-                        fontSize: FontSize.smallSize,
-                        onTap: changeFilter,
-                      ),
-                    ),
+                // const RowWithPadding(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   vertical: 10,
+                //   horizontal: 25,
+                //   children: [
+                //     Center(
+                //       child: CustomTextButton(
+                //         content: sortList[sortIdx],
+                //         fontSize: FontSize.smallSize,
+                //         onTap: changeSort,
+                //       ),
+                //     ),
+                //     Center(
+                //       child: CustomTextButton(
+                //         content: filterList[filterIdx],
+                //         fontSize: FontSize.smallSize,
+                //         onTap: changeFilter,
+                //       ),
+                //     ),
 
-                    // SelectBox(
-                    //   key: sortKey,
-                    //   onTap: changeShowSort,
-                    //   value: sortList[sortIdx],
-                    //   width: 120,
-                    //   height: 50,
-                    // ),
-                    // SelectBox(
-                    //   key: filterKey,
-                    //   onTap: changeShowFilter,
-                    //   value: filterList[filterIdx],
-                    //   width: 120,
-                    //   height: 50,
-                    // ),
-                  ],
-                ),
+                // SelectBox(
+                //   key: sortKey,
+                //   onTap: changeShowSort,
+                //   value: sortList[sortIdx],
+                //   width: 120,
+                //   height: 50,
+                // ),
+                // SelectBox(
+                //   key: filterKey,
+                //   onTap: changeShowFilter,
+                //   value: filterList[filterIdx],
+                //   width: 120,
+                //   height: 50,
+                // ),
+                //   ],
+                // ),
                 Expanded(
                   child: GroupInfiniteScroll(
                     controller: controller,

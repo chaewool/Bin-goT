@@ -107,6 +107,12 @@ class BingoDetail extends StatelessWidget {
                   final int achieve = (data['achieve']! * 100).toInt();
                   groupId = data['group'];
                   setBingoData(context, data);
+                  final size = getBingoSize(context)!;
+                  final length = size * size;
+                  initFinished(context, length);
+                  for (int i = 0; i < length; i += 1) {
+                    setFinished(context, i, data['items'][i]['finished']);
+                  }
 
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,

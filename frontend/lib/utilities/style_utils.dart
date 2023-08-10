@@ -5,11 +5,16 @@ import 'package:flutter/material.dart';
 const backgroundColor = Color(0xFFF4FCF9);
 const blackColor = Colors.black;
 const whiteColor = Colors.white;
-const greyColor = Colors.grey;
+const greyColor = Color(0xFF757070);
 const redColor = Colors.red;
 const greenColor = Colors.green;
 const blueColor = Colors.blue;
-const paleRedColor = Color(0xFFFcF4F4);
+// const paleRedColor = Color(0xFFFcF4F4);
+const paleRedColor = Color(0xFFE59394);
+const palePinkColor = Color(0xFFEFB9B3);
+const darkGreyColor = Color(0xFF403B3E);
+const beigeColor = Color(0xFFF4DBCC);
+const paleOrangeColor = Color(0xFFF4DBCC);
 
 //* 글씨 크기
 const double titleSize = 24;
