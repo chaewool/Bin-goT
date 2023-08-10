@@ -308,10 +308,10 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBarWithBack(
       actions: [
-        IconButtonInRow(
-          onPressed: () => shareBingo(bingoId: bingoId),
-          icon: shareIcon,
-        ),
+        // IconButtonInRow(
+        //   onPressed: () => shareBingo(bingoId: bingoId),
+        //   icon: shareIcon,
+        // ),
         IconButtonInRow(
           onPressed: save,
           icon: saveIcon,

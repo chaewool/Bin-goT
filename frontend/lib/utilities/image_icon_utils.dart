@@ -43,6 +43,8 @@ const leftIcon = Icons.chevron_left_rounded;
 const rightIcon = Icons.chevron_right_rounded;
 const downIcon = Icons.arrow_drop_down;
 
+const checkIcon = Icons.check_circle;
+
 const iconList = [confirmIcon, closeIcon, circleIcon];
 
 //* background image

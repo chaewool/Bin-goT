@@ -18,7 +18,11 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GroupChat extends StatefulWidget {
-  const GroupChat({super.key});
+  final int bingoId;
+  const GroupChat({
+    super.key,
+    required this.bingoId,
+  });
 
   @override
   State<GroupChat> createState() => _GroupChatState();
@@ -26,7 +30,7 @@ class GroupChat extends StatefulWidget {
 
 class _GroupChatState extends State<GroupChat> {
   GroupChatList chats = [];
-  late int groupId;
+  late int groupId, bingoId;
   final controller = ScrollController();
   bool showImg = false;
   XFile? selectedImage;
@@ -161,62 +165,65 @@ class _GroupChatState extends State<GroupChat> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: const AppBarWithBack(),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Expanded(
-                  child: InfiniteScroll(
-                    controller: controller,
-                    cnt: 50,
-                    reverse: true,
-                    data: chats,
-                    mode: 0,
-                    emptyWidget: const Column(
-                      children: [
-                        CustomText(
-                          center: true,
-                          fontSize: FontSize.titleSize,
-                          content: '채팅 기록이 없습니다.',
-                          height: 1.5,
-                        ),
-                      ],
-                    ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Expanded(
+                child: InfiniteScroll(
+                  color: whiteColor,
+                  controller: controller,
+                  cnt: 50,
+                  reverse: true,
+                  data: chats,
+                  mode: 0,
+                  emptyWidget: const Column(
+                    children: [
+                      CustomText(
+                        center: true,
+                        fontSize: FontSize.titleSize,
+                        content: '채팅 기록이 없습니다.',
+                        height: 1.5,
+                      ),
+                    ],
                   ),
                 ),
-                GroupChatBottomBar(
-                  key: bottomBarKey,
-                  addChat: addChat,
-                  selectedImage: selectedImage,
-                  imagePicker: imagePicker,
+              ),
+              GroupChatBottomBar(
+                key: bottomBarKey,
+                addChat: addChat,
+                selectedImage: selectedImage,
+                imagePicker: imagePicker,
+              ),
+            ],
+          ),
+          if (showImg)
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                CustomBoxContainer(
+                  hasRoundEdge: false,
+                  width: getWidth(context),
+                  height: getHeight(context) - appBarHeight,
+                  color: Colors.black38,
+                  image: DecorationImage(
+                    image: FileImage(
+                      File(selectedImage!.path),
+                    ),
+                  ),
+                  child: CustomIconButton(
+                    icon: closeIcon,
+                    onPressed: deleteImg,
+                  ),
                 ),
               ],
-            ),
-            if (showImg)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  CustomBoxContainer(
-                    hasRoundEdge: false,
-                    width: getWidth(context),
-                    height: getHeight(context) - appBarHeight,
-                    color: Colors.black38,
-                    image: DecorationImage(
-                      image: FileImage(
-                        File(selectedImage!.path),
-                      ),
-                    ),
-                    child: CustomIconButton(
-                      icon: closeIcon,
-                      onPressed: deleteImg,
-                    ),
-                  ),
-                ],
-              )
-          ],
-        ),
+            )
+        ],
+      ),
+      bottomNavigationBar: GroupMainBottomBar(
+        groupId: groupId,
+        selectedIndex: 2,
+        bingoId: widget.bingoId,
       ),
     );
   }
