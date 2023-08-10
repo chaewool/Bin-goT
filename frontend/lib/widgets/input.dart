@@ -59,6 +59,7 @@ class CustomInput extends StatelessWidget {
                 fillColor: filledColor,
                 border: const OutlineInputBorder(),
                 hintText: explain,
+                focusColor: whiteColor,
               ),
               maxLength: maxLength,
               style: TextStyle(fontSize: convertedFontSize(fontSize)),

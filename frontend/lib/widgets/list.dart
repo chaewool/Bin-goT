@@ -3,10 +3,12 @@ import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -117,6 +119,7 @@ class CustomList extends StatelessWidget {
   final Widget child;
   final ReturnVoid? onTap;
   final BoxShadowList? boxShadow;
+  final Color color;
   const CustomList({
     super.key,
     this.height,
@@ -124,6 +127,7 @@ class CustomList extends StatelessWidget {
     required this.child,
     this.onTap,
     this.boxShadow,
+    this.color = whiteColor,
   });
 
   @override
@@ -131,6 +135,7 @@ class CustomList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       child: CustomBoxContainer(
+        color: color,
         onTap: onTap,
         height: height,
         width: width,
@@ -207,104 +212,198 @@ class _ChatListItemState extends State<ChatListItem> {
       children: [
         if (widget.date != null)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: CustomBoxContainer(
-              child: CustomText(content: widget.date!),
+            padding: const EdgeInsets.symmetric(vertical: 30),
+            child: CustomText(
+              content: widget.date!,
+              fontSize: FontSize.smallSize,
+              bold: true,
             ),
           ),
         Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment:
               isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isMine)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: CustomText(
-                  color: greyColor,
-                  content: widget.data.createdAt.split(' ')[1].substring(0, 5),
-                  fontSize: FontSize.smallSize,
-                ),
-              ),
-            Flexible(
-              child: CustomList(
-                boxShadow: [shadowWithOpacity],
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          CachedNetworkImage(
-                            imageUrl:
-                                '${dotenv.env['fileUrl']}/badges/${widget.data.badgeId}',
-                            width: 30,
-                            height: 30,
-                            placeholder: (context, url) =>
-                                const CustomBoxContainer(color: greyColor),
-                          ),
-                          const SizedBox(width: 10),
-                          CustomText(
-                            content: widget.data.username,
-                            fontSize: FontSize.smallSize,
-                          ),
-                        ],
-                      ),
-                      // if (widget.data.itemId != -1)
-                      //   CustomText(content: widget.data.title),
-                      if (widget.data.hasImage == true)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: SizedBox(
-                            width: 100,
-                            height: 100,
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${widget.data.id}',
-                            ),
-                          ),
-                        ),
-                      if (widget.data.content != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: CustomText(content: widget.data.content!),
-                        ),
-                      if (widget.data.itemId != -1)
-                        reviewed
-                            ? const Center(
-                                child: CustomText(
-                                  content: '인증된 채팅입니다',
-                                  color: greyColor,
-                                  fontSize: FontSize.smallSize,
-                                ),
-                              )
-                            : Center(
-                                child: CustomButton(
-                                  onPressed: confirmMessage,
-                                  content: '인증 확인',
-                                  enabled: !isMine,
-                                ),
-                              )
-                    ],
-                  ),
-                ),
-              ),
-            ),
             if (!isMine)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: CustomText(
-                  color: greyColor,
-                  content: widget.data.createdAt.split(' ')[1].substring(0, 5),
-                  fontSize: FontSize.smallSize,
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: CachedNetworkImage(
+                  imageUrl:
+                      '${dotenv.env['fileUrl']}/badges/${widget.data.badgeId}',
+                  width: 30,
+                  height: 30,
+                  placeholder: (context, url) =>
+                      const CustomBoxContainer(color: greyColor),
                 ),
-              )
+              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (!isMine)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: CustomText(
+                      content: widget.data.username,
+                      fontSize: FontSize.chatSize,
+                    ),
+                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (isMine) checkAndTimeInfo(),
+                    widget.data.content != '' || widget.data.itemId != -1
+                        ? Stack(
+                            children: [
+                              CustomList(
+                                color: isMine
+                                    ? paleRedColor.withOpacity(0.8)
+                                    : greyColor.withOpacity(0.5),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      // if (widget.data.itemId != -1)
+                                      //   CustomText(content: widget.data.title),
+                                      if (widget.data.hasImage == true)
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 5,
+                                          ),
+                                          child: ChatImage(
+                                            widget: widget,
+                                            width: 100,
+                                            height: 100,
+                                          ),
+                                        ),
+                                      if (widget.data.content != null)
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 5,
+                                          ),
+                                          child: CustomText(
+                                            content: widget.data.content!,
+                                            fontSize: FontSize.smallSize,
+                                            color: whiteColor,
+                                          ),
+                                        ),
+                                      if (widget.data.itemId != -1 && !reviewed)
+                                        // reviewed
+                                        //     ? const Center(
+                                        //         child: Padding(
+                                        //           padding: EdgeInsets.symmetric(
+                                        //             vertical: 5,
+                                        //           ),
+                                        //           child: CustomText(
+                                        //             content: '인증된 채팅입니다',
+                                        //             color: greyColor,
+                                        //             fontSize: FontSize.chatSize,
+                                        //           ),
+                                        //         ),
+                                        //       )
+                                        //     :
+                                        Center(
+                                          child: CustomButton(
+                                            onPressed: confirmMessage,
+                                            content: '인증 확인',
+                                            enabled: !isMine,
+                                            fontSize: FontSize.chatSize,
+                                          ),
+                                        )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: GestureDetector(
+                              onTap: showModal(
+                                context,
+                                page: InteractiveViewer(
+                                  child: ChatImage(
+                                    widget: widget,
+                                    height: getHeight(context),
+                                    onTap: () => toBack(context),
+                                  ),
+                                ),
+                              ),
+                              child: ChatImage(
+                                widget: widget,
+                                height: 100,
+                                width: 100,
+                              ),
+                            ),
+                          ),
+                    if (!isMine) checkAndTimeInfo()
+                  ],
+                )
+              ],
+            ),
           ],
         ),
       ],
+    );
+  }
+
+  Column checkAndTimeInfo() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment:
+          isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        if (widget.data.itemId != -1 && reviewed)
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              CustomIcon(
+                icon: checkIcon,
+                color: darkGreyColor,
+              ),
+            ],
+          ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: CustomText(
+            color: greyColor,
+            content: widget.data.createdAt.split(' ')[1].substring(0, 5),
+            fontSize: FontSize.chatSize,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ChatImage extends StatelessWidget {
+  const ChatImage({
+    super.key,
+    required this.widget,
+    required this.height,
+    this.width,
+    this.onTap,
+  });
+
+  final ChatListItem widget;
+  final double height;
+  final double? width;
+  final ReturnVoid? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomBoxContainer(
+      width: width,
+      height: height,
+      onTap: onTap,
+      child: CachedNetworkImage(
+        imageUrl:
+            '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${widget.data.id}',
+      ),
     );
   }
 }

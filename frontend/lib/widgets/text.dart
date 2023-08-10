@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class CustomText extends StatelessWidget {
   final String content;
   final FontSize fontSize;
-  final bool center, cutText;
+  final bool center, cutText, bold;
   final String font;
   final Color color;
   final double? height;
@@ -20,6 +20,7 @@ class CustomText extends StatelessWidget {
     this.height,
     this.maxLines,
     this.cutText = false,
+    this.bold = false,
   });
 
   @override
@@ -31,6 +32,7 @@ class CustomText extends StatelessWidget {
         color: color,
         fontFamily: font,
         height: height,
+        fontWeight: bold ? FontWeight.bold : null,
       ),
       textAlign: center ? TextAlign.center : null,
       maxLines: maxLines,

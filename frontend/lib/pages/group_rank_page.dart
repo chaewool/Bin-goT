@@ -3,7 +3,6 @@ import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
-import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -64,10 +63,11 @@ class _GroupRankState extends State<GroupRank> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomBar(
-        isMember: true,
-        groupId: widget.groupId,
-      ),
+      // bottomNavigationBar:
+      // GroupMainBottomBar(
+      //   isMember: true,
+      //   groupId: widget.groupId,
+      // ),
     );
   }
 

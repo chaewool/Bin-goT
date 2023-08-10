@@ -17,13 +17,21 @@ const beigeColor = Color(0xFFF4DBCC);
 const paleOrangeColor = Color(0xFFF4DBCC);
 
 //* 글씨 크기
+const double sloganSize = 40;
 const double titleSize = 24;
 const double largeSize = 21;
 const double textSize = 19;
 const double smallSize = 16;
-const double sloganSize = 40;
+const double chatSize = 14;
 
-enum FontSize { titleSize, largeSize, textSize, smallSize, sloganSize }
+enum FontSize {
+  titleSize,
+  largeSize,
+  textSize,
+  smallSize,
+  sloganSize,
+  chatSize
+}
 
 double convertedFontSize(FontSize size) {
   switch (size) {
@@ -35,6 +43,8 @@ double convertedFontSize(FontSize size) {
       return smallSize;
     case FontSize.largeSize:
       return largeSize;
+    case FontSize.chatSize:
+      return chatSize;
     default:
       return sloganSize;
   }

@@ -93,6 +93,7 @@ class CustomBoxContainer extends StatelessWidget {
   final Widget? child;
   final DecorationImage? image;
   final ReturnVoid? onTap, onLongPress;
+  final BorderRadiusGeometry? borderRadius;
   const CustomBoxContainer({
     super.key,
     this.hasRoundEdge = true,
@@ -106,6 +107,7 @@ class CustomBoxContainer extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.center = false,
+    this.borderRadius,
   });
 
   @override
@@ -118,7 +120,8 @@ class CustomBoxContainer extends StatelessWidget {
         height: height,
         alignment: center ? Alignment.center : null,
         decoration: BoxDecoration(
-          borderRadius: hasRoundEdge ? BorderRadius.circular(10) : null,
+          borderRadius:
+              borderRadius ?? (hasRoundEdge ? BorderRadius.circular(10) : null),
           color: color,
           boxShadow: boxShadow,
           border: borderColor != null ? Border.all(color: borderColor!) : null,

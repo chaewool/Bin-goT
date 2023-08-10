@@ -128,7 +128,6 @@ class GroupInfiniteScroll extends StatelessWidget {
               ? hasNotGroupWidget ??
                   ListView.builder(
                     controller: controller,
-                    // hasNotGroupWidget ?? const SizedBox(),
                     itemCount: data.length,
                     itemBuilder: (context, i) {
                       return Column(
@@ -199,6 +198,7 @@ class InfiniteScroll extends StatelessWidget {
   final Widget emptyWidget;
   final bool reverse;
   final ScrollController controller;
+  final Color color;
   // final MyGroupModel? myGroupModel;
   // final bool isGroupMode, isChatMode, isSearchMode, hasNotGroup;
   const InfiniteScroll({
@@ -209,6 +209,7 @@ class InfiniteScroll extends StatelessWidget {
     required this.mode,
     required this.controller,
     this.reverse = false,
+    this.color = backgroundColor,
     // this.isChatMode = false,
   });
 
@@ -216,7 +217,7 @@ class InfiniteScroll extends StatelessWidget {
   Widget build(BuildContext context) {
     print('scroll data => $data, loading => ${getLoading(context)}');
     return CustomBoxContainer(
-      color: backgroundColor,
+      color: color,
       child: !getLoading(context)
           ? data.isNotEmpty
               ? ListView.builder(

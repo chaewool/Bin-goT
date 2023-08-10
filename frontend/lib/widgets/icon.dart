@@ -13,3 +13,14 @@ class CustomIcon extends StatelessWidget {
     return Icon(icon, color: color, size: size);
   }
 }
+
+BottomNavigationBarItem customBottomBarIcon({
+  required String label,
+  String? assetPath,
+  IconData? iconData,
+}) {
+  return BottomNavigationBarItem(
+    icon: iconData != null ? Icon(iconData) : ImageIcon(AssetImage(assetPath!)),
+    label: label,
+  );
+}
