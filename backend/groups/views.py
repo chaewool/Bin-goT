@@ -9,7 +9,7 @@ import logging
 from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm
 from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer
 from .models import Group, Participate
-from .utils import check_cnt_groups, check_cnt_boarditems_complete, createBoard
+from .utils import check_cnt_groups, check_cnt_boarditems_complete, create_board
 from boards.models import Board, BoardItem
 from accounts.serializers import GroupSerializer
 
@@ -77,7 +77,7 @@ class GroupCreateView(APIView):
         
         check_cnt_groups(user)
 
-        result = createBoard(request, group)
+        result = create_board(request, group)
         
         if result:
             url = 'groups' + '/' + str(group.id)
@@ -211,7 +211,7 @@ class GroupJoinView(APIView):
             else:
                 participate = Participate.objects.create(user=user, group=group, is_banned=1, rand_name=user.username)
             
-            result = createBoard(request, group)
+            result = create_board(request, group)
     
             if result:
                 participate.delete()

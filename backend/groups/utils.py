@@ -65,7 +65,7 @@ def check_cnt_boards(user):
         send_badge_notification(user, 7)
 
 
-def createBoard(request, group):
+def create_board(request, group):
     user = request.user
     thumbnail = request.FILES.get('thumbnail')
     data = json.loads(request.data.get('board_data'))
@@ -76,6 +76,7 @@ def createBoard(request, group):
     items = data['items']
     if len(items) < group.size ** 2:
         return '항목의 개수가 부족합니다.'
+    items.sort(key=lambda x: x['item_id'])
     
     board_serializer = BoardCreateSerializer(data=data)
     boarditem_serializer = BoardItemCreateSerializer(data=items, many=True)

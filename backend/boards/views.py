@@ -55,29 +55,22 @@ class BoardUpdateView(APIView):
         items = data['items']
         if len(items) < board.group.size ** 2:
             return Response(data={'message': '항목의 개수가 부족합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        items.sort(key=lambda x: x['item_id'])
         
         board_serializer = BoardCreateSerializer(instance=board, data=data)
         
-        if board_serializer.is_valid(raise_exception=True):
-            logger.info('보드 유효성 검사 통과')
-        
+        if board_serializer.is_valid(raise_exception=True):        
             boarditem_serializers = []
             for i in range(len(items)):
                 bs = BoardItemCreateSerializer(instance=board.items.all()[i], data=items[i])
                 if bs.is_valid(raise_exception=True):
                     boarditem_serializers.append(bs)
-                    
-            logger.info('보드 아이템 유효성 검사 통과')
             
             board_serializer.save()
             for bs in boarditem_serializers:
                 bs.save()
             
-            logger.info('보드 아이템 갱신')
-            
             url = 'boards' + '/' + str(board.id)
             upload_image(url, thumbnail)
-            
-            logger.info('보드 썸네일 갱신')
             
             return Response(status=status.HTTP_200_OK)
