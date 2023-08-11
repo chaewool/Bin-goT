@@ -58,7 +58,9 @@ class RedisRanker:
         return int(self.conn_redis.zscore(name=self.key, value=str_member) or 0)
     
     def getRank(self, str_member):
-        return int(self.conn_redis.zrevrank(name=self.key, value=str_member) or -2) + 1
+        rank = self.conn_redis.zrevrank(name=self.key, value=str_member)
+        if rank == None: return self.conn_redis.zcard(name=self.key) + 1
+        else: return int(rank) + 1
     
     def getTops(self, return_count=3):
         return self.conn_redis.zrevrangebyscore(name=self.key, min="-inf", max="+inf", start=0, num=return_count)
