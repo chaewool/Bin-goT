@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = bingot_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'bingot.xyz', 
@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'django_crontab',
+    'django_apscheduler',
 
     # django apps
     'django.contrib.admin',
@@ -228,13 +228,6 @@ LOGGING = {
 }
 
 
-# crontab
-
-CRONJOBS = [
-    ('0 0 * * *', 'groups.cron.every_day', '>> ./files/log/cron.log'),
-]
-
-
 # fcm
 
 import firebase_admin
@@ -243,3 +236,12 @@ from firebase_admin import credentials
 cred_path = os.path.join(BASE_DIR, "serviceAccountKey.json")
 cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(cred)
+
+
+# apscheduler
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+
+APSCHEDULER_RUN_NOW_TIMEOUT = 25 # Seconds
+
+SCHEDULER_DEFAULT = True

@@ -1,3 +1,9 @@
+# 클라이언트로부터 전달받은 데이터 중 bool 타입 데이터 변환
+
+def get_boolean(str):
+    return True if str in ('true', 'True') else False
+
+
 # AWS S3에 이미지 저장 및 삭제
 
 import boto3
@@ -52,7 +58,9 @@ class RedisRanker:
         return int(self.conn_redis.zscore(name=self.key, value=str_member) or 0)
     
     def getRank(self, str_member):
-        return int(self.conn_redis.zrevrank(name=self.key, value=str_member) or -2) + 1
+        rank = self.conn_redis.zrevrank(name=self.key, value=str_member)
+        if rank == None: return -1
+        else: return int(rank) + 1
     
     def getTops(self, return_count=3):
         return self.conn_redis.zrevrangebyscore(name=self.key, min="-inf", max="+inf", start=0, num=return_count)
@@ -69,27 +77,24 @@ class RedisChat:
         self.conn_redis = conn_chat
         self.key = key
 
+    def getLength(self):
+        return self.conn_redis.llen(self.key)
+
     def addChat(self, data):
-        data['id'] = self.conn_redis.llen(self.key)
         self.conn_redis.rpush(self.key, json.dumps(data))
 
-    def getChatList(self, page):
-        if page == 1:
-            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50, -1)]
+    def getChatList(self, idx):
+        if idx == 0:
+            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50, -1)][::-1]
         else:
-            return [json.loads(item) for item in self.conn_redis.lrange(self.key, -50 * page, -50 * (page - 1))]
+            length = self.conn_redis.llen(self.key)
+            return [json.loads(item) for item in self.conn_redis.lrange(self.key, idx - length - 51, idx - length - 1)][::-1]
     
     def getChatItem(self, chat_id):
         return json.loads(self.conn_redis.lindex(self.key, chat_id))
     
     def setChatItem(self, chat_id, chat):
         self.conn_redis.lset(self.key, chat_id, json.dumps(chat))
-
-
-# 클라이언트로부터 전달받은 데이터 중 bool 타입 데이터 변환
-
-def get_boolean(str):
-    return True if str in ('true', 'True') else False
 
 
 # Redis 2번 DB에서 사용자 별 FCM 토큰 조회 및 갱신
@@ -111,15 +116,48 @@ class RedisToken:
 
 from firebase_admin import messaging
 
-def send_to_fcm(group, title, body):
+def send_to_fcm(user, group, title, content, path, users=False):
     token = RedisToken()
 
-    registration_tokens = [token.getToken(user.id) for user in group.users.all()]
+    # 그룹원에게 전송
+    if group:
+        # 한 명 빼고 모든 그룹원에게 전송(채팅)
+        if user:
+            registration_tokens = [token.getToken(temp.id) for temp in group.users.all() if temp != user]
+        # 특정 그룹원에게 전송(알림 설정)
+        elif users:
+            registration_tokens = [token.getToken(user.id) for user in users]
+        # 모든 그룹원에게 전송(시작, 종료 알림)
+        else:
+            registration_tokens = [token.getToken(user.id) for user in group.users.all()]
 
-    message = messaging.MulticastMessage(
-        notification=messaging.Notification(title=title, body=body),
-        data={'group_id': str(group.id)},
-        tokens=registration_tokens,
-    )
+        message = messaging.MulticastMessage(
+            data={'title': title, 'content': content, 'path': path},
+            tokens=registration_tokens,
+        )
 
-    response = messaging.send_multicast(message)
+        messaging.send_multicast(message)
+    # 개인에게 전송
+    else:
+        registration_token = token.getToken(user.id)
+
+        message = messaging.Message(
+            data={'title': title, 'content': content, 'path': path},
+            token=registration_token,
+        )
+
+        messaging.send(message)
+
+
+# 뱃지 알림 전송
+
+from accounts.models import Badge, Achieve
+
+def send_badge_notification(user, badge_id):
+    title = '새로운 뱃지 획득!'
+    content = '알림을 눌러 획득한 뱃지를 확인해보세요.'
+    path = '뱃지 획득 후 이동할 경로'
+
+    badge = Badge.objects.get(id=badge_id)
+    Achieve.objects.create(user=user, badge=badge)
+    send_to_fcm(user, '', title, content, path)

@@ -5,6 +5,7 @@ from django.conf import settings
 class Group(models.Model):
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(-1))
     groupname = models.CharField(max_length=20, unique=True)
+    count = models.IntegerField(default=1)
     headcount = models.IntegerField()
     start = models.DateField()
     end = models.DateField()

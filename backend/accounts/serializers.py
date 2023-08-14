@@ -4,11 +4,13 @@ from datetime import date
 
 from .models import Badge
 from groups.models import Group
+from boards.models import Board
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('noti_rank', 'noti_due', 'noti_chat', 'id')
+        fields = ('noti_rank', 'noti_due', 'noti_chat', 'noti_check', 'id')
 
 
 class BadgeSerializer(serializers.ModelSerializer):
@@ -23,27 +25,47 @@ class GroupSerializer(serializers.ModelSerializer):
     def get_status(self, obj):
         if date.today() > obj.end:
             return '완료'
-        elif date.today() > obj.start:
+        elif date.today() >= obj.start:
             return '진행 중'
         else:
             return '시작 전'
     
     class Meta:
         model = Group
-        fields = ('id', 'groupname', 'is_public', 'start', 'end', 'headcount', 'status')
+        fields = ('id', 'groupname', 'is_public', 'start', 'end', 'headcount', 'status', 'count')
 
 
 class BoardSerializer(serializers.ModelSerializer):
+    group_id = serializers.SerializerMethodField('get_groupid')
+    groupname = serializers.SerializerMethodField('get_groupname')
+    start = serializers.SerializerMethodField('get_start')
+    end = serializers.SerializerMethodField('get_end')
     status = serializers.SerializerMethodField('get_status')
+    size = serializers.SerializerMethodField('get_size')
+
+    def get_groupid(self, obj):
+        return obj.group.id
+
+    def get_groupname(self, obj):
+        return obj.group.groupname
+
+    def get_start(self, obj):
+        return obj.group.start
+    
+    def get_end(self, obj):
+        return obj.group.end
 
     def get_status(self, obj):
-        if date.today() > obj.end:
+        if date.today() > obj.group.end:
             return '완료'
-        elif date.today() > obj.start:
+        elif date.today() >= obj.group.start:
             return '진행 중'
         else:
             return '시작 전'
     
+    def get_size(self, obj):
+        return obj.group.size
+    
     class Meta:
-        model = Group
-        fields = ('id', 'groupname', 'start', 'end', 'status', 'size')
+        model = Board
+        fields = ('id', 'group_id', 'groupname', 'start', 'end', 'status', 'size')
