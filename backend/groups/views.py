@@ -133,7 +133,7 @@ class GroupDetailView(APIView):
         for ranker_id in ranker.getTops(3):
             r = get_user_model().objects.get(id=ranker_id)
             rank.append({
-                'user_id': ranker_id, 
+                'user_id': int(ranker_id), 
                 'nickname': Participate.objects.get(group=group, user=r).rand_name, 
                 'achieve': ranker.getScore(ranker_id) / (group.size ** 2), 
                 'board_id': Board.objects.get(group=group, user=r).id
