@@ -1,5 +1,6 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
+import 'package:bin_got/pages/group_detail_page.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -9,6 +10,7 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -94,19 +96,43 @@ class RankListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomList(
+      innerHorizontal: 15,
       height: 70,
       boxShadow: const [defaultShadow],
-      onTap: () {},
+      onTap: toOtherPage(
+        context,
+        page: GroupDetail(
+          groupId: getGroupId(context)!,
+          password: '',
+          isPublic: true,
+          initialIndex: 0,
+        ),
+      ),
       // isMember ? toOtherPage(context, page: const BingoDetail()) : null,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           CircleContainer(
-            child: CustomText(content: '$rank', fontSize: FontSize.largeSize),
+            boxShadow: null,
+            color: palePinkColor,
+            radius: 20,
+            border: false,
+            child: CustomText(
+              content: '$rank',
+              fontSize: FontSize.largeSize,
+              color: whiteColor,
+              bold: true,
+            ),
           ),
-          const SizedBox(width: 30),
+          CustomText(content: rankListItem.nickname),
+          // CustomPaint(
+          //   size: Size(20, 20),
+          //   painter: PieChart,
+          // ),
           CustomText(
-              content: '${rankListItem.nickname} / ${rankListItem.achieve}%'),
+            content: '${(rankListItem.achieve * 100).toInt()}%',
+            fontSize: FontSize.smallSize,
+          )
         ],
       ),
     );
@@ -120,6 +146,7 @@ class CustomList extends StatelessWidget {
   final ReturnVoid? onTap;
   final BoxShadowList? boxShadow;
   final Color color;
+  final double vertical, horizontal, innerHorizontal;
   const CustomList({
     super.key,
     this.height,
@@ -128,12 +155,15 @@ class CustomList extends StatelessWidget {
     this.onTap,
     this.boxShadow,
     this.color = whiteColor,
+    this.vertical = 10,
+    this.horizontal = 10,
+    this.innerHorizontal = 30,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      padding: EdgeInsets.symmetric(vertical: vertical, horizontal: horizontal),
       child: CustomBoxContainer(
         color: color,
         onTap: onTap,
@@ -141,7 +171,7 @@ class CustomList extends StatelessWidget {
         width: width,
         boxShadow: boxShadow,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: EdgeInsets.symmetric(horizontal: innerHorizontal),
           child: child,
         ),
       ),
@@ -215,7 +245,7 @@ class _ChatListItemState extends State<ChatListItem> {
             padding: const EdgeInsets.symmetric(vertical: 30),
             child: CustomText(
               content: widget.date!,
-              fontSize: FontSize.smallSize,
+              fontSize: FontSize.textSize,
               bold: true,
             ),
           ),
@@ -244,7 +274,7 @@ class _ChatListItemState extends State<ChatListItem> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: CustomText(
                       content: widget.data.username,
-                      fontSize: FontSize.chatSize,
+                      fontSize: FontSize.smallSize,
                     ),
                   ),
                 Row(
@@ -255,67 +285,65 @@ class _ChatListItemState extends State<ChatListItem> {
                         ? Stack(
                             children: [
                               CustomList(
+                                vertical: 2,
+                                innerHorizontal: 20,
                                 color: isMine
                                     ? paleRedColor.withOpacity(0.8)
                                     : greyColor.withOpacity(0.5),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // if (widget.data.itemId != -1)
-                                      //   CustomText(content: widget.data.title),
-                                      if (widget.data.hasImage == true)
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 5,
-                                          ),
-                                          child: ChatImage(
-                                            widget: widget,
-                                            width: 100,
-                                            height: 100,
-                                          ),
+                                child: ColWithPadding(
+                                  vertical: 10,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // if (widget.data.itemId != -1)
+                                    //   CustomText(content: widget.data.title),
+                                    if (widget.data.hasImage == true)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 5,
                                         ),
-                                      if (widget.data.content != null)
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 5,
-                                          ),
-                                          child: CustomText(
-                                            content: widget.data.content!,
-                                            fontSize: FontSize.smallSize,
-                                            color: whiteColor,
-                                          ),
+                                        child: ChatImage(
+                                          widget: widget,
+                                          width: 100,
+                                          height: 100,
                                         ),
-                                      if (widget.data.itemId != -1 && !reviewed)
-                                        // reviewed
-                                        //     ? const Center(
-                                        //         child: Padding(
-                                        //           padding: EdgeInsets.symmetric(
-                                        //             vertical: 5,
-                                        //           ),
-                                        //           child: CustomText(
-                                        //             content: '인증된 채팅입니다',
-                                        //             color: greyColor,
-                                        //             fontSize: FontSize.chatSize,
-                                        //           ),
-                                        //         ),
-                                        //       )
-                                        //     :
-                                        Center(
-                                          child: CustomButton(
-                                            onPressed: confirmMessage,
-                                            content: '인증 확인',
-                                            enabled: !isMine,
-                                            fontSize: FontSize.chatSize,
-                                          ),
-                                        )
-                                    ],
-                                  ),
+                                      ),
+                                    if (widget.data.content != null)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 5,
+                                        ),
+                                        child: CustomText(
+                                          content: widget.data.content!,
+                                          fontSize: FontSize.textSize,
+                                          color: whiteColor,
+                                        ),
+                                      ),
+                                    if (widget.data.itemId != -1 && !reviewed)
+                                      // reviewed
+                                      //     ? const Center(
+                                      //         child: Padding(
+                                      //           padding: EdgeInsets.symmetric(
+                                      //             vertical: 5,
+                                      //           ),
+                                      //           child: CustomText(
+                                      //             content: '인증된 채팅입니다',
+                                      //             color: greyColor,
+                                      //             fontSize: FontSize.chatSize,
+                                      //           ),
+                                      //         ),
+                                      //       )
+                                      //     :
+                                      Center(
+                                        child: CustomButton(
+                                          onPressed: confirmMessage,
+                                          content: '인증 확인',
+                                          enabled: !isMine,
+                                          fontSize: FontSize.smallSize,
+                                          color: whiteColor,
+                                        ),
+                                      )
+                                  ],
                                 ),
                               ),
                             ],
@@ -372,7 +400,7 @@ class _ChatListItemState extends State<ChatListItem> {
           child: CustomText(
             color: greyColor,
             content: widget.data.createdAt.split(' ')[1].substring(0, 5),
-            fontSize: FontSize.chatSize,
+            fontSize: FontSize.smallSize,
           ),
         ),
       ],

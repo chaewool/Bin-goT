@@ -6,6 +6,7 @@ class ColWithPadding extends StatelessWidget {
   final double vertical, horizontal;
   final WidgetList children;
   final MainAxisAlignment mainAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
   final MainAxisSize mainAxisSize;
   const ColWithPadding({
     super.key,
@@ -14,6 +15,7 @@ class ColWithPadding extends StatelessWidget {
     required this.children,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.mainAxisSize = MainAxisSize.max,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
   });
 
   @override
@@ -23,6 +25,7 @@ class ColWithPadding extends StatelessWidget {
       child: Column(
         mainAxisSize: mainAxisSize,
         mainAxisAlignment: mainAxisAlignment,
+        crossAxisAlignment: crossAxisAlignment,
         children: children,
       ),
     );
@@ -34,12 +37,15 @@ class RowWithPadding extends StatelessWidget {
   final double vertical, horizontal;
   final WidgetList children;
   final MainAxisAlignment mainAxisAlignment;
-  const RowWithPadding(
-      {super.key,
-      this.vertical = 0,
-      this.horizontal = 0,
-      required this.children,
-      this.mainAxisAlignment = MainAxisAlignment.start});
+  final bool min;
+  const RowWithPadding({
+    super.key,
+    this.vertical = 0,
+    this.horizontal = 0,
+    required this.children,
+    this.mainAxisAlignment = MainAxisAlignment.start,
+    this.min = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +53,7 @@ class RowWithPadding extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: vertical, horizontal: horizontal),
       child: Row(
         mainAxisAlignment: mainAxisAlignment,
+        mainAxisSize: min ? MainAxisSize.min : MainAxisSize.max,
         children: children,
       ),
     );

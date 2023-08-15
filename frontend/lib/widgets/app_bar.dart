@@ -1,7 +1,6 @@
 import 'package:bin_got/pages/group_admin_page.dart';
 import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/pages/main_page.dart';
-import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -35,13 +34,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: elevation,
       backgroundColor: whiteColor,
       title: title != null
-          ? Center(
+          ? Padding(
+              padding: const EdgeInsets.all(6),
               child: CustomText(
                 content: title!,
                 fontSize: FontSize.largeSize,
               ),
             )
-          : const SizedBox(),
+          : null,
       leading: Padding(
         padding: const EdgeInsets.all(6),
         child: leadingChild,
@@ -58,12 +58,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
   final WidgetList? actions;
   final String? title;
-  final ReturnVoid? onPressed;
+  final ReturnVoid? onPressedBack;
   const AppBarWithBack({
     super.key,
     this.actions,
     this.title,
-    this.onPressed,
+    this.onPressedBack,
+    // this.onPressedClose,
   });
 
   @override
@@ -71,42 +72,13 @@ class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
     return CustomAppBar(
       leadingChild: ExitButton(
         isIconType: true,
-        onPressed: onPressed,
+        onPressed: onPressedBack,
       ),
       title: title,
-      actions: actions,
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(appBarHeight);
-}
-
-//* main, search
-class MainBar extends StatelessWidget implements PreferredSizeWidget {
-  final ReturnVoid? onPressed;
-  const MainBar({super.key, this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomAppBar(
-      elevation: 1,
-      leadingChild: halfLogo,
       actions: [
-        onPressed != null
-            ? IconButtonInRow(onPressed: onPressed!, icon: searchIcon)
-            : const SizedBox(),
-        IconButtonInRow(
-          icon: settingsIcon,
-          onPressed: toOtherPage(context, page: const MyPage()),
-        ),
-        IconButtonInRow(
-          onPressed: toOtherPage(
-            context,
-            page: const GroupForm(),
-          ),
-          icon: createGroupIcon,
-        )
+        ...?actions,
+        // if (onPressedClose != null)
+        //   CustomIconButton(onPressed: onPressedClose!, icon: closeIcon)
       ],
     );
   }
@@ -114,6 +86,39 @@ class MainBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(appBarHeight);
 }
+
+// //* main, search
+// class MainBar extends StatelessWidget implements PreferredSizeWidget {
+//   final ReturnVoid? onPressed;
+//   const MainBar({super.key, this.onPressed});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return CustomAppBar(
+//       elevation: 1,
+//       leadingChild: halfLogo,
+//       actions: [
+//         onPressed != null
+//             ? IconButtonInRow(onPressed: onPressed!, icon: searchIcon)
+//             : const SizedBox(),
+//         IconButtonInRow(
+//           icon: settingsIcon,
+//           onPressed: toOtherPage(context, page: const MyPage()),
+//         ),
+//         IconButtonInRow(
+//           onPressed: toOtherPage(
+//             context,
+//             page: const GroupForm(),
+//           ),
+//           icon: createGroupIcon,
+//         )
+//       ],
+//     );
+//   }
+
+//   @override
+//   Size get preferredSize => const Size.fromHeight(appBarHeight);
+// }
 
 //* group main
 class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -131,8 +136,8 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final start = DateTime.parse(getStart(context)!);
-    final today = DateTime.now();
+    // final start = DateTime.parse(getStart(context)!);
+    // final today = DateTime.now();
     void exitThisGroup() async {
       try {
         GroupProvider().exitThisGroup(groupId).then((_) {
@@ -155,7 +160,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBarWithBack(
-      onPressed: () {
+      onPressedBack: () {
         toBack(context);
         toBack(context);
         setPublic(context, null);
@@ -172,7 +177,8 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     )
                   : const SizedBox(),
-              isMember && today.difference(start) < Duration.zero
+              isMember
+                  // && today.difference(start) < Duration.zero
                   ? IconButtonInRow(
                       icon: shareIcon,
                       onPressed: () => shareGroup(
@@ -183,7 +189,8 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     )
                   : const SizedBox(),
-              isMember && !isAdmin && today.difference(start) < Duration.zero
+              isMember && !isAdmin
+                  // && today.difference(start) < Duration.zero
                   ? IconButtonInRow(
                       icon: exitIcon,
                       onPressed: showAlert(

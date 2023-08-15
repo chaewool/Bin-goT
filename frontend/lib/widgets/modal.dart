@@ -8,6 +8,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/check_box.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
@@ -224,9 +225,11 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
           imageQuality: 50,
         )
             .then((localImage) {
-          setState(() {
-            selectedImage = localImage;
-          });
+          if (localImage != null) {
+            setState(() {
+              selectedImage = localImage;
+            });
+          }
         });
       }
     });
@@ -539,9 +542,7 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
                 ),
               );
             }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const CustomCirCularIndicator();
           }),
       // for (int i = 0; i < 4; i += 1)
       //   Row(

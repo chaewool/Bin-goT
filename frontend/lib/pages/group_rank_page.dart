@@ -3,6 +3,7 @@ import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
+import 'package:bin_got/widgets/circular_progress_indicator.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class GroupRank extends StatefulWidget {
 }
 
 class _GroupRankState extends State<GroupRank> {
-  Future<RankList>? rankList;
+  // Future<RankList>? rankList;
 
   @override
   void initState() {
@@ -40,27 +41,22 @@ class _GroupRankState extends State<GroupRank> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child:
-                    CustomText(content: '그룹 랭킹', fontSize: FontSize.titleSize),
-              ),
-              FutureBuilder(
-                future: GroupProvider().groupRank(widget.groupId),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return groupRankList(snapshot);
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              )
-            ],
-          ),
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: CustomText(content: '그룹 랭킹', fontSize: FontSize.titleSize),
+            ),
+            FutureBuilder(
+              future: GroupProvider().groupRank(widget.groupId),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Expanded(child: groupRankList(snapshot));
+                }
+                return const CustomCirCularIndicator();
+              },
+            )
+          ],
         ),
       ),
       // bottomNavigationBar:

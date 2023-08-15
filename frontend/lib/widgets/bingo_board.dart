@@ -141,18 +141,14 @@ class EachBingo extends StatelessWidget {
   CustomBoxContainer draggableBox(
       BuildContext context, Color Function() convertedColor) {
     return CustomBoxContainer(
-      onTap: DateTime.now().difference(DateTime.parse(getStart(context)!)) <
-                  Duration.zero ||
-              getFinished(context)![index]
-          ? null
-          : showModal(
-              context,
-              page: BingoModal(
-                index: index,
-                cnt: size * size,
-                isDetail: isDetail,
-              ),
-            ),
+      onTap: showModal(
+        context,
+        page: BingoModal(
+          index: index,
+          cnt: size * size,
+          isDetail: isDetail,
+        ),
+      ),
       child: CustomBoxContainer(
         color: getHasBlackBox(context) ? blackColor : whiteColor,
         hasRoundEdge: getHasRoundEdge(context),

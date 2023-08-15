@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
-import 'package:bin_got/pages/bingo_detail_page.dart';
+import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/pages/group_create_completed.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';

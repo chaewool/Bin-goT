@@ -146,10 +146,12 @@ class _GroupChatState extends State<GroupChat> {
       source: ImageSource.gallery,
       imageQuality: 50,
     );
-    setState(() {
-      selectedImage = localImage;
-      showImg = true;
-    });
+    if (localImage != null) {
+      setState(() {
+        selectedImage = localImage;
+        showImg = true;
+      });
+    }
     print(showImg);
   }
 
@@ -219,11 +221,6 @@ class _GroupChatState extends State<GroupChat> {
               ],
             )
         ],
-      ),
-      bottomNavigationBar: GroupMainBottomBar(
-        groupId: groupId,
-        selectedIndex: 2,
-        bingoId: widget.bingoId,
       ),
     );
   }

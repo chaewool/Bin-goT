@@ -4,6 +4,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -119,24 +120,34 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
-      color: whiteColor,
+      color: blackColor,
       child: ColWithPadding(
         horizontal: 30,
         vertical: 17,
         children: [
-          TextField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: '키워드를 입력하세요',
-            ),
-            style: const TextStyle(fontSize: 20),
-            onChanged: (value) {
+          CustomInput(
+            explain: '검색할 그룹명을 입력하세요',
+            setValue: (value) {
               keyword['value'] = value;
             },
+            fontSize: FontSize.textSize,
+            initialValue: keyword['value'],
+            needSearch: true,
             onSubmitted: (_) => onSearchAction(),
-            textInputAction: TextInputAction.search,
-            controller: TextEditingController(text: keyword['value']),
           ),
+          // TextField(
+          //   decoration: const InputDecoration(
+          //     border: OutlineInputBorder(),
+          //     hintText: '키워드를 입력하세요',
+          //   ),
+          //   style: const TextStyle(fontSize: 20),
+          //   onChanged: (value) {
+          //     keyword['value'] = value;
+          //   },
+          //   onSubmitted: (_) => onSearchAction(),
+          //   textInputAction: TextInputAction.search,
+          //   controller: TextEditingController(text: keyword['value']),
+          // ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -161,7 +172,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             children: [
               CustomBoxContainer(
                 onTap: () => changeSort(0),
-                color: sortIdx == 0 ? greenColor : whiteColor,
+                color: sortIdx == 0 ? paleOrangeColor : whiteColor,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CustomText(
@@ -173,7 +184,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               const SizedBox(width: 10),
               CustomBoxContainer(
                 onTap: () => changeSort(1),
-                color: sortIdx == 1 ? greenColor : whiteColor,
+                color: sortIdx == 1 ? paleOrangeColor : whiteColor,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CustomText(
@@ -189,7 +200,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             children: [
               CustomBoxContainer(
                 onTap: changePublic,
-                color: publicGroup ? greenColor : whiteColor,
+                color: publicGroup ? paleOrangeColor : whiteColor,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CustomText(
@@ -202,7 +213,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               const SizedBox(width: 10),
               CustomBoxContainer(
                 onTap: changePrivate,
-                color: privateGroup ? greenColor : whiteColor,
+                color: privateGroup ? paleOrangeColor : whiteColor,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CustomText(

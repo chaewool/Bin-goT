@@ -1,0 +1,102 @@
+import 'package:bin_got/providers/user_info_provider.dart';
+import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/app_bar.dart';
+import 'package:bin_got/widgets/row_col.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
+import 'package:bin_got/widgets/text.dart';
+import 'package:flutter/material.dart';
+
+class NotificationSettings extends StatefulWidget {
+  const NotificationSettings({super.key});
+
+  @override
+  State<NotificationSettings> createState() => _NotificationSettingsState();
+}
+
+class _NotificationSettingsState extends State<NotificationSettings> {
+  List initialOption = [];
+  List optionList = [];
+  StringList notificationList = [
+    '진행률/랭킹 알림',
+    '남은 기간 알림',
+    '채팅 알림',
+    '인증 완료 알림',
+  ];
+  //   static bool _rankNoti = true;
+  // static bool _dueNoti = true;
+  // static bool _chatNoti = true;
+  // static bool _completeNoti = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // optionList.add(context.read<NotiProvider>().rankNoti);
+    // optionList.add(context.read<NotiProvider>().dueNoti);
+    // optionList.add(context.read<NotiProvider>().chatNoti);
+    // optionList.add(context.read<NotiProvider>().completeNoti);
+    initialOption = List.from(optionList);
+  }
+
+  void changeIdx(int i) {
+    setState(() {
+      optionList[i] = !optionList[i];
+    });
+  }
+
+  // void cancelChange() {
+  //   optionList = List.from(initialOption);
+  // }
+
+  void applyNoti() {
+    UserInfoProvider().changeNoti({
+      'noti_rank': optionList[0],
+      'noti_chat': optionList[1],
+      'noti_due': optionList[2],
+      'noti_check': optionList[3],
+    }).then((_) {
+      // context.read<NotiProvider>().setStoreRank(optionList[0]);
+      // context.read<NotiProvider>().setStoreDue(optionList[1]);
+      // context.read<NotiProvider>().setStoreChat(optionList[2]);
+      // context.read<NotiProvider>().setStoreComplete(optionList[3]);
+      initialOption = List.from(optionList);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBarWithBack(
+        onPressedBack: () {
+          toBack(context);
+          applyNoti();
+        },
+      ),
+      body: ColWithPadding(children: [
+        for (int i = 0; i < 4; i += 1)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Flexible(flex: 2, child: SizedBox()),
+              Flexible(
+                flex: 4,
+                child: CustomText(
+                  content: notificationList[i],
+                  fontSize: FontSize.smallSize,
+                ),
+              ),
+              Flexible(
+                flex: 2,
+                child: CustomSwitch(
+                  value: optionList[i],
+                  onChanged: (value) => changeIdx(i),
+                ),
+              ),
+              const Flexible(flex: 2, child: SizedBox()),
+            ],
+          ),
+      ]),
+    );
+  }
+}

@@ -474,38 +474,39 @@ class _MyTabBarState extends State<MyTabBar> {
       listItems: [
         [
           Expanded(
-              child: GroupInfiniteScroll(
-            controller: groupController,
-            data: groupTabData,
-            mode: 1,
-            emptyWidget: Column(
-              children: const [
-                CustomText(
-                  center: true,
-                  content: '조건을 만족하는 그룹이 없어요.',
-                  height: 1.7,
-                ),
-              ],
+            child: GroupInfiniteScroll(
+              controller: groupController,
+              data: groupTabData,
+              mode: 1,
+              emptyWidget: const Column(
+                children: [
+                  CustomText(
+                    center: true,
+                    content: '조건을 만족하는 그룹이 없어요.',
+                    height: 1.7,
+                  ),
+                ],
+              ),
+              hasNotGroupWidget: hasNotGroup
+                  ? const Column(
+                      children: [
+                        CustomText(
+                          center: true,
+                          content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                          height: 1.7,
+                        ),
+                        SizedBox(
+                          height: 70,
+                        ),
+                        CustomText(
+                          content: '추천그룹',
+                          fontSize: FontSize.titleSize,
+                        ),
+                      ],
+                    )
+                  : null,
             ),
-            hasNotGroupWidget: hasNotGroup
-                ? Column(
-                    children: const [
-                      CustomText(
-                        center: true,
-                        content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                        height: 1.7,
-                      ),
-                      SizedBox(
-                        height: 70,
-                      ),
-                      CustomText(
-                        content: '추천그룹',
-                        fontSize: FontSize.titleSize,
-                      ),
-                    ],
-                  )
-                : null,
-          ))
+          )
         ],
         [
           Expanded(

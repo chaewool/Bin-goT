@@ -2,7 +2,7 @@ import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/app_bar.dart';
+import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -155,7 +155,7 @@ class _SearchGroupState extends State<SearchGroup> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: const MainBar(),
+        // appBar: const MainBar(),
         body: Stack(
           children: [
             Column(
@@ -247,6 +247,7 @@ class _SearchGroupState extends State<SearchGroup> {
             //         ),
             //       )
             //     : const SizedBox(),
+            const CreateGroupButton(),
           ],
         ),
       ),

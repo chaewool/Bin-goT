@@ -7,13 +7,13 @@ import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/check_box.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
@@ -43,7 +43,7 @@ class GroupForm extends StatefulWidget {
 class _GroupFormState extends State<GroupForm> {
   //* select box
   final printedValues = [
-    ['2 * 2', '3 * 3', '4 * 4', '5 * 5'],
+    ['2 x 2', '3 x 3', '4 x 4', '5 x 5'],
     ['그룹장의\n승인 필요', '자동 가입']
   ];
   final convertedValues = [
@@ -196,10 +196,12 @@ class _GroupFormState extends State<GroupForm> {
           imageQuality: 50,
         )
             .then((localImage) {
-          setState(() {
-            selectedImage = localImage;
-            isImageUpdated = true;
-          });
+          if (localImage != null) {
+            setState(() {
+              selectedImage = localImage;
+              isImageUpdated = true;
+            });
+          }
         }).catchError((error) {
           showErrorModal(context);
         });
@@ -257,23 +259,19 @@ class _GroupFormState extends State<GroupForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: whiteColor,
+        appBar: const AppBarWithBack(title: '그룹 생성'),
         resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
           child: ColWithPadding(
-            horizontal: 30,
-            vertical: 40,
+            horizontal: 50,
+            vertical: 20,
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: CustomText(
-                  content: '그룹 생성',
-                  center: true,
-                  fontSize: FontSize.titleSize,
-                ),
-              ),
               CustomInput(
-                title: '그룹명 *',
+                title: '그룹명',
+                explainTitle: const ['필수', '시작일 전 수정 가능'],
                 explain: '그룹명을 입력하세요',
                 setValue: setGroupData('groupname'),
                 initialValue: groupData.containsKey('groupname')
@@ -288,7 +286,6 @@ class _GroupFormState extends State<GroupForm> {
                 initialValue: groupData.containsKey('headcount')
                     ? groupData['headcount'].toString()
                     : context.read<GlobalGroupProvider>().headCount?.toString(),
-                needSubmit: false,
               ),
               if (widget.groupId == null)
                 Column(
@@ -305,75 +302,103 @@ class _GroupFormState extends State<GroupForm> {
                       // onSubmit: setGroupData,
                       applyDay: applyDay,
                     ),
-                    const CustomText(content: '빙고 크기 *'),
+                    const CustomText(
+                      content: '빙고 크기 *',
+                      center: false,
+                    ),
                     for (int i = 0; i < 2; i += 1)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            for (int j = 0; j < 2; j += 1)
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: CustomBoxContainer(
-                                  onTap: () => changeGroupData(0, 2 * i + j),
-                                  width: 120,
-                                  height: 30,
-                                  boxShadow: applyBoxShadow(0, 2 * i + j),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                    ),
-                                    child: Center(
-                                      child: CustomText(
-                                        content: printedValues[0][2 * i + j],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    const CustomText(content: '그룹 가입 시 자동 승인 여부*'),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           for (int j = 0; j < 2; j += 1)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: CustomBoxContainer(
-                                onTap: () => changeGroupData(1, j),
+                                borderColor: selectedIndex[0] == 2 * i + j
+                                    ? null
+                                    : greyColor,
+                                onTap: () => changeGroupData(0, 2 * i + j),
                                 width: 120,
-                                height: 60,
-                                boxShadow: applyBoxShadow(1, j),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                  ),
-                                  child: Center(
-                                    child: CustomText(
-                                      content: printedValues[1][j],
-                                    ),
+                                height: 30,
+                                color: selectedIndex[0] == 2 * i + j
+                                    ? paleOrangeColor
+                                    : whiteColor,
+                                // boxShadow: applyBoxShadow(0, 2 * i + j),
+                                child: Center(
+                                  child: CustomText(
+                                    content: printedValues[0][2 * i + j],
+                                    color: selectedIndex[0] == 2 * i + j
+                                        ? whiteColor
+                                        : blackColor,
                                   ),
                                 ),
                               ),
                             ),
                         ],
                       ),
+                    expainDivider(
+                        '총 ${(selectedIndex[0] + 2) * (selectedIndex[0] + 2)} 칸의 빙고판이 만들어집니다.'),
+                    const CustomText(
+                      content: '그룹 가입 시 자동 승인 여부*',
+                      center: false,
                     ),
-                    CustomCheckBox(
-                      label: '공개 여부 *',
-                      value: isChecked,
-                      onChange: (_) {
-                        setState(() {
-                          isChecked = !isChecked;
-                        });
-                        setGroupData('is_public')(isChecked);
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        for (int j = 0; j < 2; j += 1)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: CustomBoxContainer(
+                              borderColor:
+                                  selectedIndex[1] == j ? null : greyColor,
+                              onTap: () => changeGroupData(1, j),
+                              width: 120,
+                              height: 60,
+                              color: selectedIndex[1] == j
+                                  ? paleOrangeColor
+                                  : whiteColor,
+                              // boxShadow: applyBoxShadow(1, j),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Center(
+                                  child: CustomText(
+                                    content: printedValues[1][j],
+                                    color: selectedIndex[1] == j
+                                        ? whiteColor
+                                        : blackColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    expainDivider(
+                      selectedIndex[1] == 0
+                          ? '가입 신청 후, 그룹장의 허가가 있어야 가입됩니다.'
+                          : '가입 신청 시, 자동으로 가입됩니다.',
+                    ),
+                    RowWithPadding(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const CustomText(content: '그룹 공개 *'),
+                          CustomSwitch(
+                            value: isChecked,
+                            onChanged: (_) {
+                              setState(() {
+                                isChecked = !isChecked;
+                              });
+                              setGroupData('is_public')(isChecked);
+                            },
+                          )
+                        ]),
+                    CustomText(
+                      center: false,
+                      content:
+                          isChecked ? '추천 그룹, 검색 화면에 노출됩니다' : '초대로만 가입이 가능합니다',
+                      fontSize: FontSize.smallSize,
+                      color: greyColor,
                     ),
                     if (!isChecked)
                       CustomInput(
@@ -387,6 +412,7 @@ class _GroupFormState extends State<GroupForm> {
                       )
                   ],
                 ),
+              const CustomDivider(),
               CustomInput(
                 title: '그룹 설명',
                 needMore: true,
@@ -411,6 +437,20 @@ class _GroupFormState extends State<GroupForm> {
           ),
         ),
         bottomNavigationBar: FormBottomBar(createOrUpdate: createOrUpdate));
+  }
+
+  Column expainDivider(String content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomText(
+          content: content,
+          fontSize: FontSize.smallSize,
+          color: greyColor,
+        ),
+        const CustomDivider(),
+      ],
+    );
   }
 
   CustomBoxContainer groupImage() {
@@ -464,11 +504,11 @@ class _GroupFormState extends State<GroupForm> {
     }
   }
 
-  BoxShadowList applyBoxShadow(int i, int j) {
-    if (selectedIndex[i] == j) {
-      return [selectedShadow];
-    } else {
-      return [defaultShadow];
-    }
-  }
+  // BoxShadowList applyBoxShadow(int i, int j) {
+  //   if (selectedIndex[i] == j) {
+  //     return [selectedShadow];
+  //   } else {
+  //     return [defaultShadow];
+  //   }
+  // }
 }

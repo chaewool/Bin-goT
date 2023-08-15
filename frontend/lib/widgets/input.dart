@@ -1,4 +1,5 @@
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,8 @@ import 'package:flutter/services.dart';
 //* input
 class CustomInput extends StatelessWidget {
   final String? explain;
-  final bool needMore, onlyNum, enabled, needSubmit;
+  final StringList? explainTitle;
+  final bool needMore, onlyNum, enabled, needSearch;
   final double? width, height, vertical, horizontal;
   final bool filled;
   final Color filledColor;
@@ -17,6 +19,8 @@ class CustomInput extends StatelessWidget {
   final String? initialValue;
   // final String? Function() returnValue;
   final void Function(String) setValue;
+  final void Function(String)? onSubmitted;
+  final Widget? suffixIcon;
 
   const CustomInput({
     super.key,
@@ -32,24 +36,48 @@ class CustomInput extends StatelessWidget {
     this.fontSize = FontSize.smallSize,
     this.maxLength,
     this.title = '',
-    this.horizontal = 20.0,
-    this.vertical = 10.0,
+    this.horizontal = 0,
+    this.vertical = 0,
     this.initialValue,
-    this.needSubmit = true,
+    this.needSearch = false,
+    this.onSubmitted,
+    this.suffixIcon,
+    this.explainTitle,
     // required this.returnValue,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        title != '' ? CustomText(content: title) : const SizedBox(),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: vertical!,
-            horizontal: horizontal!,
-          ),
-          child: SizedBox(
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: vertical!,
+        horizontal: horizontal!,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          title != ''
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    children: [
+                      CustomText(content: title),
+                      Row(
+                        children: [
+                          if (explainTitle != null)
+                            for (int i = 0; i < explainTitle!.length; i += 1)
+                              CustomText(
+                                content: explainTitle![i],
+                                fontSize: FontSize.smallSize,
+                                color: greyColor,
+                              ),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox(),
+          SizedBox(
             width: width,
             height: height,
             child: TextField(
@@ -60,6 +88,10 @@ class CustomInput extends StatelessWidget {
                 border: const OutlineInputBorder(),
                 hintText: explain,
                 focusColor: whiteColor,
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: paleOrangeColor),
+                ),
+                suffixIcon: suffixIcon,
               ),
               maxLength: maxLength,
               style: TextStyle(fontSize: convertedFontSize(fontSize)),
@@ -71,14 +103,14 @@ class CustomInput extends StatelessWidget {
               textAlign: TextAlign.start,
               textAlignVertical: TextAlignVertical.center,
               onChanged: setValue,
-              onSubmitted:
-                  needSubmit ? (_) => FocusScope.of(context).nextFocus() : null,
-              textInputAction: TextInputAction.next,
+              onSubmitted: onSubmitted,
+              textInputAction:
+                  needSearch ? TextInputAction.search : TextInputAction.next,
               // focusNode: inputFocus,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -150,7 +182,8 @@ class _InputDateState extends State<InputDate> {
       lastDate: DateTime(DateTime.now().year + 1, 12, 31),
       dayTextStyle: dayTextStyle,
       calendarType: CalendarDatePicker2Type.range,
-      selectedDayHighlightColor: Colors.purple[800],
+      selectedDayHighlightColor: paleOrangeColor,
+      selectedRangeHighlightColor: beigeColor,
       closeDialogOnCancelTapped: true,
       firstDayOfWeek: 0,
       weekdayLabelTextStyle: const TextStyle(
@@ -285,7 +318,6 @@ class _InputDateState extends State<InputDate> {
         child: CustomInput(
           explain: widget.explain,
           enabled: false,
-          needSubmit: false,
           setValue: (value) {},
         ),
       ),
