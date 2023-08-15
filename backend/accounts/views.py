@@ -12,7 +12,7 @@ import jwt
 
 from bingot.settings import SIMPLE_JWT
 from bingot_settings import KAKAO_REST_API_KEY
-from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
+from .serializers import ProfileSerializer, NotificationSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
 from groups.models import Group, Participate
 from commons import get_boolean, RedisToken
@@ -57,9 +57,7 @@ def from_kaKao_id_get_user_info(kakao_id):
     
     data['refresh_token'] = str(token)
     data['access_token'] = str(token.access_token)
-        
-    serializer = UserSerializer(user)
-    data.update(serializer.data)
+    data['id'] = user.pk
     
     return data
 
@@ -196,7 +194,15 @@ class BadgeUpdateView(APIView):
             
             return Response(data={}, status=status.HTTP_200_OK)
         return Response(data={'message': '보유하지 않은 배지입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+    
+class NotificationDetailView(APIView):
+    def get(self, request):
+        user = request.user
+        data = NotificationSerializer(user).data
+
+        return Response(data=data, status=status.HTTP_200_OK)
+ 
     
 class NotificationUpdateView(APIView):
     def put(self, request):
@@ -322,5 +328,6 @@ class MainBoardsView(APIView):
 class ProfileView(APIView):
     def get(self, request):
         user = request.user
-        
-        return Response(data={'username': user.username, 'badge': user.badge}, status=status.HTTP_200_OK)
+        data = ProfileSerializer(user).data
+
+        return Response(data=data, status=status.HTTP_200_OK)
