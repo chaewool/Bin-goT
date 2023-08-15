@@ -154,10 +154,14 @@ def send_to_fcm(user, group, title, content, path, users=False):
 from accounts.models import Badge, Achieve
 
 def send_badge_notification(user, badge_id):
+    badge = Badge.objects.get(id=badge_id)
+    Achieve.objects.create(user=user, badge=badge)
+    
+    user.cnt_badge += 1
+    user.save()
+    
     title = '새로운 뱃지 획득!'
     content = '알림을 눌러 획득한 뱃지를 확인해보세요.'
     path = '뱃지 획득 후 이동할 경로'
 
-    badge = Badge.objects.get(id=badge_id)
-    Achieve.objects.create(user=user, badge=badge)
     send_to_fcm(user, '', title, content, path)
