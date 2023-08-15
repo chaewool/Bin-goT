@@ -55,7 +55,10 @@ def every_day():
             users = group.users.all()
             for user in users:
                 rank = ranker.getRank(str(user.id))
-                content = f'당신의 등수는 {rank}등입니다.'
+                if rank == -1:
+                    content = '채워진 칸이 없어 순위가 집계되지 않았습니다.'
+                else:
+                    content = f'당신의 등수는 {rank}등입니다.'
                 send_to_fcm(user, '', title, content, path)
                 
                 if rank == 1:
@@ -84,7 +87,10 @@ def every_monday():
         for user in users:
             if user.noti_rank:
                 rank = ranker.getRank(str(user.id))
-                content = f'당신의 등수는 {rank}등입니다.'
+                if rank == -1:
+                    content = '채워진 칸이 없어 순위가 집계되지 않았습니다.'
+                else:
+                    content = f'당신의 등수는 {rank}등입니다.'
                 send_to_fcm(user, '', title, content, path)
 
 
