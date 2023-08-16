@@ -17,26 +17,26 @@ class NotificationSettings extends StatefulWidget {
 
 class _NotificationSettingsState extends State<NotificationSettings> {
   List initialOption = [];
-  List optionList = [];
+  BoolList optionList = List.generate(4, (index) => false);
   StringList notificationList = [
     '진행률/랭킹 알림',
     '남은 기간 알림',
     '채팅 알림',
     '인증 완료 알림',
   ];
-  //   static bool _rankNoti = true;
-  // static bool _dueNoti = true;
-  // static bool _chatNoti = true;
-  // static bool _completeNoti = true;
 
   @override
   void initState() {
     super.initState();
-    // optionList.add(context.read<NotiProvider>().rankNoti);
-    // optionList.add(context.read<NotiProvider>().dueNoti);
-    // optionList.add(context.read<NotiProvider>().chatNoti);
-    // optionList.add(context.read<NotiProvider>().completeNoti);
-    initialOption = List.from(optionList);
+    UserInfoProvider().getNoti().then((data) {
+      optionList[0] = data.rank;
+      optionList[1] = data.due;
+      optionList[2] = data.chat;
+      optionList[3] = data.check;
+      initialOption = List.from(optionList);
+    }).catchError((error) {
+      print(error);
+    });
   }
 
   void changeIdx(int i) {
@@ -56,10 +56,6 @@ class _NotificationSettingsState extends State<NotificationSettings> {
       'noti_due': optionList[2],
       'noti_check': optionList[3],
     }).then((_) {
-      // context.read<NotiProvider>().setStoreRank(optionList[0]);
-      // context.read<NotiProvider>().setStoreDue(optionList[1]);
-      // context.read<NotiProvider>().setStoreChat(optionList[2]);
-      // context.read<NotiProvider>().setStoreComplete(optionList[3]);
       initialOption = List.from(optionList);
     });
   }

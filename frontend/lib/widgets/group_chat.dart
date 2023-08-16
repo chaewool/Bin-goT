@@ -18,10 +18,10 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GroupChat extends StatefulWidget {
-  final int bingoId;
+  // final int bingoId;
   const GroupChat({
     super.key,
-    required this.bingoId,
+    // required this.bingoId,
   });
 
   @override
@@ -30,7 +30,7 @@ class GroupChat extends StatefulWidget {
 
 class _GroupChatState extends State<GroupChat> {
   GroupChatList chats = [];
-  late int groupId, bingoId;
+  late int groupId;
   final controller = ScrollController();
   bool showImg = false;
   XFile? selectedImage;

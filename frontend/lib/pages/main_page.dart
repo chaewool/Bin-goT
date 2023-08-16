@@ -9,6 +9,7 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/scroll.dart';
+import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/settings.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:bin_got/widgets/toast.dart';
@@ -27,7 +28,7 @@ class _MainState extends State<Main> {
   double boxHeight = 100;
   double radius = 40;
   int selectedIndex = 1;
-  WidgetList nextPages = const [Settings(), MainTabBar(), SearchBar()];
+  WidgetList nextPages = const [Settings(), MainTabBar(), CustomSearchBar()];
   final List<BottomNavigationBarItem> items = [
     customBottomBarIcon(label: '설정 페이지', iconData: settingsIcon),
     customBottomBarIcon(label: '메인 페이지', iconData: homeIcon),

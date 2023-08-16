@@ -186,6 +186,7 @@ class UrlClass extends DioClass {
   //* my page
   static const _badgeListUrl = '$_badgeUrl/list/';
   static const _changeBadgeUrl = '$_badgeUrl/update/';
+  static const _notificationsUrl = '$_accountUrl/notification/detail';
   static const _notiUrl = '$_accountUrl/notification/update/';
   static const _profileUrl = '$_accountUrl/profile/';
 
@@ -280,6 +281,7 @@ class UrlClass extends DioClass {
   String get changeBadgeUrl => _changeBadgeUrl;
   String get notiUrl => _notiUrl;
   String get profileUrl => _profileUrl;
+  String get notificationsUrl => _notificationsUrl;
 
   //* fcm
   String get saveFCMTokentUrl => _saveFCMTokentUrl;

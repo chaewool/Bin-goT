@@ -3,7 +3,7 @@ import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
-import 'package:bin_got/widgets/circular_progress_indicator.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';

@@ -58,13 +58,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
   final WidgetList? actions;
   final String? title;
-  final ReturnVoid? onPressedBack;
+  final ReturnVoid? onPressedBack, onPressedClose;
+  final IconData? otherIcon;
   const AppBarWithBack({
     super.key,
     this.actions,
     this.title,
     this.onPressedBack,
-    // this.onPressedClose,
+    this.onPressedClose,
+    this.otherIcon,
   });
 
   @override
@@ -77,8 +79,12 @@ class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
       title: title,
       actions: [
         ...?actions,
-        // if (onPressedClose != null)
-        //   CustomIconButton(onPressed: onPressedClose!, icon: closeIcon)
+        if (onPressedClose != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 15),
+            child: CustomIconButton(
+                onPressed: onPressedClose!, icon: otherIcon ?? closeIcon),
+          )
       ],
     );
   }

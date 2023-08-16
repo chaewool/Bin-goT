@@ -181,13 +181,6 @@ void login(BuildContext context) async {
   try {
     UserProvider().login().then((data) {
       setTokens(context, data['access_token'], data['refresh_token']);
-      // setNoti(
-      //   context,
-      //   rank: data['noti_rank'],
-      //   due: data['noti_due'],
-      //   chat: data['noti_chat'],
-      //   complete: data['noti_check'],
-      // );
       context.read<AuthProvider>().setStoreId(data['id']);
       saveFCMToken();
       if (data['is_login']) {

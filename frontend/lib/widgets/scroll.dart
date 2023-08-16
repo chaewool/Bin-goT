@@ -1,6 +1,6 @@
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/widgets/circular_progress_indicator.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:flutter/material.dart';

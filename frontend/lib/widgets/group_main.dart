@@ -49,6 +49,7 @@ class _GroupMainState extends State<GroupMain> {
             memberState = data.memberState;
             setGroupData(context, data);
           });
+          print('apply new!!! -------------------------');
           widget.applyNew(
             newBingoId: data.bingoId,
             newMemberState: data.memberState,
@@ -171,9 +172,15 @@ class _GroupMainState extends State<GroupMain> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomText(content: data.groupName, fontSize: FontSize.titleSize),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.only(top: 20, bottom: 10),
+          child: CustomText(
+            content: data.groupName,
+            fontSize: FontSize.titleSize,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10, bottom: 20),
           child: CustomText(content: '참여 인원 ${data.count}/${data.headCount}'),
         ),
         CustomText(content: '${data.start} ~ ${data.end}'),

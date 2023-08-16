@@ -1,7 +1,9 @@
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/search_bar.dart';
@@ -37,6 +39,7 @@ class _SearchGroupState extends State<SearchGroup> {
   // Offset? filterPosition;
   // Offset? sortPosition;
   final controller = ScrollController();
+  bool showSearchBar = true;
 
   @override
   void initState() {
@@ -145,6 +148,11 @@ class _SearchGroupState extends State<SearchGroup> {
   //     }
   //   });
   // }
+  void changeShowSearchBar() {
+    setState(() {
+      showSearchBar = !showSearchBar;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,17 +163,21 @@ class _SearchGroupState extends State<SearchGroup> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        // appBar: const MainBar(),
+        appBar: AppBarWithBack(
+          onPressedClose: changeShowSearchBar,
+          otherIcon: searchIcon,
+        ),
         body: Stack(
           children: [
             Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                CustomSearchBar(
-                  public: widget.public,
-                  period: widget.period,
-                  query: widget.query,
-                ),
+                if (showSearchBar)
+                  CustomSearchBar(
+                    public: widget.public,
+                    period: widget.period,
+                    query: widget.query,
+                  ),
                 // const RowWithPadding(
                 //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 //   vertical: 10,

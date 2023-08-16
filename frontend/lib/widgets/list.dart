@@ -98,7 +98,8 @@ class RankListItem extends StatelessWidget {
     return CustomList(
       innerHorizontal: 15,
       height: 70,
-      boxShadow: const [defaultShadow],
+      border: true,
+      // boxShadow: const [defaultShadow],
       onTap: toOtherPage(
         context,
         page: GroupDetail(
@@ -146,6 +147,7 @@ class CustomList extends StatelessWidget {
   final ReturnVoid? onTap;
   final BoxShadowList? boxShadow;
   final Color color;
+  final bool border;
   final double vertical, horizontal, innerHorizontal;
   const CustomList({
     super.key,
@@ -158,6 +160,7 @@ class CustomList extends StatelessWidget {
     this.vertical = 10,
     this.horizontal = 10,
     this.innerHorizontal = 30,
+    this.border = false,
   });
 
   @override
@@ -169,6 +172,7 @@ class CustomList extends StatelessWidget {
         onTap: onTap,
         height: height,
         width: width,
+        borderColor: border ? greyColor : null,
         boxShadow: boxShadow,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: innerHorizontal),

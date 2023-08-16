@@ -31,6 +31,9 @@ class _SettingsState extends State<Settings> {
   String username = '';
   StringMap newName = {'value': ''};
   int badgeId = 0;
+  int numberOfCompleted = 0;
+  int numberOfWon = 0;
+  int ownBadges = 0;
 
   void logout() {
     deleteVar(context);
@@ -45,6 +48,9 @@ class _SettingsState extends State<Settings> {
         username = data.username;
         newName['value'] = data.username;
         badgeId = data.badgeId;
+        numberOfCompleted = data.numberOfCompleted;
+        numberOfWon = data.numberOfWon;
+        ownBadges = data.ownBadges;
       });
     }).catchError((error) {
       showErrorModal(context);
@@ -237,60 +243,125 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
       padding: const EdgeInsets.fromLTRB(5, 10, 5, 15),
       child: CustomBoxContainer(
         color: paleRedColor,
-        child: RowWithPadding(
-          // vertical: 20,
-          horizontal: 15,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Flexible(
-              child: CircleContainer(
-                color: whiteColor,
-                onTap: showModal(
-                  context,
-                  page: SelectBadgeModal(
-                    presentBadge: badgeId,
-                    onPressed: changeBadge,
+            RowWithPadding(
+              // vertical: 20,
+              horizontal: 15,
+              children: [
+                Flexible(
+                  child: CircleContainer(
+                    color: whiteColor,
+                    onTap: showModal(
+                      context,
+                      page: SelectBadgeModal(
+                        presentBadge: badgeId,
+                        onPressed: changeBadge,
+                      ),
+                    ),
+                    child: badgeId != 0
+                        ? Center(
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  '${dotenv.env['fileUrl']}/badges/$badgeId',
+                              placeholder: (context, url) =>
+                                  const SizedBox(width: 50, height: 50),
+                            ),
+                          )
+                        : const SizedBox(),
                   ),
                 ),
-                child: badgeId != 0
-                    ? Center(
-                        child: CachedNetworkImage(
-                          imageUrl: '${dotenv.env['fileUrl']}/badges/$badgeId',
-                          placeholder: (context, url) =>
-                              const SizedBox(width: 50, height: 50),
+                Flexible(
+                  flex: 4,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        flex: 5,
+                        child: Center(
+                          child: CustomText(
+                            content: username,
+                            fontSize: FontSize.largeSize,
+                            color: whiteColor,
+                            bold: true,
+                          ),
                         ),
-                      )
-                    : const SizedBox(),
-              ),
+                      ),
+                      Flexible(
+                        flex: 2,
+                        child: IconButtonInRow(
+                          onPressed: showModal(
+                            context,
+                            page: const ChangeNameModal(),
+                          ),
+                          icon: editIcon,
+                          color: whiteColor,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            Flexible(
-              flex: 4,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Flexible(
-                    flex: 5,
-                    child: Center(
-                      child: CustomText(
-                        content: username,
-                        fontSize: FontSize.largeSize,
-                        color: whiteColor,
-                        bold: true,
+                  Column(
+                    children: [
+                      Flexible(
+                        child: Row(
+                          children: [
+                            const CustomIcon(
+                              icon: checkIcon,
+                              size: 40,
+                            ),
+                            CustomText(content: '$numberOfCompleted개'),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    child: IconButtonInRow(
-                      onPressed: showModal(
-                        context,
-                        page: const ChangeNameModal(),
+                      const Flexible(
+                        child: CustomText(
+                          content: '100% 완료한 빙고 개수',
+                          fontSize: FontSize.smallSize,
+                        ),
                       ),
-                      icon: editIcon,
-                    ),
+                    ],
                   ),
+                  Row(
+                    children: [
+                      const CustomIcon(
+                        icon: Icons.format_list_numbered,
+                        size: 40,
+                      ),
+                      CustomText(content: '$numberOfWon개'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const CustomIcon(
+                        icon: Icons.badge_outlined,
+                        size: 40,
+                      ),
+                      CustomText(content: '$ownBadges개'),
+                    ],
+                  )
                 ],
               ),
             ),
+            const Row(
+              children: [
+                CustomText(
+                  content: '100% 완료한 빙고 개수',
+                  fontSize: FontSize.smallSize,
+                ),
+                CustomText(content: '1위한 빙고 개수'),
+                CustomText(content: '획득한 배지 개수'),
+              ],
+            )
           ],
         ),
       ),

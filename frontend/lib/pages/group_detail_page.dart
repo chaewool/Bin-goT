@@ -33,9 +33,8 @@ class _GroupDetailState extends State<GroupDetail> {
   int? bingoId;
   late bool needAuth;
   late int selectedIndex;
-  final WidgetList nextPages = [];
-  final List<PreferredSizeWidget> appbarList =
-      List.generate(3, (_) => AppBar());
+  final WidgetList nextPages = List.generate(3, (_) => const SizedBox());
+  final List<PreferredSizeWidget?> appbarList = List.generate(3, (_) => null);
   @override
   void initState() {
     super.initState();
@@ -44,16 +43,12 @@ class _GroupDetailState extends State<GroupDetail> {
     size = -1;
     needAuth = false;
     bingoId = widget.bingoId ?? 0;
-    if (memberState != 0) {
-      nextPages.addAll([
-        BingoDetail(bingoId: bingoId!, size: size),
-        GroupMain(
-          groupId: widget.groupId,
-          password: widget.password,
-          applyNew: applyNew,
-        ),
-        GroupChat(bingoId: bingoId!)
-      ]);
+    if (selectedIndex == 1) {
+      nextPages[1] = GroupMain(
+        groupId: widget.groupId,
+        password: widget.password,
+        applyNew: applyNew,
+      );
     }
     appbarList[2] = const AppBarWithBack();
     // appbarList.addAll([
@@ -108,6 +103,10 @@ class _GroupDetailState extends State<GroupDetail> {
         password: widget.password,
       );
     });
+    print(memberState);
+    print(size);
+    print(bingoId);
+    print(memberState);
   }
 
   // @override
@@ -118,6 +117,10 @@ class _GroupDetailState extends State<GroupDetail> {
 
   @override
   Widget build(BuildContext context) {
+    if (memberState != -1 && nextPages[0] == const SizedBox()) {
+      nextPages[0] = BingoDetail(bingoId: bingoId!, size: size);
+      nextPages[2] = const GroupChat();
+    }
     return WillPopScope(
       onWillPop: () {
         if (selectedIndex == 0) {

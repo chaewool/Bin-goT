@@ -1,9 +1,11 @@
 import 'package:bin_got/pages/search_group_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
@@ -39,7 +41,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     '여섯 달 ~ 아홉 달',
     '아홉 달 ~ 1년',
   ];
-  late bool privateGroup, publicGroup;
+  late BoolList publicPrivate;
   StringMap keyword = {};
   late double index;
   late int sortIdx;
@@ -49,13 +51,12 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     super.initState();
     index = widget.period.toDouble();
     sortIdx = widget.sortIdx;
-    privateGroup = widget.public % 2 == 0;
-    publicGroup = widget.public < 2;
+    publicPrivate = [widget.public % 2 == 0, widget.public < 2];
     keyword['value'] = widget.query ?? '';
   }
 
   void onSearchAction() {
-    if (!publicGroup && !privateGroup) {
+    if (!publicPrivate[0] && !publicPrivate[1]) {
       showModal(
         context,
         page: const CustomModal(
@@ -68,10 +69,10 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     }
     if (keyword['value'] != '' || index != 0) {
       int result = 3;
-      if (publicGroup) {
+      if (publicPrivate[0]) {
         result -= 2;
       }
-      if (privateGroup) {
+      if (publicPrivate[1]) {
         result -= 1;
       }
 
@@ -99,17 +100,13 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     }
   }
 
-  void changePrivate() {
+  void changePublicPrivate(int i) {
     setState(() {
-      privateGroup = !privateGroup;
+      publicPrivate[i] = !publicPrivate[i];
     });
   }
 
-  void changePublic() {
-    setState(() {
-      publicGroup = !publicGroup;
-    });
-  }
+  bool Function() isPossible() => () => index != 0 || keyword['value'] != '';
 
   void changeSort(int value) {
     setState(() {
@@ -117,23 +114,50 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     });
   }
 
+  // void changePossible(String value) {
+  //   if (value == '') {
+  //     if (isPossible) {
+  //       setState(() {
+  //         isPossible = false;
+  //       });
+  //     }
+  //   } else if (!isPossible) {
+  //     setState(() {
+  //       isPossible = true;
+  //     });
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
-      color: blackColor,
+      hasRoundEdge: false,
+      // color: blackColor,
       child: ColWithPadding(
         horizontal: 30,
-        vertical: 17,
+        vertical: 30,
         children: [
-          CustomInput(
-            explain: '검색할 그룹명을 입력하세요',
-            setValue: (value) {
-              keyword['value'] = value;
-            },
-            fontSize: FontSize.textSize,
-            initialValue: keyword['value'],
-            needSearch: true,
-            onSubmitted: (_) => onSearchAction(),
+          // const Center(
+          //     child: CustomText(
+          //   content: '검색',
+          //   fontSize: FontSize.titleSize,
+          // )),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: CustomInput(
+              explain: '검색할 그룹명을 입력하세요',
+              setValue: (value) {
+                keyword['value'] = value;
+              },
+              fontSize: FontSize.textSize,
+              initialValue: keyword['value'],
+              needSearch: true,
+              onSubmitted: (_) => onSearchAction(),
+              suffixIcon: const CustomIcon(
+                icon: searchIcon,
+                color: greyColor,
+              ),
+            ),
           ),
           // TextField(
           //   decoration: const InputDecoration(
@@ -148,87 +172,145 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           //   textInputAction: TextInputAction.search,
           //   controller: TextEditingController(text: keyword['value']),
           // ),
-          Row(
+          RowWithPadding(
+            vertical: 20,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Slider(
-                min: 0,
-                max: 5,
-                value: index,
-                onChanged: (value) {
-                  setState(() {
-                    index = value;
-                  });
-                },
-              ),
-              CustomText(
-                content: index.toInt() != 0 ? period[index.toInt()] : '',
+              const CustomText(
+                content: '기간 선택',
                 fontSize: FontSize.smallSize,
               ),
+              Column(
+                children: [
+                  SliderTheme(
+                    data: SliderThemeData(
+                      overlayShape: SliderComponentShape.noOverlay,
+                    ),
+                    child: Slider(
+                      activeColor: paleOrangeColor,
+                      thumbColor: paleOrangeColor,
+                      inactiveColor: paleOrangeColor.withOpacity(0.5),
+                      min: 0,
+                      max: 5,
+                      divisions: 5,
+                      value: index,
+                      onChanged: (value) {
+                        setState(() {
+                          index = value;
+                          // if (value == 0) {
+                          //   if (isPossible) {
+                          //     isPossible = false;
+                          //   }
+                          // } else if (!isPossible) {
+                          //   isPossible = true;
+                          // }
+                        });
+                      },
+                    ),
+                  ),
+                  if (index != 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: CustomText(
+                        content:
+                            index.toInt() != 0 ? period[index.toInt()] : '',
+                        fontSize: FontSize.smallSize,
+                      ),
+                    ),
+                ],
+              ),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomBoxContainer(
-                onTap: () => changeSort(0),
-                color: sortIdx == 0 ? paleOrangeColor : whiteColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomText(
-                    content: '시작일 ▲',
-                    color: sortIdx == 0 ? whiteColor : blackColor,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              CustomBoxContainer(
-                onTap: () => changeSort(1),
-                color: sortIdx == 1 ? paleOrangeColor : whiteColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomText(
-                    content: '시작일 ▼',
-                    color: sortIdx == 1 ? whiteColor : blackColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
+          RowWithPadding(
+            vertical: 20,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomBoxContainer(
-                onTap: changePublic,
-                color: publicGroup ? paleOrangeColor : whiteColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomText(
-                    content: '공개 그룹',
-                    color: publicGroup ? whiteColor : blackColor,
-                    fontSize: FontSize.smallSize,
+              const CustomText(
+                content: '그룹 정렬',
+                fontSize: FontSize.smallSize,
+              ),
+              for (int i = 0; i < 2; i += 1)
+                CustomBoxContainer(
+                  onTap: () => changeSort(i),
+                  color: sortIdx == i ? paleOrangeColor : whiteColor,
+                  borderColor: sortIdx == i ? null : greyColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomText(
+                      content: '시작일 ${i == 0 ? '▲' : '▼'}',
+                      color: sortIdx == i ? whiteColor : blackColor,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              CustomBoxContainer(
-                onTap: changePrivate,
-                color: privateGroup ? paleOrangeColor : whiteColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomText(
-                    content: '비공개 그룹',
-                    color: privateGroup ? whiteColor : blackColor,
-                    fontSize: FontSize.smallSize,
-                  ),
-                ),
-              ),
-              CustomButton(
-                onPressed: onSearchAction,
-                content: '검색',
-              ),
             ],
           ),
+          RowWithPadding(
+            vertical: 20,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const CustomText(
+                content: '공개 여부 필터',
+                fontSize: FontSize.smallSize,
+              ),
+              for (int i = 0; i < 2; i += 1)
+                CustomBoxContainer(
+                  onTap: () => changePublicPrivate(i),
+                  color: publicPrivate[i] ? paleOrangeColor : whiteColor,
+                  borderColor: publicPrivate[i] ? null : greyColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomText(
+                      content: i == 0 ? '공개 그룹' : '비공개 그룹',
+                      color: publicPrivate[i] ? whiteColor : blackColor,
+                      fontSize: FontSize.smallSize,
+                    ),
+                  ),
+                ),
+              // const SizedBox(width: 10),
+              // CustomBoxContainer(
+              //   onTap: changePrivate,
+              //   color: privateGroup ? paleOrangeColor : whiteColor,
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(8.0),
+              //     child: CustomText(
+              //       content: '비공개 그룹',
+              //       color: privateGroup ? whiteColor : blackColor,
+              //       fontSize: FontSize.smallSize,
+              //     ),
+              //   ),
+              // ),
+              // CustomButton(
+              //   onPressed: onSearchAction,
+              //   content: '검색',
+              // ),
+            ],
+          ),
+          RowWithPadding(
+            vertical: 10,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              isPossible()()
+                  ? Expanded(
+                      child: CustomButton(
+                        onPressed: onSearchAction,
+                        content: '검색',
+                      ),
+                    )
+                  : const Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: CustomText(
+                        content: '그룹명을 입력하거나, 기간을 선택해주세요',
+                        fontSize: FontSize.smallSize,
+                        color: paleRedColor,
+                      ),
+                    ),
+            ],
+          ),
+          // CustomText(
+          //   content: isPossible ? '검색 가능합니다' : '그룹명을 입력하거나, 기간을 선택해주세요',
+          //   fontSize: FontSize.smallSize,
+          //   color: isPossible ? blackColor : paleRedColor,
+          // )
         ],
       ),
     );
