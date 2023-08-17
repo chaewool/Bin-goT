@@ -28,7 +28,7 @@ class BingoDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int groupId = 0;
+    // int groupId = 0;
     GlobalKey globalKey = GlobalKey();
     int bingoSize = size ?? context.read<GlobalGroupProvider>().bingoSize!;
     // void deleteBingo() {
@@ -98,10 +98,9 @@ class BingoDetail extends StatelessWidget {
               final DynamicMap data = snapshot.data!;
               print('bingo data => $data');
               final int achieve = (data['achieve']! * 100).toInt();
-              groupId = data['group'];
+              // groupId = data['group'];
               setBingoData(context, data);
-              final size = getBingoSize(context)!;
-              final length = size * size;
+              final length = bingoSize * bingoSize;
               initFinished(context, length);
               for (int i = 0; i < length; i += 1) {
                 setFinished(context, i, data['items'][i]['finished']);

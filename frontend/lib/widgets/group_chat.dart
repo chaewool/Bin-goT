@@ -6,7 +6,6 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -30,7 +29,7 @@ class GroupChat extends StatefulWidget {
 
 class _GroupChatState extends State<GroupChat> {
   GroupChatList chats = [];
-  late int groupId;
+  int groupId = 0;
   final controller = ScrollController();
   bool showImg = false;
   XFile? selectedImage;
@@ -40,9 +39,9 @@ class _GroupChatState extends State<GroupChat> {
   @override
   void initState() {
     super.initState();
-    groupId = getGroupId(context)!;
-    print('group id => $groupId');
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      groupId = getGroupId(context)!;
+      print('group id => $groupId');
       initLoadingData(context, 0);
       if (readLoading(context)) {
         readChats(false);
@@ -164,64 +163,58 @@ class _GroupChatState extends State<GroupChat> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: const AppBarWithBack(),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Expanded(
-                child: InfiniteScroll(
-                  color: whiteColor,
-                  controller: controller,
-                  cnt: 50,
-                  reverse: true,
-                  data: chats,
-                  mode: 0,
-                  emptyWidget: const Column(
-                    children: [
-                      CustomText(
-                        center: true,
-                        fontSize: FontSize.titleSize,
-                        content: '채팅 기록이 없습니다.',
-                        height: 1.5,
-                      ),
-                    ],
-                  ),
+    return Stack(
+      children: [
+        Column(
+          children: [
+            Expanded(
+              child: InfiniteScroll(
+                color: whiteColor,
+                controller: controller,
+                cnt: 50,
+                reverse: true,
+                data: chats,
+                mode: 0,
+                emptyWidget: const Column(
+                  children: [
+                    CustomText(
+                      center: true,
+                      fontSize: FontSize.titleSize,
+                      content: '채팅 기록이 없습니다.',
+                      height: 1.5,
+                    ),
+                  ],
                 ),
               ),
-              GroupChatBottomBar(
-                key: bottomBarKey,
-                addChat: addChat,
-                selectedImage: selectedImage,
-                imagePicker: imagePicker,
+            ),
+            GroupChatBottomBar(
+              key: bottomBarKey,
+              addChat: addChat,
+              selectedImage: selectedImage,
+              imagePicker: imagePicker,
+            ),
+          ],
+        ),
+        if (showImg)
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              CustomBoxContainer(
+                hasRoundEdge: false,
+                width: getWidth(context),
+                height: getHeight(context) - appBarHeight,
+                color: blackColor.withOpacity(0.8),
+                image: DecorationImage(
+                  image: FileImage(File(selectedImage!.path)),
+                ),
+                child: CustomIconButton(
+                  icon: closeIcon,
+                  onPressed: deleteImg,
+                ),
               ),
             ],
-          ),
-          if (showImg)
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                CustomBoxContainer(
-                  hasRoundEdge: false,
-                  width: getWidth(context),
-                  height: getHeight(context) - appBarHeight,
-                  color: Colors.black38,
-                  image: DecorationImage(
-                    image: FileImage(
-                      File(selectedImage!.path),
-                    ),
-                  ),
-                  child: CustomIconButton(
-                    icon: closeIcon,
-                    onPressed: deleteImg,
-                  ),
-                ),
-              ],
-            )
-        ],
-      ),
+          )
+      ],
     );
   }
 }

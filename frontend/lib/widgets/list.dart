@@ -246,7 +246,7 @@ class _ChatListItemState extends State<ChatListItem> {
       children: [
         if (widget.date != null)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30),
+            padding: const EdgeInsets.only(bottom: 20, top: 10),
             child: CustomText(
               content: widget.date!,
               fontSize: FontSize.textSize,
@@ -281,7 +281,8 @@ class _ChatListItemState extends State<ChatListItem> {
                       fontSize: FontSize.smallSize,
                     ),
                   ),
-                Row(
+                RowWithPadding(
+                  vertical: 12,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (isMine) checkAndTimeInfo(),
@@ -289,7 +290,7 @@ class _ChatListItemState extends State<ChatListItem> {
                         ? Stack(
                             children: [
                               CustomList(
-                                vertical: 2,
+                                vertical: 0,
                                 innerHorizontal: 20,
                                 color: isMine
                                     ? paleRedColor.withOpacity(0.8)
@@ -350,6 +351,15 @@ class _ChatListItemState extends State<ChatListItem> {
                                   ],
                                 ),
                               ),
+                              if (widget.data.itemId != -1 && reviewed)
+                                Transform.translate(
+                                  offset: const Offset(0, -10),
+                                  child: const CustomIcon(
+                                    icon: checkIcon,
+                                    color: darkGreyColor,
+                                    size: 25,
+                                  ),
+                                ),
                             ],
                           )
                         : Padding(
@@ -372,7 +382,15 @@ class _ChatListItemState extends State<ChatListItem> {
                               ),
                             ),
                           ),
-                    if (!isMine) checkAndTimeInfo()
+
+                    if (!isMine)
+                      CustomText(
+                        color: greyColor,
+                        content:
+                            widget.data.createdAt.split(' ')[1].substring(0, 5),
+                        fontSize: FontSize.smallSize,
+                      )
+                    // checkAndTimeInfo()
                   ],
                 )
               ],
@@ -383,31 +401,30 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  Column checkAndTimeInfo() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment:
-          isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
-        if (widget.data.itemId != -1 && reviewed)
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              CustomIcon(
-                icon: checkIcon,
-                color: darkGreyColor,
-              ),
-            ],
-          ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: CustomText(
-            color: greyColor,
-            content: widget.data.createdAt.split(' ')[1].substring(0, 5),
-            fontSize: FontSize.smallSize,
-          ),
-        ),
-      ],
+  CustomText checkAndTimeInfo() {
+    return
+        // Column(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   crossAxisAlignment:
+        //       isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        //   children: [
+        // if (widget.data.itemId != -1 && reviewed)
+        //   const Row(
+        //     mainAxisAlignment: MainAxisAlignment.end,
+        //     children: [
+        //       CustomIcon(
+        //         icon: checkIcon,
+        //         color: darkGreyColor,
+        //         size: 25,
+        //       ),
+        //     ],
+        //   ),
+        CustomText(
+      color: greyColor,
+      content: widget.data.createdAt.split(' ')[1].substring(0, 5),
+      fontSize: FontSize.smallSize,
+      //   ),
+      // ],
     );
   }
 }

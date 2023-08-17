@@ -1,10 +1,10 @@
+import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/widgets/container.dart';
-import 'package:bin_got/widgets/group_chat.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
-import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
+import 'package:bin_got/widgets/group_chat.dart';
 import 'package:bin_got/widgets/group_main.dart';
 import 'package:flutter/material.dart';
 
@@ -14,14 +14,15 @@ class GroupDetail extends StatefulWidget
   final int groupId, initialIndex;
   final String password;
   final bool isPublic;
-  final int? bingoId;
+  final int? bingoId, size;
   const GroupDetail({
     super.key,
     required this.groupId,
     required this.password,
-    this.initialIndex = 1,
     required this.isPublic,
+    this.initialIndex = 1,
     this.bingoId,
+    this.size,
   });
 
   @override
@@ -40,17 +41,35 @@ class _GroupDetailState extends State<GroupDetail> {
     super.initState();
     selectedIndex = widget.initialIndex;
     memberState = -1;
-    size = -1;
+    size = widget.size ?? -1;
     needAuth = false;
     bingoId = widget.bingoId ?? 0;
+    nextPages[2] = const GroupChat();
     if (selectedIndex == 1) {
       nextPages[1] = GroupMain(
         groupId: widget.groupId,
         password: widget.password,
         applyNew: applyNew,
       );
+    } else {
+      nextPages[0] = BingoDetail(bingoId: bingoId!, size: size);
+      nextPages[1] = GroupMain(
+        groupId: widget.groupId,
+        password: '',
+        applyNew: applyNew,
+      );
+      appbarList[0] = BingoDetailAppBar(
+        save: () => Future.value(true),
+        bingoId: bingoId!,
+      );
+      appbarList[1] = GroupAppBar(
+        groupId: widget.groupId,
+        isMember: memberState != 0,
+        isAdmin: memberState == 2,
+        password: widget.password,
+      );
     }
-    appbarList[2] = const AppBarWithBack();
+    // appbarList[2] = const AppBarWithBack();
     // appbarList.addAll([
     //   BingoDetailAppBar(
     //     save: () => Future.value(true),
@@ -70,6 +89,7 @@ class _GroupDetailState extends State<GroupDetail> {
   }
 
   void changeIndex(int index) {
+    print('selected index => $index $nextPages');
     setState(() {
       selectedIndex = index;
     });
@@ -102,11 +122,14 @@ class _GroupDetailState extends State<GroupDetail> {
         isAdmin: memberState == 2,
         password: widget.password,
       );
+      nextPages[0] = BingoDetail(bingoId: bingoId!, size: size);
+      print('finished -------');
+      print(appbarList);
+      print(memberState);
+      print(size);
+      print(bingoId);
+      print(memberState);
     });
-    print(memberState);
-    print(size);
-    print(bingoId);
-    print(memberState);
   }
 
   // @override
@@ -117,10 +140,6 @@ class _GroupDetailState extends State<GroupDetail> {
 
   @override
   Widget build(BuildContext context) {
-    if (memberState != -1 && nextPages[0] == const SizedBox()) {
-      nextPages[0] = BingoDetail(bingoId: bingoId!, size: size);
-      nextPages[2] = const GroupChat();
-    }
     return WillPopScope(
       onWillPop: () {
         if (selectedIndex == 0) {
@@ -134,25 +153,23 @@ class _GroupDetailState extends State<GroupDetail> {
         }
       },
       child: Scaffold(
-        appBar: appbarList[selectedIndex],
-        body: CustomAnimatedPage(
-          initialPage: widget.initialIndex,
-          changeIndex: changeIndex,
-          nextPages: nextPages,
-          selectedIndex: selectedIndex,
-        ),
-        bottomNavigationBar: selectedIndex != 2
-            ? GroupMainBottomBar(
-                isMember: memberState != 0,
-                groupId: widget.groupId,
-                needAuth: needAuth,
-                size: size,
-                selectedIndex: selectedIndex,
-                bingoId: bingoId,
-                changeIndex: changeIndex,
-              )
-            : null,
-      ),
+          resizeToAvoidBottomInset: selectedIndex != 2,
+          appBar: appbarList[selectedIndex],
+          body: CustomAnimatedPage(
+            initialPage: widget.initialIndex,
+            changeIndex: changeIndex,
+            nextPages: nextPages,
+            selectedIndex: selectedIndex,
+          ),
+          bottomNavigationBar: GroupMainBottomBar(
+            isMember: memberState != 0,
+            groupId: widget.groupId,
+            needAuth: needAuth,
+            size: size,
+            selectedIndex: selectedIndex,
+            bingoId: bingoId,
+            changeIndex: changeIndex,
+          )),
     );
   }
 }

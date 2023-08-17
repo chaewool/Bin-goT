@@ -1,5 +1,5 @@
 import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/widgets/bingo_detail.dart';
+import 'package:bin_got/pages/group_detail_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -50,9 +50,14 @@ class BingoGallery extends StatelessWidget {
       setStart(context, bingo.start);
       toOtherPage(
         context,
-        page:
-            // GroupMain(groupId: bingo.groupId, data: data),
-            BingoDetail(bingoId: bingo.id, size: bingo.size),
+        page: GroupDetail(
+          groupId: bingo.groupId,
+          password: '',
+          isPublic: true,
+          bingoId: bingo.id,
+          size: bingo.size,
+          initialIndex: 0,
+        ),
       )();
     }
 
@@ -67,9 +72,10 @@ class BingoGallery extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: CachedNetworkImage(
                 imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
-                placeholder: (context, url) => const SizedBox(
-                  width: 50,
-                  height: 50,
+                placeholder: (context, url) => CustomBoxContainer(
+                  color: whiteColor,
+                  width: (getWidth(context) - 8) / 2,
+                  height: (getWidth(context) - 8) / 2,
                 ),
               ),
             ),

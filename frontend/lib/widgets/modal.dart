@@ -350,62 +350,6 @@ class ChangeNameModal extends StatelessWidget {
   }
 }
 
-//* 날짜
-// class DateModal extends StatelessWidget {
-//   const DateModal({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Dialog(child: DatePicker());
-//   }
-// }
-
-//* 이미지
-// class ImageModal extends StatefulWidget {
-//   final XFile? image;
-//   final ReturnVoid imagePicker, deleteImage;
-//   const ImageModal({
-//     super.key,
-//     required this.image,
-//     required this.imagePicker,
-//     required this.deleteImage,
-//   });
-
-//   @override
-//   State<ImageModal> createState() => _ImageModalState();
-// }
-
-// class _ImageModalState extends State<ImageModal> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return CustomModal(title: '그룹 이미지 선택', hasConfirm: false, children: [
-//       Padding(
-//         padding: const EdgeInsets.symmetric(vertical: 20),
-//         child: CustomBoxContainer(
-//           width: 100,
-//           height: 100,
-//           borderColor: blackColor,
-//           image: widget.image != null
-//               ? DecorationImage(
-//                   fit: BoxFit.cover,
-//                   image: FileImage(File(widget.image!.path)),
-//                 )
-//               : null,
-//           child: widget.image == null
-//               ? CustomIconButton(
-//                   icon: addIcon,
-//                   onPressed: widget.imagePicker,
-//                 )
-//               : CustomIconButton(
-//                   onPressed: widget.deleteImage,
-//                   icon: closeIcon,
-//                 ),
-//         ),
-//       ),
-//     ]);
-//   }
-// }
-
 //* alert 기본
 class CustomAlert extends StatelessWidget {
   final String title, content;

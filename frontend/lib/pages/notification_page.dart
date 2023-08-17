@@ -16,7 +16,7 @@ class NotificationSettings extends StatefulWidget {
 }
 
 class _NotificationSettingsState extends State<NotificationSettings> {
-  List initialOption = [];
+  // List initialOption = [];
   BoolList optionList = List.generate(4, (index) => false);
   StringList notificationList = [
     '진행률/랭킹 알림',
@@ -33,7 +33,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
       optionList[1] = data.due;
       optionList[2] = data.chat;
       optionList[3] = data.check;
-      initialOption = List.from(optionList);
+      print('${data.rank}, ${data.due}, ${data.chat}, ${data.check}');
+      // initialOption = List.from(optionList);
     }).catchError((error) {
       print(error);
     });
@@ -42,6 +43,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
   void changeIdx(int i) {
     setState(() {
       optionList[i] = !optionList[i];
+      print(optionList[i]);
     });
   }
 
@@ -56,7 +58,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
       'noti_due': optionList[2],
       'noti_check': optionList[3],
     }).then((_) {
-      initialOption = List.from(optionList);
+      print('apply');
+      // initialOption = List.from(optionList);
     });
   }
 

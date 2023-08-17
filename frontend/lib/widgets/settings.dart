@@ -312,22 +312,18 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                 children: [
                   Column(
                     children: [
-                      Flexible(
-                        child: Row(
-                          children: [
-                            const CustomIcon(
-                              icon: checkIcon,
-                              size: 40,
-                            ),
-                            CustomText(content: '$numberOfCompleted개'),
-                          ],
-                        ),
+                      Row(
+                        children: [
+                          const CustomIcon(
+                            icon: checkIcon,
+                            size: 40,
+                          ),
+                          CustomText(content: '$numberOfCompleted개'),
+                        ],
                       ),
-                      const Flexible(
-                        child: CustomText(
-                          content: '100% 완료한 빙고 개수',
-                          fontSize: FontSize.smallSize,
-                        ),
+                      const CustomText(
+                        content: '100% 완료한 빙고 개수',
+                        fontSize: FontSize.smallSize,
                       ),
                     ],
                   ),
@@ -352,16 +348,16 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                 ],
               ),
             ),
-            const Row(
-              children: [
-                CustomText(
-                  content: '100% 완료한 빙고 개수',
-                  fontSize: FontSize.smallSize,
-                ),
-                CustomText(content: '1위한 빙고 개수'),
-                CustomText(content: '획득한 배지 개수'),
-              ],
-            )
+            // const Row(
+            //   children: [
+            //     CustomText(
+            //       content: '100% 완료한 빙고 개수',
+            //       fontSize: FontSize.smallSize,
+            //     ),
+            //     CustomText(content: '1위한 빙고 개수'),
+            //     CustomText(content: '획득한 배지 개수'),
+            //   ],
+            // )
           ],
         ),
       ),

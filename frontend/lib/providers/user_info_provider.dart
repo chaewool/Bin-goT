@@ -65,7 +65,8 @@ class UserInfoProvider extends ApiProvider {
     }
   }
 
-  FutureDynamic _changeNoti(DynamicMap data) => updateApi(notiUrl, data: data);
+  FutureDynamic _changeNoti(DynamicMap data) =>
+      updateApi(changenotiUrl, data: data);
 
   FutureDynamic _checkName(String name) =>
       createApi(checkNameUrl, data: {'username': name});

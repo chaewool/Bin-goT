@@ -39,16 +39,18 @@ class _GroupMainState extends State<GroupMain> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (getGroupId(context) != widget.groupId) {
+        print('group id 다름');
         setGroupId(context, widget.groupId);
         // setPublic(context, widget.isPublic);
         GroupProvider()
             .readGroupDetail(widget.groupId, widget.password)
             .then((data) {
           setState(() {
+            print('set state 실행');
             groupDetailModel = data;
             memberState = data.memberState;
-            setGroupData(context, data);
           });
+          setGroupData(context, data);
           print('apply new!!! -------------------------');
           widget.applyNew(
             newBingoId: data.bingoId,
@@ -89,26 +91,10 @@ class _GroupMainState extends State<GroupMain> {
                       placeholder: (context, url) => const CustomBoxContainer(
                         width: 200,
                         height: 200,
-                        color: greyColor,
                       ),
                     ),
                   groupHeader(groupDetailModel!),
                   const SizedBox(height: 20),
-                  // memberState != 0
-                  //     ? CustomButton(
-                  //         onPressed: toOtherPage(
-                  //           context,
-                  //           page: widget.data.bingoId != 0
-                  //               ? BingoDetail(bingoId: bingoId!)
-                  //               : BingoForm(
-                  //                   bingoSize: size,
-                  //                   needAuth: needAuth,
-                  //                   beforeJoin: true,
-                  //                 ),
-                  //         ),
-                  //         content: bingoId != 0 ? '내 빙고 보기' : '내 빙고 만들기',
-                  //       )
-                  //     : const SizedBox(),
                   ShowContentBox(
                     contentTitle: '설명',
                     content: groupDetailModel!.description,

@@ -7,6 +7,7 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/input.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_snake_navigationbar/flutter_snake_navigationbar.dart';
 import 'package:image_picker/image_picker.dart';
@@ -143,6 +144,7 @@ class GroupMainBottomBar extends StatelessWidget {
               child: CustomButton(
                 color: blackColor,
                 content: '빙고 만들고 가입${needAuth == true ? ' 신청' : ''}하기',
+                textColor: whiteColor,
                 onPressed: toOtherPage(
                   context,
                   page: BingoForm(
@@ -218,17 +220,19 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
     }
 
     return CustomBoxContainer(
-      color: blackColor,
+      color: greyColor,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-      child: Row(
+      child: RowWithPadding(
+        vertical: 10,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Flexible(
-              child: CustomIconButton(
-            onPressed: widget.imagePicker,
-            icon: addIcon,
-            color: whiteColor,
-          )),
+            child: CustomIconButton(
+              onPressed: widget.imagePicker,
+              icon: addIcon,
+              color: whiteColor,
+            ),
+          ),
           Flexible(
             flex: 5,
             child: CustomInput(
