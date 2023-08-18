@@ -28,16 +28,25 @@ class BingoTabBar extends StatefulWidget {
 }
 
 class _BingoTabBarState extends State<BingoTabBar> {
+  final explainText = [
+    '빙고판 배경 사진을 설정할 수 있어요.',
+    '빙고판 내부를 설정할 수 있어요.',
+    '빙고판 내부 글씨체를 설정할 수 있어요.',
+    '목표 달성 시, 표시되는 아이콘을 설정할 수 있어요.'
+  ];
+
   @override
   Widget build(BuildContext context) {
     const List<IconData> iconList = [colorIcon, drawIcon, fontIcon, emojiIcon];
     return CustomBoxContainer(
       hasRoundEdge: false,
       child: ContainedTabBarView(
+        tabBarProperties:
+            const TabBarProperties(indicatorColor: paleOrangeColor),
         tabs: [
           for (IconData icon in iconList) Tab(child: CustomIcon(icon: icon)),
         ],
-        views: [paintTab(), optionOrFontTab(1), optionOrFontTab(2), checkTab()],
+        views: List.generate(4, (index) => tabViews(index)),
         onChange: (index) {
           final isCheckTheme = context.read<GlobalBingoProvider>().isCheckTheme;
           void setCheckTheme(bool value) =>
@@ -51,6 +60,40 @@ class _BingoTabBarState extends State<BingoTabBar> {
           }
         },
       ),
+    );
+  }
+
+  Column tabViews(int index) {
+    Widget? widget;
+    WidgetList? widgetList;
+    MainAxisAlignment mainAxisAlignment = MainAxisAlignment.center;
+    // [paintTab(), optionOrFontTab(1), optionOrFontTab(2), checkTab()];
+    switch (index) {
+      case 0:
+        widget = paintTab();
+        break;
+      case 3:
+        widget = checkTab();
+        break;
+      default:
+        widgetList = optionOrFontTab(index);
+        mainAxisAlignment = MainAxisAlignment.spaceEvenly;
+    }
+    return Column(
+      mainAxisAlignment: mainAxisAlignment,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: CustomText(
+            content: explainText[index],
+            color: greyColor,
+            fontSize: FontSize.smallSize,
+          ),
+        ),
+        if (widgetList != null) ...widgetList,
+        if (widget != null) widget,
+      ],
     );
   }
 
@@ -75,7 +118,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
   }
 
   //* 빙고칸 & font 변경
-  Column optionOrFontTab(int index) {
+  WidgetList optionOrFontTab(int index) {
     StringList gapList = ['좁은', '보통', '넓은'];
 
     StringList optionList = [
@@ -85,74 +128,59 @@ class _BingoTabBarState extends State<BingoTabBar> {
       '${gapList[getGap(context)!]} 간격'
     ];
 
-    BoxShadowList applyBoxShadow(int i, int j) {
+    bool isSelected(int i, int j) {
       final elementIdx = 2 * i + j;
       switch (index) {
         case 1:
           final keyList = ['has_round_edge', 'has_border'];
-          return i == 0 && getBingoData(context)[keyList[j]]
-              ? [selectedShadow]
-              : [defaultShadow];
+          return i == 0 && getBingoData(context)[keyList[j]];
         default:
-          return getFont(context) != elementIdx
-              ? const [defaultShadow]
-              : const [selectedShadow];
+          return getFont(context) == elementIdx;
       }
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        for (int i = 0; i < index + 1; i += 1)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              for (int j = 0; j < 2; j += 1)
-                CustomBoxContainer(
-                  onTap: () => changeBingoData(context, index, 2 * i + j),
-                  width: 150,
-                  height: 40,
-                  boxShadow: applyBoxShadow(i, j),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: CustomText(
-                          content: index == 2
-                              ? showedFont[2 * i + j]
-                              : optionList[2 * i + j],
-                          font:
-                              index == 2 ? matchFont[2 * i + j] : 'RIDIBatang',
-                        ),
-                      ),
+    return [
+      for (int i = 0; i < index + 1; i += 1)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            for (int j = 0; j < 2; j += 1)
+              CustomBoxContainer(
+                onTap: () => changeBingoData(context, index, 2 * i + j),
+                width: 150,
+                height: 40,
+                color: isSelected(i, j) ? paleOrangeColor : whiteColor,
+                borderColor: isSelected(i, j) ? null : greyColor,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: CustomText(
+                      content: index == 2
+                          ? showedFont[2 * i + j]
+                          : optionList[2 * i + j],
+                      font: index == 2 ? matchFont[2 * i + j] : 'RIDIBatang',
+                      color: isSelected(i, j) ? whiteColor : blackColor,
                     ),
                   ),
-                  // width: MediaQuery.of(context).size.width,
                 ),
-            ],
-          ),
-      ],
-    );
-  }
-
-  Column checkTab() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            for (int i = 0; i < 3; i += 1)
-              CustomIconButton(
-                onPressed: () => changeBingoData(context, 3, i),
-                icon: iconList[i],
-                size: 70,
-                color: i == getCheckIcon(context) ? greenColor : blackColor,
+                // width: MediaQuery.of(context).size.width,
               ),
           ],
         ),
+    ];
+  }
+
+  Row checkTab() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        for (int i = 0; i < 3; i += 1)
+          CustomIconButton(
+            onPressed: () => changeBingoData(context, 3, i),
+            icon: iconList[i],
+            size: 70,
+            color: i == getCheckIcon(context) ? paleOrangeColor : greyColor,
+          ),
       ],
     );
   }
@@ -208,9 +236,8 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
                     children: [
                       needAuth
                           ? Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               child: ListView.separated(
                                 shrinkWrap: true,
                                 itemCount: applicants.length,
@@ -224,9 +251,7 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
                                   );
                                 },
                                 separatorBuilder: (context, index) =>
-                                    const SizedBox(
-                                  height: 10,
-                                ),
+                                    const SizedBox(height: 10),
                               ),
                             )
                           : const Padding(
@@ -665,7 +690,9 @@ class _MainTabBarState extends State<MainTabBar> {
 
       return true;
     }).catchError((error) {
-      showErrorModal(context);
+      if (mounted) {
+        showErrorModal(context);
+      }
       return false;
     });
     return Future.value(answer);
@@ -687,6 +714,10 @@ class _MainTabBarState extends State<MainTabBar> {
         setAdditional(context, false);
       }
       // increasePage(context, 2);
+    }).catchError((error) {
+      if (mounted) {
+        showErrorModal(context);
+      }
     });
   }
 
@@ -725,31 +756,31 @@ class _MainTabBarState extends State<MainTabBar> {
           }
         },
       );
-    });
 
-    bingoController.addListener(
-      () {
-        if (bingoController.position.pixels >=
-            bingoController.position.maxScrollExtent * 0.9) {
-          print('last id => ${getLastId(context, 2)}');
-          if (getLastId(context, 2) != -1) {
-            // print('${getPage(context, 2)}, ${getTotal(context, 2)}');
-            // if (getPage(context, 2) < getTotal(context, 2)!) {
-            if (!getWorking(context)) {
-              setWorking(context, true);
-              Future.delayed(const Duration(seconds: 2), () {
-                if (!getAdditional(context)) {
-                  setAdditional(context, true);
-                  if (getAdditional(context)) {
-                    setBingoTabData();
+      bingoController.addListener(
+        () {
+          if (bingoController.position.pixels >=
+              bingoController.position.maxScrollExtent * 0.9) {
+            print('last id => ${getLastId(context, 2)}');
+            if (getLastId(context, 2) != -1) {
+              // print('${getPage(context, 2)}, ${getTotal(context, 2)}');
+              // if (getPage(context, 2) < getTotal(context, 2)!) {
+              if (!getWorking(context)) {
+                setWorking(context, true);
+                Future.delayed(const Duration(seconds: 2), () {
+                  if (!getAdditional(context)) {
+                    setAdditional(context, true);
+                    if (getAdditional(context)) {
+                      setBingoTabData();
+                    }
                   }
-                }
-              });
+                });
+              }
             }
           }
-        }
-      },
-    );
+        },
+      );
+    });
   }
 
   @override

@@ -56,6 +56,7 @@ class RowWithPadding extends StatelessWidget {
       child: Row(
         mainAxisAlignment: mainAxisAlignment,
         crossAxisAlignment: crossAxisAlignment,
+        textBaseline: TextBaseline.ideographic,
         mainAxisSize: min ? MainAxisSize.min : MainAxisSize.max,
         children: children,
       ),

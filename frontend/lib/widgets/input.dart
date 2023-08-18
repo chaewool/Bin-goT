@@ -1,6 +1,5 @@
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/text.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +14,7 @@ class CustomInput extends StatelessWidget {
   final Color filledColor;
   final FontSize fontSize;
   final int? maxLength;
-  final String title;
+  // final String title;
   final String? initialValue;
   // final String? Function() returnValue;
   final void Function(String) setValue;
@@ -35,7 +34,7 @@ class CustomInput extends StatelessWidget {
     this.filledColor = whiteColor,
     this.fontSize = FontSize.smallSize,
     this.maxLength,
-    this.title = '',
+    // this.title = '',
     this.horizontal = 0,
     this.vertical = 0,
     this.initialValue,
@@ -56,27 +55,6 @@ class CustomInput extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          title != ''
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    children: [
-                      CustomText(content: title),
-                      Row(
-                        children: [
-                          if (explainTitle != null)
-                            for (int i = 0; i < explainTitle!.length; i += 1)
-                              CustomText(
-                                content: explainTitle![i],
-                                fontSize: FontSize.smallSize,
-                                color: greyColor,
-                              ),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
-              : const SizedBox(),
           SizedBox(
             width: width,
             height: height,
@@ -117,14 +95,13 @@ class CustomInput extends StatelessWidget {
 
 //* date input
 class InputDate extends StatefulWidget {
-  final String explain, title;
+  final String explain;
   final String? start, end;
   // final Function(BuildContext, String) onSubmit;
   final Function(List<DateTime?>) applyDay;
   const InputDate({
     super.key,
     required this.explain,
-    required this.title,
     required this.start,
     required this.end,
     // required this.onSubmit,
@@ -172,7 +149,7 @@ class _InputDateState extends State<InputDate> {
     const dayTextStyle =
         TextStyle(color: blackColor, fontWeight: FontWeight.w500);
     const weekendTextStyle =
-        TextStyle(color: redColor, fontWeight: FontWeight.w500);
+        TextStyle(color: darkGreyColor, fontWeight: FontWeight.w500);
     const anniversaryTextStyle = TextStyle(
       color: redColor,
       fontWeight: FontWeight.w700,
@@ -292,35 +269,32 @@ class _InputDateState extends State<InputDate> {
         return null;
       },
     );
-    return Column(children: [
-      CustomText(content: widget.title),
-      GestureDetector(
-        onTap: () async {
-          final values = await showCalendarDatePicker2Dialog(
-            context: context,
-            config: config,
-            dialogSize: const Size(325, 400),
-            borderRadius: BorderRadius.circular(15),
-            value: calendarPickerValue,
-            dialogBackgroundColor: whiteColor,
-          );
-          if (values != null) {
-            widget.applyDay(values);
-            // print(_getValueText(
-            //   config.calendarType,
-            //   values,
-            // ));
-            setState(() {
-              calendarPickerValue = values;
-            });
-          }
-        },
-        child: CustomInput(
-          explain: widget.explain,
-          enabled: false,
-          setValue: (value) {},
-        ),
+    return GestureDetector(
+      onTap: () async {
+        final values = await showCalendarDatePicker2Dialog(
+          context: context,
+          config: config,
+          dialogSize: const Size(325, 400),
+          borderRadius: BorderRadius.circular(15),
+          value: calendarPickerValue,
+          dialogBackgroundColor: whiteColor,
+        );
+        if (values != null) {
+          widget.applyDay(values);
+          // print(_getValueText(
+          //   config.calendarType,
+          //   values,
+          // ));
+          setState(() {
+            calendarPickerValue = values;
+          });
+        }
+      },
+      child: CustomInput(
+        explain: widget.explain,
+        enabled: false,
+        setValue: (value) {},
       ),
-    ]);
+    );
   }
 }

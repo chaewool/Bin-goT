@@ -45,7 +45,7 @@ class _GroupDetailState extends State<GroupDetail> {
     needAuth = false;
     bingoId = widget.bingoId ?? 0;
     nextPages[2] = const GroupChat();
-    if (selectedIndex == 1) {
+    if (widget.initialIndex == 1) {
       nextPages[1] = GroupMain(
         groupId: widget.groupId,
         password: widget.password,
@@ -142,7 +142,7 @@ class _GroupDetailState extends State<GroupDetail> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        if (selectedIndex == 0) {
+        if (selectedIndex == 1) {
           toBack(context);
           toBack(context);
           setPublic(context, null);

@@ -13,9 +13,11 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bingo_board.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -245,46 +247,60 @@ class _BingoFormState extends State<BingoForm> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: const AppBarWithBack(),
-      body: ColWithPadding(
-        horizontal: 10,
-        vertical: 5,
-        children: [
-          Flexible(
-            flex: 2,
-            child: CustomInput(
-              explain: '빙고 이름',
-              setValue: (value) => setOption(context, 'title', value),
-              initialValue: getTitle(context),
-            ),
-          ),
-          Flexible(
-            flex: 6,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-              child: RepaintBoundary(
-                key: globalKey,
-                child: BingoBoard(
-                  isDetail: false,
-                  bingoSize: size,
+      body: CustomBoxContainer(
+        color: whiteColor,
+        child: ColWithPadding(
+          horizontal: 10,
+          vertical: 5,
+          children: [
+            Flexible(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomText(content: '빙고명'),
+                    const SizedBox(height: 10),
+                    CustomInput(
+                      explain: '빙고명을 입력해주세요',
+                      setValue: (value) => setOption(context, 'title', value),
+                      initialValue: getTitle(context),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          const Flexible(
-            flex: 4,
-            child: BingoTabBar(),
-          ),
-          Flexible(
-            flex: 1,
-            child: Center(
-              child: CustomButton(
-                onPressed: createOrEditBingo,
-                content: widget.beforeJoin ? '가입 신청' : '완료',
-                fontSize: FontSize.textSize,
+            Flexible(
+              flex: 6,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                child: RepaintBoundary(
+                  key: globalKey,
+                  child: BingoBoard(
+                    isDetail: false,
+                    bingoSize: size,
+                  ),
+                ),
               ),
             ),
-          )
-        ],
+            const Flexible(flex: 4, child: BingoTabBar()),
+            Flexible(
+              flex: 1,
+              child: Row(children: [
+                Expanded(
+                  child: CustomButton(
+                    onPressed: createOrEditBingo,
+                    content: widget.beforeJoin ? '가입 신청' : '완료',
+                    fontSize: FontSize.textSize,
+                    textColor: whiteColor,
+                    color: paleOrangeColor,
+                  ),
+                ),
+              ]),
+            )
+          ],
+        ),
       ),
     );
   }

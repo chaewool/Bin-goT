@@ -182,14 +182,14 @@ class CustomAnimatedPage extends StatelessWidget {
   final void Function(int) changeIndex;
   final int initialPage, selectedIndex;
   final WidgetList nextPages;
-  final Color color;
+  // final Color color;
   const CustomAnimatedPage({
     super.key,
     required this.changeIndex,
     this.initialPage = 1,
     required this.nextPages,
     required this.selectedIndex,
-    this.color = whiteColor,
+    // this.color = whiteColor,
   });
 
   @override
@@ -197,8 +197,8 @@ class CustomAnimatedPage extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       child: AnimatedContainer(
-        color: color,
-        duration: const Duration(seconds: 1),
+        // color: color,
+        duration: const Duration(milliseconds: 500),
         child: PageView.builder(
           controller: PageController(initialPage: initialPage),
           onPageChanged: (value) => changeIndex(value),
