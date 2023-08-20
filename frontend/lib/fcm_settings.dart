@@ -111,8 +111,11 @@ class FCM {
     RemoteMessage? message =
         await FirebaseMessaging.instance.getInitialMessage();
     if (message != null) {
-      print(message.data);
+      _firebaseMessagingBackgroundHandler(message);
     }
+
+    FirebaseMessaging.onMessageOpenedApp
+        .listen(_firebaseMessagingBackgroundHandler);
   }
 
   // fcm 토큰 저장
