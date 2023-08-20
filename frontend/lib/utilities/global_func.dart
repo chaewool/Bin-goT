@@ -1,17 +1,15 @@
+import 'package:bin_got/dl_settings.dart';
+import 'package:bin_got/fcm_settings.dart';
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/pages/main_page.dart';
-import 'package:bin_got/providers/fcm_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +45,7 @@ void shareGroup({
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
 
-  String url = await buildDynamicLink(isPublic, groupId);
+  String url = await DynamicLink().buildDynamicLink(isPublic, groupId);
 
   if (isKakaoTalkSharingAvailable) {
     try {
@@ -114,21 +112,6 @@ void shareBingo({required int bingoId}) async {
   // }
 }
 
-Future<String> buildDynamicLink(bool isPublic, int groupId) async {
-  String uriPrefix = dotenv.env['dynamicLinkPrefix']!;
-
-  final DynamicLinkParameters parameters = DynamicLinkParameters(
-    uriPrefix: uriPrefix,
-    link: Uri.parse('$uriPrefix/firebase/dynamicLinks/first'),
-    androidParameters:
-        AndroidParameters(packageName: dotenv.env['packageName']!),
-  );
-  // final dynamicLink =
-  //     await FirebaseDynamicLinks.instance.buildShortLink(parameters);
-  final dynamicLink = await FirebaseDynamicLinks.instance.buildLink(parameters);
-  return dynamicLink.toString();
-}
-
 //* 페이지 이동
 ReturnVoid toOtherPage(BuildContext context, {required Widget page}) {
   return () =>
@@ -189,7 +172,7 @@ void login(BuildContext context) async {
         complete: data['noti_check'],
       );
       context.read<AuthProvider>().setStoreId(data['id']);
-      saveFCMToken();
+      FCM().saveFCMToken();
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
@@ -237,22 +220,6 @@ void setTokens(BuildContext context, String newToken, String newRefresh) {
 void deleteVar(BuildContext context) {
   context.read<AuthProvider>().deleteVar();
   context.read<NotiProvider>().deleteVar();
-}
-
-//* fcm token
-void saveFCMToken() async {
-  // 기기의 등록 토큰 액세스
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  final fcmToken = await messaging.getToken();
-  FCMProvider().saveFCMToken(fcmToken!);
-
-  // 토큰이 업데이트될 때마다 서버에 저장
-  messaging.onTokenRefresh.listen((fcmToken) {
-    FCMProvider().saveFCMToken(fcmToken);
-  }).onError((err) {
-    print('error => $err');
-    throw Error();
-  });
 }
 
 //* id
