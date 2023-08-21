@@ -73,6 +73,7 @@ class _BingoFormState extends State<BingoForm> {
           context,
           title: '필수 항목 누락',
           content: '빙고명을 입력해주세요',
+          hasCancel: false,
         )();
       }
       int cnt = 0;
@@ -89,6 +90,7 @@ class _BingoFormState extends State<BingoForm> {
           context,
           title: '필수 항목 누락',
           content: '빙고칸 내부를 채워주세요',
+          hasCancel: false,
         )();
       }
       print('bingo data => $data');
@@ -254,13 +256,34 @@ class _BingoFormState extends State<BingoForm> {
           vertical: 5,
           children: [
             Flexible(
-              flex: 2,
+              flex: 5,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CustomText(content: '빙고명'),
+                    const Row(
+                      children: [
+                        CustomText(content: '빙고명'),
+                        SizedBox(width: 5),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomText(
+                                content: '(필수)',
+                                fontSize: FontSize.tinySize,
+                                color: greyColor,
+                              ),
+                              CustomText(
+                                content: '시작일 전 수정 가능',
+                                fontSize: FontSize.tinySize,
+                                color: greyColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 10),
                     CustomInput(
                       explain: '빙고명을 입력해주세요',
@@ -272,21 +295,51 @@ class _BingoFormState extends State<BingoForm> {
               ),
             ),
             Flexible(
-              flex: 6,
+              flex: 12,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                child: RepaintBoundary(
-                  key: globalKey,
-                  child: BingoBoard(
-                    isDetail: false,
-                    bingoSize: size,
-                  ),
+                child: Column(
+                  children: [
+                    const Row(
+                      children: [
+                        CustomText(content: '빙고판'),
+                        SizedBox(width: 5),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomText(
+                                content: '(필수)',
+                                fontSize: FontSize.tinySize,
+                                color: greyColor,
+                              ),
+                              CustomText(
+                                content: '시작일 전 수정 가능',
+                                fontSize: FontSize.tinySize,
+                                color: greyColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: RepaintBoundary(
+                        key: globalKey,
+                        child: BingoBoard(
+                          isDetail: false,
+                          bingoSize: size,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            const Flexible(flex: 4, child: BingoTabBar()),
+            const Flexible(flex: 9, child: BingoTabBar()),
             Flexible(
-              flex: 1,
+              flex: 2,
               child: Row(children: [
                 Expanded(
                   child: CustomButton(

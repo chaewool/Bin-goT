@@ -121,7 +121,7 @@ class _GroupMainState extends State<GroupMain> {
             vertical: 10,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const CustomText(content: '랭킹'),
+              const CustomText(content: '순위'),
               TextButton(
                 onPressed: memberState != 0
                     ? toOtherPage(
@@ -148,7 +148,16 @@ class _GroupMainState extends State<GroupMain> {
                 isMember: memberState != 0,
               ),
           if (data.rank.isEmpty)
-            const CustomText(content: '달성한 목표가 있는 그룹원이 존재하지 않습니다.')
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomText(
+                  content: '달성한 목표가 있는 그룹원이\n존재하지 않습니다.',
+                  height: 1.5,
+                  center: true,
+                ),
+              ],
+            )
         ],
       ),
     );

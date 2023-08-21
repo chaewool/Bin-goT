@@ -81,7 +81,7 @@ class _GroupFormState extends State<GroupForm> {
         selectedIndex[0] = getBingoSize(context)! - 1;
         selectedIndex[1] =
             context.read<GlobalGroupProvider>().needAuth! ? 0 : 1;
-        isChecked = getPublic(context)!;
+        // isChecked = getPublic(context)!;
       });
     }
   }
@@ -93,14 +93,14 @@ class _GroupFormState extends State<GroupForm> {
   }
 
   void createOrUpdate() async {
-    if (groupData['headcount'].runtimeType != int) {
+    if (groupData.containsKey('headcount') &&
+        groupData['headcount'].runtimeType != int) {
       groupData['headcount'] = int.parse(groupData['headcount']);
     }
-    if (groupData['size'].runtimeType != int) {
-      groupData['size'] = int.parse(groupData['size']);
-    }
-
     if (widget.groupId == null) {
+      if (groupData['size'].runtimeType != int) {
+        groupData['size'] = int.parse(groupData['size']);
+      }
       if (groupData['groupname'].length < 3) {
         showAlert(context, title: '그룹명 오류', content: '그룹명을 3자 이상으로 입력해주세요.')();
       } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
@@ -250,7 +250,9 @@ class _GroupFormState extends State<GroupForm> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: whiteColor,
-        appBar: const AppBarWithBack(title: '그룹 생성'),
+        appBar: AppBarWithBack(
+          title: widget.groupId == null ? '그룹 생성' : '그룹 수정',
+        ),
         resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
           child: ColWithPadding(

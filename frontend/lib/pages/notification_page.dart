@@ -40,10 +40,9 @@ class _NotificationSettingsState extends State<NotificationSettings> {
     });
   }
 
-  void changeIdx(int i) {
+  void changeIdx(int i, bool value) {
     setState(() {
-      optionList[i] = !optionList[i];
-      print(optionList[i]);
+      optionList[i] = value;
     });
   }
 
@@ -54,8 +53,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
   void applyNoti() {
     UserInfoProvider().changeNoti({
       'noti_rank': optionList[0],
-      'noti_chat': optionList[1],
-      'noti_due': optionList[2],
+      'noti_due': optionList[1],
+      'noti_chat': optionList[2],
       'noti_check': optionList[3],
     }).then((_) {
       print('apply');
@@ -89,7 +88,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
                 flex: 2,
                 child: CustomSwitch(
                   value: optionList[i],
-                  onChanged: (value) => changeIdx(i),
+                  onChanged: (value) => changeIdx(i, value),
                 ),
               ),
               const Flexible(flex: 2, child: SizedBox()),

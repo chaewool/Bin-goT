@@ -301,7 +301,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       child: CustomText(
                         content: '그룹명을 입력하거나, 기간을 선택해주세요',
                         fontSize: FontSize.smallSize,
-                        color: paleRedColor,
+                        color: paleOrangeColor,
                       ),
                     ),
             ],

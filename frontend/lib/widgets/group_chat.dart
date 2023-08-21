@@ -61,7 +61,7 @@ class _GroupChatState extends State<GroupChat> {
           // if (getPage(context, 1) < getTotal(context, 1)!) {
           if (!getWorking(context)) {
             setWorking(context, true);
-            Future.delayed(const Duration(seconds: 3), () {
+            Future.delayed(const Duration(seconds: 2), () {
               if (!getAdditional(context)) {
                 setAdditional(context, true);
                 if (getAdditional(context)) {

@@ -156,7 +156,6 @@ class _GroupDetailState extends State<GroupDetail> {
           resizeToAvoidBottomInset: selectedIndex != 2,
           appBar: appbarList[selectedIndex],
           body: CustomAnimatedPage(
-            initialPage: widget.initialIndex,
             changeIndex: changeIndex,
             nextPages: nextPages,
             selectedIndex: selectedIndex,

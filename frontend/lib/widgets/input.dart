@@ -82,8 +82,7 @@ class CustomInput extends StatelessWidget {
               textAlignVertical: TextAlignVertical.center,
               onChanged: setValue,
               onSubmitted: onSubmitted,
-              textInputAction:
-                  needSearch ? TextInputAction.search : TextInputAction.next,
+              textInputAction: needSearch ? TextInputAction.search : null,
               // focusNode: inputFocus,
             ),
           ),

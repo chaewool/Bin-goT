@@ -29,10 +29,10 @@ class BingoTabBar extends StatefulWidget {
 
 class _BingoTabBarState extends State<BingoTabBar> {
   final explainText = [
-    '빙고판 배경 사진을 설정할 수 있어요.',
-    '빙고판 내부를 설정할 수 있어요.',
-    '빙고판 내부 글씨체를 설정할 수 있어요.',
-    '목표 달성 시, 표시되는 아이콘을 설정할 수 있어요.'
+    '빙고판 배경 사진 (선택)',
+    '빙고판 내부 설정 (필수)',
+    '빙고판 내부 글씨체 (필수)',
+    '목표 달성 시, 표시되는 아이콘 (필수)'
   ];
 
   @override
@@ -66,7 +66,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
   Column tabViews(int index) {
     Widget? widget;
     WidgetList? widgetList;
-    MainAxisAlignment mainAxisAlignment = MainAxisAlignment.center;
+    MainAxisAlignment mainAxisAlignment = MainAxisAlignment.spaceEvenly;
     // [paintTab(), optionOrFontTab(1), optionOrFontTab(2), checkTab()];
     switch (index) {
       case 0:
@@ -77,19 +77,16 @@ class _BingoTabBarState extends State<BingoTabBar> {
         break;
       default:
         widgetList = optionOrFontTab(index);
-        mainAxisAlignment = MainAxisAlignment.spaceEvenly;
+      // mainAxisAlignment = MainAxisAlignment.spaceEvenly;
     }
     return Column(
       mainAxisAlignment: mainAxisAlignment,
       mainAxisSize: MainAxisSize.max,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: CustomText(
-            content: explainText[index],
-            color: greyColor,
-            fontSize: FontSize.smallSize,
-          ),
+        CustomText(
+          content: explainText[index],
+          color: greyColor,
+          fontSize: FontSize.smallSize,
         ),
         if (widgetList != null) ...widgetList,
         if (widget != null) widget,
@@ -437,7 +434,7 @@ class _MyTabBarState extends State<MyTabBar> {
             if (getLastId(context, 1) != -1) {
               if (!getWorking(context)) {
                 setWorking(context, true);
-                Future.delayed(const Duration(seconds: 3), () {
+                Future.delayed(const Duration(seconds: 2), () {
                   if (!getAdditional(context)) {
                     setAdditional(context, true);
                     if (getAdditional(context)) {
@@ -575,7 +572,8 @@ class CustomTextTabBar extends StatelessWidget {
     return CustomBoxContainer(
       hasRoundEdge: false,
       child: ContainedTabBarView(
-        tabBarProperties: const TabBarProperties(indicatorColor: greenColor),
+        tabBarProperties:
+            const TabBarProperties(indicatorColor: paleOrangeColor),
         tabs: [
           for (String tabTitle in tabTitles)
             Tab(
@@ -587,7 +585,7 @@ class CustomTextTabBar extends StatelessWidget {
           for (int i = 0; i < tabTitles.length; i += 1)
             Column(
               children: [
-                upperView ?? const SizedBox(),
+                upperView ?? const SizedBox(height: 10),
                 for (Widget listItem in listItems[i]) listItem
               ],
             ),
@@ -743,7 +741,7 @@ class _MainTabBarState extends State<MainTabBar> {
             if (getLastId(context, 1) != -1) {
               if (!getWorking(context)) {
                 setWorking(context, true);
-                Future.delayed(const Duration(seconds: 3), () {
+                Future.delayed(const Duration(seconds: 2), () {
                   if (!getAdditional(context)) {
                     setAdditional(context, true);
                     if (getAdditional(context)) {
