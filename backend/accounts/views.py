@@ -207,10 +207,10 @@ class NotificationDetailView(APIView):
 class NotificationUpdateView(APIView):
     def put(self, request):
         user = request.user
-        logger.info(f"전달 받은 noti_rank: {request.data.get(noti_rank)}, {type(request.data.get(noti_rank))}")
-        logger.info(f"전달 받은 noti_chat: {request.data.get(noti_chat)}, {type(request.data.get(noti_chat))}")
-        logger.info(f"전달 받은 noti_due: {request.data.get(noti_due)}, {type(request.data.get(noti_due))}")
-        logger.info(f"전달 받은 noti_check: {request.data.get(noti_check)}, {type(request.data.get(noti_check))}")
+        logger.info(f"전달 받은 noti_rank: {request.data.get('noti_rank')}, {type(request.data.get('noti_rank'))}")
+        logger.info(f"전달 받은 noti_chat: {request.data.get('noti_chat')}, {type(request.data.get('noti_chat'))}")
+        logger.info(f"전달 받은 noti_due: {request.data.get('noti_due')}, {type(request.data.get('noti_due'))}")
+        logger.info(f"전달 받은 noti_check: {request.data.get('noti_check')}, {type(request.data.get('noti_check'))}")
 
         noti_rank = get_boolean(request.data.get('noti_rank'))
         noti_chat = get_boolean(request.data.get('noti_chat'))
