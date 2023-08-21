@@ -76,40 +76,40 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
 
 //* notification
 class NotiProvider extends ChangeNotifier {
-  static bool _rankNoti = true;
-  static bool _dueNoti = true;
-  static bool _chatNoti = true;
-  static bool _completeNoti = true;
+  // static bool _rankNoti = true;
+  // static bool _dueNoti = true;
+  // static bool _chatNoti = true;
+  // static bool _completeNoti = true;
   static bool _beforeExit = false;
   static bool _afterWork = false;
 
   //* getter
-  bool get rankNoti => _rankNoti;
-  bool get dueNoti => _dueNoti;
-  bool get chatNoti => _chatNoti;
-  bool get completeNoti => _completeNoti;
+  // bool get rankNoti => _rankNoti;
+  // bool get dueNoti => _dueNoti;
+  // bool get chatNoti => _chatNoti;
+  // bool get completeNoti => _completeNoti;
   bool get beforeExit => _beforeExit;
   bool get afterWork => _afterWork;
 
   //* private
-  FutureBool initNoti() async {
-    final prefs = await SharedPreferences.getInstance();
-    _setRank(prefs.getBool('rank') ?? true);
-    _setDue(prefs.getBool('due') ?? true);
-    _setChat(prefs.getBool('chat') ?? true);
-    _setChat(prefs.getBool('complete') ?? true);
-    return Future.value(true);
-  }
+  // FutureBool initNoti() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   _setRank(prefs.getBool('rank') ?? true);
+  //   _setDue(prefs.getBool('due') ?? true);
+  //   _setChat(prefs.getBool('chat') ?? true);
+  //   _setChat(prefs.getBool('complete') ?? true);
+  //   return Future.value(true);
+  // }
 
   void _storeBool(String key, bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(key, value);
   }
 
-  void _setRank(bool newVal) => _rankNoti = newVal;
-  void _setDue(bool newVal) => _dueNoti = newVal;
-  void _setChat(bool newVal) => _chatNoti = newVal;
-  void _setComplete(bool newVal) => _completeNoti = newVal;
+  // void _setRank(bool newVal) => _rankNoti = newVal;
+  // void _setDue(bool newVal) => _dueNoti = newVal;
+  // void _setChat(bool newVal) => _chatNoti = newVal;
+  // void _setComplete(bool newVal) => _completeNoti = newVal;
 
   FutureBool _changePressed() {
     if (!_beforeExit) {
@@ -136,38 +136,38 @@ class NotiProvider extends ChangeNotifier {
   }
 
   //* public
-  void setStoreRank(bool newRank) {
-    _setRank(newRank);
-    _storeBool('rank', newRank);
-    notifyListeners();
-  }
+  // void setStoreRank(bool newRank) {
+  //   _setRank(newRank);
+  //   _storeBool('rank', newRank);
+  //   notifyListeners();
+  // }
 
-  void setStoreDue(bool newDue) async {
-    _setDue(newDue);
-    _storeBool('due', newDue);
-    notifyListeners();
-  }
+  // void setStoreDue(bool newDue) async {
+  //   _setDue(newDue);
+  //   _storeBool('due', newDue);
+  //   notifyListeners();
+  // }
 
-  void setStoreChat(bool newChat) {
-    _setChat(newChat);
-    _storeBool('chat', newChat);
-    notifyListeners();
-  }
+  // void setStoreChat(bool newChat) {
+  //   _setChat(newChat);
+  //   _storeBool('chat', newChat);
+  //   notifyListeners();
+  // }
 
-  void setStoreComplete(bool newComplete) {
-    _setComplete(newComplete);
-    _storeBool('complete', newComplete);
-    notifyListeners();
-  }
+  // void setStoreComplete(bool newComplete) {
+  //   _setComplete(newComplete);
+  //   _storeBool('complete', newComplete);
+  //   notifyListeners();
+  // }
 
-  void deleteVar() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.clear();
-    _setChat(true);
-    _setDue(true);
-    _setRank(true);
-    _setComplete(true);
-  }
+  // void deleteVar() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   prefs.clear();
+  //   _setChat(true);
+  //   _setDue(true);
+  //   _setRank(true);
+  //   _setComplete(true);
+  // }
 
   FutureBool changePressed() => _changePressed();
   void showToast() => _showToast();

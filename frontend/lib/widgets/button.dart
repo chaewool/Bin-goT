@@ -1,3 +1,4 @@
+import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -12,22 +13,28 @@ class CustomButton extends StatelessWidget {
   final String content;
   final FontSize fontSize;
   final bool enabled;
+  final Color? color, textColor;
   const CustomButton({
     super.key,
     required this.onPressed,
     required this.content,
     this.fontSize = FontSize.smallSize,
     this.enabled = true,
+    this.color,
+    this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: onPressed,
+      style: ButtonStyle(
+        backgroundColor: color != null ? MaterialStatePropertyAll(color) : null,
+      ),
+      onPressed: enabled ? onPressed : null,
       child: CustomText(
         content: content,
         fontSize: fontSize,
-        color: enabled ? blackColor : greyColor,
+        color: enabled ? textColor ?? blackColor : greyColor,
       ),
     );
   }
@@ -142,6 +149,28 @@ class CustomTextButton extends StatelessWidget {
         child: CustomText(
           content: content,
           fontSize: fontSize,
+        ),
+      ),
+    );
+  }
+}
+
+class CreateGroupButton extends StatelessWidget {
+  const CreateGroupButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: getWidth(context) - 80,
+      top: getHeight(context) - 170,
+      child: FloatingActionButton(
+        backgroundColor: paleOrangeColor,
+        onPressed: toOtherPage(context, page: const GroupForm()),
+        child: const CustomIcon(
+          icon: addIcon,
+          color: whiteColor,
         ),
       ),
     );

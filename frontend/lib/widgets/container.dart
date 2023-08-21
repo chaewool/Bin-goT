@@ -1,5 +1,5 @@
 import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/pages/bingo_detail_page.dart';
+import 'package:bin_got/pages/group_detail_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -50,7 +50,14 @@ class BingoGallery extends StatelessWidget {
       setStart(context, bingo.start);
       toOtherPage(
         context,
-        page: BingoDetail(bingoId: bingo.id, size: bingo.size),
+        page: GroupDetail(
+          groupId: bingo.groupId,
+          password: '',
+          isPublic: true,
+          bingoId: bingo.id,
+          size: bingo.size,
+          initialIndex: 0,
+        ),
       )();
     }
 
@@ -58,25 +65,22 @@ class BingoGallery extends StatelessWidget {
       onTap: toBingoDetail,
       child: Padding(
         padding: const EdgeInsets.all(8),
-        child: CustomBoxContainer(
-          // width: 150,
-          // height: 200,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: CachedNetworkImage(
-                  imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
-                  placeholder: (context, url) => const SizedBox(
-                    width: 50,
-                    height: 50,
-                  ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: CachedNetworkImage(
+                imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
+                placeholder: (context, url) => CustomBoxContainer(
+                  color: whiteColor,
+                  width: (getWidth(context) - 8) / 2,
+                  height: (getWidth(context) - 8) / 2,
                 ),
               ),
-              CustomText(content: bingo.groupName)
-            ],
-          ),
+            ),
+            CustomText(content: bingo.groupName)
+          ],
         ),
       ),
     );
@@ -137,9 +141,10 @@ class CustomBoxContainer extends StatelessWidget {
 class CircleContainer extends StatelessWidget {
   final double radius;
   final Widget child;
-  final bool center;
+  final bool center, border;
   final List<BoxShadow>? boxShadow;
   final ReturnVoid? onTap;
+  final Color? color;
 
   const CircleContainer({
     super.key,
@@ -148,6 +153,8 @@ class CircleContainer extends StatelessWidget {
     this.center = true,
     this.boxShadow,
     this.onTap,
+    this.color,
+    this.border = true,
   });
 
   @override
@@ -159,12 +166,46 @@ class CircleContainer extends StatelessWidget {
         height: radius * 2,
         alignment: center ? Alignment.center : null,
         decoration: BoxDecoration(
+          color: color,
           shape: BoxShape.circle,
-          border: Border.all(color: greyColor),
+          border: border ? Border.all(color: greyColor) : null,
           boxShadow: boxShadow,
         ),
         child: child,
       ),
+    );
+  }
+}
+
+//* animated container with page view
+class CustomAnimatedPage extends StatelessWidget {
+  final void Function(int) changeIndex;
+  final int selectedIndex;
+  final WidgetList nextPages;
+  // final Color color;
+  const CustomAnimatedPage({
+    super.key,
+    required this.changeIndex,
+    required this.nextPages,
+    required this.selectedIndex,
+    // this.color = whiteColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      child: AnimatedContainer(
+          // color: color,
+          duration: const Duration(milliseconds: 500),
+          child: nextPages[selectedIndex]
+          // PageView.builder(
+          //   controller: PageController(initialPage: initialPage),
+          //   onPageChanged: (value) => changeIndex(value),
+          //   itemCount: 3,
+          //   itemBuilder: (context, index) => nextPages[selectedIndex],
+          // ),
+          ),
     );
   }
 }
