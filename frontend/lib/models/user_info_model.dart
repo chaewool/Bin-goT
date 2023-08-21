@@ -39,10 +39,13 @@ class MainGroupListModel {
 
 class ProfilModel {
   final String username;
-  final int badgeId;
+  final int badgeId, numberOfCompleted, numberOfWon, ownBadges;
   ProfilModel.fromJson(DynamicMap json)
       : badgeId = json['badge'],
-        username = json['username'];
+        username = json['username'],
+        numberOfCompleted = json['cnt_boards_complete'],
+        numberOfWon = json['cnt_rank1'],
+        ownBadges = json['cnt_badge'];
 }
 
 class BadgeModel {
@@ -53,4 +56,13 @@ class BadgeModel {
       : id = json['id'],
         name = json['badge_cond'],
         hasBadge = json['has_badge'];
+}
+
+class NotificationModel {
+  final bool rank, due, chat, check;
+  NotificationModel.fromJson(DynamicMap json)
+      : rank = json['noti_rank'],
+        due = json['noti_chat'],
+        chat = json['noti_chat'],
+        check = json['noti_check'];
 }

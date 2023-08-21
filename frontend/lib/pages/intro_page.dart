@@ -7,6 +7,7 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -54,9 +55,9 @@ class _IntroState extends State<Intro> {
     }
   }
 
-  void initNoti() async {
-    await context.read<NotiProvider>().initNoti();
-  }
+  // void initNoti() async {
+  //   await context.read<NotiProvider>().initNoti();
+  // }
 
   void afterFewSec(int millisec, ReturnVoid changeVar) {
     Future.delayed(Duration(milliseconds: millisec), () {
@@ -77,7 +78,7 @@ class _IntroState extends State<Intro> {
       showTitle = true;
     });
     verifyToken();
-    initNoti();
+    // initNoti();
     afterFewSec(2000, () {
       if (!showLoginBtn) {
         toOtherPageWithoutPath(
@@ -100,36 +101,34 @@ class _IntroState extends State<Intro> {
       body: SizedBox(
         height: getHeight(context),
         width: getWidth(context),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 100),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              if (showLogo) halfLogo,
-              Column(
-                children: [
-                  if (showExplain)
-                    const CustomText(
-                      content: '당신을 채울',
-                      fontSize: FontSize.sloganSize,
-                    ),
-                  const SizedBox(height: 20),
-                  if (showTitle)
-                    const CustomText(
-                      content: 'Bin:goT',
-                      fontSize: FontSize.sloganSize,
-                    ),
-                ],
-              ),
-              if (showLoginBtn)
-                GestureDetector(
-                  onTap: () => login(context),
-                  child: kakaoLogin,
-                )
-            ],
-          ),
+        child: ColWithPadding(
+          vertical: 100,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            if (showLogo) halfLogo,
+            Column(
+              children: [
+                if (showExplain)
+                  const CustomText(
+                    content: '당신을 채울',
+                    fontSize: FontSize.sloganSize,
+                  ),
+                const SizedBox(height: 20),
+                if (showTitle)
+                  const CustomText(
+                    content: 'Bin:goT',
+                    fontSize: FontSize.sloganSize,
+                  ),
+              ],
+            ),
+            if (showLoginBtn)
+              GestureDetector(
+                onTap: () => login(context),
+                child: kakaoLogin,
+              )
+          ],
         ),
       ),
     );

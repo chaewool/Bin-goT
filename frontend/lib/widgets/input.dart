@@ -1,5 +1,5 @@
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/widgets/text.dart';
+import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,16 +7,19 @@ import 'package:flutter/services.dart';
 //* input
 class CustomInput extends StatelessWidget {
   final String? explain;
-  final bool needMore, onlyNum, enabled, needSubmit;
+  final StringList? explainTitle;
+  final bool needMore, onlyNum, enabled, needSearch;
   final double? width, height, vertical, horizontal;
   final bool filled;
   final Color filledColor;
   final FontSize fontSize;
   final int? maxLength;
-  final String title;
+  // final String title;
   final String? initialValue;
   // final String? Function() returnValue;
   final void Function(String) setValue;
+  final void Function(String)? onSubmitted;
+  final Widget? suffixIcon;
 
   const CustomInput({
     super.key,
@@ -31,25 +34,28 @@ class CustomInput extends StatelessWidget {
     this.filledColor = whiteColor,
     this.fontSize = FontSize.smallSize,
     this.maxLength,
-    this.title = '',
-    this.horizontal = 20.0,
-    this.vertical = 10.0,
+    // this.title = '',
+    this.horizontal = 0,
+    this.vertical = 0,
     this.initialValue,
-    this.needSubmit = true,
+    this.needSearch = false,
+    this.onSubmitted,
+    this.suffixIcon,
+    this.explainTitle,
     // required this.returnValue,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        title != '' ? CustomText(content: title) : const SizedBox(),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: vertical!,
-            horizontal: horizontal!,
-          ),
-          child: SizedBox(
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: vertical!,
+        horizontal: horizontal!,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
             width: width,
             height: height,
             child: TextField(
@@ -60,6 +66,10 @@ class CustomInput extends StatelessWidget {
                 border: const OutlineInputBorder(),
                 hintText: explain,
                 focusColor: whiteColor,
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: paleOrangeColor),
+                ),
+                suffixIcon: suffixIcon,
               ),
               maxLength: maxLength,
               style: TextStyle(fontSize: convertedFontSize(fontSize)),
@@ -71,28 +81,26 @@ class CustomInput extends StatelessWidget {
               textAlign: TextAlign.start,
               textAlignVertical: TextAlignVertical.center,
               onChanged: setValue,
-              onSubmitted:
-                  needSubmit ? (_) => FocusScope.of(context).nextFocus() : null,
-              textInputAction: TextInputAction.next,
+              onSubmitted: onSubmitted,
+              textInputAction: needSearch ? TextInputAction.search : null,
               // focusNode: inputFocus,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
 //* date input
 class InputDate extends StatefulWidget {
-  final String explain, title;
+  final String explain;
   final String? start, end;
   // final Function(BuildContext, String) onSubmit;
   final Function(List<DateTime?>) applyDay;
   const InputDate({
     super.key,
     required this.explain,
-    required this.title,
     required this.start,
     required this.end,
     // required this.onSubmit,
@@ -140,7 +148,7 @@ class _InputDateState extends State<InputDate> {
     const dayTextStyle =
         TextStyle(color: blackColor, fontWeight: FontWeight.w500);
     const weekendTextStyle =
-        TextStyle(color: redColor, fontWeight: FontWeight.w500);
+        TextStyle(color: darkGreyColor, fontWeight: FontWeight.w500);
     const anniversaryTextStyle = TextStyle(
       color: redColor,
       fontWeight: FontWeight.w700,
@@ -150,7 +158,8 @@ class _InputDateState extends State<InputDate> {
       lastDate: DateTime(DateTime.now().year + 1, 12, 31),
       dayTextStyle: dayTextStyle,
       calendarType: CalendarDatePicker2Type.range,
-      selectedDayHighlightColor: Colors.purple[800],
+      selectedDayHighlightColor: paleOrangeColor,
+      selectedRangeHighlightColor: beigeColor,
       closeDialogOnCancelTapped: true,
       firstDayOfWeek: 0,
       weekdayLabelTextStyle: const TextStyle(
@@ -259,36 +268,32 @@ class _InputDateState extends State<InputDate> {
         return null;
       },
     );
-    return Column(children: [
-      CustomText(content: widget.title),
-      GestureDetector(
-        onTap: () async {
-          final values = await showCalendarDatePicker2Dialog(
-            context: context,
-            config: config,
-            dialogSize: const Size(325, 400),
-            borderRadius: BorderRadius.circular(15),
-            value: calendarPickerValue,
-            dialogBackgroundColor: whiteColor,
-          );
-          if (values != null) {
-            widget.applyDay(values);
-            // print(_getValueText(
-            //   config.calendarType,
-            //   values,
-            // ));
-            setState(() {
-              calendarPickerValue = values;
-            });
-          }
-        },
-        child: CustomInput(
-          explain: widget.explain,
-          enabled: false,
-          needSubmit: false,
-          setValue: (value) {},
-        ),
+    return GestureDetector(
+      onTap: () async {
+        final values = await showCalendarDatePicker2Dialog(
+          context: context,
+          config: config,
+          dialogSize: const Size(325, 400),
+          borderRadius: BorderRadius.circular(15),
+          value: calendarPickerValue,
+          dialogBackgroundColor: whiteColor,
+        );
+        if (values != null) {
+          widget.applyDay(values);
+          // print(_getValueText(
+          //   config.calendarType,
+          //   values,
+          // ));
+          setState(() {
+            calendarPickerValue = values;
+          });
+        }
+      },
+      child: CustomInput(
+        explain: widget.explain,
+        enabled: false,
+        setValue: (value) {},
       ),
-    ]);
+    );
   }
 }
