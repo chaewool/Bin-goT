@@ -150,9 +150,14 @@ class GroupUpdateView(APIView):
         group = Group.objects.get(id=group_id)
         data = json.loads(request.data.get('data'))
         update_img = get_boolean(request.data.get('update_img'))
+        
+        logger.info(f"전달 받은 data: {data}")
+        logger.info(f"전달 받은 update_img: {update_img}")
                 
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        logger.info(f"시작일 경과하지 않음")
 
         if not data['groupname']:
             data['groupname'] = group.groupname
@@ -163,14 +168,20 @@ class GroupUpdateView(APIView):
         if data['headcount'] < 1 or data['headcount'] > 30:
             return Response(data={'message': '인원 수는 1명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        logger.info(f"인원수 체크 완료")
+        
         if user == group.leader:
             serializer = GroupUpdateSerializer(instance=group, data=data)
 
             if serializer.is_valid(raise_exception=True):        
                 url = 'groups' + '/' + str(group.id)
                 
+                logger.info(f"시리얼라이저 통과")
+                
                 if update_img:                
                     img = request.FILES.get('img')
+
+                    logger.info(f"이미지 확인: {img}")
                     
                     if img != None:
                         upload_image(url, img)
@@ -178,6 +189,8 @@ class GroupUpdateView(APIView):
                     else:
                         delete_image(url)
                         serializer.save(has_img=False)
+                    
+                logger.info(f"이미지 처리 통과")
                 
                 return Response(status=status.HTTP_200_OK)
         return Response(data={'message': '수정 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
