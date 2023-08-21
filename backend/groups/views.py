@@ -219,7 +219,7 @@ class GroupJoinView(APIView):
                 return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
             
             if group.need_auth:
-                send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.', '요청 확인 후 이동할 경로')
+                send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.', f'groups/{group.id}/admin')
                 
             return Response(data={}, status=status.HTTP_200_OK)
         
@@ -263,7 +263,7 @@ class GroupGrantView(APIView):
                 group.save()
                 
                 check_cnt_groups(applicant)
-                send_to_fcm(applicant, '', '가입 승인!', f'{group.groupname} 그룹에 가입되셨습니다.', '그룹 가입 후 이동할 경로')
+                send_to_fcm(applicant, '', '가입 승인!', f'{group.groupname} 그룹에 가입되셨습니다.', f'groups/{group.id}/main')
             else:
                 participate.is_banned = 2
                 participate.save()
@@ -382,7 +382,7 @@ class GroupChatCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
-        send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
+        send_to_fcm(user, group, group.groupname, content, f'groups/{group.id}/chat')
             
         return Response(data=chat, status=status.HTTP_200_OK)
 
@@ -441,7 +441,7 @@ class GroupReviewCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
-        send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
+        send_to_fcm(user, group, group.groupname, content, f'groups/{group.id}/chat')
             
         return Response(data=chat, status=status.HTTP_200_OK)
 
@@ -489,7 +489,7 @@ class GroupReviewCheckView(APIView):
         review['reviewed'] = True
         chat.setChatItem(review_id, review)
 
-        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', '인증 확인 후 이동할 경로')
+        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', f'groups/{group.id}/myboard')
         
         return Response(status=status.HTTP_200_OK)
 
