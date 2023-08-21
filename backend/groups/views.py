@@ -531,13 +531,15 @@ class GroupAdminView(APIView):
                     applicants.append({
                         'id': participate.user.id,
                         'username': participate.rand_name if group.is_public else participate.user.username,
-                        'board_id': board_id
+                        'board_id': board_id,
+                        'badge': participate.user.badge
                         })
             elif participate.is_banned == 0:
                 members.append({
                     'id': participate.user.id,
                     'username': participate.rand_name if group.is_public else participate.user.username,
-                    'board_id': board_id
+                    'board_id': board_id,
+                    'badge': participate.user.badge
                     })
         
         data = {'applicants': applicants, 'members': members, 'need_auth': group.need_auth}
