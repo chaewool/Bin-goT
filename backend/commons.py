@@ -1,7 +1,7 @@
 # 클라이언트로부터 전달받은 데이터 중 bool 타입 데이터 변환
 
 def get_boolean(str):
-    return True if str in ('true', 'True') else False
+    return True if str in ('true', 'True', True) else False
 
 
 # AWS S3에 이미지 저장 및 삭제
