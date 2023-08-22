@@ -207,15 +207,15 @@ class NotificationDetailView(APIView):
 class NotificationUpdateView(APIView):
     def put(self, request):
         user = request.user
-        noti_rank = get_boolean(request.data.get('noti_rank'))
-        noti_chat = get_boolean(request.data.get('noti_chat'))
-        noti_due = get_boolean(request.data.get('noti_due'))
-        noti_check = get_boolean(request.data.get('noti_check'))
+        noti_rank = request.data.get('noti_rank')
+        noti_chat = request.data.get('noti_chat')
+        noti_due = request.data.get('noti_due')
+        noti_check = request.data.get('noti_check')
         
-        user.noti_rank = noti_rank
-        user.noti_chat = noti_chat
-        user.noti_due = noti_due
-        user.noti_check = noti_check
+        user.noti_rank = noti_rank if type(noti_rank) == bool else get_boolean(noti_rank)
+        user.noti_chat = noti_chat if type(noti_chat) == bool else get_boolean(noti_chat)
+        user.noti_due = noti_due if type(noti_due) == bool else get_boolean(noti_due)
+        user.noti_check = noti_check if type(noti_check) == bool else get_boolean(noti_check)
         user.save()
             
         return Response(data={}, status=status.HTTP_200_OK)
