@@ -178,6 +178,8 @@ class GroupUpdateView(APIView):
                     else:
                         delete_image(url)
                         serializer.save(has_img=False)
+                else:
+                    serializer.save()
                 
                 return Response(status=status.HTTP_200_OK)
         return Response(data={'message': '수정 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
