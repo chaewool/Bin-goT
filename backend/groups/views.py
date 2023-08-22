@@ -154,10 +154,10 @@ class GroupUpdateView(APIView):
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not data['groupname']:
+        if not data.get('groupname'):
             data['groupname'] = group.groupname
         
-        if not data['headcount']:
+        if not data.get('headcount'):
             data['headcount'] = group.headcount
 
         if data['headcount'] < 1 or data['headcount'] > 30:
@@ -168,8 +168,6 @@ class GroupUpdateView(APIView):
 
             if serializer.is_valid(raise_exception=True):        
                 url = 'groups' + '/' + str(group.id)
-
-                logger.info('시리얼라이저 통과')
                 
                 if update_img:                
                     img = request.FILES.get('img')
