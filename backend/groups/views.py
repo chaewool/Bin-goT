@@ -91,7 +91,6 @@ class GroupDetailView(APIView):
     def get(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        password = request.GET.get('password')
         
         rand_name = user.username
         board = Board.objects.filter(user=user, group=group)
@@ -113,12 +112,7 @@ class GroupDetailView(APIView):
             if group.is_public:
                 rand_name = board.rand_name
                 
-        else:
-            # 비밀번호 확인
-            if not group.is_public and password != group.password:
-                data = {'message': '비밀번호가 일치하지 않습니다.'}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            
+        else:            
             is_participant = 0
 
         serializer = GroupDetailSerializer(group)
@@ -136,6 +130,17 @@ class GroupDetailView(APIView):
         data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board.id, 'rank': rank}
         
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class GroupCheckView(APIView):
+    def post(self, request, group_id):
+        password = request.data.get('password')
+        group = Group.objects.get(id=group_id)
+        
+        if not group.is_public and password != group.password:
+            data = {'message': '비밀번호가 일치하지 않습니다.'}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={}, status=status.HTTP_200_OK)
 
 
 class GroupUpdateView(APIView):
