@@ -38,6 +38,7 @@ class _InputPasswordState extends State<InputPassword> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      //* 알림을 통해 들어왔을 경우, 로그인 확인
       if (widget.needCheck) {
         if (getToken(context) == null) {
           //* 로그인 팝업
@@ -52,7 +53,7 @@ class _InputPasswordState extends State<InputPassword> {
           }
         }
       }
-
+      //* 공개 그룹이 아니고 검색, 추천을 통해 들어왔을 때
       if (!widget.isPublic && widget.isSearchMode) {
         // ignore: use_build_context_synchronously
         showModal(

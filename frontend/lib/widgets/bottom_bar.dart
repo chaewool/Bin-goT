@@ -236,6 +236,7 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
           Flexible(
             flex: 5,
             child: CustomInput(
+              autofocus: true,
               filled: true,
               explain: '내용을 입력하세요',
               setValue: (value) {

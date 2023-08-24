@@ -125,9 +125,10 @@ class GroupProvider extends ApiProvider {
   FutureDynamic editOwnGroup(int groupId, FormData groupData) async {
     try {
       print(groupData);
-      final response =
-          await dioWithTokenForm().put(editGroupUrl(groupId), data: groupData);
-      return response.data.groupId;
+      // final response =
+      await dioWithTokenForm().put(editGroupUrl(groupId), data: groupData);
+
+      return {};
     } catch (error) {
       print(error);
       throw Error();

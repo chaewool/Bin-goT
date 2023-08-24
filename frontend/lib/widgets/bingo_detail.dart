@@ -18,37 +18,16 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class BingoDetail extends StatelessWidget {
-  final int bingoId;
   final int? size;
   const BingoDetail({
     super.key,
-    required this.bingoId,
     this.size,
   });
 
   @override
   Widget build(BuildContext context) {
-    // int groupId = 0;
     GlobalKey globalKey = GlobalKey();
     int bingoSize = size ?? context.read<GlobalGroupProvider>().bingoSize!;
-    // void deleteBingo() {
-    //   BingoProvider().deleteOwnBingo(widget.bingoId).then((_) {
-    //     toBack(context);
-    //     showAlert(
-    //       context,
-    //       title: '삭제 완료',
-    //       content: '빙고가 정상적으로 삭제되었습니다.',
-    //       hasCancel: false,
-    //     )();
-    //   }).catchError((_) {
-    //     showAlert(
-    //       context,
-    //       title: '삭제 오류',
-    //       content: '오류가 발생해 빙고가 삭제되지 않았습니다.',
-    //       hasCancel: false,
-    //     )();
-    //   });
-    // }
 
     FutureBool bingoToImage() async {
       var renderObject = globalKey.currentContext?.findRenderObject();
@@ -89,98 +68,102 @@ class BingoDetail extends StatelessWidget {
       }
     }
 
-    return Stack(
-      children: [
-        FutureBuilder(
-          future: BingoProvider().readBingoDetail(bingoId),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final DynamicMap data = snapshot.data!;
-              print('bingo data => $data');
-              final int achieve = (data['achieve']! * 100).toInt();
-              // groupId = data['group'];
-              setBingoData(context, data);
-              final length = bingoSize * bingoSize;
-              initFinished(context, length);
-              for (int i = 0; i < length; i += 1) {
-                setFinished(context, i, data['items'][i]['finished']);
-              }
+    return getBingoId(context) != null
+        ? Stack(
+            children: [
+              FutureBuilder(
+                future: BingoProvider().readBingoDetail(getBingoId(context)!),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final DynamicMap data = snapshot.data!;
+                    print('bingo data => $data');
+                    final int achieve = (data['achieve']! * 100).toInt();
+                    // groupId = data['group'];
+                    setBingoData(context, data);
+                    final length = bingoSize * bingoSize;
+                    initFinished(context, length);
+                    for (int i = 0; i < length; i += 1) {
+                      setFinished(context, i, data['items'][i]['finished']);
+                    }
 
-              return RepaintBoundary(
-                key: globalKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      flex: 2,
-                      child: CustomText(
-                        content: data['title'],
-                        fontSize: FontSize.titleSize,
-                      ),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: CustomText(
-                          content: data['username'],
-                          fontSize: FontSize.smallSize,
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                    return RepaintBoundary(
+                      key: globalKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          if (DateTime.now().difference(
-                                DateTime.parse(getStart(context)!),
-                              ) <
-                              Duration.zero)
-                            IconButtonInRow(
-                              onPressed: toOtherPage(
-                                context,
-                                page: BingoForm(
-                                  bingoId: bingoId,
-                                  bingoSize: bingoSize,
-                                  needAuth: false,
-                                ),
-                              ),
-                              icon: editIcon,
+                          Flexible(
+                            flex: 2,
+                            child: CustomText(
+                              content: data['title'],
+                              fontSize: FontSize.titleSize,
                             ),
-                          const SizedBox(width: 20)
+                          ),
+                          Flexible(
+                            flex: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: CustomText(
+                                content: data['username'],
+                                fontSize: FontSize.smallSize,
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                if (DateTime.now().difference(
+                                      DateTime.parse(getStart(context)!),
+                                    ) <
+                                    Duration.zero)
+                                  IconButtonInRow(
+                                    onPressed: toOtherPage(
+                                      context,
+                                      page: BingoForm(
+                                        // bingoId: getBingoId(context),
+                                        bingoSize: bingoSize,
+                                        needAuth: false,
+                                      ),
+                                    ),
+                                    icon: editIcon,
+                                  ),
+                                const SizedBox(width: 20)
+                              ],
+                            ),
+                          ),
+                          Flexible(
+                            flex: 6,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: BingoBoard(
+                                isDetail: true,
+                                bingoSize: bingoSize,
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 2,
+                            child: Center(
+                              child: CustomText(
+                                content: '달성률 : $achieve%',
+                                fontSize: FontSize.largeSize,
+                              ),
+                            ),
+                          )
                         ],
                       ),
-                    ),
-                    Flexible(
-                      flex: 6,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: BingoBoard(
-                          isDetail: true,
-                          bingoSize: bingoSize,
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: Center(
-                        child: CustomText(
-                          content: '달성률 : $achieve%',
-                          fontSize: FontSize.largeSize,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            }
-            return const Center(child: CustomText(content: '정보를 불러오는 중입니다'));
-          },
-        ),
-        if (watchAfterWork(context)) const CustomToast(content: '인증 요청되었습니다.')
-      ],
-    );
+                    );
+                  }
+                  return const Center(
+                      child: CustomText(content: '정보를 불러오는 중입니다'));
+                },
+              ),
+              if (watchAfterWork(context))
+                const CustomToast(content: '인증 요청되었습니다.')
+            ],
+          )
+        : const SizedBox();
   }
 }

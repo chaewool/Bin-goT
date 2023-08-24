@@ -27,13 +27,11 @@ import 'package:http_parser/http_parser.dart';
 
 class BingoForm extends StatefulWidget {
   final int bingoSize;
-  final int? bingoId;
   final bool needAuth, beforeJoin;
   final DynamicMap? beforeData;
   final XFile? groupImg;
   const BingoForm({
     super.key,
-    this.bingoId,
     required this.bingoSize,
     required this.needAuth,
     this.beforeJoin = false,
@@ -96,7 +94,8 @@ class _BingoFormState extends State<BingoForm> {
       print('bingo data => $data');
 
       bingoToThumb().then((_) {
-        if (widget.bingoId == null) {
+        final bingoId = getBingoId(context);
+        if (bingoId == null) {
           widget.beforeJoin ? joinGroup(data) : createGroup(data);
         } else {
           //* 빙고 수정
@@ -108,16 +107,14 @@ class _BingoFormState extends State<BingoForm> {
               contentType: MediaType('image', 'png'),
             ),
           });
-          print(widget.bingoId);
-          BingoProvider()
-              .editOwnBingo(widget.bingoId!, bingoData)
-              .then((value) {
+
+          BingoProvider().editOwnBingo(bingoId, bingoData).then((value) {
             if (value['statusCode'] == 401) {
               showLoginModal(context);
             } else {
               toOtherPage(
                 context,
-                page: BingoDetail(bingoId: widget.bingoId!),
+                page: const BingoDetail(),
               )();
             }
           }).catchError((_) {

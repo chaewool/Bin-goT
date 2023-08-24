@@ -70,16 +70,22 @@ class BingoGallery extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: CachedNetworkImage(
-                imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
-                placeholder: (context, url) => CustomBoxContainer(
-                  color: whiteColor,
-                  width: (getWidth(context) - 8) / 2,
-                  height: (getWidth(context) - 8) / 2,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: CachedNetworkImage(
+                  imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
+                  placeholder: (context, url) => CustomBoxContainer(
+                    color: whiteColor,
+                    width: (getWidth(context) - 8) / 2,
+                    height: (getWidth(context) - 8) / 2,
+                  ),
                 ),
               ),
             ),
-            CustomText(content: bingo.groupName)
+            CustomText(
+              content: bingo.groupName,
+              cutText: true,
+            )
           ],
         ),
       ),
@@ -180,32 +186,52 @@ class CircleContainer extends StatelessWidget {
 //* animated container with page view
 class CustomAnimatedPage extends StatelessWidget {
   final void Function(int) changeIndex;
-  final int selectedIndex;
-  final WidgetList nextPages;
-  // final Color color;
-  const CustomAnimatedPage({
-    super.key,
-    required this.changeIndex,
-    required this.nextPages,
-    required this.selectedIndex,
-    // this.color = whiteColor,
-  });
+  final Widget nextPage;
+  final Widget? appBar;
+  final bool needScroll;
+  const CustomAnimatedPage(
+      {super.key,
+      required this.changeIndex,
+      required this.nextPage,
+      this.appBar,
+      this.needScroll = false});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-      child: AnimatedContainer(
-          // color: color,
-          duration: const Duration(milliseconds: 500),
-          child: nextPages[selectedIndex]
-          // PageView.builder(
-          //   controller: PageController(initialPage: initialPage),
-          //   onPageChanged: (value) => changeIndex(value),
-          //   itemCount: 3,
-          //   itemBuilder: (context, index) => nextPages[selectedIndex],
-          // ),
-          ),
-    );
+    return needScroll
+        ? Stack(
+            children: [
+              Padding(
+                padding:
+                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                child: SingleChildScrollView(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
+                    child: nextPage,
+                  ),
+                ),
+              ),
+              if (appBar != null)
+                CustomBoxContainer(
+                  color: Colors.transparent,
+                  width: getWidth(context),
+                  height: 100,
+                  child: appBar!,
+                ),
+            ],
+          )
+        : Stack(
+            children: [
+              Padding(
+                padding:
+                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 500),
+                  child: nextPage,
+                ),
+              ),
+              if (appBar != null) appBar!,
+            ],
+          );
   }
 }

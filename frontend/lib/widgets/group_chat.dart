@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -9,12 +10,14 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class GroupChat extends StatefulWidget {
   // final int bingoId;
@@ -28,13 +31,14 @@ class GroupChat extends StatefulWidget {
 }
 
 class _GroupChatState extends State<GroupChat> {
-  GroupChatList chats = [];
+  // GroupChatList chats = [];
   int groupId = 0;
   final controller = ScrollController();
   bool showImg = false;
   XFile? selectedImage;
   GlobalKey bottomBarKey = GlobalKey();
   double appBarHeight = 50;
+  bool showInput = false;
 
   @override
   void initState() {
@@ -92,7 +96,7 @@ class _GroupChatState extends State<GroupChat> {
       print('read chat data => $data');
       print('last id => ${getLastId(context, 0)}');
       if (data.isNotEmpty) {
-        chats.addAll(data);
+        context.read<GlobalGroupProvider>().addChats(data);
       }
       setLoading(context, false);
       print('read loading ${readLoading(context)}');
@@ -120,16 +124,17 @@ class _GroupChatState extends State<GroupChat> {
         }),
       )
           .then((data) {
-        setState(() {
-          chats.insert(
-              0,
-              GroupChatModel.fromJson({
-                ...data,
-                'content': content,
-                'reviewed': false,
-                'hasImage': image != null
-              }));
-        });
+        context.read<GlobalGroupProvider>().insertChat(
+              GroupChatModel.fromJson(
+                {
+                  ...data,
+                  'content': content,
+                  'reviewed': false,
+                  'hasImage': image != null,
+                },
+              ),
+            );
+
         if (showImg) {
           setState(() {
             showImg = false;
@@ -154,10 +159,16 @@ class _GroupChatState extends State<GroupChat> {
     print(showImg);
   }
 
-  void deleteImg() async {
+  void deleteImg() {
     setState(() {
       selectedImage = null;
       showImg = false;
+    });
+  }
+
+  void changeShowInput(bool value) {
+    setState(() {
+      showInput = value;
     });
   }
 
@@ -165,36 +176,58 @@ class _GroupChatState extends State<GroupChat> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Column(
-          children: [
-            Expanded(
-              child: InfiniteScroll(
-                color: whiteColor,
-                controller: controller,
-                cnt: 50,
-                reverse: true,
-                data: chats,
-                mode: 0,
-                emptyWidget: const Column(
-                  children: [
-                    CustomText(
-                      center: true,
-                      fontSize: FontSize.titleSize,
-                      content: '채팅 기록이 없습니다.',
-                      height: 1.5,
-                    ),
-                  ],
+        GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+            changeShowInput(false);
+          },
+          child: Column(
+            children: [
+              Expanded(
+                child: InfiniteScroll(
+                  color: whiteColor,
+                  controller: controller,
+                  cnt: 50,
+                  reverse: true,
+                  data: context.read<GlobalGroupProvider>().chats,
+                  mode: 0,
+                  emptyWidget: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      CustomText(
+                        center: true,
+                        fontSize: FontSize.titleSize,
+                        content: '채팅 기록이 없습니다.',
+                        height: 1.5,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            GroupChatBottomBar(
-              key: bottomBarKey,
-              addChat: addChat,
-              selectedImage: selectedImage,
-              imagePicker: imagePicker,
-            ),
-          ],
+              if (showInput)
+                GroupChatBottomBar(
+                  key: bottomBarKey,
+                  addChat: addChat,
+                  selectedImage: selectedImage,
+                  imagePicker: imagePicker,
+                )
+            ],
+          ),
         ),
+        if (!showInput)
+          Positioned(
+            left: getWidth(context) - 80,
+            top: getHeight(context) - 170,
+            child: FloatingActionButton(
+              backgroundColor: palePinkColor.withOpacity(0.8),
+              onPressed: () => changeShowInput(true),
+              child: const CustomIcon(
+                icon: addIcon,
+                color: whiteColor,
+              ),
+            ),
+          ),
         if (showImg)
           Column(
             mainAxisAlignment: MainAxisAlignment.start,

@@ -375,6 +375,10 @@ void initLoadingData(BuildContext context, int mode) {
 }
 
 //* group data
+
+int? getMemberState(BuildContext context) =>
+    context.read<GlobalGroupProvider>().memberState;
+
 int? getGroupId(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupId;
 
@@ -423,7 +427,13 @@ void initFinished(BuildContext context, int size) =>
 void setFinished(BuildContext context, int index, bool value) =>
     context.read<GlobalBingoProvider>().setFinished(index, value);
 
+void setBingoId(BuildContext context, int id, int size) =>
+    context.read<GlobalBingoProvider>().setBingoIdSize(id, size);
+
 //* var
+int? getBingoId(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().bingoId;
+
 DynamicMap getBingoData(BuildContext context) =>
     context.read<GlobalBingoProvider>().data;
 

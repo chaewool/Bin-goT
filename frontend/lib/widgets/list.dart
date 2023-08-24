@@ -49,6 +49,7 @@ class GroupListItem extends StatelessWidget {
     return CustomList(
       height: 70,
       boxShadow: [shadowWithOpacity],
+      // border: true,
       onTap: toOtherPage(
         context,
         page: InputPassword(
@@ -61,19 +62,28 @@ class GroupListItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          CustomText(content: groupInfo.name),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomText(content: showedDif()),
-              const SizedBox(height: 5),
-              isSearchMode
-                  ? CustomText(
-                      content: groupMember,
-                      fontSize: FontSize.smallSize,
-                    )
-                  : const SizedBox(),
-            ],
+          Flexible(
+              flex: 3,
+              child: CustomText(
+                content: groupInfo.name,
+                cutText: true,
+              )),
+          Flexible(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomText(
+                  content: showedDif(),
+                ),
+                const SizedBox(height: 5),
+                isSearchMode
+                    ? CustomText(
+                        content: groupMember,
+                        fontSize: FontSize.smallSize,
+                      )
+                    : const SizedBox(),
+              ],
+            ),
           )
         ],
       ),
@@ -172,7 +182,7 @@ class CustomList extends StatelessWidget {
         onTap: onTap,
         height: height,
         width: width,
-        borderColor: border ? greyColor : null,
+        borderColor: border ? greyColor : whiteColor,
         boxShadow: boxShadow,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: innerHorizontal),

@@ -147,7 +147,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
                 width: 150,
                 height: 40,
                 color: isSelected(i, j) ? paleOrangeColor : whiteColor,
-                borderColor: isSelected(i, j) ? null : greyColor,
+                borderColor: isSelected(i, j) ? whiteColor : greyColor,
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -788,7 +788,7 @@ class _MainTabBarState extends State<MainTabBar> {
         Column(
           children: [
             RowWithPadding(
-              vertical: 20,
+              vertical: 25,
               min: true,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -813,20 +813,22 @@ class _MainTabBarState extends State<MainTabBar> {
             Expanded(
               child: Column(
                 children: [
-                  RowWithPadding(
-                    vertical: 10,
-                    horizontal: 25,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      for (int i = 0; i < 2; i += 1)
-                        Center(
-                          child: CustomTextButton(
-                            content: buttonOptions[i][idxList[tabBarIndex][i]],
-                            fontSize: FontSize.smallSize,
-                            onTap: () => changeIdx(i),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        for (int i = 0; i < 2; i += 1)
+                          Center(
+                            child: CustomTextButton(
+                              content: buttonOptions[i]
+                                  [idxList[tabBarIndex][i]],
+                              fontSize: FontSize.smallSize,
+                              onTap: () => changeIdx(i),
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                   Expanded(
                     child: tabBarIndex == 0

@@ -34,7 +34,9 @@ class _GroupRankState extends State<GroupRank> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: GroupAppBar(
+      appBar:
+          // AppBarWithBack(),
+          GroupAppBar(
         onlyBack: true,
         groupId: widget.groupId,
         password: widget.password,

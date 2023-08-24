@@ -31,9 +31,7 @@ class _SettingsState extends State<Settings> {
   String username = '';
   StringMap newName = {'value': ''};
   int badgeId = 0;
-  int numberOfCompleted = 0;
-  int numberOfWon = 0;
-  int ownBadges = 0;
+  List<int?> cntList = List.generate(3, (index) => null);
 
   void logout() {
     deleteVar(context);
@@ -48,9 +46,9 @@ class _SettingsState extends State<Settings> {
         username = data.username;
         newName['value'] = data.username;
         badgeId = data.badgeId;
-        numberOfCompleted = data.numberOfCompleted;
-        numberOfWon = data.numberOfWon;
-        ownBadges = data.ownBadges;
+        cntList[0] = data.numberOfCompleted;
+        cntList[1] = data.numberOfWon;
+        cntList[2] = data.ownBadges;
       });
     }).catchError((error) {
       showErrorModal(context);
@@ -132,266 +130,265 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
 
   @override
   Widget build(BuildContext context) {
-    return ColWithPadding(
-      horizontal: 15,
-      vertical: 10,
-      mainAxisSize: MainAxisSize.max,
-      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(flex: 4, child: profile(context)),
-        eachSection(
-          flex: 2,
-          title: '설정',
-          options: [
-            eachOption(
-              icon: bellIcon,
-              title: '알림 설정',
-              onTap: toOtherPage(
-                context,
-                page: const NotificationSettings(),
+    return SingleChildScrollView(
+      child: ColWithPadding(
+        horizontal: 15,
+        vertical: 10,
+        mainAxisSize: MainAxisSize.max,
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          profile(context),
+          eachSection(
+            // flex: 2,
+            title: '설정',
+            options: [
+              eachOption(
+                icon: bellIcon,
+                title: '알림 설정',
+                onTap: toOtherPage(
+                  context,
+                  page: const NotificationSettings(),
+                ),
+              )
+            ],
+          ),
+          eachSection(
+            // flex: 4,
+            title: '소통',
+            options: [
+              eachOption(
+                icon: helpIcon,
+                title: '도움말',
+                onTap: toOtherPage(
+                  context,
+                  page: const Help(),
+                ),
               ),
-            )
-          ],
-        ),
-        eachSection(
-          flex: 4,
-          title: '소통',
-          options: [
-            eachOption(
-              icon: helpIcon,
-              title: '도움말',
-              onTap: toOtherPage(
-                context,
-                page: const Help(),
+              eachOption(
+                icon: Icons.question_answer_outlined,
+                title: '문의하기',
+                onTap: () {},
               ),
-            ),
-            eachOption(
-              icon: Icons.question_answer_outlined,
-              title: '문의하기',
-              onTap: () {},
-            ),
-          ],
-        ),
-        eachSection(
-          flex: 4,
-          title: '방침',
-          options: [
-            eachOption(
-              icon: Icons.question_answer_outlined,
-              title: '개인 정보 처리 방침',
-              onTap: () {},
-            ),
-            eachOption(
-              icon: Icons.question_answer_outlined,
-              title: '라이선스',
-              onTap: () {},
-            ),
-          ],
-        ),
-        eachSection(
-          flex: 2,
-          title: '기타',
-          hasDivider: false,
-          options: [
-            eachOption(
-              icon: Icons.question_answer_outlined,
-              title: '로그아웃',
-              onTap: showAlert(
-                context,
-                title: '로그아웃 확인',
-                content: '로그아웃하시겠습니까?',
-                onPressed: logout,
+            ],
+          ),
+          eachSection(
+            // flex: 4,
+            title: '방침',
+            options: [
+              eachOption(
+                icon: Icons.question_answer_outlined,
+                title: '개인 정보 처리 방침',
+                onTap: () {},
               ),
-              moveToOther: false,
-            ),
-          ],
-        ),
-      ],
+              eachOption(
+                icon: Icons.question_answer_outlined,
+                title: '라이선스',
+                onTap: () {},
+              ),
+            ],
+          ),
+          eachSection(
+            // flex: 2,
+            title: '기타',
+            hasDivider: false,
+            options: [
+              eachOption(
+                icon: Icons.question_answer_outlined,
+                title: '로그아웃',
+                onTap: showAlert(
+                  context,
+                  title: '로그아웃 확인',
+                  content: '로그아웃하시겠습니까?',
+                  onPressed: logout,
+                ),
+                moveToOther: false,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
-  CustomBoxContainer eachOption({
+  Padding eachOption({
     required IconData icon,
     required String title,
     required ReturnVoid onTap,
     bool moveToOther = true,
   }) {
-    return CustomBoxContainer(
-      onTap: onTap,
-      child: RowWithPadding(
-        horizontal: 10,
-        mainAxisAlignment: moveToOther
-            ? MainAxisAlignment.spaceBetween
-            : MainAxisAlignment.start,
-        children: [
-          RowWithPadding(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CustomIcon(icon: icon),
-              const SizedBox(width: 10),
-              CustomText(content: title),
-            ],
-          ),
-          if (moveToOther) const CustomIcon(icon: rightIcon)
-        ],
-      ),
-    );
-  }
-
-  Padding profile(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(5, 10, 5, 15),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       child: CustomBoxContainer(
-        color: paleRedColor,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        onTap: onTap,
+        child: RowWithPadding(
+          horizontal: 10,
+          mainAxisAlignment: moveToOther
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.start,
           children: [
             RowWithPadding(
-              // vertical: 20,
-              horizontal: 15,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
-                  child: CircleContainer(
-                    color: whiteColor,
-                    onTap: showModal(
-                      context,
-                      page: SelectBadgeModal(
-                        presentBadge: badgeId,
-                        onPressed: changeBadge,
-                      ),
-                    ),
-                    child: badgeId != 0
-                        ? Center(
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  '${dotenv.env['fileUrl']}/badges/$badgeId',
-                              placeholder: (context, url) =>
-                                  const SizedBox(width: 50, height: 50),
-                            ),
-                          )
-                        : const SizedBox(),
-                  ),
-                ),
-                Flexible(
-                  flex: 4,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        flex: 5,
-                        child: Center(
-                          child: CustomText(
-                            content: username,
-                            fontSize: FontSize.largeSize,
-                            color: whiteColor,
-                            bold: true,
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        child: IconButtonInRow(
-                          onPressed: showModal(
-                            context,
-                            page: const ChangeNameModal(),
-                          ),
-                          icon: editIcon,
-                          color: whiteColor,
-                          size: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                CustomIcon(icon: icon),
+                const SizedBox(width: 10),
+                CustomText(content: title),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          const CustomIcon(
-                            icon: checkIcon,
-                            size: 40,
-                          ),
-                          CustomText(content: '$numberOfCompleted개'),
-                        ],
-                      ),
-                      const CustomText(
-                        content: '100% 완료한 빙고 개수',
-                        fontSize: FontSize.smallSize,
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const CustomIcon(
-                        icon: Icons.format_list_numbered,
-                        size: 40,
-                      ),
-                      CustomText(content: '$numberOfWon개'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const CustomIcon(
-                        icon: Icons.badge_outlined,
-                        size: 40,
-                      ),
-                      CustomText(content: '$ownBadges개'),
-                    ],
-                  )
-                ],
-              ),
-            ),
-            // const Row(
-            //   children: [
-            //     CustomText(
-            //       content: '100% 완료한 빙고 개수',
-            //       fontSize: FontSize.smallSize,
-            //     ),
-            //     CustomText(content: '1위한 빙고 개수'),
-            //     CustomText(content: '획득한 배지 개수'),
-            //   ],
-            // )
+            if (moveToOther) const CustomIcon(icon: rightIcon)
           ],
         ),
       ),
     );
   }
 
-  Flexible eachSection({
-    required int flex,
+  Padding profile(BuildContext context) {
+    const iconList = [
+      checkIcon,
+      Icons.format_list_numbered,
+      Icons.badge_outlined,
+    ];
+    const explainList = ['100% 달성 횟수', '1위 횟수', '배지 개수'];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 15),
+      child: Column(
+        children: [
+          CustomBoxContainer(
+            color: palePinkColor,
+            boxShadow: [shadowWithOpacity],
+            child: ColWithPadding(
+              horizontal: 10,
+              vertical: 10,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RowWithPadding(
+                  vertical: 10,
+                  horizontal: 15,
+                  children: [
+                    const SizedBox(height: 5),
+                    Flexible(
+                      child: CircleContainer(
+                        color: whiteColor,
+                        onTap: showModal(
+                          context,
+                          page: SelectBadgeModal(
+                            presentBadge: badgeId,
+                            onPressed: changeBadge,
+                          ),
+                        ),
+                        child: badgeId != 0
+                            ? Center(
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      '${dotenv.env['fileUrl']}/badges/$badgeId',
+                                  placeholder: (context, url) =>
+                                      const SizedBox(width: 50, height: 50),
+                                ),
+                              )
+                            : const SizedBox(),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 4,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            flex: 5,
+                            child: Center(
+                              child: CustomText(
+                                content: username,
+                                fontSize: FontSize.largeSize,
+                                color: whiteColor,
+                                bold: true,
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 2,
+                            child: IconButtonInRow(
+                              onPressed: showModal(
+                                context,
+                                page: const ChangeNameModal(),
+                              ),
+                              icon: editIcon,
+                              color: whiteColor,
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            child: CustomBoxContainer(
+              // borderColor: greyColor,
+              boxShadow: [defaultShadow],
+              child: RowWithPadding(
+                vertical: 10,
+                horizontal: 10,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  for (int i = 0; i < 3; i += 1)
+                    Column(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomIcon(
+                          icon: iconList[i],
+                          size: 40,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: CustomText(
+                              content:
+                                  cntList[i] != null ? '${cntList[i]} 개' : ''),
+                        ),
+                        CustomText(
+                          content: explainList[i],
+                          fontSize: FontSize.tinySize,
+                        ),
+                        const SizedBox(height: 10)
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  ColWithPadding eachSection({
+    // required int flex,
     required String title,
     required WidgetList options,
     bool hasDivider = true,
   }) {
-    return Flexible(
-      flex: flex,
-      child: ColWithPadding(
-        vertical: 3,
-        mainAxisAlignment: hasDivider
-            ? MainAxisAlignment.spaceBetween
-            : MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CustomText(
-            content: title,
-            fontSize: FontSize.tinySize,
+    return ColWithPadding(
+      vertical: 3,
+      mainAxisAlignment: hasDivider
+          ? MainAxisAlignment.spaceBetween
+          : MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomText(
+          content: title,
+          fontSize: FontSize.tinySize,
+          color: greyColor,
+        ),
+        const SizedBox(height: 5),
+        ...options,
+        if (hasDivider)
+          const Divider(
+            thickness: 1,
             color: greyColor,
-          ),
-          ...options,
-          if (hasDivider)
-            const Divider(
-              thickness: 1,
-              color: greyColor,
-            )
-        ],
-      ),
+          )
+      ],
     );
   }
 }
