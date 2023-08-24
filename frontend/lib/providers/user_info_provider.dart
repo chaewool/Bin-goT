@@ -16,6 +16,8 @@ class UserInfoProvider extends ApiProvider {
       _getMainBingoData(queryParameters);
   FutureDynamic changeNoti(DynamicMap data) => _changeNoti(data);
 
+  FutureDynamic getNoti() => _getNoti();
+
   //* private
   FutureBool _changeBadge(DynamicMap data) async {
     try {
@@ -51,7 +53,20 @@ class UserInfoProvider extends ApiProvider {
     }
   }
 
-  FutureDynamic _changeNoti(DynamicMap data) => updateApi(notiUrl, data: data);
+  FutureDynamic _getNoti() async {
+    try {
+      final response = await dioWithToken().get(notificationsUrl);
+      NotificationModel notifications =
+          NotificationModel.fromJson(response.data);
+
+      return notifications;
+    } catch (error) {
+      throw Error();
+    }
+  }
+
+  FutureDynamic _changeNoti(DynamicMap data) =>
+      updateApi(changenotiUrl, data: data);
 
   FutureDynamic _checkName(String name) =>
       createApi(checkNameUrl, data: {'username': name});

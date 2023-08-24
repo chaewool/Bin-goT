@@ -1,5 +1,4 @@
-import 'package:bin_got/pages/group_main_page.dart';
-import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/pages/group_detail_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -77,35 +76,15 @@ class _InputPasswordState extends State<InputPassword> {
           ),
         )();
       } else {
-        print('public==========');
-        GroupProvider().readGroupDetail(widget.groupId, '').then((data) {
-          print('1-------');
-          setGroupData(context, data);
-          print('2-------');
-          setGroupId(context, widget.groupId);
-          print('3-------');
-          setPublic(context, widget.isPublic);
-          print('4-------');
-          toOtherPage(
-            context,
-            page: GroupMain(
-              groupId: widget.groupId,
-              data: data,
-            ),
-          )();
-        }).catchError((error) {
-          print(error);
-          showAlert(
-            context,
-            title: '오류 발생',
-            content: '오류가 발생해 그룹 정보를 받아올 수 없습니다',
-            hasCancel: false,
-            onPressed: () {
-              toBack(context);
-              toBack(context);
-            },
-          )();
-        });
+        toOtherPage(
+          context,
+          page: GroupDetail(
+            groupId: widget.groupId,
+            password: '',
+            isPublic: widget.isPublic,
+            // data: data,
+          ),
+        )();
       }
     });
   }
@@ -130,27 +109,14 @@ class _InputPasswordState extends State<InputPassword> {
     if (password == null || password == '') {
       showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
     } else {
-      GroupProvider().readGroupDetail(widget.groupId, password).then((data) {
-        print(data);
-        toBack(context);
-        setGroupData(context, data);
-        setGroupId(context, widget.groupId);
-        setPublic(context, widget.isPublic);
-        toOtherPage(
-          context,
-          page: GroupMain(
-            groupId: widget.groupId,
-            data: data,
-          ),
-        )();
-      }).catchError((error) {
-        print(error);
-        showAlert(
-          context,
-          title: '오류 발생',
-          content: '오류가 발생해 요청 작업을 처리하지 못했습니다',
-        )();
-      });
+      toOtherPage(
+        context,
+        page: GroupDetail(
+          groupId: widget.groupId,
+          isPublic: widget.isPublic,
+          password: password,
+        ),
+      )();
     }
   }
 

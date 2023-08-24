@@ -66,7 +66,7 @@ class GroupProvider extends ApiProvider {
   }
 
   //* detail
-  FutureDynamic readGroupDetail(int groupId, String password) async {
+  Future<GroupDetailModel> readGroupDetail(int groupId, String password) async {
     try {
       print('groupId: $groupId, password: $password');
       print(groupDetailUrl(groupId));
@@ -74,11 +74,16 @@ class GroupProvider extends ApiProvider {
         groupDetailUrl(groupId),
         queryParameters: {'password': password},
       );
-      print('response: $response');
-      final groupDetail = GroupDetailModel.fromJson(response.data);
+      print('response: ${response.data}');
+      // print(
+      //     'type => userId : ${response.data['rank'][0]['user_id'].runtimeType}');
+      // print(
+      //     'type => bingoId : ${response.data['rank'][0]['board_id'].runtimeType}');
+      GroupDetailModel groupDetail = GroupDetailModel.fromJson(response.data);
       // return response;
       return groupDetail;
     } catch (error) {
+      print(error);
       throw Error();
     }
   }
@@ -99,9 +104,8 @@ class GroupProvider extends ApiProvider {
   //* create
   FutureInt createOwnGroup(FormData groupData) async {
     try {
-      final dioWithForm = dioWithToken();
-      dioWithForm.options.contentType = 'multipart/form-data';
-      final response = await dioWithForm.post(createGroupUrl, data: groupData);
+      final response =
+          await dioWithTokenForm().post(createGroupUrl, data: groupData);
       print(response);
       if (response.statusCode == 200) {
         return response.data['group_id'];
@@ -122,7 +126,7 @@ class GroupProvider extends ApiProvider {
     try {
       print(groupData);
       final response =
-          await dioWithToken().put(editGroupUrl(groupId), data: groupData);
+          await dioWithTokenForm().put(editGroupUrl(groupId), data: groupData);
       return response.data.groupId;
     } catch (error) {
       print(error);

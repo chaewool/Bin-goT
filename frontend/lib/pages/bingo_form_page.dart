@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
-import 'package:bin_got/pages/bingo_detail_page.dart';
+import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/pages/group_create_completed.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
@@ -13,9 +13,11 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bingo_board.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -71,6 +73,7 @@ class _BingoFormState extends State<BingoForm> {
           context,
           title: '필수 항목 누락',
           content: '빙고명을 입력해주세요',
+          hasCancel: false,
         )();
       }
       int cnt = 0;
@@ -87,6 +90,7 @@ class _BingoFormState extends State<BingoForm> {
           context,
           title: '필수 항목 누락',
           content: '빙고칸 내부를 채워주세요',
+          hasCancel: false,
         )();
       }
       print('bingo data => $data');
@@ -245,46 +249,111 @@ class _BingoFormState extends State<BingoForm> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: const AppBarWithBack(),
-      body: ColWithPadding(
-        horizontal: 10,
-        vertical: 5,
-        children: [
-          Flexible(
-            flex: 2,
-            child: CustomInput(
-              explain: '빙고 이름',
-              setValue: (value) => setOption(context, 'title', value),
-              initialValue: getTitle(context),
-            ),
-          ),
-          Flexible(
-            flex: 6,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-              child: RepaintBoundary(
-                key: globalKey,
-                child: BingoBoard(
-                  isDetail: false,
-                  bingoSize: size,
+      body: CustomBoxContainer(
+        color: whiteColor,
+        child: ColWithPadding(
+          horizontal: 10,
+          vertical: 5,
+          children: [
+            Flexible(
+              flex: 5,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                child: Column(
+                  children: [
+                    const Row(
+                      children: [
+                        CustomText(content: '빙고명'),
+                        SizedBox(width: 5),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomText(
+                                content: '(필수)',
+                                fontSize: FontSize.tinySize,
+                                color: greyColor,
+                              ),
+                              CustomText(
+                                content: '시작일 전 수정 가능',
+                                fontSize: FontSize.tinySize,
+                                color: greyColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    CustomInput(
+                      explain: '빙고명을 입력해주세요',
+                      setValue: (value) => setOption(context, 'title', value),
+                      initialValue: getTitle(context),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          const Flexible(
-            flex: 4,
-            child: BingoTabBar(),
-          ),
-          Flexible(
-            flex: 1,
-            child: Center(
-              child: CustomButton(
-                onPressed: createOrEditBingo,
-                content: widget.beforeJoin ? '가입 신청' : '완료',
-                fontSize: FontSize.textSize,
+            Flexible(
+              flex: 12,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                child: Column(
+                  children: [
+                    const Row(
+                      children: [
+                        CustomText(content: '빙고판'),
+                        SizedBox(width: 5),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomText(
+                                content: '(필수)',
+                                fontSize: FontSize.tinySize,
+                                color: greyColor,
+                              ),
+                              CustomText(
+                                content: '시작일 전 수정 가능',
+                                fontSize: FontSize.tinySize,
+                                color: greyColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: RepaintBoundary(
+                        key: globalKey,
+                        child: BingoBoard(
+                          isDetail: false,
+                          bingoSize: size,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          )
-        ],
+            const Flexible(flex: 9, child: BingoTabBar()),
+            Flexible(
+              flex: 2,
+              child: Row(children: [
+                Expanded(
+                  child: CustomButton(
+                    onPressed: createOrEditBingo,
+                    content: widget.beforeJoin ? '가입 신청' : '완료',
+                    fontSize: FontSize.textSize,
+                    textColor: whiteColor,
+                    color: paleOrangeColor,
+                  ),
+                ),
+              ]),
+            )
+          ],
+        ),
       ),
     );
   }

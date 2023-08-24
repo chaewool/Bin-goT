@@ -34,22 +34,22 @@ class GroupAdminTabModel {
 }
 
 class GroupRankModel {
-  final int userId, achieve, bingoId;
+  final int userId, bingoId;
+  final double achieve;
   final String nickname;
   GroupRankModel.fromJson(DynamicMap json)
-      : userId = json['userId'],
+      : userId = json['user_id'],
         achieve = json['achieve'],
-        bingoId = json['bingoId'],
+        bingoId = json['board_id'],
         nickname = json['nickname'];
 }
 
 class GroupDetailModel {
   final int headCount, count, bingoSize, memberState;
   final int? bingoId;
-  final String groupName, nickname, start, end, password;
-  final String? description, rule;
+  final String groupName, nickname, start, end, password, description, rule;
   final bool hasImage, needAuth;
-  // final GroupRankModel rank;
+  final List rank;
   GroupDetailModel.fromJson(DynamicMap json)
 
       // : id = json['id'],
@@ -66,8 +66,11 @@ class GroupDetailModel {
         password = json['password'],
         hasImage = json['has_img'],
         needAuth = json['need_auth'],
-        memberState = json['is_participant'];
-  // rank = json['rank'],
+        memberState = json['is_participant'],
+        // rank = json['rank'];
+        rank = json['rank']
+            .map((eachRank) => GroupRankModel.fromJson(eachRank))
+            .toList();
 }
 
 class GroupChatModel {

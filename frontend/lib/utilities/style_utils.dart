@@ -14,15 +14,15 @@ const paleRedColor = Color(0xFFE59394);
 const palePinkColor = Color(0xFFEFB9B3);
 const darkGreyColor = Color(0xFF403B3E);
 const beigeColor = Color(0xFFF4DBCC);
-const paleOrangeColor = Color(0xFFF4DBCC);
+const paleOrangeColor = Color(0xFFDDA990);
 
 //* 글씨 크기
-const double sloganSize = 40;
-const double titleSize = 24;
-const double largeSize = 21;
-const double textSize = 19;
-const double smallSize = 16;
-const double chatSize = 14;
+const double sloganSize = 30;
+const double titleSize = 21;
+const double largeSize = 19;
+const double textSize = 16;
+const double smallSize = 14;
+const double tinySize = 12;
 
 enum FontSize {
   titleSize,
@@ -30,7 +30,7 @@ enum FontSize {
   textSize,
   smallSize,
   sloganSize,
-  chatSize
+  tinySize,
 }
 
 double convertedFontSize(FontSize size) {
@@ -43,8 +43,8 @@ double convertedFontSize(FontSize size) {
       return smallSize;
     case FontSize.largeSize:
       return largeSize;
-    case FontSize.chatSize:
-      return chatSize;
+    case FontSize.tinySize:
+      return tinySize;
     default:
       return sloganSize;
   }

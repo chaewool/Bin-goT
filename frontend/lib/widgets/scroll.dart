@@ -1,5 +1,6 @@
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:flutter/material.dart';
@@ -122,7 +123,7 @@ class GroupInfiniteScroll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
-      color: backgroundColor,
+      color: beigeColor,
       child: !getLoading(context)
           ? data.isNotEmpty
               ? hasNotGroupWidget ??
@@ -160,9 +161,7 @@ class GroupInfiniteScroll extends StatelessWidget {
                                         padding: EdgeInsets.symmetric(
                                           vertical: 40,
                                         ),
-                                        child: Center(
-                                          child: CircularProgressIndicator(),
-                                        ),
+                                        child: CustomCirCularIndicator(),
                                       )
                                   ],
                                 ),
@@ -186,7 +185,7 @@ class GroupInfiniteScroll extends StatelessWidget {
                     },
                   )
               : emptyWidget
-          : const Center(child: CircularProgressIndicator()),
+          : const CustomCirCularIndicator(),
       // CustomText(content: '빙고 정보를 불러오는 중입니다')
     );
   }
@@ -209,7 +208,7 @@ class InfiniteScroll extends StatelessWidget {
     required this.mode,
     required this.controller,
     this.reverse = false,
-    this.color = backgroundColor,
+    this.color = beigeColor,
     // this.isChatMode = false,
   });
 
@@ -261,9 +260,7 @@ class InfiniteScroll extends StatelessWidget {
                                 padding: EdgeInsets.symmetric(
                                   vertical: 40,
                                 ),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
+                                child: CustomCirCularIndicator(),
                               )
                             : const SizedBox(),
                         Padding(
@@ -276,7 +273,7 @@ class InfiniteScroll extends StatelessWidget {
                   },
                 )
               : emptyWidget
-          : const Center(child: CircularProgressIndicator()),
+          : const CustomCirCularIndicator(),
       // CustomText(content: '빙고 정보를 불러오는 중입니다')
     );
   }

@@ -79,13 +79,12 @@ class MemberList extends StatelessWidget {
     return isMember
         ? CustomList(
             height: 70,
-            boxShadow: const [defaultShadow],
+            // boxShadow: const [defaultShadow],
+            border: true,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CircleContainer(
-                  child: halfLogo,
-                ),
+                CircleContainer(child: halfLogo),
                 CustomText(content: nickname),
                 getId(context) != id
                     ? IconButtonInRow(
@@ -94,10 +93,13 @@ class MemberList extends StatelessWidget {
                         color: blackColor,
                       )
                     : const CustomBoxContainer(
-                        color: greenColor,
-                        child: CustomText(
-                          content: '그룹장',
-                          color: whiteColor,
+                        color: paleOrangeColor,
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: CustomText(
+                            content: '그룹장',
+                            color: whiteColor,
+                          ),
                         ),
                       ),
               ],

@@ -181,13 +181,6 @@ void login(BuildContext context) async {
   try {
     UserProvider().login().then((data) {
       setTokens(context, data['access_token'], data['refresh_token']);
-      setNoti(
-        context,
-        rank: data['noti_rank'],
-        due: data['noti_due'],
-        chat: data['noti_chat'],
-        complete: data['noti_check'],
-      );
       context.read<AuthProvider>().setStoreId(data['id']);
       saveFCMToken();
       if (data['is_login']) {
@@ -236,7 +229,7 @@ void setTokens(BuildContext context, String newToken, String newRefresh) {
 
 void deleteVar(BuildContext context) {
   context.read<AuthProvider>().deleteVar();
-  context.read<NotiProvider>().deleteVar();
+  // context.read<NotiProvider>().deleteVar();
 }
 
 //* fcm token
@@ -259,18 +252,18 @@ void saveFCMToken() async {
 int? getId(BuildContext context) => context.read<AuthProvider>().id;
 
 //* notifications
-void setNoti(
-  BuildContext context, {
-  required bool rank,
-  required bool due,
-  required bool chat,
-  required bool complete,
-}) {
-  context.read<NotiProvider>().setStoreRank(rank);
-  context.read<NotiProvider>().setStoreDue(due);
-  context.read<NotiProvider>().setStoreChat(chat);
-  context.read<NotiProvider>().setStoreComplete(complete);
-}
+// void setNoti(
+//   BuildContext context, {
+//   required bool rank,
+//   required bool due,
+//   required bool chat,
+//   required bool complete,
+// }) {
+//   context.read<NotiProvider>().setStoreRank(rank);
+//   context.read<NotiProvider>().setStoreDue(due);
+//   context.read<NotiProvider>().setStoreChat(chat);
+//   context.read<NotiProvider>().setStoreComplete(complete);
+// }
 
 //* size
 double getWidth(BuildContext context) => MediaQuery.of(context).size.width;
