@@ -7,9 +7,24 @@ import logging
 
 from commons import RedisRanker, send_to_fcm, send_badge_notification
 from groups.models import Group
+from boards.models import Board
 
 
 logger = logging.getLogger('accounts')
+
+
+def send_due(group, title, content, need_noti_due):
+    base_path = f'groups/{group.id}/myboard/{group.is_public}/{group.password}/{group.size}'
+    
+    if need_noti_due:
+        users = [user for user in group.users.all() if user.noti_due]
+    else:
+        users = group.users.all()
+    
+    for user in users:
+        board = Board.objects.get(user=user, group=group)
+        path = base_path + f'/{board.id}'
+        send_to_fcm(user, '', title, content, path)
 
 
 def every_day():
@@ -23,34 +38,26 @@ def every_day():
         if today == group.start - timedelta(days=7):
             title = f'{group.groupname} 그룹의 시작까지 7일 남았습니다.'
             content = f'빙고에 참여할 준비 됐나요?'
-            path = f'groups/{group.id}/myboard'
-            users = [user for user in group.users.all() if user.noti_due]
-            
-            send_to_fcm('', group, title, content, path, users)
+            send_due(group, title, content, True)
         
         # 시작일, 시작 알림
         elif today == group.start:
             title = f'{group.groupname} 그룹이 시작했습니다!'
             content = f'빙고를 함께 채워볼까요?'
-            path = f'groups/{group.id}/myboard'
-            
-            send_to_fcm('', group, title, content, path)
+            send_due(group, title, content, False)
         
         # 종료일 7일 전, 남은 기간 알림
         elif today == group.end - timedelta(days=7):
             title = f'{group.groupname} 그룹의 종료까지 7일 남았습니다.'
             content = f'열심히 참여해서 빈 곳을 채워보세요!'
-            path = f'groups/{group.id}/myboard'
-            users = [user for user in group.users.all() if user.noti_due]
-            
-            send_to_fcm('', group, title, content, path, users)
+            send_due(group, title, content, True)
         
         # 종료일, 순위 알림
         elif today == group.end:
             ranker = RedisRanker(str(group.id))
             
             title = f'{group.groupname} 그룹의 빙고가 종료되었습니다.'
-            path = f'groups/{group.id}/rank'
+            path = f'groups/{group.id}/rank/{group.is_public}/{group.password}'
 
             users = group.users.all()
             for user in users:
@@ -81,7 +88,7 @@ def every_monday():
         ranker = RedisRanker(str(group.id))
         
         title = f'{group.groupname} 그룹의 현재 순위를 확인해보세요.'
-        path = f'groups/{group.id}/rank'
+        path = f'groups/{group.id}/rank/{group.is_public}/{group.password}'
 
         users = group.users.all()
         for user in users:
