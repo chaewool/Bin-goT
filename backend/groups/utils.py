@@ -3,8 +3,8 @@ from rest_framework import status
 from datetime import date
 import json
 
-from boards.serializers import BoardCreateSerializer, BoardItemCreateSerializer
-from boards.models import Board
+from groups.serializers import BoardCreateSerializer, BoardItemCreateSerializer
+from groups.models import Board
 from commons import RedisRanker, send_badge_notification, upload_image
 
 
@@ -65,10 +65,12 @@ def check_cnt_boards(user):
         send_badge_notification(user, 7)
 
 
-def create_board(request, group):
+def create_board(request, group, is_banned, rand_name):
     user = request.user
     thumbnail = request.FILES.get('thumbnail')
     data = json.loads(request.data.get('board_data'))
+    data['is_banned'] = is_banned
+    data['rand_name'] = rand_name
     
     if date.today() >= group.start:
         return '시작일이 경과하여 가입할 수 없습니다.'

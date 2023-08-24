@@ -14,7 +14,7 @@ from bingot.settings import SIMPLE_JWT
 from bingot_settings import KAKAO_REST_API_KEY
 from .serializers import ProfileSerializer, NotificationSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
-from groups.models import Group, Participate
+from groups.models import Group, Board
 from commons import get_boolean, RedisToken
 
 
@@ -231,10 +231,10 @@ class MainGroupsView(APIView):
         is_recommend = False
         last_idx = -1
 
-        participates = Participate.objects.filter(user=user, is_banned=0)
+        boards = Board.objects.filter(user=user, is_banned=0)
 
         # 가입한 그룹이 없음 => 그룹 추천
-        if not participates:
+        if not boards:
             is_recommend = True
 
             recommends = Group.objects.filter(is_public=True, start__gt=date.today()).order_by('-start')
@@ -244,7 +244,7 @@ class MainGroupsView(APIView):
 
             temp = []
             for group in groups:
-                if Participate.objects.filter(group=group['id'], user=user, is_banned=0):
+                if Board.objects.filter(group=group['id'], user=user, is_banned=0):
                     temp.append(group)
             groups = temp[:]
 
@@ -291,7 +291,7 @@ class MainBoardsView(APIView):
 
         temp = []
         for board in boards:
-            if Participate.objects.filter(group=board['group_id'], user=user, is_banned=0):
+            if Board.objects.filter(group=board['group_id'], user=user, is_banned=0):
                 temp.append(board)
         boards = temp[:]
 

@@ -6,8 +6,7 @@ from datetime import date, timedelta
 import logging
 
 from commons import RedisRanker, send_to_fcm, send_badge_notification
-from groups.models import Group
-from boards.models import Board
+from groups.models import Group, Board
 
 
 logger = logging.getLogger('accounts')
