@@ -3,14 +3,19 @@ from rest_framework import serializers
 from datetime import date
 
 from .models import Badge
-from groups.models import Group
-from boards.models import Board
+from groups.models import Group, Board
 
 
-class UserSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('noti_rank', 'noti_due', 'noti_chat', 'noti_check', 'id')
+        fields = ('username', 'badge', 'cnt_boards_complete', 'cnt_rank1', 'cnt_badge')
+
+        
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ('noti_rank', 'noti_due', 'noti_chat', 'noti_check')
 
 
 class BadgeSerializer(serializers.ModelSerializer):

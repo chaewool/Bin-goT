@@ -6,6 +6,7 @@ app_name = 'groups'
 urlpatterns = [
     path('create/', views.GroupCreateView.as_view(), name='group_create'),
     path('<int:group_id>/', views.GroupDetailView.as_view(), name='group_detail'),
+    path('<int:group_id>/check/', views.GroupCheckView.as_view(), name='group_check'),
     path('<int:group_id>/update/', views.GroupUpdateView.as_view(), name='group_update'),
     path('<int:group_id>/delete/', views.GroupDeleteView.as_view(), name='group_delete'),
 
@@ -14,6 +15,9 @@ urlpatterns = [
     path('<int:group_id>/resign/', views.GroupResignView.as_view(), name='group_resign'),
     
     path('<int:group_id>/rank/', views.GroupRankView.as_view(), name='group_rank'),
+
+    path('<int:group_id>/boards/<int:board_id>/', views.BoardDetailView.as_view(), name='board_detail'),
+    path('<int:group_id>/boards/<int:board_id>/update/', views.BoardUpdateView.as_view(), name='board_update'),
     
     path('<int:group_id>/chat/create/', views.GroupChatCreateView.as_view(), name='group_chat_create'),
     path('<int:group_id>/chat/list/', views.GroupChatListView.as_view(), name='group_chat_list'),

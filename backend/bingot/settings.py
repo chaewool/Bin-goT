@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = bingot_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'bingot.xyz', 
@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     # local apps
     'accounts',
     'groups',
-    'boards',
 
     # third party apps
     'corsheaders',

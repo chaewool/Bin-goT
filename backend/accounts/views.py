@@ -12,9 +12,9 @@ import jwt
 
 from bingot.settings import SIMPLE_JWT
 from bingot_settings import KAKAO_REST_API_KEY
-from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
+from .serializers import ProfileSerializer, NotificationSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
-from groups.models import Group, Participate
+from groups.models import Group, Board
 from commons import get_boolean, RedisToken
 
 
@@ -57,9 +57,7 @@ def from_kaKao_id_get_user_info(kakao_id):
     
     data['refresh_token'] = str(token)
     data['access_token'] = str(token.access_token)
-        
-    serializer = UserSerializer(user)
-    data.update(serializer.data)
+    data['id'] = user.pk
     
     return data
 
@@ -196,20 +194,28 @@ class BadgeUpdateView(APIView):
             
             return Response(data={}, status=status.HTTP_200_OK)
         return Response(data={'message': '보유하지 않은 배지입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+    
+class NotificationDetailView(APIView):
+    def get(self, request):
+        user = request.user
+        data = NotificationSerializer(user).data
+
+        return Response(data=data, status=status.HTTP_200_OK)
+ 
     
 class NotificationUpdateView(APIView):
     def put(self, request):
         user = request.user
-        noti_rank = get_boolean(request.data.get('noti_rank'))
-        noti_chat = get_boolean(request.data.get('noti_chat'))
-        noti_due = get_boolean(request.data.get('noti_due'))
-        noti_check = get_boolean(request.data.get('noti_check'))
+        noti_rank = request.data.get('noti_rank')
+        noti_chat = request.data.get('noti_chat')
+        noti_due = request.data.get('noti_due')
+        noti_check = request.data.get('noti_check')
         
-        user.noti_rank = noti_rank
-        user.noti_chat = noti_chat
-        user.noti_due = noti_due
-        user.noti_check = noti_check
+        user.noti_rank = noti_rank if type(noti_rank) == bool else get_boolean(noti_rank)
+        user.noti_chat = noti_chat if type(noti_chat) == bool else get_boolean(noti_chat)
+        user.noti_due = noti_due if type(noti_due) == bool else get_boolean(noti_due)
+        user.noti_check = noti_check if type(noti_check) == bool else get_boolean(noti_check)
         user.save()
             
         return Response(data={}, status=status.HTTP_200_OK)
@@ -225,10 +231,10 @@ class MainGroupsView(APIView):
         is_recommend = False
         last_idx = -1
 
-        participates = Participate.objects.filter(user=user, is_banned=0)
+        boards = Board.objects.filter(user=user, is_banned=0)
 
         # 가입한 그룹이 없음 => 그룹 추천
-        if not participates:
+        if not boards:
             is_recommend = True
 
             recommends = Group.objects.filter(is_public=True, start__gt=date.today()).order_by('-start')
@@ -238,7 +244,7 @@ class MainGroupsView(APIView):
 
             temp = []
             for group in groups:
-                if Participate.objects.filter(group=group['id'], user=user, is_banned=0):
+                if Board.objects.filter(group=group['id'], user=user, is_banned=0):
                     temp.append(group)
             groups = temp[:]
 
@@ -285,7 +291,7 @@ class MainBoardsView(APIView):
 
         temp = []
         for board in boards:
-            if Participate.objects.filter(group=board['group_id'], user=user, is_banned=0):
+            if Board.objects.filter(group=board['group_id'], user=user, is_banned=0):
                 temp.append(board)
         boards = temp[:]
 
@@ -322,5 +328,6 @@ class MainBoardsView(APIView):
 class ProfileView(APIView):
     def get(self, request):
         user = request.user
-        
-        return Response(data={'username': user.username, 'badge': user.badge}, status=status.HTTP_200_OK)
+        data = ProfileSerializer(user).data
+
+        return Response(data=data, status=status.HTTP_200_OK)

@@ -7,10 +7,9 @@ import json
 import logging
 
 from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm
-from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer
-from .models import Group, Participate
+from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, BoardCreateSerializer, BoardDetailSerializer, BoardItemCreateSerializer, BoardItemDetailSerializer
+from .models import Group, Board, BoardItem
 from .utils import check_cnt_groups, check_cnt_boarditems_complete, create_board
-from boards.models import Board, BoardItem
 from accounts.serializers import GroupSerializer
 
 
@@ -62,22 +61,16 @@ class GroupCreateView(APIView):
                 group = serializer.save(leader=user, period=period, has_img=False)
 
         if is_public:
-            num = [x.rand_name for x in Participate.objects.filter(group=group)]
+            num = [x.rand_name for x in Board.objects.filter(group=group)]
             rand_name = f'익명의 참여자 {len(num) + 1:0>2}'
             for i in range(len(num)):
                 if str(num[i][-2:]) != f'{i + 1:0>2}':
                     rand_name = f'익명의 참여자 {i + 1:0>2}'
                     break
-            Participate.objects.create(user=user, group=group, is_banned=0, rand_name=rand_name)
         else:
-            Participate.objects.create(user=user, group=group, is_banned=0, rand_name=user.username)
-        
-        user.cnt_groups += 1
-        user.save()
-        
-        check_cnt_groups(user)
+            rand_name = user.username
 
-        result = create_board(request, group)
+        result = create_board(request, group, 0, rand_name)
         
         if result:
             url = 'groups' + '/' + str(group.id)
@@ -86,6 +79,11 @@ class GroupCreateView(APIView):
 
             return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
         
+        user.cnt_groups += 1
+        user.save()
+        
+        check_cnt_groups(user)
+        
         return Response(data={'group_id': group.id}, status=status.HTTP_200_OK)
 
 
@@ -93,21 +91,16 @@ class GroupDetailView(APIView):
     def get(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        password = request.GET.get('password')
         
         rand_name = user.username
-        participate = Participate.objects.filter(user=user, group=group)
-        board_id = 0
-        
-        if Board.objects.filter(user=user, group=group).exists():
-            board_id = Board.objects.get(user=user, group=group).id
-        
+        board = Board.objects.filter(user=user, group=group)
+
         # 그룹 가입 여부 확인
-        if participate:
-            participate = participate[0]
+        if board.exists():
+            board = Board.objects.get(user=user, group=group)
             
             # 강제 탈퇴 여부 확인
-            if participate.is_banned:
+            if board.is_banned == 2:
                 return Response(data={'message': '탈퇴 처리된 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
             
             if group.leader == user:
@@ -117,14 +110,9 @@ class GroupDetailView(APIView):
             
             # 공개 그룹인 경우 익명 닉네임 표시
             if group.is_public:
-                rand_name = participate.rand_name
+                rand_name = board.rand_name
                 
-        else:
-            # 비밀번호 확인
-            if not group.is_public and password != group.password:
-                data = {'message': '비밀번호가 일치하지 않습니다.'}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            
+        else:            
             is_participant = 0
 
         serializer = GroupDetailSerializer(group)
@@ -134,14 +122,25 @@ class GroupDetailView(APIView):
             r = get_user_model().objects.get(id=ranker_id)
             rank.append({
                 'user_id': int(ranker_id), 
-                'nickname': Participate.objects.get(group=group, user=r).rand_name, 
+                'nickname': Board.objects.get(group=group, user=r).rand_name, 
                 'achieve': ranker.getScore(ranker_id) / (group.size ** 2), 
                 'board_id': Board.objects.get(group=group, user=r).id
                 })
         
-        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank}
+        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board.id, 'rank': rank}
         
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class GroupCheckView(APIView):
+    def post(self, request, group_id):
+        password = request.data.get('password')
+        group = Group.objects.get(id=group_id)
+        
+        if not group.is_public and password != group.password:
+            data = {'message': '비밀번호가 일치하지 않습니다.'}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={}, status=status.HTTP_200_OK)
 
 
 class GroupUpdateView(APIView):
@@ -154,10 +153,10 @@ class GroupUpdateView(APIView):
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not data['groupname']:
+        if not data.get('groupname'):
             data['groupname'] = group.groupname
         
-        if not data['headcount']:
+        if not data.get('headcount'):
             data['headcount'] = group.headcount
 
         if data['headcount'] < 1 or data['headcount'] > 30:
@@ -178,6 +177,8 @@ class GroupUpdateView(APIView):
                     else:
                         delete_image(url)
                         serializer.save(has_img=False)
+                else:
+                    serializer.save()
                 
                 return Response(status=status.HTTP_200_OK)
         return Response(data={'message': '수정 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -191,16 +192,23 @@ class GroupJoinView(APIView):
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 가입할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not Participate.objects.filter(user=user, group=group).exists():
-            if not group.need_auth:
-                num = [x.rand_name for x in Participate.objects.filter(group=group)]
+        if not Board.objects.filter(user=user, group=group).exists():
+            if group.is_public:
+                num = [x.rand_name for x in Board.objects.filter(group=group)]
                 rand_name = f'익명의 참여자 {len(num) + 1:0>2}'
                 for i in range(len(num)):
                     if str(num[i][-2:]) != f'{i + 1:0>2}':
                         rand_name = f'익명의 참여자 {i + 1:0>2}'
                         break
-                participate = Participate.objects.create(user=user, group=group, is_banned=0, rand_name=rand_name)
-                
+            else:
+                rand_name = user.username
+
+            if not group.need_auth:
+                result = create_board(request, group, 0, rand_name)
+
+                if result:
+                    return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
+
                 user.cnt_groups += 1
                 user.save()
 
@@ -208,25 +216,21 @@ class GroupJoinView(APIView):
                 group.save()
                 
                 check_cnt_groups(user)
-            else:
-                participate = Participate.objects.create(user=user, group=group, is_banned=1, rand_name=user.username)
-            
-            result = create_board(request, group)
-    
-            if result:
-                participate.delete()
 
-                return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
-            
-            if group.need_auth:
-                send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.', '요청 확인 후 이동할 경로')
+                return Response(data={}, status=status.HTTP_200_OK)
+            else:
+                result = create_board(request, group, 1, rand_name)
+    
+                if result:
+                    return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
                 
-            return Response(data={}, status=status.HTTP_200_OK)
-        
+                send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.', f'groups/{group.id}/admin')
+                    
+                return Response(data={}, status=status.HTTP_200_OK)
+        elif Board.objects.get(user=user, group=group).is_banned == 2:
+            return Response(data={'message': '이미 승인 거부되었거나 강제 탈퇴된 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            if Participate.objects.get(user=user, group=group).is_banned == 2:
-                return Response(data={'message': '이미 승인 거부되었거나 강제 탈퇴된 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(data={'message': '이미 가입한 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': '이미 가입한 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GroupGrantView(APIView):
@@ -241,20 +245,20 @@ class GroupGrantView(APIView):
 
         if group.leader == user:
             applicant = get_user_model().objects.get(id=target_id)
-            participate = Participate.objects.get(user=applicant, group=group)
+            board = Board.objects.get(user=applicant, group=group)
             
             if user == applicant:
                 return Response(data={'message': '잘못된 접근입니다.'}, status=status.HTTP_400_BAD_REQUEST)
             
-            if participate.is_banned == 2:
+            if board.is_banned == 2:
                 return Response(data={'message': '이미 승인 거부되었거나 강제 탈퇴된 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            if participate.is_banned == 0 and grant:
+            if board.is_banned == 0 and grant:
                 return Response(data={'message': '이미 승인된 회원입니다.'}, status=status.HTTP_400_BAD_REQUEST)
             
             if grant:
-                participate.is_banned = 0
-                participate.save()
+                board.is_banned = 0
+                board.save()
                 
                 applicant.cnt_groups += 1
                 applicant.save()
@@ -263,10 +267,10 @@ class GroupGrantView(APIView):
                 group.save()
                 
                 check_cnt_groups(applicant)
-                send_to_fcm(applicant, '', '가입 승인!', f'{group.groupname} 그룹에 가입되셨습니다.', '그룹 가입 후 이동할 경로')
+                send_to_fcm(applicant, '', '가입 승인!', f'{group.groupname} 그룹에 가입되셨습니다.', f'groups/{group.id}/main')
             else:
-                participate.is_banned = 2
-                participate.save()
+                board.is_banned = 2
+                board.save()
 
             return Response(data={}, status=status.HTTP_200_OK)
         
@@ -284,7 +288,7 @@ class GroupDeleteView(APIView):
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 삭제할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if len(Participate.objects.filter(group=group)) > 1:
+        if group.count > 1:
             return Response(data={'message': '참여자가 존재하여 삭제할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         url = 'groups' + '/' + str(group.id)
@@ -298,9 +302,9 @@ class GroupResignView(APIView):
     def delete(self, request, group_id):
         user = request.user
         group = Group.objects.get(id=group_id)
-        participate = Participate.objects.filter(user=user, group=group)
+        board = Board.objects.filter(user=user, group=group)
         
-        if not participate:
+        if not board:
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if date.today() >= group.start:
@@ -312,12 +316,9 @@ class GroupResignView(APIView):
         group.count -= 1
         group.save()
 
-        participate.delete()
-        
-        board = Board.objects.filter(group=group, user=user)
         board.delete()
         
-        if len(Participate.objects.filter(group=group)) < 1:
+        if group.count < 1:
             url = 'groups' + '/' + str(group.id)
             delete_image(url)
             group.delete()
@@ -330,23 +331,84 @@ class GroupRankView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         
-        if not Participate.objects.filter(user=user, group=group).exists():
+        if not Board.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         ranker = RedisRanker(group_id)
         data = []
         
-        for participate in Participate.objects.filter(group=group):
-            u = participate.user
+        for board in Board.objects.filter(group=group):
+            u = board.user
             data.append({
                 'user_id': u.id, 
-                'nickname': participate.rand_name, 
+                'nickname': board.rand_name, 
                 'achieve': ranker.getScore(str(u.id)) / (group.size ** 2), 
-                'board_id': Board.objects.get(group=group, user=u).id,
+                'board_id': board.id,
                 'rank': ranker.getRank(str(u.id))
                 })
         
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class BoardDetailView(APIView):
+    def get(self, request, group_id, board_id):
+        board = Board.objects.get(id=board_id)
+        serializer = BoardDetailSerializer(board)
+        group = board.group
+
+        if not Board.objects.filter(user=request.user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        achieve = 0
+        
+        for item in serializer.data['items']:
+            if item['finished']:
+                achieve += 1
+        
+        data = {**serializer.data, 'username': board.rand_name if group.is_public else board.user.username, 'achieve': round(achieve / (board.group.size ** 2), 2), 'size': group.size}
+        
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class BoardUpdateView(APIView):
+    def put(self, request, group_id, board_id):
+        user = request.user
+        board = Board.objects.get(id=board_id)
+        group = board.group
+        thumbnail = request.FILES.get('thumbnail')
+        data = json.loads(request.data.get('data'))
+        
+        if not Board.objects.filter(user=user, group=group).exists():
+            return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user != board.user:
+            return Response(data={'message': '수정 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        if date.today() >= group.start:
+            return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        items = data['items']
+        if len(items) < board.group.size ** 2:
+            return Response(data={'message': '항목의 개수가 부족합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        items.sort(key=lambda x: x['item_id'])
+        
+        board_serializer = BoardCreateSerializer(instance=board, data=data)
+        
+        if board_serializer.is_valid(raise_exception=True):        
+            boarditem_serializers = []
+            for i in range(len(items)):
+                bs = BoardItemCreateSerializer(instance=board.items.all()[i], data=items[i])
+                if bs.is_valid(raise_exception=True):
+                    boarditem_serializers.append(bs)
+            
+            board_serializer.save()
+            for bs in boarditem_serializers:
+                bs.save()
+            
+            url = 'boards' + '/' + str(board.id)
+            upload_image(url, thumbnail)
+            
+            return Response(status=status.HTTP_200_OK)
 
 
 class GroupChatCreateView(APIView):
@@ -355,15 +417,17 @@ class GroupChatCreateView(APIView):
         group = Group.objects.get(id=group_id)
         content = request.data.get('content')
         img = request.FILES.get('img')
-        participate = Participate.objects.filter(user=user, group=group)
+        board = Board.objects.filter(user=user, group=group)
         
-        if not participate.exists():
+        if not board.exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        board = Board.objects.get(user=user, group=group)
         
         chat = {
             'user_id': user.id,
             'badge_id': user.badge,
-            'username': participate[0].rand_name,
+            'username': board.rand_name,
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
@@ -382,7 +446,7 @@ class GroupChatCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
-        send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
+        send_to_fcm(user, group, group.groupname, content, f'groups/{group.id}/chat', chat)
             
         return Response(data=chat, status=status.HTTP_200_OK)
 
@@ -393,7 +457,7 @@ class GroupChatListView(APIView):
         group = Group.objects.get(id=group_id)
         idx = int(request.GET.get('idx'))
         
-        if not Participate.objects.filter(user=user, group=group).exists():
+        if not Board.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         data = RedisChat(group_id).getChatList(idx)
@@ -408,7 +472,7 @@ class GroupReviewCreateView(APIView):
         content = request.data.get('content')
         item_id = int(request.data.get('item_id'))
         img = request.FILES.get('img')
-        participate = Participate.objects.filter(user=user, group=group)
+        board = Board.objects.filter(user=user, group=group)
 
         if date.today() < group.start:
             return Response(data={'message': '시작일 이전에는 요청할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -416,13 +480,15 @@ class GroupReviewCreateView(APIView):
         if date.today() >= group.end:
             return Response(data={'message': '종료일이 경과하여 요청할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if not participate.exists():
+        if not board.exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        board = Board.objects.get(user=user, group=group)
 
         chat = {
             'user_id': user.id,
             'badge_id': user.badge,
-            'username': participate[0].rand_name,
+            'username': board.rand_name,
             'content': content,
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'reviewed': False,
@@ -441,7 +507,7 @@ class GroupReviewCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
-        send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
+        send_to_fcm(user, group, group.groupname, content, f'groups/{group.id}/chat', chat)
             
         return Response(data=chat, status=status.HTTP_200_OK)
 
@@ -461,7 +527,7 @@ class GroupReviewCheckView(APIView):
         if date.today() >= group.end:
             return Response(data={'message': '종료일이 경과하여 인증할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if not Participate.objects.filter(user=user, group=group).exists():
+        if not Board.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if review_user == user:
@@ -489,7 +555,7 @@ class GroupReviewCheckView(APIView):
         review['reviewed'] = True
         chat.setChatItem(review_id, review)
 
-        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', '인증 확인 후 이동할 경로')
+        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', f'groups/{group.id}/myboard')
         
         return Response(status=status.HTTP_200_OK)
 
@@ -499,32 +565,27 @@ class GroupAdminView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         
-        if not Participate.objects.filter(user=user, group=group).exists() or user != group.leader:
+        if not Board.objects.filter(user=user, group=group).exists() or user != group.leader:
             return Response(data={'message': '권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         applicants = []
         members = []
         
-        for participate in Participate.objects.filter(group=group):
-            board = Board.objects.filter(user=user, group=group)
-            
-            if board:
-                board_id = board[0].id
-            else:
-                board_id = -1
-            
-            if participate.is_banned == 1:
+        for board in Board.objects.filter(group=group):
+            if board.is_banned == 1:
                 if date.today() < group.start:
                     applicants.append({
-                        'id': participate.user.id,
-                        'username': participate.rand_name if group.is_public else participate.user.username,
-                        'board_id': board_id
+                        'id': board.user.id,
+                        'username': board.rand_name if group.is_public else board.user.username,
+                        'board_id': board.id,
+                        'badge': board.user.badge
                         })
-            elif participate.is_banned == 0:
+            elif board.is_banned == 0:
                 members.append({
-                    'id': participate.user.id,
-                    'username': participate.rand_name if group.is_public else participate.user.username,
-                    'board_id': board_id
+                    'id': board.user.id,
+                    'username': board.rand_name if group.is_public else board.user.username,
+                    'board_id': board.id,
+                    'badge': board.user.badge
                     })
         
         data = {'applicants': applicants, 'members': members, 'need_auth': group.need_auth}
@@ -564,7 +625,7 @@ class GroupSearchView(APIView):
         groups = groups.order_by(order)
         groups = GroupSerializer(groups, many=True).data
 
-        groups = [d for d in groups if d['count'] < d['headcount'] and not Participate.objects.filter(group=d['id'], user=user).exists()]
+        groups = [d for d in groups if d['count'] < d['headcount'] and not Board.objects.filter(group=d['id'], user=user).exists()]
         
         if groups:
             last_idx = groups[-1]['id']
