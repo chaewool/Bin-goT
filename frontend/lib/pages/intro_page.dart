@@ -1,3 +1,4 @@
+import 'package:bin_got/fcm_settings.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -36,7 +37,7 @@ class _IntroState extends State<Intro> {
       UserProvider().confirmToken().then((result) async {
         print('intro => $result');
         if (result.isEmpty) {
-          saveFCMToken();
+          FCM().saveFCMToken();
         } else {
           throw Error();
         }
