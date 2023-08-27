@@ -154,10 +154,10 @@ class GroupUpdateView(APIView):
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not data['groupname']:
+        if not data.get('groupname'):
             data['groupname'] = group.groupname
         
-        if not data['headcount']:
+        if not data.get('headcount'):
             data['headcount'] = group.headcount
 
         if data['headcount'] < 1 or data['headcount'] > 30:
@@ -178,6 +178,8 @@ class GroupUpdateView(APIView):
                     else:
                         delete_image(url)
                         serializer.save(has_img=False)
+                else:
+                    serializer.save()
                 
                 return Response(status=status.HTTP_200_OK)
         return Response(data={'message': '수정 권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -219,7 +221,7 @@ class GroupJoinView(APIView):
                 return Response(data={'message': result}, status=status.HTTP_400_BAD_REQUEST)
             
             if group.need_auth:
-                send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.', '요청 확인 후 이동할 경로')
+                send_to_fcm(group.leader, '', '새로운 가입 요청!', '알림을 눌러 가입 요청을 확인해보세요.', f'groups/{group.id}/admin')
                 
             return Response(data={}, status=status.HTTP_200_OK)
         
@@ -263,7 +265,7 @@ class GroupGrantView(APIView):
                 group.save()
                 
                 check_cnt_groups(applicant)
-                send_to_fcm(applicant, '', '가입 승인!', f'{group.groupname} 그룹에 가입되셨습니다.', '그룹 가입 후 이동할 경로')
+                send_to_fcm(applicant, '', '가입 승인!', f'{group.groupname} 그룹에 가입되셨습니다.', f'groups/{group.id}/main')
             else:
                 participate.is_banned = 2
                 participate.save()
@@ -382,7 +384,7 @@ class GroupChatCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
-        send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
+        send_to_fcm(user, group, group.groupname, content, f'groups/{group.id}/chat')
             
         return Response(data=chat, status=status.HTTP_200_OK)
 
@@ -441,7 +443,7 @@ class GroupReviewCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
-        send_to_fcm(user, group, group.groupname, content, '채팅 확인 후 이동할 경로')
+        send_to_fcm(user, group, group.groupname, content, f'groups/{group.id}/chat')
             
         return Response(data=chat, status=status.HTTP_200_OK)
 
@@ -489,7 +491,7 @@ class GroupReviewCheckView(APIView):
         review['reviewed'] = True
         chat.setChatItem(review_id, review)
 
-        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', '인증 확인 후 이동할 경로')
+        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', f'groups/{group.id}/myboard')
         
         return Response(status=status.HTTP_200_OK)
 
@@ -518,13 +520,15 @@ class GroupAdminView(APIView):
                     applicants.append({
                         'id': participate.user.id,
                         'username': participate.rand_name if group.is_public else participate.user.username,
-                        'board_id': board_id
+                        'board_id': board_id,
+                        'badge': participate.user.badge
                         })
             elif participate.is_banned == 0:
                 members.append({
                     'id': participate.user.id,
                     'username': participate.rand_name if group.is_public else participate.user.username,
-                    'board_id': board_id
+                    'board_id': board_id,
+                    'badge': participate.user.badge
                     })
         
         data = {'applicants': applicants, 'members': members, 'need_auth': group.need_auth}

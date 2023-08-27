@@ -20,7 +20,7 @@ class GroupDetailSerializer(serializers.ModelSerializer):
 
 
 class GroupUpdateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(required=False, allow_blank=True)
+    groupname = serializers.CharField(required=False)
     description = serializers.CharField(required=False, allow_blank=True)
     rule = serializers.CharField(required=False, allow_blank=True)
     headcount = serializers.IntegerField(required=False)

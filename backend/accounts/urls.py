@@ -20,6 +20,7 @@ urlpatterns = [
     path('badge/list/', views.BadgeListView.as_view(), name='badge_list'),
     path('badge/update/', views.BadgeUpdateView.as_view(), name='badge_update'),
     
+    path('notification/detail/', views.NotificationDetailView.as_view(), name='notification_detail'),
     path('notification/update/', views.NotificationUpdateView.as_view(), name='notification_update'),
     
     path('main/groups/', views.MainGroupsView.as_view(), name='main_groups'),

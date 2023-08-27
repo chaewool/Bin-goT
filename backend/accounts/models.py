@@ -15,6 +15,7 @@ class User(AbstractUser):
     cnt_boarditems_complete = models.IntegerField(default=0)
     cnt_boards_complete = models.IntegerField(default=0)
     cnt_rank1 = models.IntegerField(default=0)
+    cnt_badge = models.IntegerField(default=0)
     groups = models.ManyToManyField('groups.Group', through='groups.Participate', related_name="groups")
 
     def __str__(self) -> str:

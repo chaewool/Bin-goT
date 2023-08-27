@@ -116,20 +116,12 @@ class RedisToken:
 
 from firebase_admin import messaging
 
-def send_to_fcm(user, group, title, content, path, users=False):
+def send_to_fcm(user, group, title, content, path):
     token = RedisToken()
 
-    # 그룹원에게 전송
+    # 한 명 빼고 모든 그룹원에게 전송(채팅)
     if group:
-        # 한 명 빼고 모든 그룹원에게 전송(채팅)
-        if user:
-            registration_tokens = [token.getToken(temp.id) for temp in group.users.all() if temp != user]
-        # 특정 그룹원에게 전송(알림 설정)
-        elif users:
-            registration_tokens = [token.getToken(user.id) for user in users]
-        # 모든 그룹원에게 전송(시작, 종료 알림)
-        else:
-            registration_tokens = [token.getToken(user.id) for user in group.users.all()]
+        registration_tokens = [token.getToken(temp.id) for temp in group.users.all() if temp != user]
 
         message = messaging.MulticastMessage(
             data={'title': title, 'content': content, 'path': path},
@@ -154,10 +146,14 @@ def send_to_fcm(user, group, title, content, path, users=False):
 from accounts.models import Badge, Achieve
 
 def send_badge_notification(user, badge_id):
-    title = '새로운 뱃지 획득!'
-    content = '알림을 눌러 획득한 뱃지를 확인해보세요.'
-    path = '뱃지 획득 후 이동할 경로'
-
     badge = Badge.objects.get(id=badge_id)
     Achieve.objects.create(user=user, badge=badge)
+    
+    user.cnt_badge += 1
+    user.save()
+    
+    title = '새로운 뱃지 획득!'
+    content = '알림을 눌러 획득한 뱃지를 확인해보세요.'
+    path = 'mypage'
+
     send_to_fcm(user, '', title, content, path)
