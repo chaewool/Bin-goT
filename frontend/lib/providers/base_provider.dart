@@ -213,6 +213,9 @@ class UrlClass extends DioClass {
   String _editGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}update/';
   String _deleteGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}delete/';
 
+  //* check password
+  String _checkPasswordUrl(int groupId) => '${_groupDetailUrl(groupId)}/check/';
+
   //* member
   String _joinGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}join/';
   String _grantMemberUrl(int groupId) => '${_groupDetailUrl(groupId)}grant/';
@@ -250,6 +253,7 @@ class UrlClass extends DioClass {
   String get searchGroupUrl => _searchGroupUrl;
   String get createGroupUrl => _createGroupUrl;
   String groupDetailUrl(int groupId) => _groupDetailUrl(groupId);
+  String checkPasswordUrl(int groupId) => _checkPasswordUrl(groupId);
   String joinGroupUrl(int groupId) => _joinGroupUrl(groupId);
   String grantMemberUrl(int groupId) => _grantMemberUrl(groupId);
   String editGroupUrl(int groupId) => _editGroupUrl(groupId);

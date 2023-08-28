@@ -618,13 +618,18 @@ class CustomModal extends StatelessWidget {
       backgroundColor: whiteColor,
       child: CustomBoxContainer(
         width: getWidth(context) * 0.85,
-        child: Column(
+        child: ColWithPadding(
+          vertical: 20,
+          mainAxisSize: MainAxisSize.min,
           children: [
             if (title != null)
-              Center(
-                child: CustomText(
-                  content: title!,
-                  fontSize: FontSize.largeSize,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Center(
+                  child: CustomText(
+                    content: title!,
+                    fontSize: FontSize.largeSize,
+                  ),
                 ),
               ),
             ...children,
@@ -636,6 +641,8 @@ class CustomModal extends StatelessWidget {
               children: [
                 if (hasConfirm)
                   CustomButton(
+                    color: paleOrangeColor,
+                    textColor: whiteColor,
                     onPressed: onPressed ?? () => toBack(context),
                     content: buttonText,
                   ),
@@ -644,7 +651,8 @@ class CustomModal extends StatelessWidget {
                     : CustomButton(
                         onPressed: onCancelPressed!,
                         content: cancelText,
-                        color: paleOrangeColor,
+                        // color: paleOrangeColor,
+                        // textColor: whiteColor,
                       ),
               ],
             )

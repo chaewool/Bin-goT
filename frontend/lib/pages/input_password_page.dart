@@ -1,4 +1,5 @@
 import 'package:bin_got/pages/group_detail_page.dart';
+import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -9,14 +10,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class InputPassword extends StatefulWidget {
-  final bool isPublic, needCheck, isSearchMode;
-  final int groupId;
+  final bool isPublic, needCheck, isSearchMode, admin;
+  final int groupId, initialIndex;
+  final int? bingoId, size;
   const InputPassword({
     super.key,
     required this.isPublic,
     required this.groupId,
+    this.initialIndex = 1,
     this.needCheck = false,
-    this.isSearchMode = true,
+    this.isSearchMode = false,
+    this.admin = false,
+    this.bingoId,
+    this.size,
   });
 
   @override
@@ -38,7 +44,7 @@ class _InputPasswordState extends State<InputPassword> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      //* 알림을 통해 들어왔을 경우, 로그인 확인
+      //* 알림을 통해 들어왔을 경우, 로그인 확인 (알림으로 들어왔을 경우, 가입된 경우 => 확인 X)
       if (widget.needCheck) {
         if (getToken(context) == null) {
           //* 로그인 팝업
@@ -53,8 +59,8 @@ class _InputPasswordState extends State<InputPassword> {
           }
         }
       }
-      //* 공개 그룹이 아니고 검색, 추천을 통해 들어왔을 때
-      if (!widget.isPublic && widget.isSearchMode) {
+      //* 공개 그룹이 아니고 검색을 통해 들어왔을 때
+      else if (!widget.isPublic && widget.isSearchMode) {
         // ignore: use_build_context_synchronously
         showModal(
           context,
@@ -77,12 +83,17 @@ class _InputPasswordState extends State<InputPassword> {
           ),
         )();
       } else {
+        // ignore: use_build_context_synchronously
         toOtherPage(
           context,
           page: GroupDetail(
             groupId: widget.groupId,
-            password: '',
+            admin: widget.admin,
+            // password: '',
             isPublic: widget.isPublic,
+            initialIndex: widget.initialIndex,
+            bingoId: widget.bingoId,
+            size: widget.size,
             // data: data,
           ),
         )();
@@ -110,14 +121,23 @@ class _InputPasswordState extends State<InputPassword> {
     if (password == null || password == '') {
       showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
     } else {
-      toOtherPage(
-        context,
-        page: GroupDetail(
-          groupId: widget.groupId,
-          isPublic: widget.isPublic,
-          password: password,
-        ),
-      )();
+      GroupProvider()
+          .checkPassword(widget.groupId, password)
+          .then((_) => toOtherPage(
+                context,
+                page: GroupDetail(
+                  groupId: widget.groupId,
+                  isPublic: widget.isPublic,
+                  admin: widget.admin,
+                  bingoId: widget.bingoId,
+                  size: widget.size,
+                  // password: password,
+                ),
+              ))
+          .catchError((error) {
+        print(error);
+        return error;
+      });
     }
   }
 

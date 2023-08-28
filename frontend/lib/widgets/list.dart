@@ -1,6 +1,5 @@
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/pages/group_detail_page.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -110,15 +109,21 @@ class RankListItem extends StatelessWidget {
       height: 70,
       border: true,
       // boxShadow: const [defaultShadow],
-      onTap: toOtherPage(
-        context,
-        page: GroupDetail(
-          groupId: getGroupId(context)!,
-          password: '',
-          isPublic: true,
-          initialIndex: 0,
-        ),
-      ),
+      onTap: () {
+        toBack(context);
+        setBingoId(context, rankListItem.bingoId);
+      },
+      // toOtherPage(
+      //   context,
+      //   page:
+      //   // const SizedBox(),
+      //   // GroupDetail(
+      //   //   groupId: getGroupId(context)!,
+      //   //   // password: '',x
+      //   //   isPublic: true,
+      //   //   initialIndex: 0,
+      //   // ),
+      // ),
       // isMember ? toOtherPage(context, page: const BingoDetail()) : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

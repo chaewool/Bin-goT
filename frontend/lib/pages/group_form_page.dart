@@ -44,7 +44,7 @@ class GroupForm extends StatefulWidget {
 class _GroupFormState extends State<GroupForm> {
   //* select box
   final printedValues = [
-    ['2 x 2', '3 x 3', '4 x 4', '5 x 5'],
+    ['2 ✕ 2', '3 ✕ 3', '4 ✕ 4', '5 ✕ 5'],
     ['그룹장의\n승인 필요', '자동 가입']
   ];
   final convertedValues = [
@@ -79,8 +79,7 @@ class _GroupFormState extends State<GroupForm> {
       groupData = {};
       WidgetsBinding.instance.addPostFrameCallback((_) {
         selectedIndex[0] = getBingoSize(context)! - 1;
-        selectedIndex[1] =
-            context.read<GlobalGroupProvider>().needAuth! ? 0 : 1;
+        selectedIndex[1] = getNeedAuth(context)! ? 0 : 1;
         // isChecked = getPublic(context)!;
       });
     }

@@ -501,7 +501,9 @@ class _MyTabBarState extends State<MyTabBar> {
               controller: groupController,
               data: groupTabData,
               mode: 1,
-              emptyWidget: const Column(
+              emptyWidget: const Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomText(
                     center: true,
@@ -537,13 +539,16 @@ class _MyTabBarState extends State<MyTabBar> {
               controller: bingoController,
               data: bingoTabData,
               mode: 2,
-              emptyWidget: const Padding(
-                padding: EdgeInsets.only(top: 40),
-                child: CustomText(
-                  center: true,
-                  height: 1.7,
-                  content: '조건을 만족하는 빙고가 없어요.',
-                ),
+              emptyWidget: const Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomText(
+                    center: true,
+                    height: 1.7,
+                    content: '조건을 만족하는 빙고가 없어요.',
+                  ),
+                ],
               ),
             ),
           )
@@ -836,7 +841,9 @@ class _MainTabBarState extends State<MainTabBar> {
                             controller: groupController,
                             data: groupTabData,
                             mode: 1,
-                            emptyWidget: const Column(
+                            emptyWidget: const Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 CustomText(
                                   center: true,
@@ -869,13 +876,16 @@ class _MainTabBarState extends State<MainTabBar> {
                             controller: bingoController,
                             data: bingoTabData,
                             mode: 2,
-                            emptyWidget: const Padding(
-                              padding: EdgeInsets.only(top: 40),
-                              child: CustomText(
-                                center: true,
-                                height: 1.7,
-                                content: '조건을 만족하는 빙고가 없어요.',
-                              ),
+                            emptyWidget: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                CustomText(
+                                  center: true,
+                                  height: 1.7,
+                                  content: '조건을 만족하는 빙고가 없어요.',
+                                ),
+                              ],
                             ),
                           ),
                   ),

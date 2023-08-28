@@ -28,6 +28,7 @@ import 'package:http_parser/http_parser.dart';
 class BingoForm extends StatefulWidget {
   final int bingoSize;
   final bool needAuth, beforeJoin;
+  // final bool beforeJoin;
   final DynamicMap? beforeData;
   final XFile? groupImg;
   const BingoForm({
@@ -197,7 +198,7 @@ class _BingoFormState extends State<BingoForm> {
         print('그룹 가입 성공 => $data');
         print('form data : $bingoData');
         print('빙고 생성 성공');
-        if (widget.needAuth == true) {
+        if (getNeedAuth(context) == true) {
           toBack(context);
           toBack(context);
           showAlert(

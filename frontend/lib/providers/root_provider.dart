@@ -463,10 +463,13 @@ class GlobalBingoProvider extends ChangeNotifier {
   void setData(DynamicMap data) => _setData(data);
   // void setTempData(DynamicMap data) => _setTempData(data);
 
-  void setBingoIdSize(int newVal1, int newVal2) {
-    _setBingoId(newVal1);
-    _setBingoSize(newVal2);
+  void setBingoId(int newId) {
+    _setBingoId(newId);
     notifyListeners();
+  }
+
+  void setBingoSize(int newSize) {
+    _setBingoSize(newSize);
   }
 
   // void setNeedAuth(bool newVal) {

@@ -394,6 +394,9 @@ bool? getPublic(BuildContext context) =>
 String? getGroupName(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupName;
 
+bool? getNeedAuth(BuildContext context) =>
+    context.read<GlobalGroupProvider>().needAuth;
+
 void setStart(BuildContext context, String newStart) =>
     context.read<GlobalGroupProvider>().setStart(newStart);
 
@@ -427,8 +430,10 @@ void initFinished(BuildContext context, int size) =>
 void setFinished(BuildContext context, int index, bool value) =>
     context.read<GlobalBingoProvider>().setFinished(index, value);
 
-void setBingoId(BuildContext context, int id, int size) =>
-    context.read<GlobalBingoProvider>().setBingoIdSize(id, size);
+void setBingoId(BuildContext context, int id) =>
+    context.read<GlobalBingoProvider>().setBingoId(id);
+void setBingoSize(BuildContext context, int size) =>
+    context.read<GlobalBingoProvider>().setBingoSize(size);
 
 //* var
 int? getBingoId(BuildContext context) =>

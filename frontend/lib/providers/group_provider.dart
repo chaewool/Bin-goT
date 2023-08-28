@@ -65,14 +65,36 @@ class GroupProvider extends ApiProvider {
     }
   }
 
-  //* detail
-  Future<GroupDetailModel> readGroupDetail(int groupId, String password) async {
+  //* check password
+  Future<DynamicMap> checkPassword(int groupId, String password) async {
     try {
-      print('groupId: $groupId, password: $password');
+      print('groupId: $groupId');
+      print(checkPasswordUrl(groupId));
+      final response = await dioWithToken().post(
+        checkPasswordUrl(groupId),
+        data: {'password': password},
+      );
+      print('response: ${response.data}');
+      // print(
+      //     'type => userId : ${response.data['rank'][0]['user_id'].runtimeType}');
+      // print(
+      //     'type => bingoId : ${response.data['rank'][0]['board_id'].runtimeType}');
+      // return response;
+      return response.data;
+    } catch (error) {
+      print(error);
+      throw Error();
+    }
+  }
+
+  //* detail
+  Future<GroupDetailModel> readGroupDetail(int groupId) async {
+    try {
+      print('groupId: $groupId');
       print(groupDetailUrl(groupId));
       final response = await dioWithToken().get(
         groupDetailUrl(groupId),
-        queryParameters: {'password': password},
+        // queryParameters: {'password': password},
       );
       print('response: ${response.data}');
       // print(

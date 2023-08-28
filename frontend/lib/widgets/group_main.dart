@@ -41,15 +41,14 @@ class _GroupMainState extends State<GroupMain> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       groupId = getGroupId(context);
       // setPublic(context, widget.isPublic);
-      GroupProvider()
-          .readGroupDetail(getGroupId(context)!, widget.password)
-          .then((data) {
+      GroupProvider().readGroupDetail(getGroupId(context)!).then((data) {
         setState(() {
           print('set state 실행');
           groupDetailModel = data;
           memberState = data.memberState;
         });
         setGroupData(context, data);
+        setBingoSize(context, data.bingoSize);
         setBingoId(context, data.bingoId);
       }).catchError((error) {
         print(error);
@@ -116,9 +115,9 @@ class _GroupMainState extends State<GroupMain> {
                     ? toOtherPage(
                         context,
                         page: GroupRank(
-                          groupId: groupId,
+                          groupId: groupId!,
                           isMember: memberState != 0,
-                          password: widget.password,
+                          // password: widget.password,
                         ),
                       )
                     : null,

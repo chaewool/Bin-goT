@@ -287,6 +287,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                             : const SizedBox(),
                       ),
                     ),
+                    const SizedBox(width: 10),
                     Flexible(
                       flex: 4,
                       child: Row(

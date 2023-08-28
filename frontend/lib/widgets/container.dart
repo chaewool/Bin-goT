@@ -1,5 +1,5 @@
 import 'package:bin_got/models/user_info_model.dart';
-import 'package:bin_got/pages/group_detail_page.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -48,30 +48,36 @@ class BingoGallery extends StatelessWidget {
     void toBingoDetail() {
       setGroupId(context, bingo.groupId);
       setStart(context, bingo.start);
-      toOtherPage(
-        context,
-        page: GroupDetail(
-          groupId: bingo.groupId,
-          password: '',
-          isPublic: true,
-          bingoId: bingo.id,
-          size: bingo.size,
-          initialIndex: 0,
-        ),
-      )();
+      toOtherPage(context,
+          page: InputPassword(
+            isPublic: true,
+            groupId: bingo.groupId,
+            initialIndex: 0,
+            bingoId: bingo.id,
+            size: bingo.size,
+          ))();
+      //   GroupDetail(
+      //     groupId: bingo.groupId,
+      //     // password: '',
+      //     isPublic: true,
+      //     bingoId: bingo.id,
+      //     size: bingo.size,
+      //     initialIndex: 0,
+      //   ),
+      // )();
     }
 
     return GestureDetector(
       onTap: toBingoDetail,
       child: Padding(
         padding: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
+        child: CustomBoxContainer(
+          color: greyColor.withOpacity(0.5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: CachedNetworkImage(
                   imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
                   placeholder: (context, url) => CustomBoxContainer(
@@ -81,12 +87,12 @@ class BingoGallery extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-            CustomText(
-              content: bingo.groupName,
-              cutText: true,
-            )
-          ],
+              CustomText(
+                content: bingo.groupName,
+                cutText: true,
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -189,12 +195,13 @@ class CustomAnimatedPage extends StatelessWidget {
   final Widget nextPage;
   final Widget? appBar;
   final bool needScroll;
-  const CustomAnimatedPage(
-      {super.key,
-      required this.changeIndex,
-      required this.nextPage,
-      this.appBar,
-      this.needScroll = false});
+  const CustomAnimatedPage({
+    super.key,
+    required this.changeIndex,
+    required this.nextPage,
+    this.appBar,
+    this.needScroll = false,
+  });
 
   @override
   Widget build(BuildContext context) {

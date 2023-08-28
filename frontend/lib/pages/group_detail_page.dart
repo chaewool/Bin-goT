@@ -13,17 +13,18 @@ class GroupDetail extends StatefulWidget
 // with WidgetsBindingObserver
 {
   final int initialIndex;
-  final String password;
-  final bool isPublic;
+  // final String password;
+  final bool isPublic, admin;
   final int? bingoId, size, groupId;
   const GroupDetail({
     super.key,
     this.groupId,
-    required this.password,
+    // required this.password,
     required this.isPublic,
     this.initialIndex = 1,
     this.bingoId,
     this.size,
+    required this.admin,
   });
 
   @override
@@ -92,7 +93,8 @@ class _GroupDetailState extends State<GroupDetail> {
     // ]);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.bingoId != null) {
-        setBingoId(context, widget.bingoId!, widget.size!);
+        setBingoSize(context, widget.size!);
+        setBingoId(context, widget.bingoId!);
       } else if (widget.groupId != null) {
         setGroupId(context, widget.groupId!);
       }
