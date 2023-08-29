@@ -3,8 +3,7 @@ from rest_framework import serializers
 from datetime import date
 
 from .models import Badge
-from groups.models import Group
-from boards.models import Board
+from groups.models import Group, Board
 
 
 class ProfileSerializer(serializers.ModelSerializer):
