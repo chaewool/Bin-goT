@@ -1,4 +1,5 @@
-import 'package:bin_got/pages/group_admin_page.dart';
+import 'dart:convert';
+
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -9,76 +10,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:bin_got/providers/fcm_provider.dart';
 import 'package:path/path.dart';
-
-@pragma('vm:entry-point')
-void onNotificationTapped(NotificationResponse notificationResponse) {
-  final payload = notificationResponse.payload;
-  print('페이로드 : $payload');
-
-  Widget page;
-
-  if (payload!.startsWith('mypage')) {
-    // 마이페이지로 이동
-    page = const Main();
-  } else {
-    List<String> tmp = payload.split('/');
-    var groupId = int.parse(tmp[1]);
-    var isPublic = tmp[3] == 'True' ? true : false;
-    var password = tmp[4];
-    var size = int.parse(tmp[5]);
-    var bingoId = int.parse(tmp[6]);
-
-    if (tmp[2] == 'admin') {
-      // 그룹 관리 페이지로 이동
-      page = GroupAdmin(groupId: groupId);
-    } else if (tmp[2] == 'main') {
-      // 그룹 메인 페이지로 이동
-      page = InputPassword(isPublic: isPublic, groupId: groupId);
-      // GroupDetail(
-      //     groupId: groupId,
-      //     password: password,
-      //     isPublic: isPublic,
-      //     initialIndex: 1);
-    } else if (tmp[2] == 'chat') {
-      // 그룹 채팅 페이지로 이동
-      page = InputPassword(
-        isPublic: isPublic,
-        groupId: groupId,
-        initialIndex: 2,
-      );
-      // GroupDetail(
-      //     groupId: groupId,
-      //     password: password,
-      //     isPublic: isPublic,
-      //     initialIndex: 0);
-    } else if (tmp[2] == 'myboard') {
-      // 그룹 내 내 빙고 페이지로 이동
-      page = InputPassword(
-        isPublic: isPublic,
-        groupId: groupId,
-        initialIndex: 0,
-      );
-      // GroupDetail(
-      //     groupId: groupId,
-      //     password: password,
-      //     isPublic: isPublic,
-      //     initialIndex: 2,
-      //     size: size,
-      //     bingoId: bingoId);
-    }
-    // else if (tmp[2] == 'rank') {
-    else {
-      // 그룹 랭킹 페이지로 이동
-      page = InputPassword(
-        isPublic: isPublic,
-        groupId: groupId,
-        initialIndex: 3,
-      );
-      // GroupRank(groupId: groupId, isMember: true, password: password);
-    }
-  }
-  toOtherPage(context as BuildContext, page: page);
-}
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -94,7 +25,69 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           'flutter_notification_title_high',
         ),
       ),
-      payload: message.data['path']);
+      payload: message.data['data']);
+}
+
+void onNotificationTapped(NotificationResponse notificationResponse) {
+  final payload = jsonDecode(notificationResponse.payload!);
+  List<String> path = payload['path'].split('/');
+  Widget page;
+
+  if (path[0] == 'mypage') {
+    // 마이페이지로 이동
+    page = const Main(initialPage: 0);
+  } else {
+    var groupId = int.parse(path[1]);
+    var isPublic = true;
+    var needCheck = true;
+
+    // setGroupId(context as BuildContext, groupId);
+
+    if (path[2] == 'admin') {
+      // 그룹 관리 페이지로 이동
+      page = InputPassword(
+        isPublic: isPublic,
+        groupId: groupId,
+        needCheck: needCheck,
+        admin: true,
+      );
+    } else if (path[2] == 'main') {
+      // 그룹 메인 페이지로 이동
+      page = InputPassword(
+        isPublic: isPublic,
+        groupId: groupId,
+        needCheck: needCheck,
+      );
+    } else if (path[2] == 'chat') {
+      // 그룹 채팅 페이지로 이동
+      page = InputPassword(
+        isPublic: isPublic,
+        groupId: groupId,
+        needCheck: needCheck,
+        initialIndex: 2,
+      );
+    } else if (path[2] == 'myboard') {
+      // 그룹 내 내 빙고 페이지로 이동
+      page = InputPassword(
+        isPublic: isPublic,
+        groupId: groupId,
+        needCheck: needCheck,
+        initialIndex: 0,
+      );
+
+      // setBingoId(context as BuildContext, int.parse(path[3]));
+    } else {
+      // 그룹 랭킹 페이지로 이동
+      page = InputPassword(
+        isPublic: isPublic,
+        groupId: groupId,
+        needCheck: needCheck,
+        initialIndex: 3,
+      );
+    }
+  }
+
+  toOtherPage(context as BuildContext, page: page);
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -169,7 +162,7 @@ class FCM {
                 channelLow.name,
               ),
             ),
-            payload: message.data['path']);
+            payload: message.data['data']);
       });
     }
 
