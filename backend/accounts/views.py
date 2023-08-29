@@ -8,9 +8,11 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import requests
 import logging
 from datetime import date
+import jwt
 
+from bingot.settings import SIMPLE_JWT
 from bingot_settings import KAKAO_REST_API_KEY
-from .serializers import UserSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
+from .serializers import ProfileSerializer, NotificationSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
 from groups.models import Group, Participate
 from commons import get_boolean, RedisToken
@@ -55,9 +57,7 @@ def from_kaKao_id_get_user_info(kakao_id):
     
     data['refresh_token'] = str(token)
     data['access_token'] = str(token.access_token)
-        
-    serializer = UserSerializer(user)
-    data.update(serializer.data)
+    data['id'] = user.pk
     
     return data
 
@@ -113,6 +113,28 @@ class KaKaoUnlinkView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class TokenRefreshView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        token = request.data.get('token')
+
+        user_id = jwt.decode(
+            token,
+            SIMPLE_JWT['SIGNING_KEY'],
+            algorithms=[SIMPLE_JWT['ALGORITHM']],
+        )['user_id']
+        user = get_user_model().objects.get(pk=user_id)
+
+        tokens = TokenObtainPairSerializer.get_token(user)
+        
+        data = {}
+        data['refresh_token'] = str(tokens)
+        data['access_token'] = str(tokens.access_token)
+
+        return Response(data=data, status=status.HTTP_200_OK)
+    
+
 class TokenFCMView(APIView):
     def post(self, request):
         user = request.user
@@ -167,23 +189,33 @@ class BadgeUpdateView(APIView):
         badge = Badge.objects.get(id=badge_id)
         
         if Achieve.objects.filter(user=user, badge=badge).exists():
-            user.profile = badge_id
+            user.badge = badge_id
             user.save()
             
             return Response(data={}, status=status.HTTP_200_OK)
         return Response(data={'message': '보유하지 않은 배지입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+    
+class NotificationDetailView(APIView):
+    def get(self, request):
+        user = request.user
+        data = NotificationSerializer(user).data
+
+        return Response(data=data, status=status.HTTP_200_OK)
+ 
     
 class NotificationUpdateView(APIView):
-    def post(self, request):
+    def put(self, request):
         user = request.user
-        noti_rank = get_boolean(request.data.get('noti_rank'))
-        noti_chat = get_boolean(request.data.get('noti_chat'))
-        noti_due = get_boolean(request.data.get('noti_due'))
+        noti_rank = request.data.get('noti_rank')
+        noti_chat = request.data.get('noti_chat')
+        noti_due = request.data.get('noti_due')
+        noti_check = request.data.get('noti_check')
         
-        user.noti_rank = noti_rank
-        user.noti_chat = noti_chat
-        user.noti_due = noti_due
+        user.noti_rank = noti_rank if type(noti_rank) == bool else get_boolean(noti_rank)
+        user.noti_chat = noti_chat if type(noti_chat) == bool else get_boolean(noti_chat)
+        user.noti_due = noti_due if type(noti_due) == bool else get_boolean(noti_due)
+        user.noti_check = noti_check if type(noti_check) == bool else get_boolean(noti_check)
         user.save()
             
         return Response(data={}, status=status.HTTP_200_OK)
@@ -194,20 +226,27 @@ class MainGroupsView(APIView):
         user = request.user
         order = request.GET.get('order')
         filter = request.GET.get('filter')
-        page = int(request.GET.get('page'))
+        idx = int(request.GET.get('idx'))
         
         is_recommend = False
+        last_idx = -1
+
+        participates = Participate.objects.filter(user=user, is_banned=0)
 
         # 가입한 그룹이 없음 => 그룹 추천
-        if not user.groups:
+        if not participates:
             is_recommend = True
 
-            recommends = Group.objects.filter(is_public=True, start__gte=date.today()).order_by('-start')
-            
-            temp = GroupSerializer(recommends, many=True).data
-            groups = [group for group in temp if group['count'] < group['headcount']][:10]
-        else:
+            recommends = Group.objects.filter(is_public=True, start__gt=date.today()).order_by('-start')
+            groups = GroupSerializer(recommends, many=True).data
+        else:            
             groups = GroupSerializer(user.groups, many=True).data
+
+            temp = []
+            for group in groups:
+                if Participate.objects.filter(group=group['id'], user=user, is_banned=0):
+                    temp.append(group)
+            groups = temp[:]
 
             if filter == '1':
                 groups = [group for group in groups if group['status'] == '진행 중']
@@ -215,22 +254,30 @@ class MainGroupsView(APIView):
                 groups = [group for group in groups if group['status'] == '완료']
             
             if order == '0':
-                groups.sort(key=lambda x: x['end'], reverse=True)
+                groups.sort(key=lambda x: (x['end'], x['start']), reverse=True)
             else:
-                groups.sort(key=lambda x: x['end'])
+                groups.sort(key=lambda x: (x['end'], x['start']))
             
-            groups = groups[10 * (page - 1):10 * page]
+            if groups:
+                last_idx = groups[-1]['id']
 
-        for group in groups:
-            count = 0
-
-            for p in Participate.objects.filter(group=group['id']):
-                if p.is_banned == 0:
-                    count += 1
+            if idx == 0:
+                groups = groups[:10]
+            else:
+                cut = 0
+                for i in range(len(groups)):
+                    if groups[i]['id'] == idx:
+                        cut = i + 1
+                        break
+                groups = groups[cut:cut + 10]
+            
+            if not groups:
+                last_idx = -1
         
-            group['count'] = count
+        if is_recommend:
+            groups = [group for group in groups if group['count'] < group['headcount']][:10]
         
-        return Response(data={'groups': groups, 'is_recommend': is_recommend}, status=status.HTTP_200_OK)
+        return Response(data={'groups': groups, 'is_recommend': is_recommend, 'last_idx': last_idx}, status=status.HTTP_200_OK)
 
 
 class MainBoardsView(APIView):
@@ -238,11 +285,15 @@ class MainBoardsView(APIView):
         user = request.user
         order = request.GET.get('order')
         filter = request.GET.get('filter')
-        page = int(request.GET.get('page'))
+        idx = int(request.GET.get('idx'))
 
-        groups = [board.group for board in user.boards.all()]
+        boards = BoardSerializer(user.boards.all(), many=True).data
 
-        boards = BoardSerializer(groups, many=True).data
+        temp = []
+        for board in boards:
+            if Participate.objects.filter(group=board['group_id'], user=user, is_banned=0):
+                temp.append(board)
+        boards = temp[:]
 
         if filter == '1':
             boards = [board for board in boards if board['status'] == '진행 중']
@@ -250,17 +301,33 @@ class MainBoardsView(APIView):
             boards = [board for board in boards if board['status'] == '완료']
         
         if order == '0':
-            boards.sort(key=lambda x: x['end'], reverse=True)
+            boards.sort(key=lambda x: (x['end'], x['start']), reverse=True)
         else:
-            boards.sort(key=lambda x: x['end'])
+            boards.sort(key=lambda x: (x['end'], x['start']))
+
+        last_idx = -1
+        if boards:
+            last_idx = boards[-1]['id']
+            
+        if idx == 0:
+            boards = boards[:10]
+        else:
+            cut = 0
+            for i in range(len(boards)):
+                if boards[i]['id'] == idx:
+                    cut = i + 1
+                    break
+            boards = boards[cut:cut + 10]
         
-        boards = boards[10 * (page - 1):10 * page]
+        if not boards:
+            last_idx = -1
         
-        return Response(data=boards, status=status.HTTP_200_OK)
+        return Response(data={'boards': boards, 'last_idx': last_idx}, status=status.HTTP_200_OK)
 
 
 class ProfileView(APIView):
     def get(self, request):
         user = request.user
-        
-        return Response(data={'username': user.username, 'badge': user.badge}, status=status.HTTP_200_OK)
+        data = ProfileSerializer(user).data
+
+        return Response(data=data, status=status.HTTP_200_OK)

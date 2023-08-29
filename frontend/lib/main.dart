@@ -1,3 +1,4 @@
+import 'package:bin_got/dl_settings.dart';
 import 'package:bin_got/fcm_settings.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -26,7 +27,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  initFCM();
+  FCM().setup();
+  DynamicLink().setup();
 
   //* 외부 링크를 통해 앱에 들어올 경우
   // final PendingDynamicLinkData? initialLink =

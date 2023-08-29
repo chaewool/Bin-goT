@@ -16,11 +16,11 @@ class GroupCreateSerializer(serializers.ModelSerializer):
 class GroupDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        exclude = ('id', 'leader', 'password', 'period', 'is_public', 'users')
+        exclude = ('id', 'leader', 'period', 'is_public', 'users')
 
 
 class GroupUpdateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(required=False, allow_blank=True)
+    groupname = serializers.CharField(required=False)
     description = serializers.CharField(required=False, allow_blank=True)
     rule = serializers.CharField(required=False, allow_blank=True)
     headcount = serializers.IntegerField(required=False)

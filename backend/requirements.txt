@@ -1,3 +1,4 @@
+APScheduler==3.10.1
 asgiref==3.6.0
 async-timeout==4.0.2
 boto3==1.26.92
@@ -9,8 +10,8 @@ cffi==1.15.1
 charset-normalizer==3.0.1
 cryptography==41.0.1
 Django==3.2.12
+django-apscheduler==0.6.2
 django-cors-headers==3.13.0
-django-crontab==0.7.1
 django-redis==5.2.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
@@ -48,5 +49,7 @@ rsa==4.9
 s3transfer==0.6.0
 six==1.16.0
 sqlparse==0.4.3
+tzdata==2023.3
+tzlocal==5.0.1
 uritemplate==4.1.1
 urllib3==1.26.14
