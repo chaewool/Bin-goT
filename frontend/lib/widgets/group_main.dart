@@ -1,5 +1,5 @@
 import 'package:bin_got/models/group_model.dart';
-import 'package:bin_got/pages/group_rank_page.dart';
+import 'package:bin_got/widgets/group_rank.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -41,7 +41,8 @@ class _GroupMainState extends State<GroupMain> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       groupId = getGroupId(context);
       // setPublic(context, widget.isPublic);
-      GroupProvider().readGroupDetail(getGroupId(context)!).then((data) {
+      print('----------- read group detail');
+      GroupProvider().readGroupDetail(groupId!).then((data) {
         setState(() {
           print('set state 실행');
           groupDetailModel = data;
@@ -110,22 +111,17 @@ class _GroupMainState extends State<GroupMain> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const CustomText(content: '순위'),
-              TextButton(
-                onPressed: memberState != 0
-                    ? toOtherPage(
-                        context,
-                        page: GroupRank(
-                          groupId: groupId!,
-                          isMember: memberState != 0,
-                          // password: widget.password,
-                        ),
-                      )
-                    : null,
-                child: const CustomText(
-                  content: '전체보기',
-                  fontSize: FontSize.smallSize,
-                ),
-              )
+              if (memberState != 0)
+                TextButton(
+                  onPressed: toOtherPage(
+                    context,
+                    page: const GroupRank(),
+                  ),
+                  child: const CustomText(
+                    content: '전체보기',
+                    fontSize: FontSize.smallSize,
+                  ),
+                )
             ],
           ),
           if (data.rank.isNotEmpty)

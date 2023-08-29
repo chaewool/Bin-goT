@@ -129,10 +129,10 @@ class GroupProvider extends ApiProvider {
       final response =
           await dioWithTokenForm().post(createGroupUrl, data: groupData);
       print(response);
-      if (response.statusCode == 200) {
-        return response.data['group_id'];
-      }
-      throw Error();
+      // if (response.statusCode == 200) {
+      return response.data['group_id'];
+      // }
+      // throw Error();
     } catch (error) {
       print(error);
       throw Error();

@@ -185,13 +185,13 @@ class _GroupChatState extends State<GroupChat> {
             children: [
               Expanded(
                 child: InfiniteScroll(
-                  color: whiteColor,
+                  // color: greyColor.withOpacity(0.2),
                   controller: controller,
                   cnt: 50,
                   reverse: true,
                   data: context.read<GlobalGroupProvider>().chats,
                   mode: 0,
-                  emptyWidget: const Column(
+                  emptyWidget: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [

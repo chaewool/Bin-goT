@@ -237,9 +237,12 @@ class UrlClass extends DioClass {
   static const _bingoUrl = '/boards';
   //* CRUD
   final _createBingoUrl = '$_bingoUrl/create/';
-  String _bingoDetailUrl(int bingoId) => '$_bingoUrl/$bingoId/';
-  String _editBingoUrl(int groupId) => '${_bingoDetailUrl(groupId)}update/';
-  String _deleteBingoUrl(int groupId) => '${_bingoDetailUrl(groupId)}delete/';
+  String _bingoDetailUrl(int groupId, int bingoId) =>
+      '${_groupDetailUrl(groupId)}$_bingoUrl/$bingoId/';
+  String _editBingoUrl(int groupId, int bingoId) =>
+      '${_bingoDetailUrl(groupId, bingoId)}update/';
+  // String _deleteBingoUrl(int groupId, int bingoId) =>
+  //     '${_bingoDetailUrl(groupId, bingoId)}delete/';
 
   //! getter
 
@@ -268,9 +271,11 @@ class UrlClass extends DioClass {
 
   //* bingo
   String get createBingoUrl => _createBingoUrl;
-  String bingoDetailUrl(int bingoId) => _bingoDetailUrl(bingoId);
-  String editBingoUrl(int bingoId) => _editBingoUrl(bingoId);
-  String deleteBingoUrl(int bingoId) => _deleteBingoUrl(bingoId);
+  String bingoDetailUrl(int groupId, int bingoId) =>
+      _bingoDetailUrl(groupId, bingoId);
+  String editBingoUrl(int groupId, int bingoId) =>
+      _editBingoUrl(groupId, bingoId);
+  // String deleteBingoUrl(int , int groupId) => _deleteBingoUrl(bingoId);
 
   //* username
   String get checkNameUrl => _checkNameUrl;

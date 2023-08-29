@@ -21,7 +21,7 @@ import 'package:provider/provider.dart';
 TextTemplate defaultText({
   required int id,
   required bool isGroup,
-  String? password,
+  // String? password,
   String? groupName,
   required String url,
 }) {
@@ -55,7 +55,7 @@ void shareGroup({
         template: defaultText(
           isGroup: true,
           id: groupId,
-          password: password,
+          // password: password,
           groupName: groupName,
           url: url,
         ),
@@ -71,7 +71,7 @@ void shareGroup({
         template: defaultText(
           isGroup: true,
           id: groupId,
-          password: password,
+          // password: password,
           url: url,
         ),
       );
@@ -436,6 +436,8 @@ void setBingoSize(BuildContext context, int size) =>
     context.read<GlobalBingoProvider>().setBingoSize(size);
 
 //* var
+int? readBingoId(BuildContext context) =>
+    context.read<GlobalBingoProvider>().bingoId;
 int? getBingoId(BuildContext context) =>
     context.watch<GlobalBingoProvider>().bingoId;
 

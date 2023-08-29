@@ -1,3 +1,4 @@
+import 'package:bin_got/widgets/group_rank.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bingo_detail.dart';
@@ -13,18 +14,18 @@ class GroupDetail extends StatefulWidget
 // with WidgetsBindingObserver
 {
   final int initialIndex;
-  // final String password;
   final bool isPublic, admin;
   final int? bingoId, size, groupId;
+  // final String start;
   const GroupDetail({
     super.key,
     this.groupId,
-    // required this.password,
     required this.isPublic,
     this.initialIndex = 1,
     this.bingoId,
     this.size,
     required this.admin,
+    // required this.start,
   });
 
   @override
@@ -38,59 +39,20 @@ class _GroupDetailState extends State<GroupDetail> {
   final WidgetList nextPages = [
     const BingoDetail(),
     const GroupMain(),
-    const GroupChat()
+    const GroupChat(),
+    const GroupRank(),
   ];
   final List<Widget?> appbarList = [
     BingoDetailAppBar(save: () => Future.value(true)),
     const GroupAppBar(),
-    null
+    null,
+    const GroupAppBar(),
   ];
 
   @override
   void initState() {
     super.initState();
     selectedIndex = widget.initialIndex;
-
-    // nextPages = List.generate(3, (_) => const SizedBox());
-    // appbarList = List.generate(3, (_) => null);
-    // if (selectedIndex == 1) {
-    //   nextPages[1] = GroupMain(
-    //     groupId: widget.groupId,
-    //     password: widget.password,
-    //     applyNew: applyNew,
-    //   );
-    // } else {
-    //   nextPages[0] = BingoDetail(bingoId: bingoId!, size: size);
-    //   nextPages[1] = GroupMain(
-    //     groupId: widget.groupId,
-    //     password: '',
-    //     applyNew: applyNew,
-    //   );
-    //   appbarList[0] = BingoDetailAppBar(
-    //     save: () => Future.value(true),
-    //     bingoId: bingoId!,
-    //   );
-    // appbarList[1] = GroupAppBar(
-    //   groupId: widget.groupId,
-    //   isMember: memberState != 0,
-    //   isAdmin: memberState == 2,
-    //   password: widget.password,
-    // );
-    // }
-    // appbarList[2] = const AppBarWithBack();
-    // appbarList.addAll([
-    //   BingoDetailAppBar(
-    //     save: () => Future.value(true),
-    //     bingoId: bingoId!,
-    //   ),
-    //   GroupAppBar(
-    //     groupId: widget.groupId,
-    //     isMember: memberState != 0,
-    //     isAdmin: memberState == 2,
-    //     password: widget.password,
-    //   ),
-    //   const AppBarWithBack()
-    // ]);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.bingoId != null) {
         setBingoSize(context, widget.size!);
@@ -133,7 +95,7 @@ class _GroupDetailState extends State<GroupDetail> {
         resizeToAvoidBottomInset: true,
         backgroundColor: whiteColor,
         body: CustomAnimatedPage(
-          needScroll: selectedIndex == 1,
+          needScroll: selectedIndex % 2 == 1,
           changeIndex: changeIndex,
           nextPage: nextPages[selectedIndex],
           appBar: appbarList[selectedIndex],

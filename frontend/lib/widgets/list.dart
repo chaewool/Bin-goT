@@ -62,11 +62,12 @@ class GroupListItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
-              flex: 3,
-              child: CustomText(
-                content: groupInfo.name,
-                cutText: true,
-              )),
+            flex: 3,
+            child: CustomText(
+              content: groupInfo.name,
+              cutText: true,
+            ),
+          ),
           Flexible(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

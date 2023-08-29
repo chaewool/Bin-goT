@@ -114,6 +114,7 @@ class GroupMainBottomBar extends StatelessWidget {
               customBottomBarIcon(label: '빙고 상세 페이지', iconData: boardIcon),
               customBottomBarIcon(label: '그룹 메인 페이지', iconData: homeIcon),
               customBottomBarIcon(label: '그룹 채팅 페이지', iconData: chatIcon),
+              customBottomBarIcon(label: '그룹 내 순위 페이지', iconData: rankIcon),
             ],
             selectedIndex: selectedIndex,
             changeIndex: changeIndex,

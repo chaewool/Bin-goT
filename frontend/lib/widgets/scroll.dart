@@ -126,10 +126,15 @@ class GroupInfiniteScroll extends StatelessWidget {
       color: beigeColor,
       child: !getLoading(context)
           ? data.isNotEmpty
-              ? Column(
-                  children: [
-                    if (hasNotGroupWidget != null) hasNotGroupWidget!,
-                    ListView.builder(
+              ? hasNotGroupWidget != null
+                  ? Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        hasNotGroupWidget!,
+                      ],
+                    )
+                  : ListView.builder(
                       controller: controller,
                       itemCount: data.length,
                       itemBuilder: (context, i) {
@@ -158,7 +163,8 @@ class GroupInfiniteScroll extends StatelessWidget {
                                           public: data[i].isPublic,
                                         ),
                                       ),
-                                      if (getLastId(context, mode) != -1)
+                                      if (hasNotGroupWidget == null &&
+                                          getLastId(context, mode) != -1)
                                         const Padding(
                                           padding: EdgeInsets.symmetric(
                                             vertical: 40,
@@ -167,27 +173,10 @@ class GroupInfiniteScroll extends StatelessWidget {
                                         )
                                     ],
                                   ),
-
-                            // getLastId(context, mode) != -1 &&
-                            //         data[i].id == getLastId(context, mode)
-                            //     // &&
-                            //     //         getTotal(context, mode)! >
-                            //     //             getPage(context, mode)
-                            //     ? const Padding(
-                            //         padding: EdgeInsets.symmetric(
-                            //           vertical: 40,
-                            //         ),
-                            //         child: Center(
-                            //           child: CircularProgressIndicator(),
-                            //         ),
-                            //       )
-                            //     : const SizedBox()
                           ],
                         );
                       },
-                    ),
-                  ],
-                )
+                    )
               : emptyWidget
           : const CustomCirCularIndicator(),
       // CustomText(content: '빙고 정보를 불러오는 중입니다')

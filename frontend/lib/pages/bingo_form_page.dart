@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:bin_got/main.dart';
 import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/pages/group_create_completed.dart';
 import 'package:bin_got/pages/input_password_page.dart';
@@ -95,7 +96,7 @@ class _BingoFormState extends State<BingoForm> {
       print('bingo data => $data');
 
       bingoToThumb().then((_) {
-        final bingoId = getBingoId(context);
+        final bingoId = readBingoId(context);
         if (bingoId == null) {
           widget.beforeJoin ? joinGroup(data) : createGroup(data);
         } else {
@@ -109,7 +110,9 @@ class _BingoFormState extends State<BingoForm> {
             ),
           });
 
-          BingoProvider().editOwnBingo(bingoId, bingoData).then((value) {
+          BingoProvider()
+              .editOwnBingo(groupId!, bingoId, bingoData)
+              .then((value) {
             if (value['statusCode'] == 401) {
               showLoginModal(context);
             } else {
@@ -137,8 +140,8 @@ class _BingoFormState extends State<BingoForm> {
   FutureBool bingoToThumb() async {
     var renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject is RenderRepaintBoundary) {
-      var boundary = renderObject;
-      final image = await boundary.toImage();
+      // var boundary = renderObject;
+      final image = await renderObject.toImage();
       final byteData = await image.toByteData(format: ImageByteFormat.png);
       setState(() {
         thumbnail = byteData?.buffer.asUint8List();

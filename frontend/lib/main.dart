@@ -11,6 +11,7 @@ import 'firebase_options.dart';
 
 int? groupId;
 int? isPublic;
+// Widget nextPage = Intro();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -72,21 +72,27 @@ class BingoDetail extends StatelessWidget {
         ? Stack(
             children: [
               FutureBuilder(
-                future: BingoProvider().readBingoDetail(getBingoId(context)!),
+                future: BingoProvider().readBingoDetail(
+                  getGroupId(context)!,
+                  readBingoId(context)!,
+                ),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final DynamicMap data = snapshot.data!;
-                    print('bingo data => $data');
+                    print('--------- bingo data => $data');
                     final int achieve = (data['achieve']! * 100).toInt();
+                    print(achieve);
                     // groupId = data['group'];
                     setBingoData(context, data);
                     final length = bingoSize * bingoSize;
+                    print(length);
                     initFinished(context, length);
                     for (int i = 0; i < length; i += 1) {
                       setFinished(context, i, data['items'][i]['finished']);
                     }
+                    print(getBingoData(context));
 
-                    return RepaintBoundary(
+                    RepaintBoundary(
                       key: globalKey,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -157,7 +163,11 @@ class BingoDetail extends StatelessWidget {
                     );
                   }
                   return const Center(
-                      child: CustomText(content: '정보를 불러오는 중입니다'));
+                    child: CustomText(
+                      content: '정보를 불러오는 중입니다',
+                      color: blackColor,
+                    ),
+                  );
                 },
               ),
               if (watchAfterWork(context))

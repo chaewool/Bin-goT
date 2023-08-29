@@ -11,8 +11,10 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/image.dart';
+import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/scroll.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:bin_got/widgets/toast.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
@@ -310,7 +312,7 @@ class _MyTabBarState extends State<MyTabBar> {
   final groupController = ScrollController();
   final bingoController = ScrollController();
   MyGroupList groupTabData = [];
-  bool hasNotGroup = false;
+  bool hasNotGroup = true;
   MyBingoList bingoTabData = [];
   List<StringList> buttonOptions = [
     ['종료일 ▼', '종료일 ▲'],
@@ -373,10 +375,12 @@ class _MyTabBarState extends State<MyTabBar> {
       print('group tab bar : ${groupData.groups.length}');
       // setState(() {
       // });
-      if (groupData.groups.isNotEmpty) {
-        groupTabData.addAll(groupData.groups);
-      }
-      hasNotGroup = groupData.hasNotGroup;
+      setState(() {
+        if (groupData.groups.isNotEmpty) {
+          groupTabData.addAll(groupData.groups);
+        }
+        hasNotGroup = groupData.hasNotGroup;
+      });
       setLoading(context, false);
       if (more) {
         setWorking(context, false);
@@ -501,32 +505,42 @@ class _MyTabBarState extends State<MyTabBar> {
               controller: groupController,
               data: groupTabData,
               mode: 1,
-              emptyWidget: const Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomText(
-                    center: true,
-                    content: '조건을 만족하는 그룹이 없어요.',
-                    height: 1.7,
-                  ),
-                ],
-              ),
+              emptyWidget: emptyWidget(),
               hasNotGroupWidget: hasNotGroup
-                  ? const Column(
+                  ? Column(
                       children: [
-                        CustomText(
+                        const SizedBox(height: 40),
+                        const CustomText(
                           center: true,
                           content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
                           height: 1.7,
                         ),
-                        SizedBox(
-                          height: 70,
-                        ),
-                        CustomText(
+                        const SizedBox(height: 70),
+                        const CustomText(
                           content: '추천그룹',
                           fontSize: FontSize.titleSize,
                         ),
+                        const SizedBox(height: 20),
+                        !getLoading(context)
+                            ? groupTabData.isNotEmpty
+                                ? Expanded(
+                                    child: ListView.builder(
+                                      itemCount: groupTabData.length,
+                                      itemBuilder: (context, i) {
+                                        return Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              5, 0, 5, 5),
+                                          child: GroupListItem(
+                                            isSearchMode: false,
+                                            groupInfo: groupTabData[i],
+                                            public: groupTabData[i].isPublic!,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : emptyWidget()
+                            : const CustomCirCularIndicator(),
                       ],
                     )
                   : null,
@@ -553,6 +567,20 @@ class _MyTabBarState extends State<MyTabBar> {
             ),
           )
         ]
+      ],
+    );
+  }
+
+  Row emptyWidget() {
+    return const Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CustomText(
+          center: true,
+          content: '조건을 만족하는 그룹이 없어요.',
+          height: 1.7,
+        ),
       ],
     );
   }
