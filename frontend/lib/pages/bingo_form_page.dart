@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:bin_got/main.dart';
 import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/pages/group_create_completed.dart';
 import 'package:bin_got/pages/input_password_page.dart';
@@ -27,13 +28,12 @@ import 'package:http_parser/http_parser.dart';
 
 class BingoForm extends StatefulWidget {
   final int bingoSize;
-  final int? bingoId;
   final bool needAuth, beforeJoin;
+  // final bool beforeJoin;
   final DynamicMap? beforeData;
   final XFile? groupImg;
   const BingoForm({
     super.key,
-    this.bingoId,
     required this.bingoSize,
     required this.needAuth,
     this.beforeJoin = false,
@@ -96,7 +96,8 @@ class _BingoFormState extends State<BingoForm> {
       print('bingo data => $data');
 
       bingoToThumb().then((_) {
-        if (widget.bingoId == null) {
+        final bingoId = readBingoId(context);
+        if (bingoId == null) {
           widget.beforeJoin ? joinGroup(data) : createGroup(data);
         } else {
           //* 빙고 수정
@@ -108,16 +109,16 @@ class _BingoFormState extends State<BingoForm> {
               contentType: MediaType('image', 'png'),
             ),
           });
-          print(widget.bingoId);
+
           BingoProvider()
-              .editOwnBingo(widget.bingoId!, bingoData)
+              .editOwnBingo(groupId!, bingoId, bingoData)
               .then((value) {
             if (value['statusCode'] == 401) {
               showLoginModal(context);
             } else {
               toOtherPage(
                 context,
-                page: BingoDetail(bingoId: widget.bingoId!),
+                page: const BingoDetail(),
               )();
             }
           }).catchError((_) {
@@ -139,8 +140,8 @@ class _BingoFormState extends State<BingoForm> {
   FutureBool bingoToThumb() async {
     var renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject is RenderRepaintBoundary) {
-      var boundary = renderObject;
-      final image = await boundary.toImage();
+      // var boundary = renderObject;
+      final image = await renderObject.toImage();
       final byteData = await image.toByteData(format: ImageByteFormat.png);
       setState(() {
         thumbnail = byteData?.buffer.asUint8List();
@@ -200,7 +201,7 @@ class _BingoFormState extends State<BingoForm> {
         print('그룹 가입 성공 => $data');
         print('form data : $bingoData');
         print('빙고 생성 성공');
-        if (widget.needAuth == true) {
+        if (getNeedAuth(context) == true) {
           toBack(context);
           toBack(context);
           showAlert(

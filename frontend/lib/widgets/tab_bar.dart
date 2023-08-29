@@ -11,8 +11,10 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/image.dart';
+import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/scroll.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:bin_got/widgets/toast.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
@@ -147,7 +149,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
                 width: 150,
                 height: 40,
                 color: isSelected(i, j) ? paleOrangeColor : whiteColor,
-                borderColor: isSelected(i, j) ? null : greyColor,
+                borderColor: isSelected(i, j) ? whiteColor : greyColor,
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -310,7 +312,7 @@ class _MyTabBarState extends State<MyTabBar> {
   final groupController = ScrollController();
   final bingoController = ScrollController();
   MyGroupList groupTabData = [];
-  bool hasNotGroup = false;
+  bool hasNotGroup = true;
   MyBingoList bingoTabData = [];
   List<StringList> buttonOptions = [
     ['종료일 ▼', '종료일 ▲'],
@@ -373,10 +375,12 @@ class _MyTabBarState extends State<MyTabBar> {
       print('group tab bar : ${groupData.groups.length}');
       // setState(() {
       // });
-      if (groupData.groups.isNotEmpty) {
-        groupTabData.addAll(groupData.groups);
-      }
-      hasNotGroup = groupData.hasNotGroup;
+      setState(() {
+        if (groupData.groups.isNotEmpty) {
+          groupTabData.addAll(groupData.groups);
+        }
+        hasNotGroup = groupData.hasNotGroup;
+      });
       setLoading(context, false);
       if (more) {
         setWorking(context, false);
@@ -501,30 +505,42 @@ class _MyTabBarState extends State<MyTabBar> {
               controller: groupController,
               data: groupTabData,
               mode: 1,
-              emptyWidget: const Column(
-                children: [
-                  CustomText(
-                    center: true,
-                    content: '조건을 만족하는 그룹이 없어요.',
-                    height: 1.7,
-                  ),
-                ],
-              ),
+              emptyWidget: emptyWidget(),
               hasNotGroupWidget: hasNotGroup
-                  ? const Column(
+                  ? Column(
                       children: [
-                        CustomText(
+                        const SizedBox(height: 40),
+                        const CustomText(
                           center: true,
                           content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
                           height: 1.7,
                         ),
-                        SizedBox(
-                          height: 70,
-                        ),
-                        CustomText(
+                        const SizedBox(height: 70),
+                        const CustomText(
                           content: '추천그룹',
                           fontSize: FontSize.titleSize,
                         ),
+                        const SizedBox(height: 20),
+                        !getLoading(context)
+                            ? groupTabData.isNotEmpty
+                                ? Expanded(
+                                    child: ListView.builder(
+                                      itemCount: groupTabData.length,
+                                      itemBuilder: (context, i) {
+                                        return Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              5, 0, 5, 5),
+                                          child: GroupListItem(
+                                            isSearchMode: false,
+                                            groupInfo: groupTabData[i],
+                                            public: groupTabData[i].isPublic!,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : emptyWidget()
+                            : const CustomCirCularIndicator(),
                       ],
                     )
                   : null,
@@ -537,17 +553,34 @@ class _MyTabBarState extends State<MyTabBar> {
               controller: bingoController,
               data: bingoTabData,
               mode: 2,
-              emptyWidget: const Padding(
-                padding: EdgeInsets.only(top: 40),
-                child: CustomText(
-                  center: true,
-                  height: 1.7,
-                  content: '조건을 만족하는 빙고가 없어요.',
-                ),
+              emptyWidget: const Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomText(
+                    center: true,
+                    height: 1.7,
+                    content: '조건을 만족하는 빙고가 없어요.',
+                  ),
+                ],
               ),
             ),
           )
         ]
+      ],
+    );
+  }
+
+  Row emptyWidget() {
+    return const Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CustomText(
+          center: true,
+          content: '조건을 만족하는 그룹이 없어요.',
+          height: 1.7,
+        ),
       ],
     );
   }
@@ -788,7 +821,7 @@ class _MainTabBarState extends State<MainTabBar> {
         Column(
           children: [
             RowWithPadding(
-              vertical: 20,
+              vertical: 25,
               min: true,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -813,20 +846,22 @@ class _MainTabBarState extends State<MainTabBar> {
             Expanded(
               child: Column(
                 children: [
-                  RowWithPadding(
-                    vertical: 10,
-                    horizontal: 25,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      for (int i = 0; i < 2; i += 1)
-                        Center(
-                          child: CustomTextButton(
-                            content: buttonOptions[i][idxList[tabBarIndex][i]],
-                            fontSize: FontSize.smallSize,
-                            onTap: () => changeIdx(i),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        for (int i = 0; i < 2; i += 1)
+                          Center(
+                            child: CustomTextButton(
+                              content: buttonOptions[i]
+                                  [idxList[tabBarIndex][i]],
+                              fontSize: FontSize.smallSize,
+                              onTap: () => changeIdx(i),
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                   Expanded(
                     child: tabBarIndex == 0
@@ -834,7 +869,9 @@ class _MainTabBarState extends State<MainTabBar> {
                             controller: groupController,
                             data: groupTabData,
                             mode: 1,
-                            emptyWidget: const Column(
+                            emptyWidget: const Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 CustomText(
                                   center: true,
@@ -867,13 +904,16 @@ class _MainTabBarState extends State<MainTabBar> {
                             controller: bingoController,
                             data: bingoTabData,
                             mode: 2,
-                            emptyWidget: const Padding(
-                              padding: EdgeInsets.only(top: 40),
-                              child: CustomText(
-                                center: true,
-                                height: 1.7,
-                                content: '조건을 만족하는 빙고가 없어요.',
-                              ),
+                            emptyWidget: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                CustomText(
+                                  center: true,
+                                  height: 1.7,
+                                  content: '조건을 만족하는 빙고가 없어요.',
+                                ),
+                              ],
                             ),
                           ),
                   ),

@@ -7,7 +7,7 @@ import json
 import logging
 
 from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm
-from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, BoardCreateSerializer, BoardDetailSerializer, BoardItemCreateSerializer, BoardItemDetailSerializer
+from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, BoardCreateSerializer, BoardDetailSerializer, BoardItemCreateSerializer
 from .models import Group, Board, BoardItem
 from .utils import check_cnt_groups, check_cnt_boarditems_complete, create_board
 from accounts.serializers import GroupSerializer
@@ -94,10 +94,12 @@ class GroupDetailView(APIView):
         
         rand_name = user.username
         board = Board.objects.filter(user=user, group=group)
+        board_id = 0
 
         # 그룹 가입 여부 확인
         if board.exists():
             board = Board.objects.get(user=user, group=group)
+            board_id = board.id
             
             # 강제 탈퇴 여부 확인
             if board.is_banned == 2:
@@ -127,7 +129,7 @@ class GroupDetailView(APIView):
                 'board_id': Board.objects.get(group=group, user=r).id
                 })
         
-        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board.id, 'rank': rank}
+        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank}
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -555,7 +557,7 @@ class GroupReviewCheckView(APIView):
         review['reviewed'] = True
         chat.setChatItem(review_id, review)
 
-        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', f'groups/{group.id}/myboard')
+        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', f'groups/{group.id}/myboard/{board.id}')
         
         return Response(status=status.HTTP_200_OK)
 

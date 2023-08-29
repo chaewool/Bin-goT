@@ -213,6 +213,9 @@ class UrlClass extends DioClass {
   String _editGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}update/';
   String _deleteGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}delete/';
 
+  //* check password
+  String _checkPasswordUrl(int groupId) => '${_groupDetailUrl(groupId)}/check/';
+
   //* member
   String _joinGroupUrl(int groupId) => '${_groupDetailUrl(groupId)}join/';
   String _grantMemberUrl(int groupId) => '${_groupDetailUrl(groupId)}grant/';
@@ -234,9 +237,12 @@ class UrlClass extends DioClass {
   static const _bingoUrl = '/boards';
   //* CRUD
   final _createBingoUrl = '$_bingoUrl/create/';
-  String _bingoDetailUrl(int bingoId) => '$_bingoUrl/$bingoId/';
-  String _editBingoUrl(int groupId) => '${_bingoDetailUrl(groupId)}update/';
-  String _deleteBingoUrl(int groupId) => '${_bingoDetailUrl(groupId)}delete/';
+  String _bingoDetailUrl(int groupId, int bingoId) =>
+      '${_groupDetailUrl(groupId)}$_bingoUrl/$bingoId/';
+  String _editBingoUrl(int groupId, int bingoId) =>
+      '${_bingoDetailUrl(groupId, bingoId)}update/';
+  // String _deleteBingoUrl(int groupId, int bingoId) =>
+  //     '${_bingoDetailUrl(groupId, bingoId)}delete/';
 
   //! getter
 
@@ -250,6 +256,7 @@ class UrlClass extends DioClass {
   String get searchGroupUrl => _searchGroupUrl;
   String get createGroupUrl => _createGroupUrl;
   String groupDetailUrl(int groupId) => _groupDetailUrl(groupId);
+  String checkPasswordUrl(int groupId) => _checkPasswordUrl(groupId);
   String joinGroupUrl(int groupId) => _joinGroupUrl(groupId);
   String grantMemberUrl(int groupId) => _grantMemberUrl(groupId);
   String editGroupUrl(int groupId) => _editGroupUrl(groupId);
@@ -264,9 +271,11 @@ class UrlClass extends DioClass {
 
   //* bingo
   String get createBingoUrl => _createBingoUrl;
-  String bingoDetailUrl(int bingoId) => _bingoDetailUrl(bingoId);
-  String editBingoUrl(int bingoId) => _editBingoUrl(bingoId);
-  String deleteBingoUrl(int bingoId) => _deleteBingoUrl(bingoId);
+  String bingoDetailUrl(int groupId, int bingoId) =>
+      _bingoDetailUrl(groupId, bingoId);
+  String editBingoUrl(int groupId, int bingoId) =>
+      _editBingoUrl(groupId, bingoId);
+  // String deleteBingoUrl(int , int groupId) => _deleteBingoUrl(bingoId);
 
   //* username
   String get checkNameUrl => _checkNameUrl;

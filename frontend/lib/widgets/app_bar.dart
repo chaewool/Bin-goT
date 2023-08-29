@@ -20,19 +20,21 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final WidgetList? actions;
   final String? title;
   final double elevation;
+  final bool transparent;
   const CustomAppBar({
     super.key,
     this.leadingChild,
     this.actions,
     this.title,
-    this.elevation = 0,
+    this.elevation = 0.0,
+    this.transparent = false,
   });
 
   @override
-  PreferredSizeWidget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return AppBar(
       elevation: elevation,
-      backgroundColor: whiteColor,
+      backgroundColor: transparent ? Colors.transparent : whiteColor,
       title: title != null
           ? Padding(
               padding: const EdgeInsets.all(6),
@@ -60,6 +62,7 @@ class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final ReturnVoid? onPressedBack, onPressedClose;
   final IconData? otherIcon;
+  final bool transparent;
   const AppBarWithBack({
     super.key,
     this.actions,
@@ -67,11 +70,13 @@ class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
     this.onPressedBack,
     this.onPressedClose,
     this.otherIcon,
+    this.transparent = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
+      transparent: transparent,
       leadingChild: ExitButton(
         isIconType: true,
         onPressed: onPressedBack,
@@ -83,7 +88,9 @@ class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: CustomIconButton(
-                onPressed: onPressedClose!, icon: otherIcon ?? closeIcon),
+              onPressed: onPressedClose!,
+              icon: otherIcon ?? closeIcon,
+            ),
           )
       ],
     );
@@ -128,20 +135,25 @@ class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
 
 //* group main
 class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final bool onlyBack, isMember, isAdmin;
-  final int groupId;
-  final String password;
+  // final bool onlyBack, isMember, isAdmin;
+  // final int groupId;
+  // final String password;
   const GroupAppBar({
     super.key,
-    this.onlyBack = false,
-    this.isMember = false,
-    this.isAdmin = false,
-    required this.password,
-    required this.groupId,
+    // this.onlyBack = false,
+    // this.isMember = false,
+    // this.isAdmin = false,
+    // required this.password,
+    // required this.groupId,
   });
 
   @override
   Widget build(BuildContext context) {
+    final memberState = getMemberState(context);
+    const onlyBack = false;
+    final isMember = memberState != 0;
+    final isAdmin = memberState == 2;
+    final groupId = getGroupId(context)!;
     // final start = DateTime.parse(getStart(context)!);
     // final today = DateTime.now();
     void exitThisGroup() async {
@@ -166,6 +178,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBarWithBack(
+      transparent: true,
       onPressedBack: () {
         toBack(context);
         toBack(context);
@@ -203,7 +216,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                         context,
                         title: '그룹 탈퇴 확인',
                         content: '정말 그룹을 탈퇴하시겠습니까?',
-                        onPressed: exitThisGroup,
+                        // onPressed: exitThisGroup,
                       ),
                     )
                   : const SizedBox(),
@@ -310,29 +323,33 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
 //* 빙고 상세
 class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final FutureBool Function() save;
-  final int bingoId;
+  // final int bingoId;
   const BingoDetailAppBar({
     super.key,
     required this.save,
-    required this.bingoId,
+    // required this.bingoId,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBarWithBack(
-      actions: [
-        // IconButtonInRow(
-        //   onPressed: () => shareBingo(bingoId: bingoId),
-        //   icon: shareIcon,
-        // ),
-        IconButtonInRow(
-          onPressed: save,
-          icon: saveIcon,
-        ),
-        const SizedBox(
-          width: 20,
-        )
-      ],
+      actions:
+          getBingoId(context) == context.read<GlobalGroupProvider>().bingoId
+              ? [
+                  // IconButtonInRow(
+                  //   onPressed: () => shareBingo(bingoId: bingoId),
+                  //   icon: shareIcon,
+                  // ),
+
+                  IconButtonInRow(
+                    onPressed: save,
+                    icon: saveIcon,
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  )
+                ]
+              : null,
     );
   }
 
