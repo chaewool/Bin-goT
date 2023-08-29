@@ -7,7 +7,7 @@ import json
 import logging
 
 from commons import upload_image, delete_image, RedisRanker, RedisChat, get_boolean, send_to_fcm
-from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, BoardCreateSerializer, BoardDetailSerializer, BoardItemCreateSerializer, BoardItemDetailSerializer
+from .serializers import GroupCreateSerializer, GroupDetailSerializer, GroupUpdateSerializer, BoardCreateSerializer, BoardDetailSerializer, BoardItemCreateSerializer
 from .models import Group, Board, BoardItem
 from .utils import check_cnt_groups, check_cnt_boarditems_complete, create_board
 from accounts.serializers import GroupSerializer
@@ -555,7 +555,7 @@ class GroupReviewCheckView(APIView):
         review['reviewed'] = True
         chat.setChatItem(review_id, review)
 
-        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', f'groups/{group.id}/myboard')
+        send_to_fcm(review_user, '', '인증 완료!', '요청하신 인증이 완료되었습니다.', f'groups/{group.id}/myboard/{board.id}')
         
         return Response(status=status.HTTP_200_OK)
 

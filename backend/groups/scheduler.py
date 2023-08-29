@@ -13,7 +13,7 @@ logger = logging.getLogger('accounts')
 
 
 def send_due(group, title, content, need_noti_due):
-    base_path = f'groups/{group.id}/myboard/{group.is_public}/{group.password}/{group.size}'
+    base_path = f'groups/{group.id}/myboard'
     
     if need_noti_due:
         users = [user for user in group.users.all() if user.noti_due]
@@ -24,6 +24,33 @@ def send_due(group, title, content, need_noti_due):
         board = Board.objects.get(user=user, group=group)
         path = base_path + f'/{board.id}'
         send_to_fcm(user, '', title, content, path)
+
+
+def send_rank(group, ranker, title, need_noti_due):
+    path = f'groups/{group.id}/myboard'
+    
+    if need_noti_due:
+        users = [user for user in group.users.all() if user.noti_due]
+    else:
+        users = group.users.all()
+
+    for user in users:
+        rank = ranker.getRank(str(user.id))
+        if rank == -1:
+            content = '채워진 칸이 없어 순위가 집계되지 않았습니다.'
+        else:
+            content = f'당신의 등수는 {rank}등입니다.'
+        
+        send_to_fcm(user, '', title, content, path)
+
+        if not need_noti_due and rank == 1:        
+            user.cnt_rank1 += 1
+            user.save()
+                        
+            if user.cnt_rank1 == 1:
+                send_badge_notification(user, 14)
+            elif user.cnt_rank1 == 5:
+                send_badge_notification(user, 15)
 
 
 def every_day():
@@ -54,27 +81,8 @@ def every_day():
         # 종료일, 순위 알림
         elif today == group.end:
             ranker = RedisRanker(str(group.id))
-            
             title = f'{group.groupname} 그룹의 빙고가 종료되었습니다.'
-            path = f'groups/{group.id}/rank/{group.is_public}/{group.password}'
-
-            users = group.users.all()
-            for user in users:
-                rank = ranker.getRank(str(user.id))
-                if rank == -1:
-                    content = '채워진 칸이 없어 순위가 집계되지 않았습니다.'
-                else:
-                    content = f'당신의 등수는 {rank}등입니다.'
-                send_to_fcm(user, '', title, content, path)
-                
-                if rank == 1:
-                    user.cnt_rank1 += 1
-                    user.save()
-                                
-                    if user.cnt_rank1 == 1:
-                        send_badge_notification(user, 14)
-                    elif user.cnt_rank1 == 5:
-                        send_badge_notification(user, 15)
+            send_rank(group, ranker, title, False)
 
 
 # 매주 월요일, 현재 순위 알림
@@ -85,19 +93,8 @@ def every_monday():
     
     for group in groups:
         ranker = RedisRanker(str(group.id))
-        
         title = f'{group.groupname} 그룹의 현재 순위를 확인해보세요.'
-        path = f'groups/{group.id}/rank/{group.is_public}/{group.password}'
-
-        users = group.users.all()
-        for user in users:
-            if user.noti_rank:
-                rank = ranker.getRank(str(user.id))
-                if rank == -1:
-                    content = '채워진 칸이 없어 순위가 집계되지 않았습니다.'
-                else:
-                    content = f'당신의 등수는 {rank}등입니다.'
-                send_to_fcm(user, '', title, content, path)
+        send_rank(group, ranker, title, True)
 
 
 def start():
