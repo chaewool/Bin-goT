@@ -1,5 +1,5 @@
 import 'package:bin_got/models/group_model.dart';
-import 'package:bin_got/pages/group_rank_page.dart';
+import 'package:bin_got/widgets/group_rank.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -12,19 +12,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class GroupMain extends StatefulWidget {
-  final int groupId;
-  final String password;
-  final void Function({
-    int? newMemberState,
-    int? newSize,
-    bool? newNeedAuth,
-    int? newBingoId,
-  }) applyNew;
+  // final int groupId;
+  // final String password;
+  // final void Function({
+  //   int? newMemberState,
+  //   int? newSize,
+  //   bool? newNeedAuth,
+  //   int? newBingoId,
+  // }) applyNew;
   const GroupMain({
     super.key,
-    required this.groupId,
-    required this.password,
-    required this.applyNew,
+    // required this.groupId,
+    // required this.password,
+    // required this.applyNew,
   });
 
   @override
@@ -34,80 +34,69 @@ class GroupMain extends StatefulWidget {
 class _GroupMainState extends State<GroupMain> {
   GroupDetailModel? groupDetailModel;
   int? memberState;
+  int? groupId;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (getGroupId(context) != widget.groupId) {
-        print('group id 다름');
-        setGroupId(context, widget.groupId);
-        // setPublic(context, widget.isPublic);
-        GroupProvider()
-            .readGroupDetail(widget.groupId, widget.password)
-            .then((data) {
-          setState(() {
-            print('set state 실행');
-            groupDetailModel = data;
-            memberState = data.memberState;
-          });
-          setGroupData(context, data);
-          print('apply new!!! -------------------------');
-          widget.applyNew(
-            newBingoId: data.bingoId,
-            newMemberState: data.memberState,
-            newNeedAuth: data.needAuth,
-            newSize: data.bingoSize,
-          );
-        }).catchError((error) {
-          print(error);
-          showAlert(
-            context,
-            title: '오류 발생',
-            content: '오류가 발생해 그룹 정보를 받아올 수 없습니다',
-            hasCancel: false,
-            onPressed: () {
-              toBack(context);
-            },
-          )();
+      groupId = getGroupId(context);
+      // setPublic(context, widget.isPublic);
+      print('----------- read group detail');
+      GroupProvider().readGroupDetail(groupId!).then((data) {
+        setState(() {
+          print('set state 실행');
+          groupDetailModel = data;
+          memberState = data.memberState;
         });
-      }
+        setGroupData(context, data);
+        setBingoSize(context, data.bingoSize);
+        setBingoId(context, data.bingoId);
+      }).catchError((error) {
+        print(error);
+        showAlert(
+          context,
+          title: '오류 발생',
+          content: '오류가 발생해 그룹 정보를 받아올 수 없습니다',
+          hasCancel: false,
+          onPressed: () {
+            toBack(context);
+          },
+        )();
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: CustomBoxContainer(
-        child: groupDetailModel != null
-            ? ColWithPadding(
-                vertical: 30,
-                horizontal: 30,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  if (groupDetailModel!.hasImage)
-                    CachedNetworkImage(
-                      imageUrl:
-                          '${dotenv.env['fileUrl']}/groups/${widget.groupId}',
-                      placeholder: (context, url) => const CustomBoxContainer(
-                        width: 200,
-                        height: 200,
-                      ),
+    return CustomBoxContainer(
+      child: groupDetailModel != null
+          ? ColWithPadding(
+              vertical: 30,
+              horizontal: 30,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                if (groupDetailModel!.hasImage)
+                  CachedNetworkImage(
+                    imageUrl: '${dotenv.env['fileUrl']}/groups/$groupId',
+                    placeholder: (context, url) => const CustomBoxContainer(
+                      width: 200,
+                      height: 200,
                     ),
-                  groupHeader(groupDetailModel!),
-                  const SizedBox(height: 20),
-                  ShowContentBox(
-                    contentTitle: '설명',
-                    content: groupDetailModel!.description,
                   ),
-                  ShowContentBox(
-                    contentTitle: '규칙',
-                    content: groupDetailModel!.rule,
-                  ),
-                  groupRankTop3(context, groupDetailModel!),
-                ],
-              )
-            : const SizedBox(),
-      ),
+                groupHeader(groupDetailModel!),
+                const SizedBox(height: 20),
+                ShowContentBox(
+                  contentTitle: '설명',
+                  content: groupDetailModel!.description,
+                ),
+                ShowContentBox(
+                  contentTitle: '규칙',
+                  content: groupDetailModel!.rule,
+                ),
+                groupRankTop3(context, groupDetailModel!),
+              ],
+            )
+          : const SizedBox(),
     );
   }
 
@@ -122,22 +111,17 @@ class _GroupMainState extends State<GroupMain> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const CustomText(content: '순위'),
-              TextButton(
-                onPressed: memberState != 0
-                    ? toOtherPage(
-                        context,
-                        page: GroupRank(
-                          groupId: widget.groupId,
-                          isMember: memberState != 0,
-                          password: widget.password,
-                        ),
-                      )
-                    : null,
-                child: const CustomText(
-                  content: '전체보기',
-                  fontSize: FontSize.smallSize,
-                ),
-              )
+              if (memberState != 0)
+                TextButton(
+                  onPressed: toOtherPage(
+                    context,
+                    page: const GroupRank(),
+                  ),
+                  child: const CustomText(
+                    content: '전체보기',
+                    fontSize: FontSize.smallSize,
+                  ),
+                )
             ],
           ),
           if (data.rank.isNotEmpty)

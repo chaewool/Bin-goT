@@ -72,8 +72,11 @@ const StringList matchFont = [
 ];
 
 //* 그림자
-const defaultShadow = BoxShadow(
-    color: greyColor, blurRadius: 3, spreadRadius: 0.3, offset: Offset(1, 2));
+var defaultShadow = BoxShadow(
+    color: Colors.black.withOpacity(0.15),
+    blurRadius: 4,
+    spreadRadius: 0,
+    offset: const Offset(1, 2));
 const thickerShadow = BoxShadow(
     color: greyColor, blurRadius: 3, spreadRadius: 1, offset: Offset(3, 3));
 var shadowWithOpacity = BoxShadow(

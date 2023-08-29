@@ -45,8 +45,8 @@ class GroupRankModel {
 }
 
 class GroupDetailModel {
-  final int headCount, count, bingoSize, memberState;
-  final int? bingoId;
+  final int headCount, count, bingoSize, memberState, bingoId;
+  // final int? bingoId;
   final String groupName, nickname, start, end, password, description, rule;
   final bool hasImage, needAuth;
   final List rank;
@@ -56,17 +56,17 @@ class GroupDetailModel {
       : bingoId = json['board_id'],
         headCount = json['headcount'],
         bingoSize = json['size'],
+        count = json['count'],
+        memberState = json['is_participant'],
+        hasImage = json['has_img'],
+        needAuth = json['need_auth'],
         groupName = json['groupname'],
         nickname = json['rand_name'],
-        count = json['count'],
         start = json['start'],
         end = json['end'],
         description = json['description'],
         rule = json['rule'],
         password = json['password'],
-        hasImage = json['has_img'],
-        needAuth = json['need_auth'],
-        memberState = json['is_participant'],
         // rank = json['rank'];
         rank = json['rank']
             .map((eachRank) => GroupRankModel.fromJson(eachRank))

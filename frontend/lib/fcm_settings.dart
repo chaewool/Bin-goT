@@ -1,6 +1,5 @@
 import 'package:bin_got/pages/group_admin_page.dart';
-import 'package:bin_got/pages/group_detail_page.dart';
-import 'package:bin_got/pages/group_rank_page.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:flutter/foundation.dart';
@@ -15,8 +14,8 @@ import 'package:path/path.dart';
 void onNotificationTapped(NotificationResponse notificationResponse) {
   final payload = notificationResponse.payload;
   print('페이로드 : $payload');
-  
-  var page;
+
+  Widget page;
 
   if (payload!.startsWith('mypage')) {
     // 마이페이지로 이동
@@ -34,16 +33,48 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
       page = GroupAdmin(groupId: groupId);
     } else if (tmp[2] == 'main') {
       // 그룹 메인 페이지로 이동
-      page = GroupDetail(groupId: groupId, password: password, isPublic: isPublic, initialIndex: 1);
+      page = InputPassword(isPublic: isPublic, groupId: groupId);
+      // GroupDetail(
+      //     groupId: groupId,
+      //     password: password,
+      //     isPublic: isPublic,
+      //     initialIndex: 1);
     } else if (tmp[2] == 'chat') {
       // 그룹 채팅 페이지로 이동
-      page = GroupDetail(groupId: groupId, password: password, isPublic: isPublic, initialIndex: 0);
+      page = InputPassword(
+        isPublic: isPublic,
+        groupId: groupId,
+        initialIndex: 2,
+      );
+      // GroupDetail(
+      //     groupId: groupId,
+      //     password: password,
+      //     isPublic: isPublic,
+      //     initialIndex: 0);
     } else if (tmp[2] == 'myboard') {
       // 그룹 내 내 빙고 페이지로 이동
-      page = GroupDetail(groupId: groupId, password: password, isPublic: isPublic, initialIndex: 2, size: size, bingoId: bingoId);
-    } else if (tmp[2] == 'rank') {
+      page = InputPassword(
+        isPublic: isPublic,
+        groupId: groupId,
+        initialIndex: 0,
+      );
+      // GroupDetail(
+      //     groupId: groupId,
+      //     password: password,
+      //     isPublic: isPublic,
+      //     initialIndex: 2,
+      //     size: size,
+      //     bingoId: bingoId);
+    }
+    // else if (tmp[2] == 'rank') {
+    else {
       // 그룹 랭킹 페이지로 이동
-      page = GroupRank(groupId: groupId, isMember: true, password: password);
+      page = InputPassword(
+        isPublic: isPublic,
+        groupId: groupId,
+        initialIndex: 3,
+      );
+      // GroupRank(groupId: groupId, isMember: true, password: password);
     }
   }
   toOtherPage(context as BuildContext, page: page);

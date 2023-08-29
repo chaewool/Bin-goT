@@ -233,7 +233,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 CustomBoxContainer(
                   onTap: () => changeSort(i),
                   color: sortIdx == i ? paleOrangeColor : whiteColor,
-                  borderColor: sortIdx == i ? null : greyColor,
+                  borderColor: sortIdx == i ? whiteColor : greyColor,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CustomText(
@@ -256,7 +256,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 CustomBoxContainer(
                   onTap: () => changePublicPrivate(i),
                   color: publicPrivate[i] ? paleOrangeColor : whiteColor,
-                  borderColor: publicPrivate[i] ? null : greyColor,
+                  borderColor: publicPrivate[i] ? whiteColor : greyColor,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CustomText(
