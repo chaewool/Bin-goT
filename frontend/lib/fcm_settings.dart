@@ -1,15 +1,15 @@
 import 'dart:convert';
 
+import 'package:bin_got/navigator_key.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:bin_got/providers/fcm_provider.dart';
-import 'package:path/path.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -31,6 +31,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void onNotificationTapped(NotificationResponse notificationResponse) {
   final payload = jsonDecode(notificationResponse.payload!);
   List<String> path = payload['path'].split('/');
+
+  final context = NavigatorKey.naviagatorState.currentContext;
   Widget page;
 
   if (path[0] == 'mypage') {
@@ -86,8 +88,9 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
       );
     }
   }
-
-  toOtherPage(context as BuildContext, page: page);
+  
+  Navigator.push(context!, MaterialPageRoute(builder: (context) => page));
+  // toOtherPage(context!, page: page);
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
