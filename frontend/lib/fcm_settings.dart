@@ -74,6 +74,7 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
         isPublic: isPublic,
         groupId: groupId,
         needCheck: needCheck,
+        bingoId: int.parse(path[3]),
         initialIndex: 0,
       );
 
@@ -88,9 +89,9 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
       );
     }
   }
-  
-  Navigator.push(context!, MaterialPageRoute(builder: (context) => page));
-  // toOtherPage(context!, page: page);
+
+  // Navigator.push(context!, MaterialPageRoute(builder: (context) => page));
+  toOtherPage(context!, page: page)();
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =

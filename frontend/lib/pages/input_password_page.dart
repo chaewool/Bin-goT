@@ -85,6 +85,12 @@ class _InputPasswordState extends State<InputPassword> {
       } else {
         // ignore: use_build_context_synchronously
         setGroupId(context, widget.groupId);
+        if (widget.bingoId != null) {
+          setBingoId(context, widget.bingoId!);
+        }
+        if (widget.size != null) {
+          setBingoSize(context, widget.size!);
+        }
         toOtherPage(
           context,
           page: GroupDetail(

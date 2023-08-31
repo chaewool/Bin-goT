@@ -150,6 +150,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final memberState = getMemberState(context);
+    print('memberState => $memberState');
     const onlyBack = false;
     final isMember = memberState != 0;
     final isAdmin = memberState == 2;

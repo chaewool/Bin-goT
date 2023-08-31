@@ -3,6 +3,7 @@ import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,6 @@ class BingoGallery extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void toBingoDetail() {
-      setGroupId(context, bingo.groupId);
       setStart(context, bingo.start);
       toOtherPage(context,
           page: InputPassword(
@@ -56,15 +56,6 @@ class BingoGallery extends StatelessWidget {
             bingoId: bingo.id,
             size: bingo.size,
           ))();
-      //   GroupDetail(
-      //     groupId: bingo.groupId,
-      //     // password: '',
-      //     isPublic: true,
-      //     bingoId: bingo.id,
-      //     size: bingo.size,
-      //     initialIndex: 0,
-      //   ),
-      // )();
     }
 
     return GestureDetector(
@@ -73,7 +64,9 @@ class BingoGallery extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         child: CustomBoxContainer(
           color: greyColor.withOpacity(0.5),
-          child: Column(
+          child: ColWithPadding(
+            vertical: 8,
+            horizontal: 10,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Padding(

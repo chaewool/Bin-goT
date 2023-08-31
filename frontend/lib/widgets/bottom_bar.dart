@@ -31,7 +31,7 @@ class CustomSnakeBottomBar extends StatefulWidget {
 class _CustomSnakeBottomBarState extends State<CustomSnakeBottomBar> {
   @override
   Widget build(BuildContext context) {
-    print('index => ${widget.selectedIndex}');
+    // print('index => ${widget.selectedIndex}');
     return SnakeNavigationBar.gradient(
       elevation: 0.8,
       shape: const RoundedRectangleBorder(

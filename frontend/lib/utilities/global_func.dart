@@ -268,10 +268,10 @@ void showToast(BuildContext context) =>
 //   }
 // }
 
-bool readLoading(BuildContext context) =>
+bool getLoading(BuildContext context) =>
     context.read<GlobalScrollProvider>().loading;
 
-bool getLoading(BuildContext context) =>
+bool watchLoading(BuildContext context) =>
     context.watch<GlobalScrollProvider>().loading;
 
 void setLoading(BuildContext context, bool value) =>
@@ -364,6 +364,12 @@ String? getGroupName(BuildContext context) =>
 bool? getNeedAuth(BuildContext context) =>
     context.read<GlobalGroupProvider>().needAuth;
 
+GroupChatList getChats(BuildContext context) =>
+    context.read<GlobalGroupProvider>().chats;
+
+GroupChatList watchChats(BuildContext context) =>
+    context.watch<GlobalGroupProvider>().chats;
+
 void setStart(BuildContext context, String newStart) =>
     context.read<GlobalGroupProvider>().setStart(newStart);
 
@@ -403,49 +409,50 @@ void setBingoSize(BuildContext context, int size) =>
     context.read<GlobalBingoProvider>().setBingoSize(size);
 
 //* var
-int? readBingoId(BuildContext context) =>
-    context.read<GlobalBingoProvider>().bingoId;
 int? getBingoId(BuildContext context) =>
+    context.read<GlobalBingoProvider>().bingoId;
+int? watchBingoId(BuildContext context) =>
     context.watch<GlobalBingoProvider>().bingoId;
 
 DynamicMap getBingoData(BuildContext context) =>
     context.read<GlobalBingoProvider>().data;
 
-String? getTitle(BuildContext context) =>
+String? watchTitle(BuildContext context) =>
     context.watch<GlobalBingoProvider>().title;
 
-int? getBackground(BuildContext context) =>
+int? watchBackground(BuildContext context) =>
     context.watch<GlobalBingoProvider>().background;
 
-bool getHasBlackBox(BuildContext context) =>
+bool watchHasBlackBox(BuildContext context) =>
     context.watch<GlobalBingoProvider>().hasBlackBox;
 
-bool getHasRoundEdge(BuildContext context) =>
+bool watchHasRoundEdge(BuildContext context) =>
     context.watch<GlobalBingoProvider>().hasRoundEdge;
 
-bool getHasBorder(BuildContext context) =>
+bool watchHasBorder(BuildContext context) =>
     context.watch<GlobalBingoProvider>().hasBorder;
 
-BoolList? getFinished(BuildContext context) =>
+BoolList? watchFinished(BuildContext context) =>
     context.watch<GlobalBingoProvider>().finished;
 
-int? getGap(BuildContext context) => context.watch<GlobalBingoProvider>().gap;
+int? watchGap(BuildContext context) => context.watch<GlobalBingoProvider>().gap;
 
-int? getFont(BuildContext context) => context.watch<GlobalBingoProvider>().font;
+int? watchFont(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().font;
 
-int? getCheckIcon(BuildContext context) =>
+int? watchCheckIcon(BuildContext context) =>
     context.watch<GlobalBingoProvider>().checkIcon;
 
 List getItems(BuildContext context) =>
     context.read<GlobalBingoProvider>().items;
 
-String? getItemTitle(BuildContext context, int index) =>
+String? watchItemTitle(BuildContext context, int index) =>
     context.watch<GlobalBingoProvider>().item(index)['title'];
 
 DynamicMap readItem(BuildContext context, int index) =>
     context.read<GlobalBingoProvider>().item(index);
 
-String getStringFont(BuildContext context) => matchFont[getFont(context)!];
+String getStringFont(BuildContext context) => matchFont[watchFont(context)!];
 
 IconData getCheckIconData(BuildContext context) =>
-    iconList[getCheckIcon(context)!];
+    iconList[watchCheckIcon(context)!];
