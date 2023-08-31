@@ -47,7 +47,7 @@ class _GroupChatState extends State<GroupChat> {
       groupId = getGroupId(context)!;
       print('group id => $groupId');
       initLoadingData(context, 0);
-      if (readLoading(context)) {
+      if (getLoading(context)) {
         readChats(false);
       }
       appBarHeight += MediaQuery.of(context).padding.top + 20;
@@ -90,6 +90,9 @@ class _GroupChatState extends State<GroupChat> {
   }
 
   void readChats([bool more = true]) {
+    if (getChats(context).isNotEmpty) {
+      context.read<GlobalGroupProvider>().clearChat();
+    }
     GroupProvider()
         .readGroupChatList(groupId, getLastId(context, 0))
         .then((data) {
@@ -99,7 +102,7 @@ class _GroupChatState extends State<GroupChat> {
         context.read<GlobalGroupProvider>().addChats(data);
       }
       setLoading(context, false);
-      print('read loading ${readLoading(context)}');
+      print('read loading ${getLoading(context)}');
       if (more) {
         setWorking(context, false);
         setAdditional(context, false);
@@ -174,6 +177,7 @@ class _GroupChatState extends State<GroupChat> {
 
   @override
   Widget build(BuildContext context) {
+    print('갱신');
     return Stack(
       children: [
         GestureDetector(
@@ -186,10 +190,11 @@ class _GroupChatState extends State<GroupChat> {
               Expanded(
                 child: InfiniteScroll(
                   // color: greyColor.withOpacity(0.2),
+                  color: whiteColor,
                   controller: controller,
                   cnt: 50,
                   reverse: true,
-                  data: context.read<GlobalGroupProvider>().chats,
+                  data: watchChats(context),
                   mode: 0,
                   emptyWidget: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -96,7 +96,7 @@ class _BingoFormState extends State<BingoForm> {
       print('bingo data => $data');
 
       bingoToThumb().then((_) {
-        final bingoId = readBingoId(context);
+        final bingoId = getBingoId(context);
         if (bingoId == null) {
           widget.beforeJoin ? joinGroup(data) : createGroup(data);
         } else {
@@ -289,7 +289,7 @@ class _BingoFormState extends State<BingoForm> {
                     CustomInput(
                       explain: '빙고명을 입력해주세요',
                       setValue: (value) => setOption(context, 'title', value),
-                      initialValue: getTitle(context),
+                      initialValue: watchTitle(context),
                     ),
                   ],
                 ),

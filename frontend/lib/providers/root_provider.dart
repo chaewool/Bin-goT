@@ -219,6 +219,8 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void _insertChat(GroupChatModel newChat) => _chats.insert(0, newChat);
 
+  void _clearChat() => _chats.clear();
+
 //* public
   void setLastId(int value) => _setLastId(value);
 
@@ -283,6 +285,10 @@ class GlobalGroupProvider extends ChangeNotifier {
   void insertChat(GroupChatModel newChat) {
     _insertChat(newChat);
     notifyListeners();
+  }
+
+  void clearChat() {
+    _clearChat();
   }
 
   // void setNeedAuth(bool newVal) {

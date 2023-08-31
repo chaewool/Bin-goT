@@ -37,14 +37,14 @@ class DynamicLink {
     int groupId = int.parse(deepLink.queryParameters['groupId']!);
 
     Widget page = InputPassword(
-        isPublic: true,
-        groupId: groupId,
-        needCheck: true,
-      );
+      isPublic: true,
+      groupId: groupId,
+      needCheck: true,
+    );
 
     final context = NavigatorKey.naviagatorState.currentContext;
-    Navigator.push(context!, MaterialPageRoute(builder: (context) => page));
-    // toOtherPage(context!, page: page);
+    // Navigator.push(context!, MaterialPageRoute(builder: (context) => page));
+    toOtherPage(context!, page: page)();
   }
 
   Future<String> buildDynamicLink(bool isPublic, int groupId) async {

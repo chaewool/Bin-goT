@@ -109,7 +109,8 @@ class _BingoTabBarState extends State<BingoTabBar> {
             onTap: () => changeBingoData(context, 0, i),
             child: ModifiedImage(
               image: backgroundList[i],
-              boxShadow: getBackground(context) == i ? [selectedShadow] : null,
+              boxShadow:
+                  watchBackground(context) == i ? [selectedShadow] : null,
             ),
           ),
       ],
@@ -118,13 +119,13 @@ class _BingoTabBarState extends State<BingoTabBar> {
 
   //* 빙고칸 & font 변경
   WidgetList optionOrFontTab(int index) {
-    StringList gapList = ['좁은', '보통', '넓은'];
+    StringList gapList = ['없음', '보통', '넓음'];
 
     StringList optionList = [
       '둥근 모서리 적용',
       '테두리 적용',
-      '${getHasBlackBox(context) ? '흰색' : '검은색'}으로 변경',
-      '${gapList[getGap(context)!]} 간격'
+      '${watchHasBlackBox(context) ? '흰색' : '검은색'}으로 변경',
+      '칸 여백 ${gapList[watchGap(context)!]}'
     ];
 
     bool isSelected(int i, int j) {
@@ -134,7 +135,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
           final keyList = ['has_round_edge', 'has_border'];
           return i == 0 && getBingoData(context)[keyList[j]];
         default:
-          return getFont(context) == elementIdx;
+          return watchFont(context) == elementIdx;
       }
     }
 
@@ -149,7 +150,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
                 width: 150,
                 height: 40,
                 color: isSelected(i, j) ? paleOrangeColor : whiteColor,
-                borderColor: isSelected(i, j) ? whiteColor : greyColor,
+                borderColor: isSelected(i, j) ? paleOrangeColor : greyColor,
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -178,7 +179,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
             onPressed: () => changeBingoData(context, 3, i),
             icon: iconList[i],
             size: 70,
-            color: i == getCheckIcon(context) ? paleOrangeColor : greyColor,
+            color: i == watchCheckIcon(context) ? paleOrangeColor : greyColor,
           ),
       ],
     );
@@ -421,10 +422,10 @@ class _MyTabBarState extends State<MyTabBar> {
     presentIdx = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initLoadingData(context, 1);
-      if (readLoading(context)) {
+      if (getLoading(context)) {
         setGroupTabData(false).then((_) {
           initLoadingData(context, 2);
-          if (readLoading(context)) {
+          if (getLoading(context)) {
             setBingoTabData(false);
           }
         });
@@ -521,7 +522,7 @@ class _MyTabBarState extends State<MyTabBar> {
                           fontSize: FontSize.titleSize,
                         ),
                         const SizedBox(height: 20),
-                        !getLoading(context)
+                        !watchLoading(context)
                             ? groupTabData.isNotEmpty
                                 ? Expanded(
                                     child: ListView.builder(
@@ -645,7 +646,7 @@ class _MainTabBarState extends State<MainTabBar> {
   int tabBarIndex = 0;
   StringList titleList = ['내 그룹', '내 빙고'];
   MyGroupList groupTabData = [];
-  bool hasNotGroup = false;
+  bool hasNotGroup = true;
   MyBingoList bingoTabData = [];
   List<StringList> buttonOptions = [
     ['종료일 ▼', '종료일 ▲'],
@@ -757,10 +758,10 @@ class _MainTabBarState extends State<MainTabBar> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initLoadingData(context, 1);
-      if (readLoading(context)) {
+      if (getLoading(context)) {
         setGroupTabData(false).then((_) {
           initLoadingData(context, 2);
-          if (readLoading(context)) {
+          if (getLoading(context)) {
             setBingoTabData(false);
           }
         });
@@ -866,7 +867,9 @@ class _MainTabBarState extends State<MainTabBar> {
                   Expanded(
                     child: tabBarIndex == 0
                         ? GroupInfiniteScroll(
-                            controller: groupController,
+                            controller: hasNotGroup
+                                ? ScrollController()
+                                : groupController,
                             data: groupTabData,
                             mode: 1,
                             emptyWidget: const Row(
@@ -881,7 +884,8 @@ class _MainTabBarState extends State<MainTabBar> {
                               ],
                             ),
                             hasNotGroupWidget: hasNotGroup
-                                ? const Column(
+                                ? const ColWithPadding(
+                                    vertical: 20,
                                     children: [
                                       CustomText(
                                         center: true,
@@ -890,7 +894,7 @@ class _MainTabBarState extends State<MainTabBar> {
                                         height: 1.7,
                                       ),
                                       SizedBox(
-                                        height: 70,
+                                        height: 40,
                                       ),
                                       CustomText(
                                         content: '추천그룹',

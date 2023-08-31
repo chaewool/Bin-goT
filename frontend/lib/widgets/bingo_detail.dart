@@ -27,7 +27,8 @@ class BingoDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GlobalKey globalKey = GlobalKey();
-    int bingoSize = size ?? context.read<GlobalGroupProvider>().bingoSize!;
+    int bingoSize = context.read<GlobalBingoProvider>().bingoSize ??
+        context.read<GlobalGroupProvider>().bingoSize!;
 
     FutureBool bingoToImage() async {
       var renderObject = globalKey.currentContext?.findRenderObject();
@@ -68,13 +69,13 @@ class BingoDetail extends StatelessWidget {
       }
     }
 
-    return getBingoId(context) != null
+    return watchBingoId(context) != null
         ? Stack(
             children: [
               FutureBuilder(
                 future: BingoProvider().readBingoDetail(
                   getGroupId(context)!,
-                  readBingoId(context)!,
+                  getBingoId(context)!,
                 ),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {

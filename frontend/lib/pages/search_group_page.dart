@@ -54,7 +54,7 @@ class _SearchGroupState extends State<SearchGroup> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initLoadingData(context, 0);
-      if (readLoading(context)) {
+      if (getLoading(context)) {
         search(false);
       }
       // getOffset();

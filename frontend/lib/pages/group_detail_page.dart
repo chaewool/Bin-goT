@@ -1,7 +1,7 @@
+import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/widgets/group_rank.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/widgets/app_bar.dart';
@@ -37,13 +37,17 @@ class _GroupDetailState extends State<GroupDetail> {
   // late bool needAuth;
   late int selectedIndex;
   final WidgetList nextPages = [
+    // const GroupMain(),
     const BingoDetail(),
     const GroupMain(),
     const GroupChat(),
     const GroupRank(),
   ];
   final List<Widget?> appbarList = [
-    BingoDetailAppBar(save: () => Future.value(true)),
+    BingoDetailAppBar(save: () {
+      print('touched');
+      return Future.value(true);
+    }),
     const GroupAppBar(),
     null,
     const GroupAppBar(),
@@ -53,14 +57,14 @@ class _GroupDetailState extends State<GroupDetail> {
   void initState() {
     super.initState();
     selectedIndex = widget.initialIndex;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.bingoId != null) {
-        setBingoSize(context, widget.size!);
-        setBingoId(context, widget.bingoId!);
-      } else if (widget.groupId != null) {
-        setGroupId(context, widget.groupId!);
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (widget.bingoId != null) {
+    //     setBingoSize(context, widget.size!);
+    //     setBingoId(context, widget.bingoId!);
+    //   } else if (widget.groupId != null) {
+    //     setGroupId(context, widget.groupId!);
+    //   }
+    // });
 
     // WidgetsBinding.instance.addObserver(this);
   }
@@ -71,6 +75,8 @@ class _GroupDetailState extends State<GroupDetail> {
       setState(() {
         selectedIndex = index;
       });
+      print(selectedIndex);
+      print(nextPages[selectedIndex]);
     }
   }
 
@@ -88,6 +94,8 @@ class _GroupDetailState extends State<GroupDetail> {
         toBack(context);
         if (selectedIndex == 1) {
           // setPublic(context, null);
+        } else {
+          // toBack(context);
         }
         return Future.value(false);
       },
