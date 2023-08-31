@@ -116,7 +116,7 @@ class RedisToken:
 
 from firebase_admin import messaging
 
-def send_to_fcm(user, group, title, content, path):
+def send_to_fcm(user, group, title, content, path, chat=None):
     token = RedisToken()
 
     # 한 명 빼고 모든 그룹원에게 전송(채팅)
@@ -124,7 +124,7 @@ def send_to_fcm(user, group, title, content, path):
         registration_tokens = [token.getToken(temp.id) for temp in group.users.all() if temp != user]
 
         message = messaging.MulticastMessage(
-            data={'title': title, 'content': content, 'path': path},
+            data={'title': title, 'content': content, 'data': json.dumps({'path': path, 'chat': chat})},
             tokens=registration_tokens,
         )
 
@@ -134,7 +134,7 @@ def send_to_fcm(user, group, title, content, path):
         registration_token = token.getToken(user.id)
 
         message = messaging.Message(
-            data={'title': title, 'content': content, 'path': path},
+            data={'title': title, 'content': content, 'data': json.dumps({'path': path})},
             token=registration_token,
         )
 

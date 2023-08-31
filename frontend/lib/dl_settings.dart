@@ -1,9 +1,9 @@
-import 'package:bin_got/pages/help_page.dart';
+import 'package:bin_got/navigator_key.dart';
+import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:path/path.dart';
 
 class DynamicLink {
   void setup() async {
@@ -31,16 +31,20 @@ class DynamicLink {
   }
 
   void _toOtherPage(PendingDynamicLinkData pendingDynamicLinkData) {
-    print("넘어온 데이터 출력: $pendingDynamicLinkData");
     final Uri deepLink = pendingDynamicLinkData.link;
     print("딥링크 출력: $deepLink");
-    bool isPublic = deepLink.queryParameters['isPublic'] == "true";
+
     int groupId = int.parse(deepLink.queryParameters['groupId']!);
-    toOtherPage(context as BuildContext,
-        // page: InputPassword(
-        //   isPublic: isPublic,
-        //   groupId: groupId,
-        page: const Help());
+
+    Widget page = InputPassword(
+        isPublic: true,
+        groupId: groupId,
+        needCheck: true,
+      );
+
+    final context = NavigatorKey.naviagatorState.currentContext;
+    Navigator.push(context!, MaterialPageRoute(builder: (context) => page));
+    // toOtherPage(context!, page: page);
   }
 
   Future<String> buildDynamicLink(bool isPublic, int groupId) async {

@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     # local apps
     'accounts',
     'groups',
-    'boards',
 
     # third party apps
     'corsheaders',
