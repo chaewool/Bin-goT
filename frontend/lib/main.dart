@@ -1,4 +1,6 @@
+import 'package:bin_got/dl_settings.dart';
 import 'package:bin_got/fcm_settings.dart';
+import 'package:bin_got/navigator_key.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'firebase_options.dart';
 
 int? groupId;
 int? isPublic;
+// Widget nextPage = Intro();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,39 +28,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  initFCM();
-
-  //* 외부 링크를 통해 앱에 들어올 경우
-  // final PendingDynamicLinkData? initialLink =
-  //     await FirebaseDynamicLinks.instance.getInitialLink();
-  // print('initial link => $initialLink');
-
-  // if (initialLink != null) {
-  //   final Uri deepLink = initialLink.link;
-  //   print('deep link => $deepLink');
-  //   toOtherPage(context as BuildContext,
-  //       page: const InputPassword(
-  //         isPublic: true,
-  //         groupId: 2,
-  //         needCheck: true,
-  //       ))();
-  // }
-
-  //* 앱이 실행 중인 경우
-  // FirebaseDynamicLinks.instance.onLink.listen(
-  //   (pendingDynamicLinkData) {
-  //     print(pendingDynamicLinkData);
-  //     // Set up the `onLink` event listener next as it may be received here
-  //     final Uri deepLink = pendingDynamicLinkData.link;
-  //     print(deepLink);
-  //     // Example of using the dynamic link to push the user to a different screen
-  //     toOtherPage(context as BuildContext,
-  //         page: const Intro(
-  //           isPublic: true,
-  //           groupId: 2,
-  //         ))();
-  //   },
-  // );
+  FCM().setup();
+  DynamicLink().setup();
 
   runApp(const App());
 }
@@ -76,6 +48,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GlobalScrollProvider()),
       ],
       child: MaterialApp(
+        navigatorKey: NavigatorKey.naviagatorState,
         home: const Intro(),
         theme: ThemeData(
           fontFamily: 'RIDIBatang',

@@ -62,7 +62,7 @@ class NotificationModel {
   final bool rank, due, chat, check;
   NotificationModel.fromJson(DynamicMap json)
       : rank = json['noti_rank'],
-        due = json['noti_chat'],
+        due = json['noti_due'],
         chat = json['noti_chat'],
         check = json['noti_check'];
 }

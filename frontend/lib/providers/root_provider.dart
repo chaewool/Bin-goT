@@ -76,40 +76,20 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
 
 //* notification
 class NotiProvider extends ChangeNotifier {
-  // static bool _rankNoti = true;
-  // static bool _dueNoti = true;
-  // static bool _chatNoti = true;
-  // static bool _completeNoti = true;
   static bool _beforeExit = false;
   static bool _afterWork = false;
 
   //* getter
-  // bool get rankNoti => _rankNoti;
-  // bool get dueNoti => _dueNoti;
-  // bool get chatNoti => _chatNoti;
-  // bool get completeNoti => _completeNoti;
+
   bool get beforeExit => _beforeExit;
   bool get afterWork => _afterWork;
 
   //* private
-  // FutureBool initNoti() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   _setRank(prefs.getBool('rank') ?? true);
-  //   _setDue(prefs.getBool('due') ?? true);
-  //   _setChat(prefs.getBool('chat') ?? true);
-  //   _setChat(prefs.getBool('complete') ?? true);
-  //   return Future.value(true);
-  // }
 
   void _storeBool(String key, bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(key, value);
   }
-
-  // void _setRank(bool newVal) => _rankNoti = newVal;
-  // void _setDue(bool newVal) => _dueNoti = newVal;
-  // void _setChat(bool newVal) => _chatNoti = newVal;
-  // void _setComplete(bool newVal) => _completeNoti = newVal;
 
   FutureBool _changePressed() {
     if (!_beforeExit) {
@@ -136,38 +116,6 @@ class NotiProvider extends ChangeNotifier {
   }
 
   //* public
-  // void setStoreRank(bool newRank) {
-  //   _setRank(newRank);
-  //   _storeBool('rank', newRank);
-  //   notifyListeners();
-  // }
-
-  // void setStoreDue(bool newDue) async {
-  //   _setDue(newDue);
-  //   _storeBool('due', newDue);
-  //   notifyListeners();
-  // }
-
-  // void setStoreChat(bool newChat) {
-  //   _setChat(newChat);
-  //   _storeBool('chat', newChat);
-  //   notifyListeners();
-  // }
-
-  // void setStoreComplete(bool newComplete) {
-  //   _setComplete(newComplete);
-  //   _storeBool('complete', newComplete);
-  //   notifyListeners();
-  // }
-
-  // void deleteVar() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   prefs.clear();
-  //   _setChat(true);
-  //   _setDue(true);
-  //   _setRank(true);
-  //   _setComplete(true);
-  // }
 
   FutureBool changePressed() => _changePressed();
   void showToast() => _showToast();
@@ -226,18 +174,24 @@ class GlobalGroupProvider extends ChangeNotifier {
   // static int _page = 1;
   static String? _start;
   static bool? _isPublic;
+  static final GroupChatList _chats = [];
 
-  int? get count => _data?.count;
-  int? get headCount => _data?.headCount;
-  int? get groupId => _groupId;
-  int? get bingoSize => _data?.bingoSize;
-  int? get lastId => _lastId;
+  GroupChatList get chats => _chats;
   bool? get isPublic => _isPublic;
+
+  int? get lastId => _lastId;
+  int? get groupId => _groupId;
+
+  int? get bingoId => _data?.bingoId;
+  int? get headCount => _data?.headCount;
+  int? get bingoSize => _data?.bingoSize;
+  int? get count => _data?.count;
+  int? get memberState => _data?.memberState;
   bool? get hasImage => _data?.hasImage;
   bool? get needAuth => _data?.needAuth;
+  String? get groupName => _data?.groupName;
   String? get start => _data?.start ?? _start;
   String? get end => _data?.end;
-  String? get groupName => _data?.groupName;
   String? get description => _data?.description;
   String? get rule => _data?.rule;
   String? get password => _data?.password;
@@ -260,6 +214,12 @@ class GlobalGroupProvider extends ChangeNotifier {
   // void _setNeedAuth(bool newVal) => _needAuth = newVal;
 
   void _setPublic(bool? newVal) => _isPublic = newVal;
+
+  void _addChats(GroupChatList newChats) => _chats.addAll(newChats);
+
+  void _insertChat(GroupChatModel newChat) => _chats.insert(0, newChat);
+
+  void _clearChat() => _chats.clear();
 
 //* public
   void setLastId(int value) => _setLastId(value);
@@ -317,6 +277,20 @@ class GlobalGroupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addChats(GroupChatList newChats) {
+    _addChats(newChats);
+    notifyListeners();
+  }
+
+  void insertChat(GroupChatModel newChat) {
+    _insertChat(newChat);
+    notifyListeners();
+  }
+
+  void clearChat() {
+    _clearChat();
+  }
+
   // void setNeedAuth(bool newVal) {
   //   _setNeedAuth(newVal);
   //   notifyListeners();
@@ -349,6 +323,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   };
   // static DynamicMap _tempData = {..._data};
   static int? _bingoId;
+  static int? _bingoSize;
   static bool _isCheckTheme = false;
   static int _lastId = 0;
   static BoolList _finished = [];
@@ -357,6 +332,8 @@ class GlobalBingoProvider extends ChangeNotifier {
   //* getter
   DynamicMap get data => _data;
   // DynamicMap get tempData => _tempData;
+  int? get bingoSize => _bingoSize;
+
   int? get groupId => _data['group'];
   int? get gap => _data['around_kan'];
   int? get checkIcon => _data['complete_icon'];
@@ -379,7 +356,8 @@ class GlobalBingoProvider extends ChangeNotifier {
   void _setIsCheckTheme(bool value) => _isCheckTheme = value;
   void _setData(DynamicMap newData) => _data = {...newData};
   // void _setTempData(DynamicMap newData) => _tempData = {...newData};
-  void _setGBingoId(int newVal) => _bingoId = newVal;
+  void _setBingoId(int newVal) => _bingoId = newVal;
+  void _setBingoSize(int newVal) => _bingoSize = newVal;
   void _setOption(String key, dynamic value) => _data[key] = value;
 
   void _changeBackground(int i) {
@@ -491,9 +469,13 @@ class GlobalBingoProvider extends ChangeNotifier {
   void setData(DynamicMap data) => _setData(data);
   // void setTempData(DynamicMap data) => _setTempData(data);
 
-  void setBingoId(int newVal) {
-    _setGBingoId(newVal);
+  void setBingoId(int newId) {
+    _setBingoId(newId);
     notifyListeners();
+  }
+
+  void setBingoSize(int newSize) {
+    _setBingoSize(newSize);
   }
 
   // void setNeedAuth(bool newVal) {

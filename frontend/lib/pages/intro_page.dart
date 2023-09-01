@@ -1,3 +1,4 @@
+import 'package:bin_got/fcm_settings.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -12,12 +13,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Intro extends StatefulWidget {
-  final bool? isPublic;
+  // final bool? isPublic;
   final int? groupId;
+  final int initialIndex;
   const Intro({
     super.key,
-    this.isPublic,
+    // this.isPublic,
     this.groupId,
+    this.initialIndex = 1,
   });
 
   @override
@@ -36,7 +39,7 @@ class _IntroState extends State<Intro> {
       UserProvider().confirmToken().then((result) async {
         print('intro => $result');
         if (result.isEmpty) {
-          saveFCMToken();
+          FCM().saveFCMToken();
         } else {
           throw Error();
         }
@@ -83,9 +86,9 @@ class _IntroState extends State<Intro> {
         toOtherPageWithoutPath(
           context,
           page: widget.groupId == null
-              ? const Main()
+              ? Main(initialPage: widget.initialIndex)
               : InputPassword(
-                  isPublic: widget.isPublic!,
+                  isPublic: true,
                   groupId: widget.groupId!,
                 ),
         );

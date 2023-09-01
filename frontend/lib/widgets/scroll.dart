@@ -122,32 +122,32 @@ class GroupInfiniteScroll extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('widget => $hasNotGroupWidget');
     return CustomBoxContainer(
       color: beigeColor,
-      child: !getLoading(context)
+      child: !watchLoading(context)
           ? data.isNotEmpty
-              ? hasNotGroupWidget ??
-                  ListView.builder(
-                    controller: controller,
-                    itemCount: data.length,
-                    itemBuilder: (context, i) {
-                      return Column(
+              ? Column(
+                  children: [
+                    if (hasNotGroupWidget != null)
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // i < getPage(context, mode) * 10
-                          //     ?
-                          data[i].id != getLastId(context, mode)
-                              ? Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(5, 0, 5, 5),
-                                  child: GroupListItem(
-                                    isSearchMode: mode == 0,
-                                    groupInfo: data[i],
-                                    public: data[i].isPublic,
-                                  ),
-                                )
-                              : Column(
-                                  children: [
-                                    Padding(
+                          hasNotGroupWidget!,
+                        ],
+                      ),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: controller,
+                        itemCount: data.length,
+                        itemBuilder: (context, i) {
+                          return Column(
+                            children: [
+                              // i < getPage(context, mode) * 10
+                              //     ?
+                              data[i].id != getLastId(context, mode)
+                                  ? Padding(
                                       padding:
                                           const EdgeInsets.fromLTRB(5, 0, 5, 5),
                                       child: GroupListItem(
@@ -155,35 +155,35 @@ class GroupInfiniteScroll extends StatelessWidget {
                                         groupInfo: data[i],
                                         public: data[i].isPublic,
                                       ),
-                                    ),
-                                    if (getLastId(context, mode) != -1)
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 40,
+                                    )
+                                  : Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              5, 0, 5, 5),
+                                          child: GroupListItem(
+                                            isSearchMode: mode == 0,
+                                            groupInfo: data[i],
+                                            public: data[i].isPublic,
+                                          ),
                                         ),
-                                        child: CustomCirCularIndicator(),
-                                      )
-                                  ],
-                                ),
-
-                          // getLastId(context, mode) != -1 &&
-                          //         data[i].id == getLastId(context, mode)
-                          //     // &&
-                          //     //         getTotal(context, mode)! >
-                          //     //             getPage(context, mode)
-                          //     ? const Padding(
-                          //         padding: EdgeInsets.symmetric(
-                          //           vertical: 40,
-                          //         ),
-                          //         child: Center(
-                          //           child: CircularProgressIndicator(),
-                          //         ),
-                          //       )
-                          //     : const SizedBox()
-                        ],
-                      );
-                    },
-                  )
+                                        if (hasNotGroupWidget == null &&
+                                            getLastId(context, mode) != -1)
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 40,
+                                            ),
+                                            child: CustomCirCularIndicator(),
+                                          )
+                                      ],
+                                    ),
+                            ],
+                          );
+                        },
+                      ),
+                    )
+                  ],
+                )
               : emptyWidget
           : const CustomCirCularIndicator(),
       // CustomText(content: '빙고 정보를 불러오는 중입니다')
@@ -217,7 +217,7 @@ class InfiniteScroll extends StatelessWidget {
     print('scroll data => $data, loading => ${getLoading(context)}');
     return CustomBoxContainer(
       color: color,
-      child: !getLoading(context)
+      child: !watchLoading(context)
           ? data.isNotEmpty
               ? ListView.builder(
                   controller: controller,

@@ -31,7 +31,7 @@ class CustomSnakeBottomBar extends StatefulWidget {
 class _CustomSnakeBottomBarState extends State<CustomSnakeBottomBar> {
   @override
   Widget build(BuildContext context) {
-    print('index => ${widget.selectedIndex}');
+    // print('index => ${widget.selectedIndex}');
     return SnakeNavigationBar.gradient(
       elevation: 0.8,
       shape: const RoundedRectangleBorder(
@@ -89,16 +89,17 @@ class _CustomSnakeBottomBarState extends State<CustomSnakeBottomBar> {
 
 //* 그룹에서의 하단 바
 class GroupMainBottomBar extends StatelessWidget {
-  final int groupId, selectedIndex;
+  // final int groupId,
+  final int selectedIndex;
   final int? size, bingoId;
   final bool isMember;
-  final bool needAuth;
+  // final bool needAuth;
   final void Function(int) changeIndex;
   const GroupMainBottomBar({
     super.key,
-    required this.groupId,
+    // required this.groupId,
     this.isMember = true,
-    required this.needAuth,
+    // required this.needAuth,
     this.size,
     required this.selectedIndex,
     this.bingoId,
@@ -113,6 +114,7 @@ class GroupMainBottomBar extends StatelessWidget {
               customBottomBarIcon(label: '빙고 상세 페이지', iconData: boardIcon),
               customBottomBarIcon(label: '그룹 메인 페이지', iconData: homeIcon),
               customBottomBarIcon(label: '그룹 채팅 페이지', iconData: chatIcon),
+              customBottomBarIcon(label: '그룹 내 순위 페이지', iconData: rankIcon),
             ],
             selectedIndex: selectedIndex,
             changeIndex: changeIndex,
@@ -143,14 +145,15 @@ class GroupMainBottomBar extends StatelessWidget {
               height: 50,
               child: CustomButton(
                 color: blackColor,
-                content: '빙고 만들고 가입${needAuth == true ? ' 신청' : ''}하기',
+                content:
+                    '빙고 만들고 가입${getNeedAuth(context) == true ? ' 신청' : ''}하기',
                 textColor: whiteColor,
                 onPressed: toOtherPage(
                   context,
                   page: BingoForm(
                     bingoSize: size!,
-                    needAuth: needAuth,
                     beforeJoin: true,
+                    needAuth: getNeedAuth(context) ?? true,
                   ),
                 ),
               ),
@@ -236,6 +239,7 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
           Flexible(
             flex: 5,
             child: CustomInput(
+              autofocus: true,
               filled: true,
               explain: '내용을 입력하세요',
               setValue: (value) {

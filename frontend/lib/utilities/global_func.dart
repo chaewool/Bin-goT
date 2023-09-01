@@ -1,17 +1,15 @@
+import 'package:bin_got/dl_settings.dart';
+import 'package:bin_got/fcm_settings.dart';
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/pages/main_page.dart';
-import 'package:bin_got/providers/fcm_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +19,7 @@ import 'package:provider/provider.dart';
 TextTemplate defaultText({
   required int id,
   required bool isGroup,
-  String? password,
+  // String? password,
   String? groupName,
   required String url,
 }) {
@@ -47,7 +45,7 @@ void shareGroup({
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
 
-  String url = await buildDynamicLink(isPublic, groupId);
+  String url = await DynamicLink().buildDynamicLink(isPublic, groupId);
 
   if (isKakaoTalkSharingAvailable) {
     try {
@@ -55,7 +53,7 @@ void shareGroup({
         template: defaultText(
           isGroup: true,
           id: groupId,
-          password: password,
+          // password: password,
           groupName: groupName,
           url: url,
         ),
@@ -71,7 +69,7 @@ void shareGroup({
         template: defaultText(
           isGroup: true,
           id: groupId,
-          password: password,
+          // password: password,
           url: url,
         ),
       );
@@ -112,21 +110,6 @@ void shareBingo({required int bingoId}) async {
   //     print('카카오톡 공유 실패 $error');
   //   }
   // }
-}
-
-Future<String> buildDynamicLink(bool isPublic, int groupId) async {
-  String uriPrefix = dotenv.env['dynamicLinkPrefix']!;
-
-  final DynamicLinkParameters parameters = DynamicLinkParameters(
-    uriPrefix: uriPrefix,
-    link: Uri.parse('$uriPrefix/firebase/dynamicLinks/first'),
-    androidParameters:
-        AndroidParameters(packageName: dotenv.env['packageName']!),
-  );
-  // final dynamicLink =
-  //     await FirebaseDynamicLinks.instance.buildShortLink(parameters);
-  final dynamicLink = await FirebaseDynamicLinks.instance.buildLink(parameters);
-  return dynamicLink.toString();
 }
 
 //* 페이지 이동
@@ -182,7 +165,7 @@ void login(BuildContext context) async {
     UserProvider().login().then((data) {
       setTokens(context, data['access_token'], data['refresh_token']);
       context.read<AuthProvider>().setStoreId(data['id']);
-      saveFCMToken();
+      FCM().saveFCMToken();
       if (data['is_login']) {
         toOtherPage(context, page: const Main())();
       } else {
@@ -230,22 +213,6 @@ void setTokens(BuildContext context, String newToken, String newRefresh) {
 void deleteVar(BuildContext context) {
   context.read<AuthProvider>().deleteVar();
   // context.read<NotiProvider>().deleteVar();
-}
-
-//* fcm token
-void saveFCMToken() async {
-  // 기기의 등록 토큰 액세스
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  final fcmToken = await messaging.getToken();
-  FCMProvider().saveFCMToken(fcmToken!);
-
-  // 토큰이 업데이트될 때마다 서버에 저장
-  messaging.onTokenRefresh.listen((fcmToken) {
-    FCMProvider().saveFCMToken(fcmToken);
-  }).onError((err) {
-    print('error => $err');
-    throw Error();
-  });
 }
 
 //* id
@@ -301,10 +268,10 @@ void showToast(BuildContext context) =>
 //   }
 // }
 
-bool readLoading(BuildContext context) =>
+bool getLoading(BuildContext context) =>
     context.read<GlobalScrollProvider>().loading;
 
-bool getLoading(BuildContext context) =>
+bool watchLoading(BuildContext context) =>
     context.watch<GlobalScrollProvider>().loading;
 
 void setLoading(BuildContext context, bool value) =>
@@ -375,6 +342,10 @@ void initLoadingData(BuildContext context, int mode) {
 }
 
 //* group data
+
+int? getMemberState(BuildContext context) =>
+    context.read<GlobalGroupProvider>().memberState;
+
 int? getGroupId(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupId;
 
@@ -389,6 +360,15 @@ bool? getPublic(BuildContext context) =>
 
 String? getGroupName(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupName;
+
+bool? getNeedAuth(BuildContext context) =>
+    context.read<GlobalGroupProvider>().needAuth;
+
+GroupChatList getChats(BuildContext context) =>
+    context.read<GlobalGroupProvider>().chats;
+
+GroupChatList watchChats(BuildContext context) =>
+    context.watch<GlobalGroupProvider>().chats;
 
 void setStart(BuildContext context, String newStart) =>
     context.read<GlobalGroupProvider>().setStart(newStart);
@@ -423,45 +403,56 @@ void initFinished(BuildContext context, int size) =>
 void setFinished(BuildContext context, int index, bool value) =>
     context.read<GlobalBingoProvider>().setFinished(index, value);
 
+void setBingoId(BuildContext context, int id) =>
+    context.read<GlobalBingoProvider>().setBingoId(id);
+void setBingoSize(BuildContext context, int size) =>
+    context.read<GlobalBingoProvider>().setBingoSize(size);
+
 //* var
+int? getBingoId(BuildContext context) =>
+    context.read<GlobalBingoProvider>().bingoId;
+int? watchBingoId(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().bingoId;
+
 DynamicMap getBingoData(BuildContext context) =>
     context.read<GlobalBingoProvider>().data;
 
-String? getTitle(BuildContext context) =>
+String? watchTitle(BuildContext context) =>
     context.watch<GlobalBingoProvider>().title;
 
-int? getBackground(BuildContext context) =>
+int? watchBackground(BuildContext context) =>
     context.watch<GlobalBingoProvider>().background;
 
-bool getHasBlackBox(BuildContext context) =>
+bool watchHasBlackBox(BuildContext context) =>
     context.watch<GlobalBingoProvider>().hasBlackBox;
 
-bool getHasRoundEdge(BuildContext context) =>
+bool watchHasRoundEdge(BuildContext context) =>
     context.watch<GlobalBingoProvider>().hasRoundEdge;
 
-bool getHasBorder(BuildContext context) =>
+bool watchHasBorder(BuildContext context) =>
     context.watch<GlobalBingoProvider>().hasBorder;
 
-BoolList? getFinished(BuildContext context) =>
+BoolList? watchFinished(BuildContext context) =>
     context.watch<GlobalBingoProvider>().finished;
 
-int? getGap(BuildContext context) => context.watch<GlobalBingoProvider>().gap;
+int? watchGap(BuildContext context) => context.watch<GlobalBingoProvider>().gap;
 
-int? getFont(BuildContext context) => context.watch<GlobalBingoProvider>().font;
+int? watchFont(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().font;
 
-int? getCheckIcon(BuildContext context) =>
+int? watchCheckIcon(BuildContext context) =>
     context.watch<GlobalBingoProvider>().checkIcon;
 
 List getItems(BuildContext context) =>
     context.read<GlobalBingoProvider>().items;
 
-String? getItemTitle(BuildContext context, int index) =>
+String? watchItemTitle(BuildContext context, int index) =>
     context.watch<GlobalBingoProvider>().item(index)['title'];
 
 DynamicMap readItem(BuildContext context, int index) =>
     context.read<GlobalBingoProvider>().item(index);
 
-String getStringFont(BuildContext context) => matchFont[getFont(context)!];
+String getStringFont(BuildContext context) => matchFont[watchFont(context)!];
 
 IconData getCheckIconData(BuildContext context) =>
-    iconList[getCheckIcon(context)!];
+    iconList[watchCheckIcon(context)!];

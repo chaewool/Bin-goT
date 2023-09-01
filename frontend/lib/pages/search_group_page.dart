@@ -1,7 +1,6 @@
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
-import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/button.dart';
@@ -55,7 +54,7 @@ class _SearchGroupState extends State<SearchGroup> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initLoadingData(context, 0);
-      if (readLoading(context)) {
+      if (getLoading(context)) {
         search(false);
       }
       // getOffset();
@@ -105,49 +104,6 @@ class _SearchGroupState extends State<SearchGroup> {
     // increasePage(context, 0);
   }
 
-  // void getOffset() {
-  //   if (filterKey.currentContext != null) {
-  //     final renderBox =
-  //         filterKey.currentContext!.findRenderObject() as RenderBox;
-  //     setState(() {
-  //       filterPosition = renderBox.localToGlobal(Offset.zero);
-  //     });
-  //   }
-  //   if (sortKey.currentContext != null) {
-  //     final renderBox = sortKey.currentContext!.findRenderObject() as RenderBox;
-  //     setState(() {
-  //       sortPosition = renderBox.localToGlobal(Offset.zero);
-  //     });
-  //   }
-  // }
-
-  // void changeShowSort() {
-  //   setState(() {
-  //     showSort = !showSort;
-  //   });
-  // }
-
-  // void changeSort() {
-  //   setState(() {
-  //     sortIdx = 1 - sortIdx;
-  //   });
-  // }
-
-  // void changeShowFilter() {
-  //   setState(() {
-  //     showFilter = !showFilter;
-  //   });
-  // }
-
-  // void changeFilter() {
-  //   setState(() {
-  //     if (filterIdx == 2) {
-  //       filterIdx = 0;
-  //     } else {
-  //       filterIdx += 1;
-  //     }
-  //   });
-  // }
   void changeShowSearchBar() {
     setState(() {
       showSearchBar = !showSearchBar;
@@ -165,7 +121,9 @@ class _SearchGroupState extends State<SearchGroup> {
         resizeToAvoidBottomInset: false,
         appBar: AppBarWithBack(
           onPressedClose: changeShowSearchBar,
-          otherIcon: searchIcon,
+          otherIcon: showSearchBar
+              ? Icons.keyboard_arrow_up_outlined
+              : Icons.keyboard_arrow_down_outlined,
         ),
         body: Stack(
           children: [
@@ -221,10 +179,17 @@ class _SearchGroupState extends State<SearchGroup> {
                     mode: 0,
                     emptyWidget: const Padding(
                       padding: EdgeInsets.only(top: 40),
-                      child: CustomText(
-                        center: true,
-                        content: '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
-                        height: 1.5,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          CustomText(
+                            center: true,
+                            content:
+                                '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
+                            height: 1.5,
+                          ),
+                        ],
                       ),
                     ),
                   ),

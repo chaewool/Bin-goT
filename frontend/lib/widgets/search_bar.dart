@@ -51,7 +51,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     super.initState();
     index = widget.period.toDouble();
     sortIdx = widget.sortIdx;
-    publicPrivate = [widget.public % 2 == 0, widget.public < 2];
+    publicPrivate = [widget.public < 2, widget.public % 2 == 0];
     keyword['value'] = widget.query ?? '';
   }
 
@@ -104,6 +104,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     setState(() {
       publicPrivate[i] = !publicPrivate[i];
     });
+    print(publicPrivate);
   }
 
   bool Function() isPossible() => () => index != 0 || keyword['value'] != '';
@@ -233,7 +234,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 CustomBoxContainer(
                   onTap: () => changeSort(i),
                   color: sortIdx == i ? paleOrangeColor : whiteColor,
-                  borderColor: sortIdx == i ? null : greyColor,
+                  borderColor: sortIdx == i ? paleOrangeColor : greyColor,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CustomText(
@@ -256,7 +257,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 CustomBoxContainer(
                   onTap: () => changePublicPrivate(i),
                   color: publicPrivate[i] ? paleOrangeColor : whiteColor,
-                  borderColor: publicPrivate[i] ? null : greyColor,
+                  borderColor: publicPrivate[i] ? paleOrangeColor : greyColor,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CustomText(

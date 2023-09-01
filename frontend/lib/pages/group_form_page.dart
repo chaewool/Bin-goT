@@ -44,7 +44,7 @@ class GroupForm extends StatefulWidget {
 class _GroupFormState extends State<GroupForm> {
   //* select box
   final printedValues = [
-    ['2 x 2', '3 x 3', '4 x 4', '5 x 5'],
+    ['2 ✕ 2', '3 ✕ 3', '4 ✕ 4', '5 ✕ 5'],
     ['그룹장의\n승인 필요', '자동 가입']
   ];
   final convertedValues = [
@@ -79,8 +79,7 @@ class _GroupFormState extends State<GroupForm> {
       groupData = {};
       WidgetsBinding.instance.addPostFrameCallback((_) {
         selectedIndex[0] = getBingoSize(context)! - 1;
-        selectedIndex[1] =
-            context.read<GlobalGroupProvider>().needAuth! ? 0 : 1;
+        selectedIndex[1] = getNeedAuth(context)! ? 0 : 1;
         // isChecked = getPublic(context)!;
       });
     }
@@ -148,6 +147,7 @@ class _GroupFormState extends State<GroupForm> {
         )();
       } else {
         print(groupData);
+        print(widget.groupId);
         GroupProvider()
             .editOwnGroup(
                 widget.groupId!,
@@ -161,9 +161,12 @@ class _GroupFormState extends State<GroupForm> {
                       : null,
                   'update_img': isImageUpdated,
                 }))
-            .then((groupId) {
+            .then((_) {
+          print('성공함');
           toBack(context);
-        }).catchError((error) {});
+        }).catchError((error) {
+          print('오류');
+        });
       }
     }
   }
@@ -265,6 +268,7 @@ class _GroupFormState extends State<GroupForm> {
                 title: '그룹명',
                 explainTitleType: 0,
                 explain: '그룹명을 입력하세요.',
+                maxLength: 20,
                 setValue: setGroupData('groupname'),
                 initialValue: groupData.containsKey('groupname')
                     ? groupData['groupname']
@@ -304,43 +308,71 @@ class _GroupFormState extends State<GroupForm> {
                       explainTitleType: 1,
                       content:
                           '총 ${(selectedIndex[0] + 2) * (selectedIndex[0] + 2)} 칸의 빙고판이 만들어집니다.',
-                      inputWidget: Column(
+                      inputWidget: RowWithPadding(
+                        vertical: 10,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          for (int i = 0; i < 2; i += 1)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                for (int j = 0; j < 2; j += 1)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                    ),
-                                    child: CustomBoxContainer(
-                                      borderColor: selectedIndex[0] == 2 * i + j
-                                          ? null
-                                          : greyColor,
-                                      onTap: () =>
-                                          changeGroupData(0, 2 * i + j),
-                                      width: 120,
-                                      height: 30,
-                                      color: selectedIndex[0] == 2 * i + j
-                                          ? paleOrangeColor
-                                          : whiteColor,
-                                      // boxShadow: applyBoxShadow(0, 2 * i + j),
-                                      child: Center(
-                                        child: CustomText(
-                                          content: printedValues[0][2 * i + j],
-                                          color: selectedIndex[0] == 2 * i + j
-                                              ? whiteColor
-                                              : blackColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
+                          for (int i = 0; i < 4; i += 1)
+                            CustomBoxContainer(
+                              borderColor: selectedIndex[0] == i
+                                  ? whiteColor
+                                  : greyColor,
+                              onTap: () => changeGroupData(0, i),
+                              // width: 120,
+                              // height: 30,
+                              color: selectedIndex[0] == i
+                                  ? paleOrangeColor
+                                  : whiteColor,
+                              // boxShadow: applyBoxShadow(0, 2 * i + j),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: CustomText(
+                                  content: printedValues[0][i],
+                                  color: selectedIndex[0] == i
+                                      ? whiteColor
+                                      : blackColor,
+                                ),
+                              ),
                             ),
                         ],
                       ),
+                      // Column(
+                      //   children: [
+                      //     for (int i = 0; i < 2; i += 1)
+                      //       Row(
+                      //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //         children: [
+                      //           for (int j = 0; j < 2; j += 1)
+                      //             Padding(
+                      //               padding: const EdgeInsets.symmetric(
+                      //                 vertical: 10,
+                      //               ),
+                      //               child: CustomBoxContainer(
+                      //                 borderColor: selectedIndex[0] == 2 * i + j
+                      //                     ? null
+                      //                     : greyColor,
+                      //                 onTap: () =>
+                      //                     changeGroupData(0, 2 * i + j),
+                      //                 width: 120,
+                      //                 height: 30,
+                      //                 color: selectedIndex[0] == 2 * i + j
+                      //                     ? paleOrangeColor
+                      //                     : whiteColor,
+                      //                 // boxShadow: applyBoxShadow(0, 2 * i + j),
+                      //                 child: Center(
+                      //                   child: CustomText(
+                      //                     content: printedValues[0][2 * i + j],
+                      //                     color: selectedIndex[0] == 2 * i + j
+                      //                         ? whiteColor
+                      //                         : blackColor,
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //         ],
+                      //       ),
+                      //   ],
+                      // ),
                     ),
                     groupFormInput(
                       title: '가입 시 자동 승인',

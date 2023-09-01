@@ -46,6 +46,8 @@ const downIcon = Icons.arrow_drop_down;
 const checkIcon = Icons.check_circle;
 const boardIcon = Icons.apps_outlined;
 
+const rankIcon = Icons.align_vertical_bottom_rounded;
+
 const iconList = [confirmIcon, closeIcon, circleIcon];
 
 //* background image

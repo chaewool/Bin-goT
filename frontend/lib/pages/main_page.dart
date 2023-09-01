@@ -1,5 +1,6 @@
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
+import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -11,7 +12,11 @@ import 'package:flutter/material.dart';
 
 //* 메인 페이지
 class Main extends StatefulWidget {
-  const Main({super.key});
+  final int initialPage;
+  const Main({
+    super.key,
+    this.initialPage = 1,
+  });
 
   @override
   State<Main> createState() => _MainState();
@@ -19,14 +24,14 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   // bool isSearchMode = false;
-  double boxHeight = 100;
-  double radius = 40;
-  int selectedIndex = 1;
-  WidgetList nextPages = const [Settings(), MainTabBar(), CustomSearchBar()];
+  // double boxHeight = 100;
+  // double radius = 40;
+  late int selectedIndex;
+  WidgetList nextPages = const [CustomSearchBar(), MainTabBar(), Settings()];
   final List<BottomNavigationBarItem> items = [
-    customBottomBarIcon(label: '설정 페이지', iconData: settingsIcon),
-    customBottomBarIcon(label: '메인 페이지', iconData: homeIcon),
     customBottomBarIcon(label: '그룹 검색 바 띄우기', iconData: searchIcon),
+    customBottomBarIcon(label: '메인 페이지', iconData: homeIcon),
+    customBottomBarIcon(label: '설정 페이지', iconData: settingsIcon),
   ];
   // final List<Color> backgroundColors = [whiteColor, paleRedColor, whiteColor];
 
@@ -39,14 +44,15 @@ class _MainState extends State<Main> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        setState(() {
-          boxHeight =
-              getHeight(context) - 50 - MediaQuery.of(context).padding.top;
-        });
-      },
-    );
+    selectedIndex = widget.initialPage;
+    // WidgetsBinding.instance.addPostFrameCallback(
+    //   (_) {
+    //     setState(() {
+    //       boxHeight =
+    //           getHeight(context) - 50 - MediaQuery.of(context).padding.top;
+    //     });
+    //   },
+    // );
   }
 
   @override
@@ -54,12 +60,11 @@ class _MainState extends State<Main> {
     return WillPopScope(
       onWillPop: () => exitApp(context),
       child: Scaffold(
-        // backgroundColor: backgroundColors[selectedIndex],
+        backgroundColor: whiteColor,
         resizeToAvoidBottomInset: false,
         body: CustomAnimatedPage(
           changeIndex: changeIndex,
-          nextPages: nextPages,
-          selectedIndex: selectedIndex,
+          nextPage: nextPages[selectedIndex],
         ),
         bottomNavigationBar: CustomSnakeBottomBar(
           selectedIndex: selectedIndex,

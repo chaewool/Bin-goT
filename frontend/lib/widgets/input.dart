@@ -10,7 +10,7 @@ class CustomInput extends StatelessWidget {
   final StringList? explainTitle;
   final bool needMore, onlyNum, enabled, needSearch;
   final double? width, height, vertical, horizontal;
-  final bool filled;
+  final bool filled, autofocus;
   final Color filledColor;
   final FontSize fontSize;
   final int? maxLength;
@@ -42,6 +42,7 @@ class CustomInput extends StatelessWidget {
     this.onSubmitted,
     this.suffixIcon,
     this.explainTitle,
+    this.autofocus = false,
     // required this.returnValue,
   });
 
@@ -59,6 +60,7 @@ class CustomInput extends StatelessWidget {
             width: width,
             height: height,
             child: TextField(
+              autofocus: autofocus,
               controller: TextEditingController(text: initialValue),
               decoration: InputDecoration(
                 filled: filled,
@@ -146,9 +148,9 @@ class _InputDateState extends State<InputDate> {
   @override
   Widget build(BuildContext context) {
     const dayTextStyle =
-        TextStyle(color: blackColor, fontWeight: FontWeight.w500);
-    const weekendTextStyle =
         TextStyle(color: darkGreyColor, fontWeight: FontWeight.w500);
+    const weekendTextStyle =
+        TextStyle(color: paleRedColor, fontWeight: FontWeight.w500);
     const anniversaryTextStyle = TextStyle(
       color: redColor,
       fontWeight: FontWeight.w700,
@@ -185,45 +187,18 @@ class _InputDateState extends State<InputDate> {
         // }
         return textStyle;
       },
-      dayBuilder: ({
-        required date,
-        textStyle,
-        decoration,
-        isSelected,
-        isDisabled,
-        isToday,
-      }) {
-        Widget? dayWidget;
-        if (date.day % 3 == 0 && date.day % 9 != 0) {
-          dayWidget = Container(
-            decoration: decoration,
-            child: Center(
-              child: Stack(
-                alignment: AlignmentDirectional.center,
-                children: [
-                  Text(
-                    MaterialLocalizations.of(context).formatDecimal(date.day),
-                    style: textStyle,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 27.5),
-                    child: Container(
-                      height: 4,
-                      width: 4,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color:
-                            isSelected == true ? whiteColor : Colors.grey[500],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-        return dayWidget;
-      },
+      // dayBuilder: ({
+      //   required date,
+      //   textStyle,
+      //   decoration,
+      //   isSelected,
+      //   isDisabled,
+      //   isToday,
+      // }) {
+      //   Widget? dayWidget;
+
+      //   return dayWidget;
+      // },
       yearBuilder: ({
         required year,
         decoration,

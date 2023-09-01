@@ -29,10 +29,12 @@ class _NotificationSettingsState extends State<NotificationSettings> {
   void initState() {
     super.initState();
     UserInfoProvider().getNoti().then((data) {
-      optionList[0] = data.rank;
-      optionList[1] = data.due;
-      optionList[2] = data.chat;
-      optionList[3] = data.check;
+      setState(() {
+        optionList[0] = data.rank;
+        optionList[1] = data.due;
+        optionList[2] = data.chat;
+        optionList[3] = data.check;
+      });
       print('${data.rank}, ${data.due}, ${data.chat}, ${data.check}');
       // initialOption = List.from(optionList);
     }).catchError((error) {
@@ -51,6 +53,12 @@ class _NotificationSettingsState extends State<NotificationSettings> {
   // }
 
   void applyNoti() {
+    print('${{
+      'noti_rank': optionList[0],
+      'noti_due': optionList[1],
+      'noti_chat': optionList[2],
+      'noti_check': optionList[3],
+    }}');
     UserInfoProvider().changeNoti({
       'noti_rank': optionList[0],
       'noti_due': optionList[1],
@@ -65,6 +73,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: whiteColor,
       appBar: AppBarWithBack(
         onPressedBack: () {
           toBack(context);

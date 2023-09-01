@@ -498,27 +498,28 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
   Widget build(BuildContext context) {
     return CustomModal(title: '배지 선택', onPressed: changeBadge, children: [
       FutureBuilder(
-          future: UserInfoProvider().getBadges(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              var data = snapshot.data;
-              return SingleChildScrollView(
-                child: CustomBoxContainer(
-                  height: getHeight(context) * 0.6,
-                  color: greyColor,
-                  hasRoundEdge: false,
-                  child: ListView.separated(
-                    itemCount: data!.length ~/ 2,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 20),
-                    itemBuilder: (context, index) {
-                      return RowWithPadding(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        vertical: 8,
-                        horizontal: 8,
-                        children: [
-                          for (int di = 0; di < 2; di += 1)
-                            Column(
+        future: UserInfoProvider().getBadges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var data = snapshot.data;
+            return SingleChildScrollView(
+              child: CustomBoxContainer(
+                height: getHeight(context) * 0.6,
+                color: whiteColor,
+                hasRoundEdge: false,
+                child: ListView.separated(
+                  itemCount: data!.length ~/ 2,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 20),
+                  itemBuilder: (context, index) {
+                    return RowWithPadding(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      vertical: 8,
+                      horizontal: 8,
+                      children: [
+                        for (int di = 0; di < 2; di += 1)
+                          Expanded(
+                            child: Column(
                               children: [
                                 CircleContainer(
                                   onTap: () =>
@@ -541,24 +542,24 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: CustomText(
-                                    content: data[2 * index + di].name,
-                                    fontSize: FontSize.smallSize,
-                                  ),
+                                const SizedBox(height: 10),
+                                CustomText(
+                                  content: data[2 * index + di].name,
+                                  fontSize: FontSize.tinySize,
                                 )
                               ],
-                            )
-                        ],
-                      );
-                    },
-                  ),
+                            ),
+                          )
+                      ],
+                    );
+                  },
                 ),
-              );
-            }
-            return const CustomCirCularIndicator();
-          }),
+              ),
+            );
+          }
+          return const CustomCirCularIndicator();
+        },
+      ),
       // for (int i = 0; i < 4; i += 1)
       //   Row(
       //     mainAxisAlignment: MainAxisAlignment.center,
@@ -613,38 +614,51 @@ class CustomModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: title != null
-          ? Center(
-              child: CustomText(
-                content: title!,
-                fontSize: FontSize.largeSize,
-              ),
-            )
-          : const SizedBox(),
-      children: [
-        ...children,
-        RowWithPadding(
-          horizontal: 50,
-          mainAxisAlignment: hasConfirm
-              ? MainAxisAlignment.spaceAround
-              : MainAxisAlignment.center,
+    return Dialog(
+      backgroundColor: whiteColor,
+      child: CustomBoxContainer(
+        width: getWidth(context) * 0.85,
+        child: ColWithPadding(
+          vertical: 20,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (hasConfirm)
-              CustomButton(
-                onPressed: onPressed ?? () => toBack(context),
-                content: buttonText,
-              ),
-            onCancelPressed == null
-                ? ExitButton(isIconType: false, buttonText: cancelText)
-                : CustomButton(
-                    onPressed: onCancelPressed!,
-                    content: cancelText,
-                    color: paleOrangeColor,
+            if (title != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Center(
+                  child: CustomText(
+                    content: title!,
+                    fontSize: FontSize.largeSize,
                   ),
+                ),
+              ),
+            ...children,
+            RowWithPadding(
+              horizontal: 50,
+              mainAxisAlignment: hasConfirm
+                  ? MainAxisAlignment.spaceAround
+                  : MainAxisAlignment.center,
+              children: [
+                if (hasConfirm)
+                  CustomButton(
+                    color: paleOrangeColor,
+                    textColor: whiteColor,
+                    onPressed: onPressed ?? () => toBack(context),
+                    content: buttonText,
+                  ),
+                onCancelPressed == null
+                    ? ExitButton(isIconType: false, buttonText: cancelText)
+                    : CustomButton(
+                        onPressed: onCancelPressed!,
+                        content: cancelText,
+                        // color: paleOrangeColor,
+                        // textColor: whiteColor,
+                      ),
+              ],
+            )
           ],
-        )
-      ],
+        ),
+      ),
     );
   }
 }
@@ -732,10 +746,16 @@ class InputModal extends StatelessWidget {
       onPressed: onPressed,
       onCancelPressed: onCancelPressed,
       children: [
-        CustomInput(
-          explain: '$type을 입력해주세요',
-          maxLength: 20,
-          setValue: setValue,
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 10,
+          ),
+          child: CustomInput(
+            explain: '$type을 입력해주세요',
+            maxLength: 20,
+            setValue: setValue,
+          ),
         ),
       ],
     );

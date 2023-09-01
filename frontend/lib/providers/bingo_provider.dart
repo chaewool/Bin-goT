@@ -4,18 +4,20 @@ import 'package:dio/dio.dart';
 
 class BingoProvider extends ApiProvider {
   //* public
-  FutureDynamicMap readBingoDetail(int bingoId) => _readBingoDetail(bingoId);
+  FutureDynamicMap readBingoDetail(int groupId, int bingoId) =>
+      _readBingoDetail(groupId, bingoId);
   // FutureInt createOwnBingo(FormData bingoData) => _createOwnBingo(bingoData);
-  FutureDynamicMap editOwnBingo(int bingoId, FormData bingoData) =>
-      _editOwnBingo(bingoId, bingoData);
-  FutureDynamicMap deleteOwnBingo(int bingoId) => _deleteOwnBingo(bingoId);
+  FutureDynamicMap editOwnBingo(int groupId, int bingoId, FormData bingoData) =>
+      _editOwnBingo(groupId, bingoId, bingoData);
+  // FutureDynamicMap deleteOwnBingo(int bingoId) => _deleteOwnBingo(bingoId);
 
   FutureDynamicMap makeCompleteMessage(int groupId, FormData completeData) =>
       _makeCompleteMessage(groupId, completeData);
   //* detail
-  FutureDynamicMap _readBingoDetail(int bingoId) async {
+  FutureDynamicMap _readBingoDetail(int groupId, int bingoId) async {
     try {
-      final response = await dioWithToken().get(bingoDetailUrl(bingoId));
+      final response =
+          await dioWithToken().get(bingoDetailUrl(groupId, bingoId));
       print('response: $response');
 
       return response.data;
@@ -45,9 +47,11 @@ class BingoProvider extends ApiProvider {
   // }
 
   //* update
-  FutureDynamicMap _editOwnBingo(int bingoId, FormData bingoData) async {
+  FutureDynamicMap _editOwnBingo(
+      int groupId, int bingoId, FormData bingoData) async {
     try {
-      await dioWithTokenForm().put(editBingoUrl(bingoId), data: bingoData);
+      await dioWithTokenForm()
+          .put(editBingoUrl(groupId, bingoId), data: bingoData);
 
       return {};
     } catch (error) {
@@ -71,6 +75,6 @@ class BingoProvider extends ApiProvider {
   }
 
   //* delete
-  FutureDynamicMap _deleteOwnBingo(int bingoId) =>
-      deleteApi(deleteBingoUrl(bingoId));
+  // FutureDynamicMap _deleteOwnBingo(int bingoId) =>
+  //     deleteApi(deleteBingoUrl(bingoId));
 }
