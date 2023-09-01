@@ -94,10 +94,12 @@ class GroupDetailView(APIView):
         
         rand_name = user.username
         board = Board.objects.filter(user=user, group=group)
+        board_id = 0
 
         # 그룹 가입 여부 확인
         if board.exists():
             board = Board.objects.get(user=user, group=group)
+            board_id = board.id
             
             # 강제 탈퇴 여부 확인
             if board.is_banned == 2:
@@ -127,7 +129,7 @@ class GroupDetailView(APIView):
                 'board_id': Board.objects.get(group=group, user=r).id
                 })
         
-        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board.id, 'rank': rank}
+        data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank}
         
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -148,7 +150,8 @@ class GroupUpdateView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         data = json.loads(request.data.get('data'))
-        update_img = get_boolean(request.data.get('update_img'))
+        update_img = request.data.get('update_img')
+        update_img = get_boolean(update_img)
                 
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -238,7 +241,8 @@ class GroupGrantView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         target_id = request.data.get('target_id')
-        grant = get_boolean(request.data.get('grant'))
+        grant = request.data.get('grant')
+        grant = get_boolean(grant)
                 
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 승인할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -446,7 +450,7 @@ class GroupChatCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
-        send_to_fcm(user, group, group.groupname, content, f'groups/{group.id}/chat', chat)
+        send_to_fcm(user, '', group.groupname, content, f'groups/{group.id}/chat', chat)
             
         return Response(data=chat, status=status.HTTP_200_OK)
 
