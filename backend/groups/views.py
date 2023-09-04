@@ -450,7 +450,7 @@ class GroupChatCreateView(APIView):
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
-        send_to_fcm(user, '', group.groupname, content, f'groups/{group.id}/chat', chat)
+        send_to_fcm(user, group, group.groupname, content, f'groups/{group.id}/chat', chat)
             
         return Response(data=chat, status=status.HTTP_200_OK)
 
