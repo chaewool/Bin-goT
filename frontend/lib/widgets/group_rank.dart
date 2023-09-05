@@ -3,7 +3,7 @@ import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/app_bar.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -25,67 +25,44 @@ class GroupRank extends StatefulWidget {
 }
 
 class _GroupRankState extends State<GroupRank> {
-  // Future<RankList>? rankList;
   late int groupId;
+  RankList rankList = [];
 
   @override
   void initState() {
     super.initState();
     groupId = getGroupId(context)!;
+    GroupProvider().groupRank(groupId).then((data) {
+      setState(() {
+        rankList.addAll(data);
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar:
-          // AppBarWithBack(),
-          const GroupAppBar(
-              // onlyBack: true,
-              // groupId: widget.groupId,
-              // password: widget.password,
-              ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: CustomText(content: '그룹 랭킹', fontSize: FontSize.titleSize),
-            ),
-            Expanded(
-              child: FutureBuilder(
-                future: GroupProvider().groupRank(groupId),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Expanded(child: groupRankList(snapshot));
-                  }
-                  return const CustomCirCularIndicator();
-                },
-              ),
-            )
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 30, 10, 0),
+      child: CustomBoxContainer(
+        color: whiteColor,
+        child: !watchLoading(context)
+            ? rankList.isNotEmpty
+                ? Expanded(
+                    child: ListView.builder(
+                      itemCount: rankList.length,
+                      itemBuilder: (context, index) => RankListItem(
+                        rank: index + 1,
+                        rankListItem: rankList[index],
+                        isMember: true,
+                      ),
+                    ),
+                  )
+                : const Padding(
+                    padding: EdgeInsets.only(top: 30),
+                    child: CustomText(content: '유효한 순위가 없습니다.'),
+                  )
+            : const CustomCirCularIndicator(),
       ),
-      // bottomNavigationBar:
-      // GroupMainBottomBar(
-      //   isMember: true,
-      //   groupId: widget.groupId,
-      // ),
-    );
-  }
-
-  ListView groupRankList(AsyncSnapshot<RankList> snapshot) {
-    return ListView.separated(
-      itemBuilder: (context, index) {
-        var rankListItem = snapshot.data![index];
-        return RankListItem(
-          rank: index + 1,
-          rankListItem: rankListItem,
-          isMember: true,
-        );
-      },
-      separatorBuilder: (context, index) => const SizedBox(height: 20),
-      itemCount: snapshot.data!.length,
     );
   }
 }

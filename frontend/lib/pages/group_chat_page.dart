@@ -7,10 +7,10 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
-import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
@@ -38,7 +38,6 @@ class _GroupChatState extends State<GroupChat> {
   XFile? selectedImage;
   GlobalKey bottomBarKey = GlobalKey();
   double appBarHeight = 50;
-  bool showInput = false;
 
   @override
   void initState() {
@@ -169,90 +168,72 @@ class _GroupChatState extends State<GroupChat> {
     });
   }
 
-  void changeShowInput(bool value) {
-    setState(() {
-      showInput = value;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     print('갱신');
-    return Stack(
-      children: [
-        GestureDetector(
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-            changeShowInput(false);
-          },
-          child: Column(
-            children: [
-              Expanded(
-                child: InfiniteScroll(
-                  // color: greyColor.withOpacity(0.2),
-                  color: whiteColor,
-                  controller: controller,
-                  cnt: 50,
-                  reverse: true,
-                  data: watchChats(context),
-                  mode: 0,
-                  emptyWidget: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      CustomText(
-                        center: true,
-                        fontSize: FontSize.titleSize,
-                        content: '채팅 기록이 없습니다.',
-                        height: 1.5,
-                      ),
-                    ],
+    return Scaffold(
+      body: Stack(
+        children: [
+          GestureDetector(
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  child: InfiniteScroll(
+                    // color: greyColor.withOpacity(0.2),
+                    color: whiteColor,
+                    controller: controller,
+                    cnt: 50,
+                    reverse: true,
+                    data: watchChats(context),
+                    mode: 0,
+                    emptyWidget: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        CustomText(
+                          center: true,
+                          fontSize: FontSize.titleSize,
+                          content: '채팅 기록이 없습니다.',
+                          height: 1.5,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              if (showInput)
                 GroupChatBottomBar(
                   key: bottomBarKey,
                   addChat: addChat,
                   selectedImage: selectedImage,
                   imagePicker: imagePicker,
                 )
-            ],
-          ),
-        ),
-        if (!showInput)
-          Positioned(
-            left: getWidth(context) - 80,
-            top: getHeight(context) - 170,
-            child: FloatingActionButton(
-              backgroundColor: palePinkColor.withOpacity(0.8),
-              onPressed: () => changeShowInput(true),
-              child: const CustomIcon(
-                icon: addIcon,
-                color: whiteColor,
-              ),
+              ],
             ),
           ),
-        if (showImg)
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              CustomBoxContainer(
-                hasRoundEdge: false,
-                width: getWidth(context),
-                height: getHeight(context) - appBarHeight,
-                color: blackColor.withOpacity(0.8),
-                image: DecorationImage(
-                  image: FileImage(File(selectedImage!.path)),
+          const AppBarWithBack(transparent: true),
+          if (showImg)
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                CustomBoxContainer(
+                  hasRoundEdge: false,
+                  width: getWidth(context),
+                  height: getHeight(context) - appBarHeight,
+                  color: blackColor.withOpacity(0.8),
+                  image: DecorationImage(
+                    image: FileImage(File(selectedImage!.path)),
+                  ),
+                  child: CustomIconButton(
+                    icon: closeIcon,
+                    onPressed: deleteImg,
+                  ),
                 ),
-                child: CustomIconButton(
-                  icon: closeIcon,
-                  onPressed: deleteImg,
-                ),
-              ),
-            ],
-          )
-      ],
+              ],
+            )
+        ],
+      ),
     );
   }
 }

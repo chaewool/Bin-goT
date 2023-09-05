@@ -327,6 +327,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   static bool _isCheckTheme = false;
   static int _lastId = 0;
   static BoolList _finished = [];
+  static bool? _isMine;
   // static int _page = 1;
 
   //* getter
@@ -348,6 +349,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   bool get isCheckTheme => _isCheckTheme;
   BoolList get finished => _finished;
   List get items => _data['items'];
+  bool? get isMine => _isMine;
   // int get page => _page;
 
   //* private
@@ -440,6 +442,8 @@ class GlobalBingoProvider extends ChangeNotifier {
     _setItem(index2, content1);
   }
 
+  void _setIsMine(bool newVal) => _isMine = newVal;
+
   //* public
   DynamicMap item(int index) => _item(index);
 
@@ -476,6 +480,11 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   void setBingoSize(int newSize) {
     _setBingoSize(newSize);
+  }
+
+  void setIsMine(bool newVal) {
+    _setIsMine(newVal);
+    notifyListeners();
   }
 
   // void setNeedAuth(bool newVal) {
