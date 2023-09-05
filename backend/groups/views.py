@@ -31,8 +31,8 @@ class GroupCreateView(APIView):
         
         if period > 365:
             return Response(data={'message': '기간은 1년 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        elif headcount < 1 or headcount > 30:
-            return Response(data={'message': '인원 수는 1명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        elif headcount < 2 or headcount > 30:
+            return Response(data={'message': '인원 수는 2명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         elif size < 2 or size > 5:
             return Response(data={'message': '빙고 크기는 2 이상 5 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         elif not is_public and password == '':
@@ -162,8 +162,8 @@ class GroupUpdateView(APIView):
         if not data.get('headcount'):
             data['headcount'] = group.headcount
 
-        if data['headcount'] < 1 or data['headcount'] > 30:
-            return Response(data={'message': '인원 수는 1명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        if data['headcount'] < 2 or data['headcount'] > 30:
+            return Response(data={'message': '인원 수는 2명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if user == group.leader:
             serializer = GroupUpdateSerializer(instance=group, data=data)
