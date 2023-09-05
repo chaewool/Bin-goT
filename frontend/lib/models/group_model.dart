@@ -15,10 +15,11 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 // }
 
 class GroupMemberModel {
-  final int id, bingoId;
+  final int id, bingoId, badgeId;
   final String username;
   GroupMemberModel.fromJson(DynamicMap json)
       : id = json['id'],
+        badgeId = json['badge'],
         bingoId = json['board_id'],
         username = json['username'];
 }

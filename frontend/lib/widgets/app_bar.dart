@@ -135,6 +135,7 @@ class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
 
 //* group main
 class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
+  // final bool onlyBack;
   // final bool onlyBack, isMember, isAdmin;
   // final int groupId;
   // final String password;
@@ -149,11 +150,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final memberState = getMemberState(context);
-    print('memberState => $memberState');
     const onlyBack = false;
-    final isMember = memberState != 0;
-    final isAdmin = memberState == 2;
     final groupId = getGroupId(context)!;
     // final start = DateTime.parse(getStart(context)!);
     // final today = DateTime.now();
@@ -188,7 +185,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: onlyBack
           ? null
           : [
-              isAdmin
+              watchMemberState(context) == 2
                   ? IconButtonInRow(
                       icon: settingsIcon,
                       onPressed: toOtherPage(
@@ -197,7 +194,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     )
                   : const SizedBox(),
-              isMember
+              watchMemberState(context) == 1
                   // && today.difference(start) < Duration.zero
                   ? IconButtonInRow(
                       icon: shareIcon,
@@ -209,7 +206,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     )
                   : const SizedBox(),
-              isMember && !isAdmin
+              watchMemberState(context) == 1
                   // && today.difference(start) < Duration.zero
                   ? IconButtonInRow(
                       icon: exitIcon,
@@ -217,7 +214,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                         context,
                         title: '그룹 탈퇴 확인',
                         content: '정말 그룹을 탈퇴하시겠습니까?',
-                        // onPressed: exitThisGroup,
+                        onPressed: exitThisGroup,
                       ),
                     )
                   : const SizedBox(),

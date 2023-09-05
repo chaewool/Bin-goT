@@ -343,6 +343,9 @@ void initLoadingData(BuildContext context, int mode) {
 
 //* group data
 
+int? watchMemberState(BuildContext context) =>
+    context.watch<GlobalGroupProvider>().memberState;
+
 int? getMemberState(BuildContext context) =>
     context.read<GlobalGroupProvider>().memberState;
 
@@ -408,6 +411,9 @@ void setBingoId(BuildContext context, int id) =>
 void setBingoSize(BuildContext context, int size) =>
     context.read<GlobalBingoProvider>().setBingoSize(size);
 
+void setIsMine(BuildContext context, bool isMine) =>
+    context.read<GlobalBingoProvider>().setIsMine(isMine);
+
 //* var
 int? getBingoId(BuildContext context) =>
     context.read<GlobalBingoProvider>().bingoId;
@@ -456,3 +462,6 @@ String getStringFont(BuildContext context) => matchFont[watchFont(context)!];
 
 IconData getCheckIconData(BuildContext context) =>
     iconList[watchCheckIcon(context)!];
+
+bool? getIsMine(BuildContext context) =>
+    context.read<GlobalBingoProvider>().isMine;

@@ -247,6 +247,7 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
                                     id: applicant.id,
                                     bingoId: applicant.bingoId,
                                     nickname: applicant.username,
+                                    badge: applicant.badgeId,
                                     isMember: false,
                                   );
                                 },
@@ -284,6 +285,7 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
                             id: member.id,
                             bingoId: member.bingoId,
                             nickname: member.username,
+                            badge: member.badgeId,
                             isMember: true,
                           );
                         },
@@ -646,7 +648,7 @@ class _MainTabBarState extends State<MainTabBar> {
   int tabBarIndex = 0;
   StringList titleList = ['내 그룹', '내 빙고'];
   MyGroupList groupTabData = [];
-  bool hasNotGroup = true;
+  bool hasNotGroup = false;
   MyBingoList bingoTabData = [];
   List<StringList> buttonOptions = [
     ['종료일 ▼', '종료일 ▲'],
@@ -707,12 +709,12 @@ class _MainTabBarState extends State<MainTabBar> {
       print('--------------------------');
       print(idxList[0]);
       print('group tab bar : ${groupData.groups.length}');
-      // setState(() {
-      // });
-      if (groupData.groups.isNotEmpty) {
-        groupTabData.addAll(groupData.groups);
-      }
-      hasNotGroup = groupData.hasNotGroup;
+      setState(() {
+        if (groupData.groups.isNotEmpty) {
+          groupTabData.addAll(groupData.groups);
+        }
+        hasNotGroup = groupData.hasNotGroup;
+      });
       setLoading(context, false);
       if (more) {
         setWorking(context, false);
@@ -738,7 +740,9 @@ class _MainTabBarState extends State<MainTabBar> {
       'idx': getLastId(context, 2),
     }).then((bingoData) {
       if (bingoData.isNotEmpty) {
-        bingoTabData.addAll(bingoData);
+        setState(() {
+          bingoTabData.addAll(bingoData);
+        });
       }
       setLoading(context, false);
       if (more) {

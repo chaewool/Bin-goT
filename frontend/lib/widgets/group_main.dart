@@ -76,11 +76,15 @@ class _GroupMainState extends State<GroupMain> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 if (groupDetailModel!.hasImage)
-                  CachedNetworkImage(
-                    imageUrl: '${dotenv.env['fileUrl']}/groups/$groupId',
-                    placeholder: (context, url) => const CustomBoxContainer(
-                      width: 200,
-                      height: 200,
+                  CustomBoxContainer(
+                    width: getWidth(context),
+                    child: CachedNetworkImage(
+                      imageUrl: '${dotenv.env['fileUrl']}/groups/$groupId',
+                      fit: BoxFit.fitWidth,
+                      placeholder: (context, url) => const CustomBoxContainer(
+                        width: 200,
+                        height: 200,
+                      ),
                     ),
                   ),
                 groupHeader(groupDetailModel!),

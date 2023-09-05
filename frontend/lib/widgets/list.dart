@@ -111,7 +111,6 @@ class RankListItem extends StatelessWidget {
       border: true,
       // boxShadow: const [defaultShadow],
       onTap: () {
-        toBack(context);
         setBingoId(context, rankListItem.bingoId);
       },
       // toOtherPage(
