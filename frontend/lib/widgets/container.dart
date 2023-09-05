@@ -75,8 +75,8 @@ class BingoGallery extends StatelessWidget {
                   imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
                   placeholder: (context, url) => CustomBoxContainer(
                     color: whiteColor,
-                    width: (getWidth(context) - 8) / 2,
-                    height: (getWidth(context) - 8) / 2,
+                    width: (getWidth(context) - 20) / 2,
+                    height: (getWidth(context) - 20) / 2,
                   ),
                 ),
               ),

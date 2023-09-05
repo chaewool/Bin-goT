@@ -8,6 +8,7 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_snake_navigationbar/flutter_snake_navigationbar.dart';
 import 'package:image_picker/image_picker.dart';
@@ -113,7 +114,6 @@ class GroupMainBottomBar extends StatelessWidget {
             items: [
               customBottomBarIcon(label: '빙고 상세 페이지', iconData: boardIcon),
               customBottomBarIcon(label: '그룹 메인 페이지', iconData: homeIcon),
-              customBottomBarIcon(label: '그룹 채팅 페이지', iconData: chatIcon),
               customBottomBarIcon(label: '그룹 내 순위 페이지', iconData: rankIcon),
             ],
             selectedIndex: selectedIndex,
@@ -141,19 +141,24 @@ class GroupMainBottomBar extends StatelessWidget {
         //     ],
         //   )
         : BottomAppBar(
-            child: SizedBox(
-              height: 50,
-              child: CustomButton(
-                color: blackColor,
-                content:
-                    '빙고 만들고 가입${getNeedAuth(context) == true ? ' 신청' : ''}하기',
-                textColor: whiteColor,
-                onPressed: toOtherPage(
-                  context,
-                  page: BingoForm(
-                    bingoSize: size!,
-                    beforeJoin: true,
-                    needAuth: getNeedAuth(context) ?? true,
+            child: GestureDetector(
+              onTap: toOtherPage(
+                context,
+                page: BingoForm(
+                  bingoSize: size ?? 0,
+                  beforeJoin: true,
+                  needAuth: getNeedAuth(context) ?? true,
+                ),
+              ),
+              child: CustomBoxContainer(
+                hasRoundEdge: false,
+                height: 50,
+                color: paleRedColor,
+                child: Center(
+                  child: CustomText(
+                    content:
+                        '빙고 만들고 가입${getNeedAuth(context) == true ? ' 신청' : ''}하기',
+                    color: whiteColor,
                   ),
                 ),
               ),
@@ -239,7 +244,6 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
           Flexible(
             flex: 5,
             child: CustomInput(
-              autofocus: true,
               filled: true,
               explain: '내용을 입력하세요',
               setValue: (value) {

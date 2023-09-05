@@ -87,6 +87,7 @@ class _InputPasswordState extends State<InputPassword> {
         setGroupId(context, widget.groupId);
         if (widget.bingoId != null) {
           setBingoId(context, widget.bingoId!);
+          setIsMine(context, true);
         }
         if (widget.size != null) {
           setBingoSize(context, widget.size!);
@@ -101,6 +102,7 @@ class _InputPasswordState extends State<InputPassword> {
             initialIndex: widget.initialIndex,
             bingoId: widget.bingoId,
             size: widget.size,
+            isMember: !widget.isSearchMode,
             // data: data,
           ),
         )();
@@ -128,6 +130,7 @@ class _InputPasswordState extends State<InputPassword> {
     if (password == null || password == '') {
       showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
     } else {
+      setGroupId(context, widget.groupId);
       GroupProvider()
           .checkPassword(widget.groupId, password)
           .then((_) => toOtherPage(
@@ -138,9 +141,10 @@ class _InputPasswordState extends State<InputPassword> {
                   admin: widget.admin,
                   bingoId: widget.bingoId,
                   size: widget.size,
+                  isMember: false,
                   // password: password,
                 ),
-              ))
+              )())
           .catchError((error) {
         print(error);
         return error;

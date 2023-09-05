@@ -6,7 +6,9 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EachAccordion extends StatefulWidget {
   final Widget question, answer;
@@ -50,8 +52,8 @@ class _EachAccordionState extends State<EachAccordion> {
 }
 
 //* group admin
-class MemberList extends StatelessWidget {
-  final int id, bingoId;
+class MemberList extends StatefulWidget {
+  final int id, bingoId, badge;
   final String nickname;
   final bool isMember;
   const MemberList({
@@ -60,23 +62,45 @@ class MemberList extends StatelessWidget {
     required this.nickname,
     required this.isMember,
     required this.bingoId,
+    required this.badge,
   });
 
   @override
+  State<MemberList> createState() => _MemberListState();
+}
+
+class _MemberListState extends State<MemberList> {
+  bool showElement = true;
+  @override
   Widget build(BuildContext context) {
-    void manageMember(bool grant) async {
+    void manageMember(bool grant) {
       try {
-        await GroupProvider().grantThisMember(
-          getGroupId(context)!,
-          {'target_id': id, 'grant': grant},
-        );
+        showAlert(
+          context,
+          title: '가입 신청 ${grant ? '승인' : '거부'}',
+          content: '가입 신청 ${grant ? '승인' : '거부'}하시겠습니까?',
+          onPressed: () async {
+            print(getGroupId(context));
+            print(
+              {'target_id': widget.id, 'grant': grant},
+            );
+            await GroupProvider().grantThisMember(
+              getGroupId(context)!,
+              {'target_id': widget.id, 'grant': grant},
+            );
+            setState(() {
+              showElement = false;
+            });
+            toBack(context);
+          },
+        )();
       } catch (error) {
         showAlert(context,
             title: '요청 실패', content: '오류가 발생해 요청한 작업이 처리되지 않았습니다.')();
       }
     }
 
-    return isMember
+    return widget.isMember
         ? CustomList(
             height: 70,
             // boxShadow: const [defaultShadow],
@@ -84,9 +108,15 @@ class MemberList extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CircleContainer(child: halfLogo),
-                CustomText(content: nickname),
-                getId(context) != id
+                CircleContainer(
+                  child: CachedNetworkImage(
+                    imageUrl: '${dotenv.env['fileUrl']}/badges/${widget.badge}',
+                    placeholder: (context, url) =>
+                        const SizedBox(width: 50, height: 50),
+                  ),
+                ),
+                CustomText(content: widget.nickname),
+                getId(context) != widget.id
                     ? IconButtonInRow(
                         icon: closeIcon,
                         onPressed: () => manageMember(false),
@@ -105,30 +135,45 @@ class MemberList extends StatelessWidget {
               ],
             ),
           )
-        : EachAccordion(
-            question: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircleContainer(child: halfLogo),
-                CustomText(content: nickname),
-                Row(
+        : showElement
+            ? EachAccordion(
+                question: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButtonInRow(
-                      icon: confirmIcon,
-                      onPressed: () => manageMember(true),
-                      color: greenColor,
+                    CircleContainer(
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            '${dotenv.env['fileUrl']}/badges/${widget.badge}',
+                        placeholder: (context, url) =>
+                            const SizedBox(width: 50, height: 50),
+                      ),
                     ),
-                    IconButtonInRow(
-                      icon: closeIcon,
-                      onPressed: () => manageMember(false),
-                      color: isMember ? blackColor : redColor,
-                    ),
+                    CustomText(content: widget.nickname),
+                    Row(
+                      children: [
+                        IconButtonInRow(
+                          icon: confirmIcon,
+                          onPressed: () => manageMember(true),
+                          color: greenColor,
+                        ),
+                        IconButtonInRow(
+                          icon: closeIcon,
+                          onPressed: () => manageMember(false),
+                          color: widget.isMember ? blackColor : redColor,
+                        ),
+                      ],
+                    )
                   ],
-                )
-              ],
-            ),
-            answer: const SizedBox(),
-            // Image.network('${dotenv.env['fileUrl']}/bingos/$bingoId'),
-          );
+                ),
+                answer: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        '${dotenv.env['fileUrl']}/boards/${widget.bingoId}',
+                  ),
+                ),
+                // Image.network('${dotenv.env['fileUrl']}/bingos/$bingoId'),
+              )
+            : const SizedBox();
   }
 }

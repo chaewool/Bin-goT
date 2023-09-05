@@ -1,3 +1,6 @@
+import 'package:bin_got/pages/group_chat_page.dart';
+import 'package:bin_got/providers/root_provider.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/widgets/group_rank.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -6,15 +9,16 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
-import 'package:bin_got/widgets/group_chat.dart';
 import 'package:bin_got/widgets/group_main.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GroupDetail extends StatefulWidget
 // with WidgetsBindingObserver
 {
   final int initialIndex;
-  final bool isPublic, admin;
+  final bool isPublic, admin, isMember;
   final int? bingoId, size, groupId;
   // final String start;
   const GroupDetail({
@@ -25,6 +29,8 @@ class GroupDetail extends StatefulWidget
     this.bingoId,
     this.size,
     required this.admin,
+    required this.isMember,
+
     // required this.start,
   });
 
@@ -40,7 +46,6 @@ class _GroupDetailState extends State<GroupDetail> {
     // const GroupMain(),
     const BingoDetail(),
     const GroupMain(),
-    const GroupChat(),
     const GroupRank(),
   ];
   final List<Widget?> appbarList = [
@@ -48,7 +53,6 @@ class _GroupDetailState extends State<GroupDetail> {
       print('touched');
       return Future.value(true);
     }),
-    const GroupAppBar(),
     null,
     const GroupAppBar(),
   ];
@@ -102,15 +106,34 @@ class _GroupDetailState extends State<GroupDetail> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: whiteColor,
-        body: CustomAnimatedPage(
-          needScroll: selectedIndex % 2 == 1,
-          changeIndex: changeIndex,
-          nextPage: nextPages[selectedIndex],
-          appBar: appbarList[selectedIndex],
+        body: Stack(
+          children: [
+            CustomAnimatedPage(
+              needScroll: selectedIndex == 1,
+              changeIndex: changeIndex,
+              nextPage: nextPages[selectedIndex],
+              appBar: appbarList[selectedIndex],
+            ),
+            Positioned(
+              left: getWidth(context) - 80,
+              top: getHeight(context) - 150,
+              child: FloatingActionButton(
+                backgroundColor: palePinkColor.withOpacity(0.8),
+                onPressed: toOtherPage(context, page: const GroupChat()),
+                child: const CustomIcon(
+                  icon: chatIcon,
+                  color: whiteColor,
+                ),
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: GroupMainBottomBar(
           selectedIndex: selectedIndex,
           changeIndex: changeIndex,
+          isMember: widget.isMember,
+          size: context.watch<GlobalGroupProvider>().bingoSize ??
+              context.watch<GlobalBingoProvider>().bingoSize,
         ),
       ),
     );

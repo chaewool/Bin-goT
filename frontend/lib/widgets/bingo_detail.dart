@@ -93,7 +93,7 @@ class BingoDetail extends StatelessWidget {
                     }
                     print(getBingoData(context));
 
-                    RepaintBoundary(
+                    return RepaintBoundary(
                       key: globalKey,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,

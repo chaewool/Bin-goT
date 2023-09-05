@@ -79,8 +79,7 @@ class _BingoFormState extends State<BingoForm> {
       int cnt = 0;
       for (var element in (data['items'] as List)) {
         final title = element['title'].trim();
-        final content = element['content'].trim();
-        if (title != null && title != '' && content != null && content != '') {
+        if (title != null && title != '') {
           cnt += 1;
         }
       }
@@ -97,7 +96,8 @@ class _BingoFormState extends State<BingoForm> {
 
       bingoToThumb().then((_) {
         final bingoId = getBingoId(context);
-        if (bingoId == null) {
+        print(bingoId);
+        if (bingoId == null || bingoId == 0) {
           widget.beforeJoin ? joinGroup(data) : createGroup(data);
         } else {
           //* 빙고 수정
