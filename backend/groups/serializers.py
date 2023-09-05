@@ -41,7 +41,7 @@ class BoardItemCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BoardItem
-        exclude = ('board', 'id', 'check_cnt', 'finished')
+        fields = ('item_id', 'title', 'content', 'check', 'check_goal')
 
 
 class BoardItemDetailSerializer(serializers.ModelSerializer):
