@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/navigator_key.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,24 +12,18 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:bin_got/providers/fcm_provider.dart';
+import 'package:provider/provider.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
-  flutterLocalNotificationsPlugin.show(
-      message.hashCode,
-      message.data['title'],
-      message.data['content'],
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'flutter_notification_high',
-          'flutter_notification_title_high',
-        ),
-      ),
-      payload: message.data['data']);
+  showNotification(message, 'flutter_notification_high',
+          'flutter_notification_title_high');
 }
 
+
+// push 알림 클릭 처리
 void onNotificationTapped(NotificationResponse notificationResponse) {
   final payload = jsonDecode(notificationResponse.payload!);
   List<String> path = payload['path'].split('/');
@@ -43,7 +39,7 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
     var isPublic = true;
     var needCheck = true;
 
-    // setGroupId(context as BuildContext, groupId);
+    setGroupId(context as BuildContext, groupId);
 
     if (path[2] == 'admin') {
       // 그룹 관리 페이지로 이동
@@ -78,7 +74,7 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
         initialIndex: 0,
       );
 
-      // setBingoId(context as BuildContext, int.parse(path[3]));
+      setBingoId(context, int.parse(path[3]));
     } else {
       // 그룹 랭킹 페이지로 이동
       page = InputPassword(
@@ -90,12 +86,38 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
     }
   }
 
-  // Navigator.push(context!, MaterialPageRoute(builder: (context) => page));
   toOtherPage(context!, page: page)();
 }
 
+
+// 경로 확인 후 chat 추가
+// push 알림 생성
+void showNotification(RemoteMessage message, String channelId, String channelName) {
+  final context = NavigatorKey.naviagatorState.currentContext;
+  Map data = jsonDecode(message.data['data']);
+  List<String> path = data['path'].split('/');
+
+  if (path[2] == 'chat' && int.parse(path[1]) == getGroupId(context!)) {
+    context.read<GlobalGroupProvider>().insertChat(GroupChatModel.fromJson(data['chat']));
+  }
+
+  flutterLocalNotificationsPlugin.show(
+    message.hashCode,
+    message.data['title'],
+    message.data['content'],
+    NotificationDetails(
+      android: AndroidNotificationDetails(
+        channelId,
+        channelName,
+      ),
+    ),
+    payload: message.data['data']);
+}
+
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+
 
 class FCM {
   void setup() async {
@@ -156,17 +178,7 @@ class FCM {
     // 포어그라운드 상태일 때 메시지 수신
     if (!kIsWeb) {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        flutterLocalNotificationsPlugin.show(
-            message.hashCode,
-            message.data['title'],
-            message.data['content'],
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channelLow.id,
-                channelLow.name,
-              ),
-            ),
-            payload: message.data['data']);
+          showNotification(message, channelLow.id, channelLow.name);
       });
     }
 
