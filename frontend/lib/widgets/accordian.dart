@@ -78,7 +78,9 @@ class _MemberListState extends State<MemberList> {
         showAlert(
           context,
           title: '가입 신청 ${grant ? '승인' : '거부'}',
-          content: '가입 신청 ${grant ? '승인' : '거부'}하시겠습니까?',
+          content: widget.isMember
+              ? '해당 회원을 탈퇴시키겠습니까?'
+              : '가입 신청 ${grant ? '승인' : '거부'}하시겠습니까?',
           onPressed: () async {
             print(getGroupId(context));
             print(
@@ -149,27 +151,46 @@ class _MemberListState extends State<MemberList> {
                       ),
                     ),
                     CustomText(content: widget.nickname),
-                    Row(
-                      children: [
-                        IconButtonInRow(
-                          icon: confirmIcon,
-                          onPressed: () => manageMember(true),
-                          color: greenColor,
-                        ),
-                        IconButtonInRow(
-                          icon: closeIcon,
-                          onPressed: () => manageMember(false),
-                          color: widget.isMember ? blackColor : redColor,
-                        ),
-                      ],
-                    )
                   ],
                 ),
                 answer: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        '${dotenv.env['fileUrl']}/boards/${widget.bingoId}',
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              '${dotenv.env['fileUrl']}/boards/${widget.bingoId}',
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomButton(
+                            content: '수락',
+                            onPressed: () => manageMember(true),
+                            color: paleOrangeColor,
+                            textColor: whiteColor,
+                          ),
+                          const SizedBox(width: 20),
+                          CustomButton(
+                            content: '거부',
+                            onPressed: () => manageMember(false),
+                          ),
+                          // IconButtonInRow(
+                          //   icon: confirmIcon,
+                          //   onPressed: () => manageMember(true),
+                          //   color: greenColor,
+                          // ),
+                          // IconButtonInRow(
+                          //   icon: closeIcon,
+                          //   onPressed: () => manageMember(false),
+                          //   color: widget.isMember ? blackColor : redColor,
+                          // ),
+                        ],
+                      )
+                    ],
                   ),
                 ),
                 // Image.network('${dotenv.env['fileUrl']}/bingos/$bingoId'),

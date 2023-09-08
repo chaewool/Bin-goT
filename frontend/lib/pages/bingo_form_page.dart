@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:bin_got/main.dart';
+import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/widgets/bingo_detail.dart';
-import 'package:bin_got/pages/group_create_completed.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/group_provider.dart';
@@ -168,13 +168,21 @@ class _BingoFormState extends State<BingoForm> {
           : null,
     });
     GroupProvider().createOwnGroup(formData).then((groupId) {
-      toOtherPage(
+      initBingoData(context);
+      showAlert(
         context,
-        page: GroupCreateCompleted(
-          groupId: groupId,
-          password: widget.beforeData?['password'] ?? '',
-        ),
+        title: '그룹 생성 완료',
+        content: '그룹 생성이 완료되었습니다. 메인 페이지로 이동합니다.',
+        hasCancel: false,
+        onPressed: () => toOtherPageWithoutPath(context, page: const Main()),
       )();
+      // toOtherPage(
+      //   context,
+      //   page: GroupCreateCompleted(
+      //     groupId: groupId,
+      //     password: widget.beforeData?['password'] ?? '',
+      //   ),
+      // )();
     }).catchError((error) {
       showAlert(
         context,
@@ -201,14 +209,17 @@ class _BingoFormState extends State<BingoForm> {
         print('그룹 가입 성공 => $data');
         print('form data : $bingoData');
         print('빙고 생성 성공');
+        initBingoData(context);
         if (getNeedAuth(context) == true) {
-          toBack(context);
-          toBack(context);
           showAlert(
             context,
             title: '가입 신청',
             content: '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.',
             hasCancel: false,
+            onPressed: () => toOtherPageWithoutPath(
+              context,
+              page: const Main(),
+            ),
           )();
         } else {
           showAlert(

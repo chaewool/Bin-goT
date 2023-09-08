@@ -91,24 +91,34 @@ class _CustomSnakeBottomBarState extends State<CustomSnakeBottomBar> {
 //* 그룹에서의 하단 바
 class GroupMainBottomBar extends StatelessWidget {
   // final int groupId,
-  final int selectedIndex;
+  // final int selectedIndex;
   final int? size, bingoId;
   final bool isMember;
   // final bool needAuth;
-  final void Function(int) changeIndex;
+  // final void Function(int) changeIndex;
   const GroupMainBottomBar({
     super.key,
     // required this.groupId,
     this.isMember = true,
     // required this.needAuth,
     this.size,
-    required this.selectedIndex,
+    // required this.selectedIndex,
     this.bingoId,
-    required this.changeIndex,
+    // required this.changeIndex,
   });
 
   @override
   Widget build(BuildContext context) {
+    // void changeIndex(int index) {
+    //   final bingoId = myBingoId(context);
+    //   if (groupSelectedIndex(context) == 0 &&
+    //       bingoId != null &&
+    //       getBingoId(context) != bingoId) {
+    //     setBingoId(context, bingoId);
+    //   }
+    //   changeGroupIndex(context, index);
+    // }
+
     return isMember
         ? CustomSnakeBottomBar(
             items: [
@@ -116,8 +126,8 @@ class GroupMainBottomBar extends StatelessWidget {
               customBottomBarIcon(label: '그룹 메인 페이지', iconData: homeIcon),
               customBottomBarIcon(label: '그룹 내 순위 페이지', iconData: rankIcon),
             ],
-            selectedIndex: selectedIndex,
-            changeIndex: changeIndex,
+            selectedIndex: groupSelectedIndex(context),
+            changeIndex: (index) => changeGroupIndex(context, index),
           )
         // BottomNavigationBar(
         //     showSelectedLabels: false,
@@ -142,14 +152,21 @@ class GroupMainBottomBar extends StatelessWidget {
         //   )
         : BottomAppBar(
             child: GestureDetector(
-              onTap: toOtherPage(
-                context,
-                page: BingoForm(
-                  bingoSize: size ?? 0,
-                  beforeJoin: true,
-                  needAuth: getNeedAuth(context) ?? true,
-                ),
-              ),
+              onTap: () {
+                final bingoId = getBingoId(context);
+                if (bingoId != null && bingoId != 0) {
+                  setBingoId(context, 0);
+                  initBingoData(context);
+                }
+                toOtherPage(
+                  context,
+                  page: BingoForm(
+                    bingoSize: size ?? 0,
+                    beforeJoin: true,
+                    needAuth: getNeedAuth(context) ?? true,
+                  ),
+                )();
+              },
               child: CustomBoxContainer(
                 hasRoundEdge: false,
                 height: 50,

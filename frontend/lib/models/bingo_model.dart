@@ -21,7 +21,7 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 class BingoFormModel {
   final int background, lineStyle, font, userId, groupId;
   final String colorText, colorLine;
-  final bool isMine;
+  // final bool isMine;
   final List items;
   final File thumbnail;
 
@@ -32,7 +32,7 @@ class BingoFormModel {
         // stickers = json['stickers'],
         lineStyle = json['line_style'],
         font = json['font'],
-        isMine = json['is_mine'],
+        // isMine = json['is_mine'],
         items = json['items'],
         thumbnail = json['thumbnail'],
         userId = json['userId'],

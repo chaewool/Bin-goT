@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 class GroupDetail extends StatefulWidget
 // with WidgetsBindingObserver
 {
-  final int initialIndex;
+  // final int initialIndex;
   final bool isPublic, admin, isMember;
   final int? bingoId, size, groupId;
   // final String start;
@@ -25,7 +25,7 @@ class GroupDetail extends StatefulWidget
     super.key,
     this.groupId,
     required this.isPublic,
-    this.initialIndex = 1,
+    // this.initialIndex = 1,
     this.bingoId,
     this.size,
     required this.admin,
@@ -41,26 +41,23 @@ class GroupDetail extends StatefulWidget
 class _GroupDetailState extends State<GroupDetail> {
   // late int memberState, size;
   // late bool needAuth;
-  late int selectedIndex;
-  final WidgetList nextPages = [
+  // late int selectedIndex;
+  WidgetList nextPages = [
     // const GroupMain(),
     const BingoDetail(),
     const GroupMain(),
     const GroupRank(),
   ];
-  final List<Widget?> appbarList = [
-    BingoDetailAppBar(save: () {
-      print('touched');
-      return Future.value(true);
-    }),
-    null,
+  final WidgetList appbarList = [
+    const BingoDetailAppBar(),
+    const GroupAppBar(),
     const GroupAppBar(),
   ];
 
   @override
   void initState() {
     super.initState();
-    selectedIndex = widget.initialIndex;
+    // selectedIndex = widget.initialIndex;
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   if (widget.bingoId != null) {
     //     setBingoSize(context, widget.size!);
@@ -71,17 +68,6 @@ class _GroupDetailState extends State<GroupDetail> {
     // });
 
     // WidgetsBinding.instance.addObserver(this);
-  }
-
-  void changeIndex(int index) {
-    if (index != selectedIndex) {
-      // print('selected index => $index $nextPages');
-      setState(() {
-        selectedIndex = index;
-      });
-      print(selectedIndex);
-      print(nextPages[selectedIndex]);
-    }
   }
 
   // @override
@@ -96,23 +82,17 @@ class _GroupDetailState extends State<GroupDetail> {
       onWillPop: () {
         toBack(context);
         toBack(context);
-        if (selectedIndex == 1) {
-          // setPublic(context, null);
-        } else {
-          // toBack(context);
-        }
         return Future.value(false);
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: true,
         backgroundColor: whiteColor,
+        resizeToAvoidBottomInset: true,
         body: Stack(
           children: [
             CustomAnimatedPage(
-              needScroll: selectedIndex == 1,
-              changeIndex: changeIndex,
-              nextPage: nextPages[selectedIndex],
-              appBar: appbarList[selectedIndex],
+              needScroll: groupSelectedIndex(context) == 1,
+              nextPage: nextPages[groupSelectedIndex(context)],
+              appBar: appbarList[groupSelectedIndex(context)],
             ),
             Positioned(
               left: getWidth(context) - 80,
@@ -129,8 +109,8 @@ class _GroupDetailState extends State<GroupDetail> {
           ],
         ),
         bottomNavigationBar: GroupMainBottomBar(
-          selectedIndex: selectedIndex,
-          changeIndex: changeIndex,
+          // selectedIndex: groupSelectedIndex(context),
+          // changeIndex: changeIndex,
           isMember: widget.isMember,
           size: context.watch<GlobalGroupProvider>().bingoSize ??
               context.watch<GlobalBingoProvider>().bingoSize,

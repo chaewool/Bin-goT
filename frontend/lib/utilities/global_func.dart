@@ -38,7 +38,6 @@ TextTemplate defaultText({
 //* 공유
 void shareGroup({
   required int groupId,
-  String? password,
   required bool isPublic,
   required groupName,
 }) async {
@@ -78,38 +77,6 @@ void shareGroup({
       print('카카오톡 공유 실패 $error');
     }
   }
-}
-
-void shareBingo({required int bingoId}) async {
-  // bool isKakaoTalkSharingAvailable =
-  //     await ShareClient.instance.isKakaoTalkSharingAvailable();
-
-  // if (isKakaoTalkSharingAvailable) {
-  //   try {
-  //     Uri uri = await ShareClient.instance.shareDefault(
-  //       template: defaultText(
-  //         id: bingoId,
-  //         isGroup: false,
-  //       ),
-  //     );
-  //     await ShareClient.instance.launchKakaoTalk(uri);
-  //     print('카카오톡 공유 완료');
-  //   } catch (error) {
-  //     print('카카오톡 공유 실패 $error');
-  //   }
-  // } else {
-  //   try {
-  //     Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
-  //       template: defaultText(
-  //         id: bingoId,
-  //         isGroup: false,
-  //       ),
-  //     );
-  //     await launchBrowserTab(shareUrl, popupOpen: true);
-  //   } catch (error) {
-  //     print('카카오톡 공유 실패 $error');
-  //   }
-  // }
 }
 
 //* 페이지 이동
@@ -342,6 +309,11 @@ void initLoadingData(BuildContext context, int mode) {
 }
 
 //* group data
+int? myBingoId(BuildContext context) =>
+    context.read<GlobalGroupProvider>().bingoId;
+
+int groupSelectedIndex(BuildContext context) =>
+    context.watch<GlobalGroupProvider>().selectedIndex;
 
 int? watchMemberState(BuildContext context) =>
     context.watch<GlobalGroupProvider>().memberState;
@@ -361,11 +333,14 @@ String? getStart(BuildContext context) =>
 bool? getPublic(BuildContext context) =>
     context.read<GlobalGroupProvider>().isPublic;
 
-String? getGroupName(BuildContext context) =>
-    context.read<GlobalGroupProvider>().groupName;
-
 bool? getNeedAuth(BuildContext context) =>
     context.read<GlobalGroupProvider>().needAuth;
+
+bool? alreadyStarted(BuildContext context) =>
+    context.read<GlobalGroupProvider>().alreadyStarted;
+
+String? getGroupName(BuildContext context) =>
+    context.read<GlobalGroupProvider>().groupName;
 
 GroupChatList getChats(BuildContext context) =>
     context.read<GlobalGroupProvider>().chats;
@@ -384,6 +359,9 @@ void setGroupId(BuildContext context, int newVal) =>
 
 void setPublic(BuildContext context, bool? newVal) =>
     context.read<GlobalGroupProvider>().setPublic(newVal);
+
+void changeGroupIndex(BuildContext context, int index) =>
+    context.read<GlobalGroupProvider>().changeIndex(index);
 
 //* bingo data
 
@@ -411,8 +389,11 @@ void setBingoId(BuildContext context, int id) =>
 void setBingoSize(BuildContext context, int size) =>
     context.read<GlobalBingoProvider>().setBingoSize(size);
 
-void setIsMine(BuildContext context, bool isMine) =>
-    context.read<GlobalBingoProvider>().setIsMine(isMine);
+// void setIsMine(BuildContext context, bool isMine) =>
+//     context.read<GlobalBingoProvider>().setIsMine(isMine);
+
+void initBingoData(BuildContext context) =>
+    context.read<GlobalBingoProvider>().initData();
 
 //* var
 int? getBingoId(BuildContext context) =>
@@ -463,5 +444,5 @@ String getStringFont(BuildContext context) => matchFont[watchFont(context)!];
 IconData getCheckIconData(BuildContext context) =>
     iconList[watchCheckIcon(context)!];
 
-bool? getIsMine(BuildContext context) =>
-    context.read<GlobalBingoProvider>().isMine;
+// bool? getIsMine(BuildContext context) =>
+//     context.read<GlobalBingoProvider>().isMine;
