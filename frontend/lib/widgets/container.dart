@@ -75,8 +75,8 @@ class BingoGallery extends StatelessWidget {
                   imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
                   placeholder: (context, url) => CustomBoxContainer(
                     color: whiteColor,
-                    width: (getWidth(context) - 20) / 2,
-                    height: (getWidth(context) - 20) / 2,
+                    width: (getWidth(context) - 40) / 2,
+                    height: (getWidth(context) - 40) / 2,
                   ),
                 ),
               ),
@@ -184,13 +184,13 @@ class CircleContainer extends StatelessWidget {
 
 //* animated container with page view
 class CustomAnimatedPage extends StatelessWidget {
-  final void Function(int) changeIndex;
+  // final void Function(int)? changeIndex;
   final Widget nextPage;
   final Widget? appBar;
   final bool needScroll;
   const CustomAnimatedPage({
     super.key,
-    required this.changeIndex,
+    // this.changeIndex,
     required this.nextPage,
     this.appBar,
     this.needScroll = false,
@@ -230,7 +230,13 @@ class CustomAnimatedPage extends StatelessWidget {
                   child: nextPage,
                 ),
               ),
-              if (appBar != null) appBar!,
+              if (appBar != null)
+                CustomBoxContainer(
+                  color: Colors.transparent,
+                  width: getWidth(context),
+                  height: 100,
+                  child: appBar!,
+                ),
             ],
           );
   }

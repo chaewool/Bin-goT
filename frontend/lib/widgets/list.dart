@@ -95,36 +95,26 @@ class GroupListItem extends StatelessWidget {
 class RankListItem extends StatelessWidget {
   final int rank;
   final GroupRankModel rankListItem;
-  final bool isMember;
+  // final bool isMember;
   const RankListItem({
     super.key,
     required this.rank,
     required this.rankListItem,
-    required this.isMember,
+    // required this.isMember,
   });
 
   @override
   Widget build(BuildContext context) {
+    void toBingoDetail() {
+      setBingoId(context, rankListItem.bingoId);
+      changeGroupIndex(context, 0);
+    }
+
     return CustomList(
       innerHorizontal: 15,
       height: 70,
       border: true,
-      // boxShadow: const [defaultShadow],
-      onTap: () {
-        setBingoId(context, rankListItem.bingoId);
-      },
-      // toOtherPage(
-      //   context,
-      //   page:
-      //   // const SizedBox(),
-      //   // GroupDetail(
-      //   //   groupId: getGroupId(context)!,
-      //   //   // password: '',x
-      //   //   isPublic: true,
-      //   //   initialIndex: 0,
-      //   // ),
-      // ),
-      // isMember ? toOtherPage(context, page: const BingoDetail()) : null,
+      onTap: toBingoDetail,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

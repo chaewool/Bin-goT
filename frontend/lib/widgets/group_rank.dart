@@ -53,7 +53,6 @@ class _GroupRankState extends State<GroupRank> {
                       itemBuilder: (context, index) => RankListItem(
                         rank: index + 1,
                         rankListItem: rankList[index],
-                        isMember: true,
                       ),
                     ),
                   )

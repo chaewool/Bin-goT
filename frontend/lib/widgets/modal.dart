@@ -101,7 +101,8 @@ class _BingoModalState extends State<BingoModal> {
               ))
           : initialize,
       onCancelPressed: widget.isDetail ? null : applyItem,
-      hasConfirm: true,
+      hasConfirm: alreadyStarted(context) == true &&
+          myBingoId(context) == getBingoId(context),
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -496,101 +497,107 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(title: '배지 선택', onPressed: changeBadge, children: [
-      FutureBuilder(
-        future: UserInfoProvider().getBadges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            var data = snapshot.data;
-            return SingleChildScrollView(
-              child: CustomBoxContainer(
-                height: getHeight(context) * 0.6,
-                color: whiteColor,
-                hasRoundEdge: false,
-                child: ListView.separated(
-                  itemCount: data!.length ~/ 2,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 20),
-                  itemBuilder: (context, index) {
-                    return RowWithPadding(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      vertical: 8,
-                      horizontal: 8,
-                      children: [
-                        for (int di = 0; di < 2; di += 1)
-                          Expanded(
-                            child: Column(
-                              children: [
-                                CircleContainer(
-                                  onTap: () =>
-                                      selectBadge(data[2 * index + di].id),
-                                  boxShadow: data[2 * index + di].id == badgeId
-                                      ? [
-                                          const BoxShadow(
-                                            blurRadius: 3,
-                                            spreadRadius: 3,
-                                            color: blueColor,
-                                          )
-                                        ]
-                                      : null,
-                                  child: Opacity(
-                                    opacity:
-                                        data[2 * index + di].hasBadge ? 1 : 0.2,
-                                    child: CachedNetworkImage(
-                                      imageUrl:
-                                          '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
+    return CustomModal(
+      title: '배지 선택',
+      onPressed: changeBadge,
+      children: [
+        FutureBuilder(
+          future: UserInfoProvider().getBadges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var data = snapshot.data;
+              return SingleChildScrollView(
+                child: CustomBoxContainer(
+                  height: getHeight(context) * 0.6,
+                  color: whiteColor,
+                  hasRoundEdge: false,
+                  child: ListView.separated(
+                    itemCount: data!.length ~/ 2,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 20),
+                    itemBuilder: (context, index) {
+                      return RowWithPadding(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        vertical: 8,
+                        horizontal: 8,
+                        children: [
+                          for (int di = 0; di < 2; di += 1)
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  CircleContainer(
+                                    onTap: () =>
+                                        selectBadge(data[2 * index + di].id),
+                                    boxShadow:
+                                        data[2 * index + di].id == badgeId
+                                            ? [
+                                                const BoxShadow(
+                                                  blurRadius: 3,
+                                                  spreadRadius: 3,
+                                                  color: blueColor,
+                                                )
+                                              ]
+                                            : null,
+                                    child: Opacity(
+                                      opacity: data[2 * index + di].hasBadge
+                                          ? 1
+                                          : 0.2,
+                                      child: CachedNetworkImage(
+                                        imageUrl:
+                                            '${dotenv.env['fileUrl']}/badges/${data[2 * index + di].id}',
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 10),
-                                CustomText(
-                                  content: data[2 * index + di].name,
-                                  fontSize: FontSize.tinySize,
-                                )
-                              ],
-                            ),
-                          )
-                      ],
-                    );
-                  },
+                                  const SizedBox(height: 10),
+                                  CustomText(
+                                    content: data[2 * index + di].name,
+                                    fontSize: FontSize.tinySize,
+                                  )
+                                ],
+                              ),
+                            )
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            );
-          }
-          return const CustomCirCularIndicator();
-        },
-      ),
-      // for (int i = 0; i < 4; i += 1)
-      //   Row(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: [
-      //       for (int j = 0; j < 3; j += 1)
-      //         ColWithPadding(
-      //           vertical: 8,
-      //           horizontal: 8,
-      //           children: [
-      //             CircleContainer(
-      //               onTap: () => selectBadge(3 * i + j),
-      //               boxShadow: 3 * i + j == badgeIdx
-      //                   ? [
-      //                       const BoxShadow(
-      //                           blurRadius: 3,
-      //                           spreadRadius: 3,
-      //                           color: blueColor)
-      //                     ]
-      //                   : null,
-      //               child: Image.network(
-      //                   '${dotenv.env['fileUrl']}/badges/${3 * i + j}'),
-      //             ),
-      //             const Padding(
-      //               padding: EdgeInsets.all(8.0),
-      //               child: CustomText(content: '배지명'),
-      //             )
-      //           ],
-      //         ),
-      //     ],
-      //   ),
-    ]);
+              );
+            }
+            return const CustomCirCularIndicator();
+          },
+        ),
+        // for (int i = 0; i < 4; i += 1)
+        //   Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       for (int j = 0; j < 3; j += 1)
+        //         ColWithPadding(
+        //           vertical: 8,
+        //           horizontal: 8,
+        //           children: [
+        //             CircleContainer(
+        //               onTap: () => selectBadge(3 * i + j),
+        //               boxShadow: 3 * i + j == badgeIdx
+        //                   ? [
+        //                       const BoxShadow(
+        //                           blurRadius: 3,
+        //                           spreadRadius: 3,
+        //                           color: blueColor)
+        //                     ]
+        //                   : null,
+        //               child: Image.network(
+        //                   '${dotenv.env['fileUrl']}/badges/${3 * i + j}'),
+        //             ),
+        //             const Padding(
+        //               padding: EdgeInsets.all(8.0),
+        //               child: CustomText(content: '배지명'),
+        //             )
+        //           ],
+        //         ),
+        //     ],
+        //   ),
+      ],
+    );
   }
 }
 
