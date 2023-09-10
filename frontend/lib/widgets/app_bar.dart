@@ -10,6 +10,7 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 const double appBarHeight = 50;
@@ -200,7 +201,6 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       icon: shareIcon,
                       onPressed: () => shareGroup(
                         groupId: groupId,
-                        password: '',
                         isPublic: getPublic(context)!,
                         groupName: getGroupName(context),
                       ),
@@ -236,8 +236,6 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final start = DateTime.parse(getStart(context)!);
-    final today = DateTime.now();
     void deleteGroup() async {
       try {
         GroupProvider().deleteOwnGroup(groupId).then((_) {
@@ -305,7 +303,7 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBarWithBack(
-      actions: today.difference(start) < Duration.zero
+      actions: alreadyStarted(context) != true
           ? [
               IconButtonInRow(icon: editIcon, onPressed: onEditAction),
               IconButtonInRow(icon: deleteIcon, onPressed: onDeleteAction),
@@ -320,34 +318,86 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 //* 빙고 상세
 class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final FutureBool Function() save;
   // final int bingoId;
   const BingoDetailAppBar({
     super.key,
-    required this.save,
     // required this.bingoId,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AppBarWithBack(
-      actions:
-          getBingoId(context) == context.read<GlobalGroupProvider>().bingoId
-              ? [
-                  // IconButtonInRow(
-                  //   onPressed: () => shareBingo(bingoId: bingoId),
-                  //   icon: shareIcon,
-                  // ),
+    FutureBool saveBingo() {
+      try {
+        Permission.storage.request().then((value) {
+          if (value == PermissionStatus.denied ||
+              value == PermissionStatus.permanentlyDenied) {
+            showAlert(
+              context,
+              title: '미디어 접근 권한 거부',
+              content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 허용해주세요',
+              hasCancel: false,
+            )();
+          } else {
+            context.read<GlobalBingoProvider>().bingoToImage();
+          }
+        });
+        return Future.value(true);
+      } catch (error) {
+        print(error);
+        return Future.value(false);
+      }
+    }
 
-                  IconButtonInRow(
-                    onPressed: save,
-                    icon: saveIcon,
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  )
-                ]
-              : null,
+    void shareBingo() async {
+      //* 카카오톡 공유 코드
+      // bool isKakaoTalkSharingAvailable =
+      //     await ShareClient.instance.isKakaoTalkSharingAvailable();
+
+      // if (isKakaoTalkSharingAvailable) {
+      //   try {
+      //     Uri uri = await ShareClient.instance.shareDefault(
+      //       template: defaultText(
+      //         id: bingoId,
+      //         isGroup: false,
+      //       ),
+      //     );
+      //     await ShareClient.instance.launchKakaoTalk(uri);
+      //     print('카카오톡 공유 완료');
+      //   } catch (error) {
+      //     print('카카오톡 공유 실패 $error');
+      //   }
+      // } else {
+      //   try {
+      //     Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
+      //       template: defaultText(
+      //         id: bingoId,
+      //         isGroup: false,
+      //       ),
+      //     );
+      //     await launchBrowserTab(shareUrl, popupOpen: true);
+      //   } catch (error) {
+      //     print('카카오톡 공유 실패 $error');
+      //   }
+      // }
+    }
+
+    return AppBarWithBack(
+      transparent: true,
+      actions: getBingoId(context) == myBingoId(context)
+          ? [
+              IconButtonInRow(
+                onPressed: shareBingo,
+                icon: shareIcon,
+              ),
+              IconButtonInRow(
+                onPressed: saveBingo,
+                icon: saveIcon,
+              ),
+              const SizedBox(
+                width: 20,
+              )
+            ]
+          : null,
     );
   }
 
@@ -361,21 +411,21 @@ class MyPageAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBarWithBack(
+    return const AppBarWithBack(
       actions: [
-        IconButtonInRow(
-          onPressed: () => shareGroup(
-            groupId: 2,
-            password: '1234',
-            isPublic: false,
-            groupName: '미라클 모닝 2',
-          ),
-          // onPressed: showModal(
-          //   context,
-          //   page: shareGroup,
-          // ),
-          icon: bellIcon,
-        ),
+        // IconButtonInRow(
+        //   onPressed: () => shareGroup(
+        //     groupId: 2,
+        //     password: '1234',
+        //     isPublic: false,
+        //     groupName: '미라클 모닝 2',
+        //   ),
+        // onPressed: showModal(
+        //   context,
+        //   page: shareGroup,
+        // ),
+        // icon: bellIcon,
+        // ),
         // IconButtonInRow(
         //     onPressed: toOtherPage(context, page: const Help()),
         //     icon: helpIcon),
@@ -384,7 +434,7 @@ class MyPageAppBar extends StatelessWidget implements PreferredSizeWidget {
         //       title: '로그아웃 확인', content: '로그아웃하시겠습니까?', onPressed: () {}),
         //   icon: exitIcon,
         // ),
-        const SizedBox(width: 10)
+        SizedBox(width: 10)
       ],
     );
   }

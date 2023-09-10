@@ -28,12 +28,12 @@ import 'package:provider/provider.dart';
 //* 그룹 생성/수정 페이지
 class GroupForm extends StatefulWidget {
   final int? groupId;
-  final String? password;
+  // final String? password;
   final bool hasImg;
   const GroupForm({
     super.key,
     this.groupId,
-    this.password,
+    // this.password,
     this.hasImg = false,
   });
 
@@ -112,6 +112,11 @@ class _GroupFormState extends State<GroupForm> {
             title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
       } else {
         print(groupData['size']);
+        final bingoId = getBingoId(context);
+        if (bingoId != null && bingoId != 0) {
+          setBingoId(context, 0);
+          initBingoData(context);
+        }
         toOtherPage(
           context,
           page: BingoForm(

@@ -63,7 +63,7 @@ class _MainState extends State<Main> {
         backgroundColor: whiteColor,
         resizeToAvoidBottomInset: false,
         body: CustomAnimatedPage(
-          changeIndex: changeIndex,
+          // changeIndex: changeIndex,
           nextPage: nextPages[selectedIndex],
         ),
         bottomNavigationBar: CustomSnakeBottomBar(

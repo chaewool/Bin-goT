@@ -212,7 +212,12 @@ class _GroupChatState extends State<GroupChat> {
               ],
             ),
           ),
-          const AppBarWithBack(transparent: true),
+          CustomBoxContainer(
+            color: Colors.transparent,
+            width: getWidth(context),
+            height: 200,
+            child: const AppBarWithBack(transparent: true),
+          ),
           if (showImg)
             Column(
               mainAxisAlignment: MainAxisAlignment.start,

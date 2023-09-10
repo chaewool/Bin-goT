@@ -1,5 +1,4 @@
 import 'package:bin_got/models/group_model.dart';
-import 'package:bin_got/widgets/group_rank.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -97,7 +96,7 @@ class _GroupMainState extends State<GroupMain> {
                   contentTitle: '규칙',
                   content: groupDetailModel!.rule,
                 ),
-                groupRankTop3(context, groupDetailModel!),
+                if (memberState != 0) groupRankTop3(context, groupDetailModel!),
               ],
             )
           : const SizedBox(),
@@ -115,17 +114,13 @@ class _GroupMainState extends State<GroupMain> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const CustomText(content: '순위'),
-              if (memberState != 0)
-                TextButton(
-                  onPressed: toOtherPage(
-                    context,
-                    page: const GroupRank(),
-                  ),
-                  child: const CustomText(
-                    content: '전체보기',
-                    fontSize: FontSize.smallSize,
-                  ),
-                )
+              TextButton(
+                onPressed: () => changeGroupIndex(context, 2),
+                child: const CustomText(
+                  content: '전체보기',
+                  fontSize: FontSize.smallSize,
+                ),
+              )
             ],
           ),
           if (data.rank.isNotEmpty)
@@ -133,7 +128,6 @@ class _GroupMainState extends State<GroupMain> {
               RankListItem(
                 rank: i + 1,
                 rankListItem: data.rank[i],
-                isMember: memberState != 0,
               ),
           if (data.rank.isEmpty)
             const Row(

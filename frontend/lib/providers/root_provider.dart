@@ -1,8 +1,12 @@
+import 'dart:ui';
+
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 //* token, user data
 class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
@@ -86,10 +90,10 @@ class NotiProvider extends ChangeNotifier {
 
   //* private
 
-  void _storeBool(String key, bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(key, value);
-  }
+  // void _storeBool(String key, bool value) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setBool(key, value);
+  // }
 
   FutureBool _changePressed() {
     if (!_beforeExit) {
@@ -104,7 +108,7 @@ class NotiProvider extends ChangeNotifier {
     return Future.value(true);
   }
 
-  void _showToast() {
+  FutureBool _showToast() {
     if (!_afterWork) {
       _afterWork = true;
       notifyListeners();
@@ -112,7 +116,9 @@ class NotiProvider extends ChangeNotifier {
         _afterWork = false;
         notifyListeners();
       });
+      return Future.value(false);
     }
+    return Future.value(true);
   }
 
   //* public
@@ -175,10 +181,12 @@ class GlobalGroupProvider extends ChangeNotifier {
   static String? _start;
   static bool? _isPublic;
   static final GroupChatList _chats = [];
+  static int _selectedIndex = 1;
 
   GroupChatList get chats => _chats;
   bool? get isPublic => _isPublic;
 
+  int get selectedIndex => _selectedIndex;
   int? get lastId => _lastId;
   int? get groupId => _groupId;
 
@@ -189,12 +197,16 @@ class GlobalGroupProvider extends ChangeNotifier {
   int? get memberState => _data?.memberState;
   bool? get hasImage => _data?.hasImage;
   bool? get needAuth => _data?.needAuth;
+  bool? get alreadyStarted => _data?.start != null
+      ? DateTime.now().difference(DateTime.parse(_data!.start)) >= Duration.zero
+      : null;
   String? get groupName => _data?.groupName;
   String? get start => _data?.start ?? _start;
   String? get end => _data?.end;
   String? get description => _data?.description;
   String? get rule => _data?.rule;
   String? get password => _data?.password;
+
   // int get page => _page;
 
   void _setData(GroupDetailModel detailModel) => _data = detailModel;
@@ -220,6 +232,12 @@ class GlobalGroupProvider extends ChangeNotifier {
   void _insertChat(GroupChatModel newChat) => _chats.insert(0, newChat);
 
   void _clearChat() => _chats.clear();
+
+  void _changeIndex(int index) {
+    if (index != _selectedIndex) {
+      _selectedIndex = index;
+    }
+  }
 
 //* public
   void setLastId(int value) => _setLastId(value);
@@ -291,20 +309,10 @@ class GlobalGroupProvider extends ChangeNotifier {
     _clearChat();
   }
 
-  // void setNeedAuth(bool newVal) {
-  //   _setNeedAuth(newVal);
-  //   notifyListeners();
-  // }
-
-  // void initVar() {
-  //   _setCount(0);
-  //   _setStart('');
-  //   _setHeadCount(0);
-  //   _setGroupName('');
-  //   _setDescription('');
-  //   _setRule('');
-  //   notifyListeners();
-  // }
+  void changeIndex(int index) {
+    _changeIndex(index);
+    notifyListeners();
+  }
 }
 
 //* bingo data
@@ -327,7 +335,8 @@ class GlobalBingoProvider extends ChangeNotifier {
   static bool _isCheckTheme = false;
   static int _lastId = 0;
   static BoolList _finished = [];
-  static bool? _isMine;
+  // static bool? _isMine;
+  static final GlobalKey _globalKey = GlobalKey();
   // static int _page = 1;
 
   //* getter
@@ -349,8 +358,10 @@ class GlobalBingoProvider extends ChangeNotifier {
   bool get isCheckTheme => _isCheckTheme;
   BoolList get finished => _finished;
   List get items => _data['items'];
-  bool? get isMine => _isMine;
+  // bool? get isMine => _isMine;
+  GlobalKey get globalKey => _globalKey;
   // int get page => _page;
+  // DateTime get now => DateTime.now();
 
   //* private
   DynamicMap _item(int index) => items[index];
@@ -442,7 +453,39 @@ class GlobalBingoProvider extends ChangeNotifier {
     _setItem(index2, content1);
   }
 
-  void _setIsMine(bool newVal) => _isMine = newVal;
+  // void _setIsMine(bool newVal) => _isMine = newVal;
+
+  void _initData() {
+    _data = {
+      'group_id': 0,
+      'title': null,
+      'background': null,
+      'is_black': false,
+      'has_border': true,
+      'has_round_edge': false,
+      'around_kan': 0,
+      'complete_icon': 0,
+      'font': 0,
+      'items': <DynamicMap>[],
+    };
+  }
+
+  FutureBool _bingoToImage() async {
+    var renderObject = _globalKey.currentContext?.findRenderObject();
+    if (renderObject is RenderRepaintBoundary) {
+      var boundary = renderObject;
+      final image = await boundary.toImage();
+      final byteData = await image.toByteData(format: ImageByteFormat.png);
+      final pngBytes = byteData?.buffer.asUint8List();
+      await ImageGallerySaver.saveImage(
+        pngBytes!,
+        name: title,
+      );
+      print('성공!!!');
+      return true;
+    }
+    return false;
+  }
 
   //* public
   DynamicMap item(int index) => _item(index);
@@ -482,10 +525,14 @@ class GlobalBingoProvider extends ChangeNotifier {
     _setBingoSize(newSize);
   }
 
-  void setIsMine(bool newVal) {
-    _setIsMine(newVal);
-    notifyListeners();
-  }
+  // void setIsMine(bool newVal) {
+  //   _setIsMine(newVal);
+  //   notifyListeners();
+  // }
+
+  void initData() => _initData();
+
+  FutureBool bingoToImage() => _bingoToImage();
 
   // void setNeedAuth(bool newVal) {
   //   _setNeedAuth(newVal);

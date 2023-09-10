@@ -87,11 +87,12 @@ class _InputPasswordState extends State<InputPassword> {
         setGroupId(context, widget.groupId);
         if (widget.bingoId != null) {
           setBingoId(context, widget.bingoId!);
-          setIsMine(context, true);
+          // setIsMine(context, true);
         }
         if (widget.size != null) {
           setBingoSize(context, widget.size!);
         }
+        changeGroupIndex(context, widget.initialIndex);
         toOtherPage(
           context,
           page: GroupDetail(
@@ -99,7 +100,7 @@ class _InputPasswordState extends State<InputPassword> {
             admin: widget.admin,
             // password: '',
             isPublic: widget.isPublic,
-            initialIndex: widget.initialIndex,
+            // initialIndex: widget.initialIndex,
             bingoId: widget.bingoId,
             size: widget.size,
             isMember: !widget.isSearchMode,
