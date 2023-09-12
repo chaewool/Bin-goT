@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:bin_got/models/group_model.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
 
 //* token, user data
 class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
@@ -533,6 +535,23 @@ class GlobalBingoProvider extends ChangeNotifier {
   void initData() => _initData();
 
   FutureBool bingoToImage() => _bingoToImage();
+  
+  Future<File> bingoToXFile() async {
+    var renderObject = _globalKey.currentContext?.findRenderObject();
+    if (renderObject is RenderRepaintBoundary) {
+      var boundary = renderObject;
+      final image = await boundary.toImage();
+      final byteData = await image.toByteData(format: ImageByteFormat.png);
+      final pngBytes = byteData?.buffer.asUint8List();
+      
+      final Directory tempDir = await getTemporaryDirectory();
+      File file = await File('${tempDir.path}/img.png').create();
+      file.writeAsBytesSync(pngBytes!);
+      
+      return file;
+    }
+    return File('');
+  }
 
   // void setNeedAuth(bool newVal) {
   //   _setNeedAuth(newVal);
