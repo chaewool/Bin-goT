@@ -31,11 +31,12 @@ class BingoTabBar extends StatefulWidget {
 
 class _BingoTabBarState extends State<BingoTabBar> {
   final explainText = [
-    '빙고판 배경 사진 (선택)',
+    '화면 배경 사진 (선택)',
     '빙고판 내부 설정 (필수)',
     '빙고판 내부 글씨체 (필수)',
     '목표 달성 시, 표시되는 아이콘 (필수)'
   ];
+  int page = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +44,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
     return CustomBoxContainer(
       hasRoundEdge: false,
       child: ContainedTabBarView(
-        tabBarProperties:
-            const TabBarProperties(indicatorColor: paleOrangeColor),
+        tabBarProperties: const TabBarProperties(indicatorColor: palePinkColor),
         tabs: [
           for (IconData icon in iconList) Tab(child: CustomIcon(icon: icon)),
         ],
@@ -98,12 +98,31 @@ class _BingoTabBarState extends State<BingoTabBar> {
 
   // * 배경 화면
   Row paintTab() {
-    var page = 0;
+    int totalPages = backgroundList.length ~/ 2;
+    void moveTo(bool toRight) {
+      if (toRight) {
+        if (page < totalPages - 1) {
+          setState(() {
+            page = page + 1;
+          });
+        }
+      } else if (page > 0) {
+        setState(() {
+          page = page - 1;
+        });
+      }
+    }
 
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
+        CustomIconButton(
+          onPressed: () => moveTo(false),
+          icon: leftIcon,
+          size: 40,
+          color: page > 0 ? palePinkColor : greyColor,
+        ),
         for (int i = 2 * page; i < 2 * page + 2; i += 1)
           GestureDetector(
             onTap: () => changeBingoData(context, 0, i),
@@ -113,6 +132,12 @@ class _BingoTabBarState extends State<BingoTabBar> {
                   watchBackground(context) == i ? [selectedShadow] : null,
             ),
           ),
+        CustomIconButton(
+          onPressed: () => moveTo(true),
+          icon: rightIcon,
+          size: 40,
+          color: page < totalPages - 1 ? palePinkColor : greyColor,
+        ),
       ],
     );
   }
@@ -149,8 +174,8 @@ class _BingoTabBarState extends State<BingoTabBar> {
                 onTap: () => changeBingoData(context, index, 2 * i + j),
                 width: 150,
                 height: 40,
-                color: isSelected(i, j) ? paleOrangeColor : whiteColor,
-                borderColor: isSelected(i, j) ? paleOrangeColor : greyColor,
+                color: isSelected(i, j) ? paleRedColor : whiteColor,
+                borderColor: isSelected(i, j) ? paleRedColor : greyColor,
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -179,7 +204,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
             onPressed: () => changeBingoData(context, 3, i),
             icon: iconList[i],
             size: 70,
-            color: i == watchCheckIcon(context) ? paleOrangeColor : greyColor,
+            color: i == watchCheckIcon(context) ? paleRedColor : greyColor,
           ),
       ],
     );
@@ -608,8 +633,7 @@ class CustomTextTabBar extends StatelessWidget {
     return CustomBoxContainer(
       hasRoundEdge: false,
       child: ContainedTabBarView(
-        tabBarProperties:
-            const TabBarProperties(indicatorColor: paleOrangeColor),
+        tabBarProperties: const TabBarProperties(indicatorColor: paleRedColor),
         tabs: [
           for (String tabTitle in tabTitles)
             Tab(
@@ -821,6 +845,9 @@ class _MainTabBarState extends State<MainTabBar> {
 
   @override
   Widget build(BuildContext context) {
+    if (watchPrev(context)) {
+      changePrev(context, false);
+    }
     return Stack(
       children: [
         Column(

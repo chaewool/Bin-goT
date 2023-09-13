@@ -48,15 +48,15 @@ class _BingoBoardState extends State<BingoBoard> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        watchBackground(context) != null
-            ? const CustomBoxContainer(
-                hasRoundEdge: false,
-                image: DecorationImage(
-                  image: AssetImage('assets/images/aaron-burden.jpg'),
-                  fit: BoxFit.fill,
-                ),
-              )
-            : const SizedBox(),
+        // watchBackground(context) != null
+        //     ? CustomBoxContainer(
+        //         hasRoundEdge: false,
+        //         image: DecorationImage(
+        //           image: AssetImage(backgroundList[watchBackground(context)!]),
+        //           fit: BoxFit.fill,
+        //         ),
+        //       )
+        //     : const SizedBox(),
         Column(
           children: [
             for (int i = 0; i < size!; i += 1)
@@ -133,7 +133,10 @@ class EachBingo extends StatelessWidget {
             ),
       childWhenDragging: isDetail
           ? draggableBox(context, convertedColor)
-          : const CustomBoxContainer(color: whiteColor),
+          : CustomBoxContainer(
+              hasRoundEdge: watchHasRoundEdge(context),
+              color: whiteColor,
+            ),
       data: index,
       child: draggableBox(context, convertedColor),
     );

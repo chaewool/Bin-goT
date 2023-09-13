@@ -166,7 +166,7 @@ class CreateGroupButton extends StatelessWidget {
       left: getWidth(context) - 80,
       top: getHeight(context) - 170,
       child: FloatingActionButton(
-        backgroundColor: paleOrangeColor,
+        backgroundColor: paleRedColor,
         onPressed: toOtherPage(context, page: const GroupForm()),
         child: const CustomIcon(
           icon: addIcon,

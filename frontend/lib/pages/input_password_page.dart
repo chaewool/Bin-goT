@@ -84,6 +84,7 @@ class _InputPasswordState extends State<InputPassword> {
         )();
       } else {
         // ignore: use_build_context_synchronously
+        setPublic(context, true);
         setGroupId(context, widget.groupId);
         if (widget.bingoId != null) {
           setBingoId(context, widget.bingoId!);
@@ -93,7 +94,7 @@ class _InputPasswordState extends State<InputPassword> {
           setBingoSize(context, widget.size!);
         }
         changeGroupIndex(context, widget.initialIndex);
-        toOtherPage(
+        jumpToOtherPage(
           context,
           page: GroupDetail(
             groupId: widget.groupId,
@@ -132,21 +133,21 @@ class _InputPasswordState extends State<InputPassword> {
       showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
     } else {
       setGroupId(context, widget.groupId);
-      GroupProvider()
-          .checkPassword(widget.groupId, password)
-          .then((_) => toOtherPage(
-                context,
-                page: GroupDetail(
-                  groupId: widget.groupId,
-                  isPublic: widget.isPublic,
-                  admin: widget.admin,
-                  bingoId: widget.bingoId,
-                  size: widget.size,
-                  isMember: false,
-                  // password: password,
-                ),
-              )())
-          .catchError((error) {
+      GroupProvider().checkPassword(widget.groupId, password).then((_) {
+        setPublic(context, false);
+        jumpToOtherPage(
+          context,
+          page: GroupDetail(
+            groupId: widget.groupId,
+            isPublic: widget.isPublic,
+            admin: widget.admin,
+            bingoId: widget.bingoId,
+            size: widget.size,
+            isMember: false,
+            // password: password,
+          ),
+        )();
+      }).catchError((error) {
         print(error);
         return error;
       });

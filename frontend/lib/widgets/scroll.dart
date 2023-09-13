@@ -124,7 +124,7 @@ class GroupInfiniteScroll extends StatelessWidget {
   Widget build(BuildContext context) {
     print('widget => $hasNotGroupWidget');
     return CustomBoxContainer(
-      color: beigeColor,
+      color: palePinkColor.withOpacity(0.8),
       child: !watchLoading(context)
           ? data.isNotEmpty
               ? Column(
@@ -208,13 +208,13 @@ class InfiniteScroll extends StatelessWidget {
     required this.mode,
     required this.controller,
     this.reverse = false,
-    this.color = beigeColor,
+    this.color = palePinkColor,
     // this.isChatMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    print('scroll data => $data, loading => ${getLoading(context)}');
+    print('last id => ${getLastId(context, mode)}');
     return CustomBoxContainer(
       color: color,
       child: !watchLoading(context)
@@ -225,6 +225,10 @@ class InfiniteScroll extends StatelessWidget {
                   // hasNotGroupWidget ?? const SizedBox(),
                   itemCount: mode != 2 ? data.length : (data.length / 2).ceil(),
                   itemBuilder: (context, i) {
+                    final length = data.length;
+                    final hasTwo =
+                        i != (length / 2).ceil() - 1 || data.length % 2 == 0;
+                    final lastIdx = hasTwo ? 2 * i + 1 : 2 * i;
                     final returnedWidget = mode == 2
                         ? Row(
                             children: [
@@ -232,8 +236,7 @@ class InfiniteScroll extends StatelessWidget {
                                 child: BingoGallery(bingo: data[2 * i]),
                               ),
                               Flexible(
-                                child: (i != (data.length / 2).ceil() - 1 ||
-                                        data.length % 2 == 0)
+                                child: hasTwo
                                     ? BingoGallery(bingo: data[2 * i + 1])
                                     : const SizedBox(),
                               ),
@@ -251,22 +254,18 @@ class InfiniteScroll extends StatelessWidget {
                       children: [
                         // i < getPage(context, mode) * cnt
                         // ?
-                        getLastId(context, mode) > 0 &&
-                                data[i].id == getLastId(context, mode)
-                            // i == data.length - 1 &&
-                            //         getTotal(context, mode)! >
-                            //             getPage(context, mode)
-                            ? const Padding(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 40,
-                                ),
-                                child: CustomCirCularIndicator(),
-                              )
-                            : const SizedBox(),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
                           child: returnedWidget,
                         ),
+                        if (getLastId(context, mode) > 0 &&
+                            (data[lastIdx].id == getLastId(context, mode)))
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 40,
+                            ),
+                            child: CustomCirCularIndicator(),
+                          )
                         // : const SizedBox(),
                       ],
                     );

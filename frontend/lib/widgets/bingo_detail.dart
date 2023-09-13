@@ -8,6 +8,7 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bingo_board.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:bin_got/widgets/toast.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +58,13 @@ class BingoDetail extends StatelessWidget {
               return RepaintBoundary(
                 key: context.read<GlobalBingoProvider>().globalKey,
                 child: CustomBoxContainer(
+                  image: watchBackground(context) != null
+                      ? DecorationImage(
+                          image: AssetImage(
+                              backgroundList[watchBackground(context)!]),
+                          fit: BoxFit.fill,
+                        )
+                      : null,
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -86,7 +94,7 @@ class BingoDetail extends StatelessWidget {
                           children: [
                             if (alreadyStarted(context) != true &&
                                 (myBingoId(context) == null ||
-                                    myBingoId(context) == getId(context)))
+                                    myBingoId(context) == getBingoId(context)))
                               IconButtonInRow(
                                 onPressed: toOtherPage(
                                   context,
@@ -129,12 +137,7 @@ class BingoDetail extends StatelessWidget {
                 ),
               );
             }
-            return const Center(
-              child: CustomText(
-                content: '정보를 불러오는 중입니다',
-                color: blackColor,
-              ),
-            );
+            return const Center(child: CustomCirCularIndicator());
           },
         ),
         if (watchAfterWork(context)) const CustomToast(content: '인증 요청되었습니다.')

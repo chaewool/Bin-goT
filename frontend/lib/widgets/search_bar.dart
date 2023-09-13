@@ -188,9 +188,9 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       overlayShape: SliderComponentShape.noOverlay,
                     ),
                     child: Slider(
-                      activeColor: paleOrangeColor,
-                      thumbColor: paleOrangeColor,
-                      inactiveColor: paleOrangeColor.withOpacity(0.5),
+                      activeColor: palePinkColor,
+                      thumbColor: palePinkColor,
+                      inactiveColor: palePinkColor.withOpacity(0.5),
                       min: 0,
                       max: 5,
                       divisions: 5,
@@ -233,8 +233,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               for (int i = 0; i < 2; i += 1)
                 CustomBoxContainer(
                   onTap: () => changeSort(i),
-                  color: sortIdx == i ? paleOrangeColor : whiteColor,
-                  borderColor: sortIdx == i ? paleOrangeColor : greyColor,
+                  color: sortIdx == i ? paleRedColor : whiteColor,
+                  borderColor: sortIdx == i ? paleRedColor : greyColor,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CustomText(
@@ -256,8 +256,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               for (int i = 0; i < 2; i += 1)
                 CustomBoxContainer(
                   onTap: () => changePublicPrivate(i),
-                  color: publicPrivate[i] ? paleOrangeColor : whiteColor,
-                  borderColor: publicPrivate[i] ? paleOrangeColor : greyColor,
+                  color: publicPrivate[i] ? paleRedColor : whiteColor,
+                  borderColor: publicPrivate[i] ? paleRedColor : greyColor,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CustomText(
@@ -302,7 +302,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       child: CustomText(
                         content: '그룹명을 입력하거나, 기간을 선택해주세요',
                         fontSize: FontSize.smallSize,
-                        color: paleOrangeColor,
+                        color: paleRedColor,
                       ),
                     ),
             ],
