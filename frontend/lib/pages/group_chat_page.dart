@@ -4,7 +4,6 @@ import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
-import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
@@ -12,6 +11,7 @@ import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/scroll.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +38,7 @@ class _GroupChatState extends State<GroupChat> {
   XFile? selectedImage;
   GlobalKey bottomBarKey = GlobalKey();
   double appBarHeight = 50;
+  double bottomBarHeight = 50;
 
   @override
   void initState() {
@@ -49,7 +50,9 @@ class _GroupChatState extends State<GroupChat> {
       if (getLoading(context)) {
         readChats(false);
       }
-      appBarHeight += MediaQuery.of(context).padding.top + 20;
+      setState(() {
+        appBarHeight = MediaQuery.of(context).padding.top;
+      });
       getImgHeight();
     });
 
@@ -83,7 +86,7 @@ class _GroupChatState extends State<GroupChat> {
       final renderBox =
           bottomBarKey.currentContext!.findRenderObject() as RenderBox;
       setState(() {
-        appBarHeight += renderBox.size.height;
+        bottomBarHeight = renderBox.size.height;
       });
     }
   }
@@ -112,6 +115,13 @@ class _GroupChatState extends State<GroupChat> {
   void addChat(StringMap inputData, XFile? image) {
     final content = inputData['content'];
     if (content != '' || image != null) {
+      showSpinner(context, true);
+      if (showImg) {
+        setState(() {
+          showImg = false;
+          selectedImage = null;
+        });
+      }
       GroupProvider()
           .createGroupChatChat(
         groupId,
@@ -126,6 +136,7 @@ class _GroupChatState extends State<GroupChat> {
         }),
       )
           .then((data) {
+        showSpinner(context, false);
         context.read<GlobalGroupProvider>().insertChat(
               GroupChatModel.fromJson(
                 {
@@ -136,29 +147,22 @@ class _GroupChatState extends State<GroupChat> {
                 },
               ),
             );
-
-        if (showImg) {
-          setState(() {
-            showImg = false;
-          });
-        }
       });
     }
   }
 
-  void imagePicker() async {
-    final ImagePicker picker = ImagePicker();
-    final localImage = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 50,
+  void chatImagePicker() {
+    return imagePicker(
+      context,
+      thenFunc: (localImage) {
+        if (localImage != null) {
+          setState(() {
+            selectedImage = localImage;
+            showImg = true;
+          });
+        }
+      },
     );
-    if (localImage != null) {
-      setState(() {
-        selectedImage = localImage;
-        showImg = true;
-      });
-    }
-    print(showImg);
   }
 
   void deleteImg() {
@@ -170,74 +174,103 @@ class _GroupChatState extends State<GroupChat> {
 
   @override
   Widget build(BuildContext context) {
-    print('갱신');
+    print('appbar => $appBarHeight, bottom => $bottomBarHeight');
     return Scaffold(
-      body: Stack(
-        children: [
-          GestureDetector(
-            onTap: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
-            child: Column(
-              children: [
-                Expanded(
-                  child: InfiniteScroll(
-                    // color: greyColor.withOpacity(0.2),
-                    color: whiteColor,
-                    controller: controller,
-                    cnt: 50,
-                    reverse: true,
-                    data: watchChats(context),
-                    mode: 0,
-                    emptyWidget: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        CustomText(
-                          center: true,
-                          fontSize: FontSize.titleSize,
-                          content: '채팅 기록이 없습니다.',
-                          height: 1.5,
+      body: Padding(
+        padding: EdgeInsets.only(top: appBarHeight),
+        child: Stack(
+          children: [
+            GestureDetector(
+              onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              child: Column(
+                children: [
+                  Expanded(
+                    child: CustomBoxContainer(
+                      width: getWidth(context),
+                      height: getHeight(context) - bottomBarHeight,
+                      child: InfiniteScroll(
+                        // color: greyColor.withOpacity(0.2),
+                        color: whiteColor,
+                        controller: controller,
+                        cnt: 50,
+                        reverse: true,
+                        data: watchChats(context),
+                        mode: 0,
+                        emptyWidget: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            CustomText(
+                              center: true,
+                              fontSize: FontSize.titleSize,
+                              content: '채팅 기록이 없습니다.',
+                              height: 1.5,
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-                GroupChatBottomBar(
-                  key: bottomBarKey,
-                  addChat: addChat,
-                  selectedImage: selectedImage,
-                  imagePicker: imagePicker,
-                )
-              ],
+                ],
+              ),
             ),
-          ),
-          CustomBoxContainer(
-            color: Colors.transparent,
-            width: getWidth(context),
-            height: 200,
-            child: const AppBarWithBack(transparent: true),
-          ),
-          if (showImg)
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                CustomBoxContainer(
-                  hasRoundEdge: false,
-                  width: getWidth(context),
-                  height: getHeight(context) - appBarHeight,
-                  color: blackColor.withOpacity(0.8),
-                  image: DecorationImage(
-                    image: FileImage(File(selectedImage!.path)),
-                  ),
-                  child: CustomIconButton(
-                    icon: closeIcon,
-                    onPressed: deleteImg,
+            const CustomBoxContainer(
+              color: Colors.transparent,
+              width: 100,
+              height: 100,
+              child: AppBarWithBack(transparent: true),
+            ),
+            if (showImg)
+              CustomBoxContainer(
+                hasRoundEdge: false,
+                width: getWidth(context),
+                height: getHeight(context) - 80,
+                color: blackColor.withOpacity(0.8),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CustomBoxContainer(
+                        height: getHeight(context) - 200,
+                        hasRoundEdge: false,
+                        color: Colors.transparent,
+                        image: DecorationImage(
+                          image: FileImage(File(selectedImage!.path)),
+                        ),
+                      ),
+                      CustomButton(
+                        onPressed: deleteImg,
+                        content: '취소',
+                        color: whiteColor,
+                      )
+                    ],
                   ),
                 ),
-              ],
-            )
-        ],
+              ),
+            Positioned(
+              top: getHeight(context) - 100,
+              child: GroupChatBottomBar(
+                addChat: addChat,
+                selectedImage: selectedImage,
+                imagePicker: chatImagePicker,
+              ),
+            ),
+            if (watchSpinner(context))
+              CustomBoxContainer(
+                hasRoundEdge: false,
+                width: getWidth(context),
+                height: getHeight(context),
+                color: blackColor.withOpacity(0.8),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [CustomCirCularIndicator()],
+                ),
+              )
+          ],
+        ),
       ),
     );
   }

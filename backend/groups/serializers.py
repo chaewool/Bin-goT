@@ -4,9 +4,9 @@ from .models import Group, Board, BoardItem
 
 
 class GroupCreateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(required=False, allow_blank=True)
-    description = serializers.CharField(required=False, allow_blank=True)
-    rule = serializers.CharField(required=False, allow_blank=True)
+    password = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    description = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    rule = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     
     class Meta:
         model = Group
@@ -21,8 +21,8 @@ class GroupDetailSerializer(serializers.ModelSerializer):
 
 class GroupUpdateSerializer(serializers.ModelSerializer):
     groupname = serializers.CharField(required=False)
-    description = serializers.CharField(required=False, allow_blank=True)
-    rule = serializers.CharField(required=False, allow_blank=True)
+    description = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    rule = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     headcount = serializers.IntegerField(required=False)
 
     class Meta:
@@ -37,15 +37,11 @@ class BoardCreateSerializer(serializers.ModelSerializer):
 
 
 class BoardItemCreateSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+
     class Meta:
         model = BoardItem
-        exclude = ('board', 'id', 'check_cnt', 'finished')
-
-
-class BoardItemCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BoardItem
-        exclude = ('board', 'id', 'check_cnt', 'finished')
+        fields = ('item_id', 'title', 'content', 'check', 'check_goal')
 
 
 class BoardItemDetailSerializer(serializers.ModelSerializer):

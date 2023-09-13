@@ -69,10 +69,7 @@ class _GroupMainState extends State<GroupMain> {
   Widget build(BuildContext context) {
     return CustomBoxContainer(
       child: groupDetailModel != null
-          ? ColWithPadding(
-              vertical: 30,
-              horizontal: 30,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+          ? Column(
               children: [
                 if (groupDetailModel!.hasImage)
                   CustomBoxContainer(
@@ -86,17 +83,26 @@ class _GroupMainState extends State<GroupMain> {
                       ),
                     ),
                   ),
-                groupHeader(groupDetailModel!),
-                const SizedBox(height: 20),
-                ShowContentBox(
-                  contentTitle: '설명',
-                  content: groupDetailModel!.description,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      groupHeader(groupDetailModel!),
+                      const SizedBox(height: 20),
+                      ShowContentBox(
+                        contentTitle: '설명',
+                        content: groupDetailModel!.description,
+                      ),
+                      ShowContentBox(
+                        contentTitle: '규칙',
+                        content: groupDetailModel!.rule,
+                      ),
+                      if (memberState != 0)
+                        groupRankTop3(context, groupDetailModel!),
+                    ],
+                  ),
                 ),
-                ShowContentBox(
-                  contentTitle: '규칙',
-                  content: groupDetailModel!.rule,
-                ),
-                if (memberState != 0) groupRankTop3(context, groupDetailModel!),
               ],
             )
           : const SizedBox(),
