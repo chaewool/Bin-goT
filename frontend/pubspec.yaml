@@ -93,12 +93,16 @@ flutter:
     - assets/logos/bin_got_logo_0.5x.png
     - assets/logos/bin_got_logo_1x.png
     - assets/images/kakao_login_button.png
-    - assets/images/aaron-burden.jpg
-    - assets/images/annie-spratt.jpg
-    - assets/images/greg-rakozy.jpg
-    - assets/images/joe-woods.jpg
-    - assets/images/luke-chesser.jpg
-    - assets/images/resul-mentes.jpg
+    - assets/images/circle.jpg
+    - assets/images/flowers.png
+    - assets/images/frame_with_leaves.png
+    - assets/images/grid.jpg
+    - assets/images/homes.png
+    - assets/images/leaves.png
+    - assets/images/lemon.png
+    - assets/images/squeeze.jpg
+    - assets/images/strawberry.png
+    - assets/images/weather.jpg
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

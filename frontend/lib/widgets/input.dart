@@ -69,7 +69,7 @@ class CustomInput extends StatelessWidget {
                 hintText: explain,
                 focusColor: whiteColor,
                 focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: paleOrangeColor),
+                  borderSide: BorderSide(color: palePinkColor),
                 ),
                 suffixIcon: suffixIcon,
               ),
@@ -160,8 +160,8 @@ class _InputDateState extends State<InputDate> {
       lastDate: DateTime(DateTime.now().year + 1, 12, 31),
       dayTextStyle: dayTextStyle,
       calendarType: CalendarDatePicker2Type.range,
-      selectedDayHighlightColor: paleOrangeColor,
-      selectedRangeHighlightColor: beigeColor,
+      selectedDayHighlightColor: palePinkColor,
+      selectedRangeHighlightColor: palePinkColor.withOpacity(0.5),
       closeDialogOnCancelTapped: true,
       firstDayOfWeek: 0,
       weekdayLabelTextStyle: const TextStyle(

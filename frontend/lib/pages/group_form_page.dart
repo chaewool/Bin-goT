@@ -22,7 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 //* 그룹 생성/수정 페이지
@@ -115,7 +114,6 @@ class _GroupFormState extends State<GroupForm> {
         final bingoId = getBingoId(context);
         if (bingoId != null && bingoId != 0) {
           setBingoId(context, 0);
-          initBingoData(context);
         }
         toOtherPage(
           context,
@@ -176,35 +174,18 @@ class _GroupFormState extends State<GroupForm> {
     }
   }
 
-  void imagePicker() async {
-    Permission.storage.request().then((value) {
-      if (value == PermissionStatus.denied ||
-          value == PermissionStatus.permanentlyDenied) {
-        showAlert(
-          context,
-          title: '미디어 접근 권한 거부',
-          content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 허용해주세요',
-          hasCancel: false,
-        )();
-      } else {
-        final ImagePicker picker = ImagePicker();
-        picker
-            .pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 50,
-        )
-            .then((localImage) {
-          if (localImage != null) {
-            setState(() {
-              selectedImage = localImage;
-              isImageUpdated = true;
-            });
-          }
-        }).catchError((error) {
-          showErrorModal(context);
-        });
-      }
-    });
+  void groupFormImagePicker() {
+    return imagePicker(
+      context,
+      thenFunc: (localImage) {
+        if (localImage != null) {
+          setState(() {
+            selectedImage = localImage;
+            isImageUpdated = true;
+          });
+        }
+      },
+    );
   }
 
   void deleteImage() {
@@ -256,6 +237,10 @@ class _GroupFormState extends State<GroupForm> {
 
   @override
   Widget build(BuildContext context) {
+    if (watchPrev(context)) {
+      toBack(context);
+      changePrev(context, false);
+    }
     return Scaffold(
         backgroundColor: whiteColor,
         appBar: AppBarWithBack(
@@ -326,7 +311,7 @@ class _GroupFormState extends State<GroupForm> {
                               // width: 120,
                               // height: 30,
                               color: selectedIndex[0] == i
-                                  ? paleOrangeColor
+                                  ? palePinkColor
                                   : whiteColor,
                               // boxShadow: applyBoxShadow(0, 2 * i + j),
                               child: Padding(
@@ -400,7 +385,7 @@ class _GroupFormState extends State<GroupForm> {
                                     width: 120,
                                     height: 60,
                                     color: selectedIndex[1] == j
-                                        ? paleOrangeColor
+                                        ? palePinkColor
                                         : whiteColor,
                                     // boxShadow: applyBoxShadow(1, j),
                                     child: Padding(
@@ -412,6 +397,7 @@ class _GroupFormState extends State<GroupForm> {
                                           color: selectedIndex[1] == j
                                               ? whiteColor
                                               : blackColor,
+                                          height: 1.2,
                                         ),
                                       ),
                                     ),
@@ -620,12 +606,12 @@ class _GroupFormState extends State<GroupForm> {
       return CustomBoxContainer(
         width: 270,
         height: 150,
-        onTap: imagePicker,
+        onTap: groupFormImagePicker,
         borderColor: greyColor,
         hasRoundEdge: false,
         child: CustomIconButton(
           icon: addIcon,
-          onPressed: imagePicker,
+          onPressed: groupFormImagePicker,
           color: greyColor,
         ),
       );
@@ -633,7 +619,7 @@ class _GroupFormState extends State<GroupForm> {
       return CustomBoxContainer(
         width: 270,
         height: 150,
-        onTap: imagePicker,
+        onTap: groupFormImagePicker,
         image: DecorationImage(
           fit: BoxFit.fill,
           image: FileImage(File(selectedImage!.path)),

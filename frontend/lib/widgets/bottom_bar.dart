@@ -109,6 +109,7 @@ class GroupMainBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('isMember => $isMember');
     // void changeIndex(int index) {
     //   final bingoId = myBingoId(context);
     //   if (groupSelectedIndex(context) == 0 &&
@@ -156,7 +157,6 @@ class GroupMainBottomBar extends StatelessWidget {
                 final bingoId = getBingoId(context);
                 if (bingoId != null && bingoId != 0) {
                   setBingoId(context, 0);
-                  initBingoData(context);
                 }
                 toOtherPage(
                   context,
@@ -202,7 +202,7 @@ class FormBottomBar extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: CustomButton(
-                color: paleOrangeColor,
+                color: paleRedColor,
                 onPressed: createOrUpdate,
                 content: '완료',
                 fontSize: FontSize.textSize,
@@ -246,6 +246,8 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
 
     return CustomBoxContainer(
       color: greyColor,
+      width: getWidth(context),
+      height: 80,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
       child: RowWithPadding(
         vertical: 10,

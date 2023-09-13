@@ -31,8 +31,8 @@ class GroupCreateView(APIView):
         
         if period > 365:
             return Response(data={'message': '기간은 1년 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        elif headcount < 1 or headcount > 30:
-            return Response(data={'message': '인원 수는 1명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        elif headcount < 2 or headcount > 30:
+            return Response(data={'message': '인원 수는 2명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         elif size < 2 or size > 5:
             return Response(data={'message': '빙고 크기는 2 이상 5 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         elif not is_public and password == '':
@@ -150,7 +150,8 @@ class GroupUpdateView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         data = json.loads(request.data.get('data'))
-        update_img = get_boolean(request.data.get('update_img'))
+        update_img = request.data.get('update_img')
+        update_img = get_boolean(update_img)
                 
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 수정할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -161,8 +162,8 @@ class GroupUpdateView(APIView):
         if not data.get('headcount'):
             data['headcount'] = group.headcount
 
-        if data['headcount'] < 1 or data['headcount'] > 30:
-            return Response(data={'message': '인원 수는 1명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        if data['headcount'] < 2 or data['headcount'] > 30:
+            return Response(data={'message': '인원 수는 2명 이상 30명 이하로 지정해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if user == group.leader:
             serializer = GroupUpdateSerializer(instance=group, data=data)
@@ -240,7 +241,8 @@ class GroupGrantView(APIView):
         user = request.user
         group = Group.objects.get(id=group_id)
         target_id = request.data.get('target_id')
-        grant = get_boolean(request.data.get('grant'))
+        grant = request.data.get('grant')
+        grant = get_boolean(grant)
                 
         if date.today() >= group.start:
             return Response(data={'message': '시작일이 경과하여 승인할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
