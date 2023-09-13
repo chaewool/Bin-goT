@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 //* 빙고
 class BingoModal extends StatefulWidget {
@@ -104,147 +103,150 @@ class _BingoModalState extends State<BingoModal> {
       hasConfirm: alreadyStarted(context) == true &&
           myBingoId(context) == getBingoId(context),
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            CustomText(content: '${newIdx + 1}/${widget.cnt}'),
-            Row(
-              children: [
-                CustomIconButton(
-                  onPressed: () => moveBingo(false),
-                  icon: leftIcon,
-                  size: 40,
-                  color: newIdx > 0 ? palePinkColor : greyColor,
-                ),
-                Expanded(
-                  child: ColWithPadding(
-                    vertical: 10,
-                    horizontal: 5,
-                    children: [
-                      const RowWithPadding(
-                        vertical: 12,
-                        children: [
-                          CustomText(
-                            content: '빙고칸 제목',
-                            fontSize: FontSize.smallSize,
-                          ),
-                          SizedBox(width: 5),
-                          CustomText(
-                            content: '(필수)',
-                            fontSize: FontSize.tinySize,
-                            color: greyColor,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CustomInput(
-                              // width: 170,
-                              height: 50,
-                              explain: '제목을 입력하세요',
-                              setValue: (value) => item['title'] = value,
-                              initialValue: item['title'],
-                              enabled: !widget.isDetail,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const RowWithPadding(
-                        vertical: 12,
-                        children: [
-                          CustomText(
-                            content: '빙고칸 내용',
-                            fontSize: FontSize.smallSize,
-                          ),
-                          SizedBox(width: 5),
-                          CustomText(
-                            content: '(선택)',
-                            fontSize: FontSize.tinySize,
-                            color: greyColor,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CustomInput(
-                              explain: '이루고 싶은 목표를\n설정해주세요',
-                              needMore: true,
-                              // width: 170,
-                              // height: 200,
-                              enabled: !widget.isDetail,
-                              fontSize: FontSize.textSize,
-                              initialValue: item['content'],
-                              setValue: (value) => item['content'] = value,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (!widget.isDetail || item['check'])
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              CustomText(content: '${newIdx + 1}/${widget.cnt}'),
+              Row(
+                children: [
+                  CustomIconButton(
+                    onPressed: () => moveBingo(false),
+                    icon: leftIcon,
+                    size: 40,
+                    color: newIdx > 0 ? palePinkColor : greyColor,
+                  ),
+                  Expanded(
+                    child: ColWithPadding(
+                      vertical: 10,
+                      horizontal: 5,
+                      children: [
+                        const RowWithPadding(
+                          vertical: 12,
                           children: [
                             CustomText(
-                              content: widget.isDetail ? '달성/목표' : '횟수 체크',
+                              content: '빙고칸 제목',
                               fontSize: FontSize.smallSize,
                             ),
-                            CustomSwitch(
-                              value: item['check'] ?? false,
-                              onChanged: widget.isDetail
-                                  ? (_) {}
-                                  : changeCheckState(false),
+                            SizedBox(width: 5),
+                            CustomText(
+                              content: '(필수)',
+                              fontSize: FontSize.tinySize,
+                              color: greyColor,
                             ),
-                            if (item['check'])
-                              Row(
-                                children: [
-                                  CustomInput(
-                                    enabled: !widget.isDetail,
-                                    width: 45,
-                                    height: 30,
-                                    onlyNum: true,
-                                    setValue: (value) =>
-                                        item['check_goal'] = value,
-                                    initialValue: widget.isDetail
-                                        ? '${item['check_cnt']}/${item['check_goal']}'
-                                        : item['check_goal'].toString(),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  const CustomText(
-                                    content: '회',
-                                    fontSize: FontSize.smallSize,
-                                  )
-                                ],
-                              )
                           ],
                         ),
-                    ],
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomInput(
+                                // width: 170,
+                                height: 50,
+                                explain: '제목을 입력하세요',
+                                setValue: (value) => item['title'] = value,
+                                initialValue: item['title'],
+                                enabled: !widget.isDetail,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const RowWithPadding(
+                          vertical: 12,
+                          children: [
+                            CustomText(
+                              content: '빙고칸 내용',
+                              fontSize: FontSize.smallSize,
+                            ),
+                            SizedBox(width: 5),
+                            CustomText(
+                              content: '(선택)',
+                              fontSize: FontSize.tinySize,
+                              color: greyColor,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomInput(
+                                explain: '이루고 싶은 목표를\n설정해주세요',
+                                needMore: true,
+                                // width: 170,
+                                // height: 200,
+                                enabled: !widget.isDetail,
+                                fontSize: FontSize.textSize,
+                                initialValue: item['content'],
+                                setValue: (value) => item['content'] = value,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (!widget.isDetail || item['check'])
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomText(
+                                content: widget.isDetail ? '달성/목표' : '횟수 체크',
+                                fontSize: FontSize.smallSize,
+                              ),
+                              CustomSwitch(
+                                value: item['check'] ?? false,
+                                onChanged: widget.isDetail
+                                    ? (_) {}
+                                    : changeCheckState(false),
+                              ),
+                              if (item['check'])
+                                Row(
+                                  children: [
+                                    CustomInput(
+                                      enabled: !widget.isDetail,
+                                      width: 45,
+                                      height: 30,
+                                      onlyNum: true,
+                                      explain: '2 이상의 숫자',
+                                      setValue: (value) =>
+                                          item['check_goal'] = value,
+                                      initialValue: widget.isDetail
+                                          ? '${item['check_cnt']}/${item['check_goal']}'
+                                          : item['check_goal'].toString(),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const CustomText(
+                                      content: '회',
+                                      fontSize: FontSize.smallSize,
+                                    )
+                                  ],
+                                )
+                            ],
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-                CustomIconButton(
-                  onPressed:
-                      newIdx < widget.cnt - 1 ? () => moveBingo(true) : () {},
-                  icon: rightIcon,
-                  size: 40,
-                  color: newIdx < widget.cnt - 1 ? palePinkColor : greyColor,
-                )
-              ],
-            ),
-            CustomText(
-              content:
-                  item['check'] ? '목표 달성 횟수를 설정합니다.' : '목표 달성 횟수를 설정하지 않습니다.',
-              fontSize: FontSize.smallSize,
-              color: greyColor,
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: CustomText(
-                content: '* 시작일 전에 변경 가능합니다.',
-                fontSize: FontSize.tinySize,
+                  CustomIconButton(
+                    onPressed:
+                        newIdx < widget.cnt - 1 ? () => moveBingo(true) : () {},
+                    icon: rightIcon,
+                    size: 40,
+                    color: newIdx < widget.cnt - 1 ? palePinkColor : greyColor,
+                  )
+                ],
+              ),
+              CustomText(
+                content:
+                    item['check'] ? '목표 달성 횟수를 설정합니다.' : '목표 달성 횟수를 설정하지 않습니다.',
+                fontSize: FontSize.smallSize,
                 color: greyColor,
               ),
-            )
-          ],
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: CustomText(
+                  content: '* 시작일 전에 변경 가능합니다.',
+                  fontSize: FontSize.tinySize,
+                  color: greyColor,
+                ),
+              )
+            ],
+          ),
         )
       ],
     );
@@ -279,29 +281,11 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
     };
   }
 
-  void imagePicker() async {
-    Permission.storage.request().then((value) {
-      if (value == PermissionStatus.denied ||
-          value == PermissionStatus.permanentlyDenied) {
-        showAlert(
-          context,
-          title: '미디어 접근 권한 거부',
-          content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 허용해주세요',
-          hasCancel: false,
-        )();
-      } else {
-        final ImagePicker picker = ImagePicker();
-        picker
-            .pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 50,
-        )
-            .then((localImage) {
-          if (localImage != null) {
-            setState(() {
-              selectedImage = localImage;
-            });
-          }
+  void requestImagePicker() {
+    return imagePicker(context, thenFunc: (localImage) {
+      if (localImage != null) {
+        setState(() {
+          selectedImage = localImage;
         });
       }
     });
@@ -355,19 +339,19 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: selectedImage == null
               ? CustomBoxContainer(
-                  onTap: imagePicker,
+                  onTap: requestImagePicker,
                   borderColor: greyColor,
                   hasRoundEdge: false,
                   width: 270,
                   height: 150,
                   child: CustomIconButton(
                     icon: addIcon,
-                    onPressed: imagePicker,
+                    onPressed: requestImagePicker,
                     color: greyColor,
                   ),
                 )
               : CustomBoxContainer(
-                  onTap: imagePicker,
+                  onTap: requestImagePicker,
                   image: DecorationImage(
                     fit: BoxFit.fill,
                     image: FileImage(File(selectedImage!.path)),
@@ -442,7 +426,11 @@ class CustomAlert extends StatelessWidget {
       content: CustomText(content: content),
       actions: [
         CustomButton(
-            onPressed: onPressed ?? () => toBack(context), content: '확인'),
+          color: palePinkColor,
+          onPressed: onPressed ?? () => toBack(context),
+          content: '확인',
+          textColor: whiteColor,
+        ),
         hasCancel
             ? const ExitButton(isIconType: false, buttonText: '취소')
             : const SizedBox(),
@@ -648,7 +636,7 @@ class CustomModal extends StatelessWidget {
               children: [
                 if (hasConfirm)
                   CustomButton(
-                    color: paleOrangeColor,
+                    color: paleRedColor,
                     textColor: whiteColor,
                     onPressed: onPressed ?? () => toBack(context),
                     content: buttonText,

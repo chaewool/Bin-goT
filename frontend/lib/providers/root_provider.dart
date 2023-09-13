@@ -82,11 +82,13 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
 class NotiProvider extends ChangeNotifier {
   static bool _beforeExit = false;
   static bool _afterWork = false;
+  static bool _spinnerState = false;
 
   //* getter
 
   bool get beforeExit => _beforeExit;
   bool get afterWork => _afterWork;
+  bool get spinnerState => _spinnerState;
 
   //* private
 
@@ -121,10 +123,13 @@ class NotiProvider extends ChangeNotifier {
     return Future.value(true);
   }
 
+  void _showSpinner(bool showState) => _spinnerState = showState;
+
   //* public
 
   FutureBool changePressed() => _changePressed();
   void showToast() => _showToast();
+  void showSpinner(bool showState) => _showSpinner(showState);
 }
 
 //* scroll
@@ -182,9 +187,11 @@ class GlobalGroupProvider extends ChangeNotifier {
   static bool? _isPublic;
   static final GroupChatList _chats = [];
   static int _selectedIndex = 1;
+  static bool _prev = false;
 
   GroupChatList get chats => _chats;
   bool? get isPublic => _isPublic;
+  bool get prev => _prev;
 
   int get selectedIndex => _selectedIndex;
   int? get lastId => _lastId;
@@ -238,6 +245,8 @@ class GlobalGroupProvider extends ChangeNotifier {
       _selectedIndex = index;
     }
   }
+
+  void _toPrevPage(bool value) => _prev = value;
 
 //* public
   void setLastId(int value) => _setLastId(value);
@@ -311,6 +320,11 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void changeIndex(int index) {
     _changeIndex(index);
+    notifyListeners();
+  }
+
+  void toPrevPage(bool value) {
+    _toPrevPage(value);
     notifyListeners();
   }
 }
@@ -435,7 +449,7 @@ class GlobalBingoProvider extends ChangeNotifier {
         'title': null,
         'content': null,
         'check': false,
-        'check_goal': '0',
+        'check_goal': 0,
       },
     );
   }

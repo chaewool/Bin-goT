@@ -51,20 +51,28 @@ const rankIcon = Icons.align_vertical_bottom_rounded;
 const iconList = [confirmIcon, closeIcon, circleIcon];
 
 //* background image
-var iceBall = 'assets/images/aaron-burden.jpg';
-var plant = 'assets/images/annie-spratt.jpg';
-var milkyway = 'assets/images/greg-rakozy.jpg';
-var wall = 'assets/images/joe-woods.jpg';
-var gradation = 'assets/images/luke-chesser.jpg';
-var daySky = 'assets/images/resul-mentes.jpg';
+var circle = 'assets/images/circle.jpg';
+var flowers = 'assets/images/flowers.png';
+var frameWithLeaves = 'assets/images/frame_with_leaves.png';
+var grid = 'assets/images/grid.jpg';
+var homes = 'assets/images/homes.png';
+var leaves = 'assets/images/leaves.png';
+var lemon = 'assets/images/lemon.png';
+var squeeze = 'assets/images/squeeze.jpg';
+var strawberry = 'assets/images/strawberry.png';
+var weather = 'assets/images/weather.jpg';
 
 StringList backgroundList = [
-  iceBall,
-  plant,
-  milkyway,
-  wall,
-  gradation,
-  daySky,
+  circle,
+  flowers,
+  frameWithLeaves,
+  grid,
+  homes,
+  leaves,
+  lemon,
+  squeeze,
+  strawberry,
+  weather
 ];
 
 
@@ -183,22 +191,3 @@ StringList backgroundList = [
 // const downIcon = Icons.arrow_drop_down;
 
 // const iconList = [confirmIcon, closeIcon, circleIcon];
-
-// //* background image
-// var iceBall = 'assets/images/aaron-burden.jpg';
-// var plant = 'assets/images/annie-spratt.jpg';
-// var milkyway = 'assets/images/greg-rakozy.jpg';
-// var wall = 'assets/images/joe-woods.jpg';
-// var gradation = 'assets/images/luke-chesser.jpg';
-// var daySky = 'assets/images/resul-mentes.jpg';
-
-// StringList backgroundList = [
-//   iceBall,
-//   plant,
-//   milkyway,
-//   wall,
-//   gradation,
-//   daySky,
-// ];
-// }
-
