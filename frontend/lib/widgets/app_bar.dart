@@ -203,7 +203,6 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       icon: shareIcon,
                       onPressed: () => shareGroup(
                         groupId: groupId,
-                        isPublic: getPublic(context)!,
                         groupName: getGroupName(context),
                       ),
                     )
@@ -339,7 +338,8 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     void shareBingo() async {
       File file = await context.read<GlobalBingoProvider>().bingoToXFile();
 
-      Share.shareXFiles([XFile(file.path)], text:"테스트").then((value) => file.delete());
+      Share.shareXFiles([XFile(file.path)], text: "테스트")
+          .then((value) => file.delete());
     }
 
     return AppBarWithBack(
