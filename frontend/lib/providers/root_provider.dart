@@ -350,7 +350,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   static int _lastId = 0;
   static BoolList _finished = [];
   // static bool? _isMine;
-  static final GlobalKey _globalKey = GlobalKey();
+  static GlobalKey _globalKey = GlobalKey();
   // static int _page = 1;
 
   //* getter
@@ -467,6 +467,10 @@ class GlobalBingoProvider extends ChangeNotifier {
     _setItem(index2, content1);
   }
 
+  void _initKey() {
+    _globalKey = GlobalKey();
+  }
+
   // void _setIsMine(bool newVal) => _isMine = newVal;
 
   void _initData() {
@@ -545,6 +549,8 @@ class GlobalBingoProvider extends ChangeNotifier {
   // }
 
   void initData() => _initData();
+
+  void initKey() => _initKey();
 
   FutureBool bingoToImage() => _bingoToImage();
 

@@ -17,6 +17,10 @@ import 'package:provider/provider.dart';
 
 //* 함수
 
+//* 지연
+void afterFewSec(int millisec, ReturnVoid afterFunc) =>
+    Future.delayed(Duration(milliseconds: millisec), afterFunc);
+
 //* 이미지
 void imagePicker(
   BuildContext context, {
@@ -235,18 +239,6 @@ void deleteVar(BuildContext context) {
 int? getId(BuildContext context) => context.read<AuthProvider>().id;
 
 //* notifications
-// void setNoti(
-//   BuildContext context, {
-//   required bool rank,
-//   required bool due,
-//   required bool chat,
-//   required bool complete,
-// }) {
-//   context.read<NotiProvider>().setStoreRank(rank);
-//   context.read<NotiProvider>().setStoreDue(due);
-//   context.read<NotiProvider>().setStoreChat(chat);
-//   context.read<NotiProvider>().setStoreComplete(complete);
-// }
 
 //* size
 double getWidth(BuildContext context) => MediaQuery.of(context).size.width;
@@ -260,12 +252,12 @@ FutureBool exitApp(BuildContext context) =>
 bool watchPressed(BuildContext context) =>
     context.watch<NotiProvider>().beforeExit;
 
-bool watchAfterWork(BuildContext context) =>
-    context.watch<NotiProvider>().afterWork;
-
 //* toast
 void showToast(BuildContext context) =>
     context.read<NotiProvider>().showToast();
+
+bool watchAfterWork(BuildContext context) =>
+    context.watch<NotiProvider>().afterWork;
 
 //* spinner
 void showSpinner(BuildContext context, bool showState) =>
@@ -275,21 +267,6 @@ bool watchSpinner(BuildContext context) =>
     context.watch<NotiProvider>().spinnerState;
 
 //* scroll
-// int? getTotal(BuildContext context, int mode) => mode == 0
-//     ? context.read<GlobalScrollProvider>().lastPage
-//     : context.read<GlobalGroupProvider>().lastPage;
-
-// void setTotal(BuildContext context,
-//     {required int mode, required int newTotal}) {
-//   switch (mode) {
-//     case 0:
-//       return context.read<GlobalScrollProvider>().setTotal(newTotal);
-//     case 1:
-//       return context.read<GlobalGroupProvider>().setTotalPage(newTotal);
-//     default:
-//       return context.read<GlobalBingoProvider>().setTotalPage(newTotal);
-//   }
-// }
 
 bool getLoading(BuildContext context) =>
     context.read<GlobalScrollProvider>().loading;
@@ -321,28 +298,6 @@ void setLastId(BuildContext context, int mode, int lastId) {
       return context.read<GlobalBingoProvider>().setLastId(lastId);
   }
 }
-
-// void increasePage(BuildContext context, int mode) {
-//   switch (mode) {
-//     case 0:
-//       return context.read<GlobalScrollProvider>().increasePage();
-//     case 1:
-//       return context.read<GlobalGroupProvider>().increasePage();
-//     default:
-//       return context.read<GlobalBingoProvider>().increasePage();
-//   }
-// }
-
-// void initPage(BuildContext context, int mode) {
-//   switch (mode) {
-//     case 0:
-//       return context.read<GlobalScrollProvider>().initPage();
-//     case 1:
-//       return context.read<GlobalGroupProvider>().initPage();
-//     default:
-//       return context.read<GlobalBingoProvider>().initPage();
-//   }
-// }
 
 bool getWorking(BuildContext context) =>
     context.read<GlobalScrollProvider>().working;
@@ -448,6 +403,7 @@ void setFinished(BuildContext context, int index, bool value) =>
 
 void setBingoId(BuildContext context, int id) =>
     context.read<GlobalBingoProvider>().setBingoId(id);
+
 void setBingoSize(BuildContext context, int size) =>
     context.read<GlobalBingoProvider>().setBingoSize(size);
 

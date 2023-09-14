@@ -16,13 +16,16 @@ import 'package:provider/provider.dart';
 
 class BingoDetail extends StatelessWidget {
   final int? size;
+  // final GlobalKey globalKey;
   const BingoDetail({
     super.key,
     this.size,
+    // required this.globalKey,
   });
 
   @override
   Widget build(BuildContext context) {
+    // GlobalKey globalKey = GlobalKey();
     int bingoSize = context.read<GlobalBingoProvider>().bingoSize ??
         context.read<GlobalGroupProvider>().bingoSize!;
 
@@ -41,6 +44,7 @@ class BingoDetail extends StatelessWidget {
           ),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              context.read<GlobalBingoProvider>().initKey();
               final DynamicMap data = snapshot.data!;
               // print('--------- bingo data => $data');
               final int achieve = (data['achieve']! * 100).toInt();
@@ -56,7 +60,7 @@ class BingoDetail extends StatelessWidget {
               // print(getBingoData(context));
 
               return RepaintBoundary(
-                key: context.read<GlobalBingoProvider>().globalKey,
+                key: context.watch<GlobalBingoProvider>().globalKey,
                 child: CustomBoxContainer(
                   image: watchBackground(context) != null
                       ? DecorationImage(
