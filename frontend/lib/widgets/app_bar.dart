@@ -321,8 +321,10 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
 //* 빙고 상세
 class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   // final int bingoId;
+  // final GlobalKey globalKey;
   const BingoDetailAppBar({
     super.key,
+    // required this.globalKey,
     // required this.bingoId,
   });
 

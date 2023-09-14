@@ -21,6 +21,7 @@ import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:bin_got/widgets/toast.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -51,6 +52,7 @@ class _BingoFormState extends State<BingoForm> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? thumbnail;
   bool changed = true;
+  String toastString = '';
   late final size;
 
   @override
@@ -195,18 +197,17 @@ class _BingoFormState extends State<BingoForm> {
     showSpinner(context, true);
     GroupProvider().createOwnGroup(formData).then((groupId) {
       showSpinner(context, false);
-      initBingoData(context);
+      // initBingoData(context);
+      toastString = '그룹 생성이 완료되었습니다.';
       changeGroupIndex(context, 1);
-      showAlert(
-        context,
-        title: '그룹 생성 완료',
-        content: '그룹 생성이 완료되었습니다.\n그룹 메인 페이지로 이동합니다.',
-        hasCancel: false,
-        onPressed: jumpToOtherPage(
+      showToast(context);
+      afterFewSec(
+        1000,
+        jumpToOtherPage(
           context,
           page: InputPassword(isPublic: true, groupId: groupId),
         ),
-      )();
+      );
       // toOtherPage(
       //   context,
       //   page: GroupCreateCompleted(
@@ -242,30 +243,39 @@ class _BingoFormState extends State<BingoForm> {
         print('그룹 가입 성공 => $data');
         print('form data : $bingoData');
         print('빙고 생성 성공');
-        initBingoData(context);
+        // initBingoData(context);
         if (getNeedAuth(context) == true) {
-          showAlert(
-            context,
-            title: '가입 신청',
-            content: '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.',
-            hasCancel: false,
-            onPressed: () => toOtherPageWithoutPath(
+          toastString = '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.';
+          showToast(context);
+          afterFewSec(
+            1000,
+            () => toOtherPageWithoutPath(
               context,
               page: const Main(),
             ),
-          )();
+          );
         } else {
+          toastString = '성공적으로 가입되었습니다.';
           changeGroupIndex(context, 1);
-          showAlert(
-            context,
-            title: '가입 완료',
-            content: '성공적으로 가입되었습니다.',
-            hasCancel: false,
-            onPressed: jumpToOtherPage(
+          showToast(context);
+          afterFewSec(
+            1000,
+            jumpToOtherPage(
               context,
               page: InputPassword(isPublic: true, groupId: groupId),
             ),
-          )();
+          );
+
+          // showAlert(
+          //   context,
+          //   title: '가입 완료',
+          //   content: '성공적으로 가입되었습니다.',
+          //   hasCancel: false,
+          //   onPressed: jumpToOtherPage(
+          //     context,
+          //     page: InputPassword(isPublic: true, groupId: groupId),
+          //   ),
+          // )();
         }
       }).catchError((e) {
         print('catch error : $e');
@@ -432,7 +442,8 @@ class _BingoFormState extends State<BingoForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [CustomCirCularIndicator()],
               ),
-            )
+            ),
+          if (watchAfterWork(context)) CustomToast(content: toastString)
         ],
       ),
     );

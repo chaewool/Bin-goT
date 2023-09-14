@@ -158,7 +158,7 @@ class GroupMainBottomBar extends StatelessWidget {
                 if (bingoId != null && bingoId != 0) {
                   setBingoId(context, 0);
                 }
-                toOtherPage(
+                jumpToOtherPage(
                   context,
                   page: BingoForm(
                     bingoSize: size ?? 0,

@@ -62,7 +62,7 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
         isPublic: isPublic,
         groupId: groupId,
         needCheck: needCheck,
-        initialIndex: 2,
+        chat: true,
       );
     } else if (path[2] == 'myboard') {
       // 그룹 내 내 빙고 페이지로 이동
@@ -81,7 +81,7 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
         isPublic: isPublic,
         groupId: groupId,
         needCheck: needCheck,
-        initialIndex: 3,
+        initialIndex: 2,
       );
     }
   }

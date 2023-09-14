@@ -19,7 +19,7 @@ class GroupDetail extends StatefulWidget
 // with WidgetsBindingObserver
 {
   // final int initialIndex;
-  final bool isPublic, admin, isMember;
+  final bool isPublic, admin, isMember, chat;
   final int? bingoId, size, groupId;
   // final String start;
   const GroupDetail({
@@ -31,6 +31,7 @@ class GroupDetail extends StatefulWidget
     this.size,
     required this.admin,
     required this.isMember,
+    required this.chat,
 
     // required this.start,
   });
@@ -44,6 +45,7 @@ class _GroupDetailState extends State<GroupDetail> {
   // late bool needAuth;
   // late int selectedIndex;
   bool refresh = false;
+  // GlobalKey globalKey = GlobalKey();
   WidgetList nextPages = [
     const BingoDetail(),
     const GroupMain(),
@@ -59,9 +61,13 @@ class _GroupDetailState extends State<GroupDetail> {
   @override
   void initState() {
     super.initState();
-    if (widget.admin) {
-      toOtherPage(context, page: GroupAdmin(groupId: widget.groupId!))();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.admin) {
+        toOtherPage(context, page: GroupAdmin(groupId: widget.groupId!))();
+      } else if (widget.chat) {
+        toOtherPage(context, page: const GroupChat())();
+      }
+    });
 
     // WidgetsBinding.instance.addObserver(this);
   }
@@ -74,11 +80,13 @@ class _GroupDetailState extends State<GroupDetail> {
 
   @override
   Widget build(BuildContext context) {
-    if (refresh) {
-      setState(() {
-        refresh = false;
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (refresh) {
+        setState(() {
+          refresh = false;
+        });
+      }
+    });
     return WillPopScope(
       onWillPop: () {
         toBack(context);
