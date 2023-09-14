@@ -422,6 +422,8 @@ class GroupChatCreateView(APIView):
         content = request.data.get('content')
         img = request.FILES.get('img')
         board = Board.objects.filter(user=user, group=group)
+
+        logger.info('받아온 이미지: {img}')
         
         if not board.exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -441,16 +443,20 @@ class GroupChatCreateView(APIView):
         }
 
         if img:
+            logger.info('이미지 등록')
+
             chat['has_img'] = True
 
             url = 'chats' + '/' + str(group_id) + '/' + str(chat['id'])
             
             upload_image(url, img)
         else:
+            logger.info('이미지 없음')
             chat['has_img'] = False
         
         RedisChat(group_id).addChat(chat)
         send_to_fcm(user, group, group.groupname, content, f'groups/{group.id}/chat', chat)
+        logger.info('채팅 등록 완료')
             
         return Response(data=chat, status=status.HTTP_200_OK)
 
