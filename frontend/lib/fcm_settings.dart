@@ -33,7 +33,7 @@ void onNotificationTapped(NotificationResponse notificationResponse) {
 
   if (path[0] == 'mypage') {
     // 마이페이지로 이동
-    page = const Main(initialPage: 0);
+    page = const Main(initialPage: 2);
   } else {
     var groupId = int.parse(path[1]);
     var isPublic = true;
@@ -97,7 +97,7 @@ void showNotification(RemoteMessage message, String channelId, String channelNam
   Map data = jsonDecode(message.data['data']);
   List<String> path = data['path'].split('/');
 
-  if (path[2] == 'chat' && int.parse(path[1]) == getGroupId(context!)) {
+  if (path[0] == 'group' && path[2] == 'chat' && int.parse(path[1]) == getGroupId(context!)) {
     context.read<GlobalGroupProvider>().insertChat(GroupChatModel.fromJson(data['chat']));
   }
 
