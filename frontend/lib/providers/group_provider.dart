@@ -51,13 +51,20 @@ class GroupProvider extends ApiProvider {
         },
       );
       print('data => ${response.data}');
-      MyGroupList groupList = response.data['groups']
-          .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
-          .toList();
-      print('group list => $groupList');
+      List groups = response.data['groups'];
+      MyGroupList groupList;
+      if (groups.isNotEmpty) {
+        groupList = response.data['groups']
+            .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
+            .toList();
+        print('group list => $groupList');
 
-      // GlobalScrollProvider().setTotalPage(response.data['last_page']);
-      GlobalScrollProvider().setLastId(response.data['last_idx']);
+        // GlobalScrollProvider().setTotalPage(response.data['last_page']);
+        GlobalScrollProvider().setLastId(groupList.last.id);
+      } else {
+        groupList = [];
+        GlobalScrollProvider().setLastId(-1);
+      }
       return groupList;
     } catch (error) {
       print(error);

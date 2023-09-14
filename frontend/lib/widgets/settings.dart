@@ -62,7 +62,7 @@ class _SettingsState extends State<Settings> {
       emailBody = await body();
       final Email email = Email(
         subject: '[Bin:goT] 문의사항',
-        recipients: [''],
+        recipients: ['celpegor216@gmail.com'],
         body: emailBody,
         isHTML: false,
       );

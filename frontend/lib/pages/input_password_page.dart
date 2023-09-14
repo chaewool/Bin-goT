@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class InputPassword extends StatefulWidget {
-  final bool isPublic, needCheck, isSearchMode, admin;
+  final bool isPublic, needCheck, isSearchMode, admin, chat;
   final int groupId, initialIndex;
   final int? bingoId, size;
   const InputPassword({
@@ -21,6 +21,7 @@ class InputPassword extends StatefulWidget {
     this.needCheck = false,
     this.isSearchMode = false,
     this.admin = false,
+    this.chat = false,
     this.bingoId,
     this.size,
   });
@@ -40,6 +41,34 @@ class _InputPasswordState extends State<InputPassword> {
         ),
       )();
 
+  void toNextPage([bool public = true, member = true]) {
+    setPublic(context, public);
+    setGroupId(context, widget.groupId);
+    if (widget.bingoId != null) {
+      setBingoId(context, widget.bingoId!);
+      // setIsMine(context, true);
+    }
+    if (widget.size != null) {
+      setBingoSize(context, widget.size!);
+    }
+    changeGroupIndex(context, widget.initialIndex);
+    jumpToOtherPage(
+      context,
+      page: GroupDetail(
+        groupId: widget.groupId,
+        admin: widget.admin,
+        chat: widget.chat,
+        // password: '',
+        isPublic: widget.isPublic,
+        // initialIndex: widget.initialIndex,
+        bingoId: widget.bingoId,
+        size: widget.size,
+        isMember: member ? !widget.isSearchMode : false,
+        // data: data,
+      ),
+    )();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,14 +77,26 @@ class _InputPasswordState extends State<InputPassword> {
       if (widget.needCheck) {
         if (getToken(context) == null) {
           //* 로그인 팝업
-          await showLoginModal();
+          showLoginModal().then((_) {
+            toNextPage();
+          }).catchError((_) {
+            showErrorModal(context);
+          });
         } else {
           try {
             //* 토큰 유효성 검사
-            await verifyToken();
+            await verifyToken().then((_) {
+              toNextPage();
+            }).catchError((_) {
+              throw Error();
+            });
           } catch (error) {
             //* 로그인 팝업
-            await showLoginModal();
+            showLoginModal().then((_) {
+              toNextPage();
+            }).catchError((_) {
+              showErrorModal(context);
+            });
           }
         }
       }
@@ -83,31 +124,7 @@ class _InputPasswordState extends State<InputPassword> {
           ),
         )();
       } else {
-        // ignore: use_build_context_synchronously
-        setPublic(context, true);
-        setGroupId(context, widget.groupId);
-        if (widget.bingoId != null) {
-          setBingoId(context, widget.bingoId!);
-          // setIsMine(context, true);
-        }
-        if (widget.size != null) {
-          setBingoSize(context, widget.size!);
-        }
-        changeGroupIndex(context, widget.initialIndex);
-        jumpToOtherPage(
-          context,
-          page: GroupDetail(
-            groupId: widget.groupId,
-            admin: widget.admin,
-            // password: '',
-            isPublic: widget.isPublic,
-            // initialIndex: widget.initialIndex,
-            bingoId: widget.bingoId,
-            size: widget.size,
-            isMember: !widget.isSearchMode,
-            // data: data,
-          ),
-        )();
+        toNextPage();
       }
     });
   }
@@ -132,21 +149,8 @@ class _InputPasswordState extends State<InputPassword> {
     if (password == null || password == '') {
       showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
     } else {
-      setGroupId(context, widget.groupId);
       GroupProvider().checkPassword(widget.groupId, password).then((_) {
-        setPublic(context, false);
-        jumpToOtherPage(
-          context,
-          page: GroupDetail(
-            groupId: widget.groupId,
-            isPublic: widget.isPublic,
-            admin: widget.admin,
-            bingoId: widget.bingoId,
-            size: widget.size,
-            isMember: false,
-            // password: password,
-          ),
-        )();
+        toNextPage(false, false);
       }).catchError((error) {
         print(error);
         return error;

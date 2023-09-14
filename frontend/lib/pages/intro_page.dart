@@ -6,7 +6,6 @@ import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -61,23 +60,23 @@ class _IntroState extends State<Intro> {
   //   await context.read<NotiProvider>().initNoti();
   // }
 
-  void afterFewSec(int millisec, ReturnVoid changeVar) {
-    Future.delayed(Duration(milliseconds: millisec), () {
-      setState(changeVar);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     afterFewSec(500, () {
-      showLogo = true;
+      setState(() {
+        showLogo = true;
+      });
     });
     afterFewSec(1000, () {
-      showExplain = true;
+      setState(() {
+        showExplain = true;
+      });
     });
     afterFewSec(1500, () {
-      showTitle = true;
+      setState(() {
+        showTitle = true;
+      });
     });
     verifyToken();
     // initNoti();
