@@ -112,6 +112,9 @@ class _SearchGroupState extends State<SearchGroup> {
 
   @override
   Widget build(BuildContext context) {
+    if (watchPrev(context)) {
+      changePrev(context, false);
+    }
     return WillPopScope(
       onWillPop: () {
         toOtherPage(context, page: const Main())();
@@ -136,42 +139,6 @@ class _SearchGroupState extends State<SearchGroup> {
                     period: widget.period,
                     query: widget.query,
                   ),
-                // const RowWithPadding(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   vertical: 10,
-                //   horizontal: 25,
-                //   children: [
-                //     Center(
-                //       child: CustomTextButton(
-                //         content: sortList[sortIdx],
-                //         fontSize: FontSize.smallSize,
-                //         onTap: changeSort,
-                //       ),
-                //     ),
-                //     Center(
-                //       child: CustomTextButton(
-                //         content: filterList[filterIdx],
-                //         fontSize: FontSize.smallSize,
-                //         onTap: changeFilter,
-                //       ),
-                //     ),
-
-                // SelectBox(
-                //   key: sortKey,
-                //   onTap: changeShowSort,
-                //   value: sortList[sortIdx],
-                //   width: 120,
-                //   height: 50,
-                // ),
-                // SelectBox(
-                //   key: filterKey,
-                //   onTap: changeShowFilter,
-                //   value: filterList[filterIdx],
-                //   width: 120,
-                //   height: 50,
-                // ),
-                //   ],
-                // ),
                 Expanded(
                   child: GroupInfiniteScroll(
                     controller: controller,

@@ -10,24 +10,69 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 //* 함수
 
+//* 지연
+void afterFewSec(int millisec, ReturnVoid afterFunc) =>
+    Future.delayed(Duration(milliseconds: millisec), afterFunc);
+
+//* 이미지
+void imagePicker(
+  BuildContext context, {
+  ReturnVoid? elseFunc,
+  void Function(XFile?)? thenFunc,
+}) async {
+  Permission.storage.request().then((value) {
+    if (value == PermissionStatus.denied ||
+        value == PermissionStatus.permanentlyDenied) {
+      showAlert(
+        context,
+        title: '미디어 접근 권한 거부',
+        content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 수정하시겠습니까?',
+        hasCancel: true,
+        onPressed: () {
+          openAppSettings();
+          toBack(context);
+        },
+      )();
+    } else {
+      if (elseFunc != null) {
+        elseFunc();
+      } else {
+        final ImagePicker picker = ImagePicker();
+        picker
+            .pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 70,
+        )
+            .then((localImage) {
+          if (thenFunc != null) {
+            thenFunc(localImage);
+          }
+        }).catchError((error) {
+          showErrorModal(context);
+        });
+      }
+    }
+  });
+}
+
 //* 공유 템플릿
 TextTemplate defaultText({
   required int id,
-  required bool isGroup,
+  // required bool isGroup,
   // String? password,
-  String? groupName,
+  required String groupName,
   required String url,
 }) {
   print(url);
   return TextTemplate(
-    text: isGroup
-        ? '$groupName 그룹에서\n당신을 기다리고 있어요\nBin:goT에서\n같이 계획을 공유해보세요'
-        : 'ㅇㅇㅇ 님이 빙고판을 공유했어요! 자세히 살펴보세요.',
+    text: '$groupName 그룹에서\n당신을 기다리고 있어요\n그룹에 참여하여\n같이 빈 곳을 채워보세요 :)\n',
     buttonTitle: '앱으로 이동하기/앱 설치하기',
     link: Link(
       mobileWebUrl: Uri.parse(url),
@@ -50,7 +95,6 @@ void shareGroup({
     try {
       Uri uri = await ShareClient.instance.shareDefault(
         template: defaultText(
-          isGroup: true,
           id: groupId,
           // password: password,
           groupName: groupName,
@@ -66,8 +110,8 @@ void shareGroup({
     try {
       Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
         template: defaultText(
-          isGroup: true,
           id: groupId,
+          groupName: groupName,
           // password: password,
           url: url,
         ),
@@ -92,6 +136,15 @@ Future<bool?> toOtherPageWithoutPath(BuildContext context, {Widget? page}) {
     MaterialPageRoute(builder: (context) => page ?? const Intro()),
     (router) => false,
   );
+}
+
+ReturnVoid jumpToOtherPage(BuildContext context, {required Widget page}) {
+  return () => Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => page,
+        ),
+      );
 }
 
 //* 뒤로 가기
@@ -186,18 +239,6 @@ void deleteVar(BuildContext context) {
 int? getId(BuildContext context) => context.read<AuthProvider>().id;
 
 //* notifications
-// void setNoti(
-//   BuildContext context, {
-//   required bool rank,
-//   required bool due,
-//   required bool chat,
-//   required bool complete,
-// }) {
-//   context.read<NotiProvider>().setStoreRank(rank);
-//   context.read<NotiProvider>().setStoreDue(due);
-//   context.read<NotiProvider>().setStoreChat(chat);
-//   context.read<NotiProvider>().setStoreComplete(complete);
-// }
 
 //* size
 double getWidth(BuildContext context) => MediaQuery.of(context).size.width;
@@ -211,29 +252,21 @@ FutureBool exitApp(BuildContext context) =>
 bool watchPressed(BuildContext context) =>
     context.watch<NotiProvider>().beforeExit;
 
+//* toast
+void showToast(BuildContext context) =>
+    context.read<NotiProvider>().showToast();
+
 bool watchAfterWork(BuildContext context) =>
     context.watch<NotiProvider>().afterWork;
 
-//* toast
-void showToast(BuildContext context) =>
-    context.watch<NotiProvider>().showToast();
+//* spinner
+void showSpinner(BuildContext context, bool showState) =>
+    context.read<NotiProvider>().showSpinner(showState);
+
+bool watchSpinner(BuildContext context) =>
+    context.watch<NotiProvider>().spinnerState;
 
 //* scroll
-// int? getTotal(BuildContext context, int mode) => mode == 0
-//     ? context.read<GlobalScrollProvider>().lastPage
-//     : context.read<GlobalGroupProvider>().lastPage;
-
-// void setTotal(BuildContext context,
-//     {required int mode, required int newTotal}) {
-//   switch (mode) {
-//     case 0:
-//       return context.read<GlobalScrollProvider>().setTotal(newTotal);
-//     case 1:
-//       return context.read<GlobalGroupProvider>().setTotalPage(newTotal);
-//     default:
-//       return context.read<GlobalBingoProvider>().setTotalPage(newTotal);
-//   }
-// }
 
 bool getLoading(BuildContext context) =>
     context.read<GlobalScrollProvider>().loading;
@@ -265,28 +298,6 @@ void setLastId(BuildContext context, int mode, int lastId) {
       return context.read<GlobalBingoProvider>().setLastId(lastId);
   }
 }
-
-// void increasePage(BuildContext context, int mode) {
-//   switch (mode) {
-//     case 0:
-//       return context.read<GlobalScrollProvider>().increasePage();
-//     case 1:
-//       return context.read<GlobalGroupProvider>().increasePage();
-//     default:
-//       return context.read<GlobalBingoProvider>().increasePage();
-//   }
-// }
-
-// void initPage(BuildContext context, int mode) {
-//   switch (mode) {
-//     case 0:
-//       return context.read<GlobalScrollProvider>().initPage();
-//     case 1:
-//       return context.read<GlobalGroupProvider>().initPage();
-//     default:
-//       return context.read<GlobalBingoProvider>().initPage();
-//   }
-// }
 
 bool getWorking(BuildContext context) =>
     context.read<GlobalScrollProvider>().working;
@@ -339,6 +350,9 @@ bool? getNeedAuth(BuildContext context) =>
 bool? alreadyStarted(BuildContext context) =>
     context.read<GlobalGroupProvider>().alreadyStarted;
 
+bool watchPrev(BuildContext context) =>
+    context.watch<GlobalGroupProvider>().prev;
+
 String? getGroupName(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupName;
 
@@ -363,6 +377,9 @@ void setPublic(BuildContext context, bool? newVal) =>
 void changeGroupIndex(BuildContext context, int index) =>
     context.read<GlobalGroupProvider>().changeIndex(index);
 
+void changePrev(BuildContext context, bool value) =>
+    context.read<GlobalGroupProvider>().toPrevPage(value);
+
 //* bingo data
 
 //* function
@@ -386,6 +403,7 @@ void setFinished(BuildContext context, int index, bool value) =>
 
 void setBingoId(BuildContext context, int id) =>
     context.read<GlobalBingoProvider>().setBingoId(id);
+
 void setBingoSize(BuildContext context, int size) =>
     context.read<GlobalBingoProvider>().setBingoSize(size);
 

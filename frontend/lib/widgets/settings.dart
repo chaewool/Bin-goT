@@ -62,7 +62,7 @@ class _SettingsState extends State<Settings> {
       emailBody = await body();
       final Email email = Email(
         subject: '[Bin:goT] 문의사항',
-        recipients: [''],
+        recipients: ['celpegor216@gmail.com'],
         body: emailBody,
         isHTML: false,
       );
@@ -84,12 +84,12 @@ class _SettingsState extends State<Settings> {
 
   String inquiryBody() {
     return '''안녕하세요, Bin:goT 개발팀입니다.\n
-저희 서비스에 관심을 보내주셔서 감사합니다.\n
-아래 양식에 맞추어 (이메일)에
-문의사항을 보내 주시면 빠르게 검토하여 답변 드리겠습니다.\n
-카테고리 : 오류 / 기능 제안 / 기타\n
+저희 서비스에 관심을 가지고 사용해주셔서 감사합니다.\n \n
+아래 양식에 맞추어 celpegor216@gmail.com 으로
+메일을 보내주시면 빠르게 검토하여 답변 드리겠습니다.\n \n
+카테고리 : 문의사항 / 오류신고 / 개선의견 / 기타\n
 답변 받으실 이메일 : \n
-문의 내용 : \n
+문의 내용 : \n \n \n
 ''';
   }
 
@@ -107,12 +107,8 @@ class _SettingsState extends State<Settings> {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       String appVersion = packageInfo.version;
       return '''
-안녕하세요, Bin:goT 개발팀입니다.\n
-저희 서비스에 관심을 보내주셔서 감사합니다.\n
-아래 양식에 맞추어 문의사항을 작성해 주시면 빠르게 검토하여 답변 드리겠습니다.\n
-카테고리 : 오류 / 기능 제안 / 기타\n
-답변 받으실 이메일 : \n
-문의 내용 : \n
+${inquiryBody()}
+
 OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
 사용 기종 : $manufacturer $model $device \n
 사용 버전 : $appVersion \n
@@ -167,7 +163,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
               eachOption(
                 icon: Icons.question_answer_outlined,
                 title: '문의하기',
-                onTap: () {},
+                onTap: sendEmail,
               ),
             ],
           ),

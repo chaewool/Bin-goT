@@ -125,7 +125,7 @@ class _MemberListState extends State<MemberList> {
                         color: blackColor,
                       )
                     : const CustomBoxContainer(
-                        color: paleOrangeColor,
+                        color: paleRedColor,
                         child: Padding(
                           padding: EdgeInsets.all(8.0),
                           child: CustomText(
@@ -170,7 +170,7 @@ class _MemberListState extends State<MemberList> {
                           CustomButton(
                             content: '수락',
                             onPressed: () => manageMember(true),
-                            color: paleOrangeColor,
+                            color: paleRedColor,
                             textColor: whiteColor,
                           ),
                           const SizedBox(width: 20),

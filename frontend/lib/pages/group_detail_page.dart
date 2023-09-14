@@ -1,3 +1,4 @@
+import 'package:bin_got/pages/group_admin_page.dart';
 import 'package:bin_got/pages/group_chat_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
@@ -18,7 +19,7 @@ class GroupDetail extends StatefulWidget
 // with WidgetsBindingObserver
 {
   // final int initialIndex;
-  final bool isPublic, admin, isMember;
+  final bool isPublic, admin, isMember, chat;
   final int? bingoId, size, groupId;
   // final String start;
   const GroupDetail({
@@ -30,6 +31,7 @@ class GroupDetail extends StatefulWidget
     this.size,
     required this.admin,
     required this.isMember,
+    required this.chat,
 
     // required this.start,
   });
@@ -42,8 +44,9 @@ class _GroupDetailState extends State<GroupDetail> {
   // late int memberState, size;
   // late bool needAuth;
   // late int selectedIndex;
+  bool refresh = false;
+  // GlobalKey globalKey = GlobalKey();
   WidgetList nextPages = [
-    // const GroupMain(),
     const BingoDetail(),
     const GroupMain(),
     const GroupRank(),
@@ -53,19 +56,18 @@ class _GroupDetailState extends State<GroupDetail> {
     const GroupAppBar(),
     const GroupAppBar(),
   ];
+  void changeRefresh() => refresh = true;
 
   @override
   void initState() {
     super.initState();
-    // selectedIndex = widget.initialIndex;
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (widget.bingoId != null) {
-    //     setBingoSize(context, widget.size!);
-    //     setBingoId(context, widget.bingoId!);
-    //   } else if (widget.groupId != null) {
-    //     setGroupId(context, widget.groupId!);
-    //   }
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.admin) {
+        toOtherPage(context, page: GroupAdmin(groupId: widget.groupId!))();
+      } else if (widget.chat) {
+        toOtherPage(context, page: const GroupChat())();
+      }
+    });
 
     // WidgetsBinding.instance.addObserver(this);
   }
@@ -78,9 +80,15 @@ class _GroupDetailState extends State<GroupDetail> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (refresh) {
+        setState(() {
+          refresh = false;
+        });
+      }
+    });
     return WillPopScope(
       onWillPop: () {
-        toBack(context);
         toBack(context);
         return Future.value(false);
       },
@@ -94,18 +102,19 @@ class _GroupDetailState extends State<GroupDetail> {
               nextPage: nextPages[groupSelectedIndex(context)],
               appBar: appbarList[groupSelectedIndex(context)],
             ),
-            Positioned(
-              left: getWidth(context) - 80,
-              top: getHeight(context) - 150,
-              child: FloatingActionButton(
-                backgroundColor: palePinkColor.withOpacity(0.8),
-                onPressed: toOtherPage(context, page: const GroupChat()),
-                child: const CustomIcon(
-                  icon: chatIcon,
-                  color: whiteColor,
+            if (watchMemberState(context) != 0)
+              Positioned(
+                left: getWidth(context) - 80,
+                top: getHeight(context) - 150,
+                child: FloatingActionButton(
+                  backgroundColor: palePinkColor.withOpacity(0.8),
+                  onPressed: toOtherPage(context, page: const GroupChat()),
+                  child: const CustomIcon(
+                    icon: chatIcon,
+                    color: whiteColor,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
         bottomNavigationBar: GroupMainBottomBar(

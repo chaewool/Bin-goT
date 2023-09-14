@@ -10,7 +10,6 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 const double appBarHeight = 50;
@@ -180,7 +179,6 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
       transparent: true,
       onPressedBack: () {
         toBack(context);
-        toBack(context);
         setPublic(context, null);
       },
       actions: onlyBack
@@ -195,8 +193,9 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     )
                   : const SizedBox(),
-              watchMemberState(context) == 1
-                  // && today.difference(start) < Duration.zero
+              (watchMemberState(context) == 1 ||
+                          watchMemberState(context) == 2) &&
+                      alreadyStarted(context) == false
                   ? IconButtonInRow(
                       icon: shareIcon,
                       onPressed: () => shareGroup(
@@ -319,33 +318,19 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
 //* 빙고 상세
 class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   // final int bingoId;
+  // final GlobalKey globalKey;
   const BingoDetailAppBar({
     super.key,
+    // required this.globalKey,
     // required this.bingoId,
   });
 
   @override
   Widget build(BuildContext context) {
     FutureBool saveBingo() {
-      try {
-        Permission.storage.request().then((value) {
-          if (value == PermissionStatus.denied ||
-              value == PermissionStatus.permanentlyDenied) {
-            showAlert(
-              context,
-              title: '미디어 접근 권한 거부',
-              content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 허용해주세요',
-              hasCancel: false,
-            )();
-          } else {
-            context.read<GlobalBingoProvider>().bingoToImage();
-          }
-        });
-        return Future.value(true);
-      } catch (error) {
-        print(error);
-        return Future.value(false);
-      }
+      imagePicker(context,
+          elseFunc: () => context.read<GlobalBingoProvider>().bingoToImage());
+      return Future.value(true);
     }
 
     void shareBingo() async {

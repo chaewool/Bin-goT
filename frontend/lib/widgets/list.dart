@@ -314,10 +314,22 @@ class _ChatListItemState extends State<ChatListItem> {
                                         ),
                                         child: ChatImage(
                                           widget: widget,
+                                          onTap: showModal(
+                                            context,
+                                            page: InteractiveViewer(
+                                              child: ChatImage(
+                                                widget: widget,
+                                                height: getHeight(context),
+                                                onTap: () => toBack(context),
+                                                transparent: false,
+                                              ),
+                                            ),
+                                          ),
                                           width: 100,
                                           height: 100,
                                         ),
                                       ),
+
                                     if (widget.data.content != null)
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -369,7 +381,7 @@ class _ChatListItemState extends State<ChatListItem> {
                           )
                         : Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: GestureDetector(
+                            child: ChatImage(
                               onTap: showModal(
                                 context,
                                 page: InteractiveViewer(
@@ -377,14 +389,13 @@ class _ChatListItemState extends State<ChatListItem> {
                                     widget: widget,
                                     height: getHeight(context),
                                     onTap: () => toBack(context),
+                                    transparent: false,
                                   ),
                                 ),
                               ),
-                              child: ChatImage(
-                                widget: widget,
-                                height: 100,
-                                width: 100,
-                              ),
+                              widget: widget,
+                              height: 100,
+                              width: 100,
                             ),
                           ),
 
@@ -441,16 +452,20 @@ class ChatImage extends StatelessWidget {
     required this.height,
     this.width,
     this.onTap,
+    this.transparent = true,
   });
 
   final ChatListItem widget;
   final double height;
   final double? width;
   final ReturnVoid? onTap;
+  final bool transparent;
 
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
+      hasRoundEdge: false,
+      color: transparent ? Colors.transparent : blackColor.withOpacity(0.8),
       width: width,
       height: height,
       onTap: onTap,
