@@ -1,19 +1,20 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Group(models.Model):
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(-1))
     groupname = models.CharField(max_length=20, unique=True)
-    count = models.IntegerField(default=1)
-    headcount = models.IntegerField()
+    count = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(30)])
+    headcount = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(30)])
     start = models.DateField()
     end = models.DateField()
-    size = models.IntegerField()
+    size = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(5)])
     description = models.TextField(null=True)
     rule = models.TextField(null=True)
     has_img = models.BooleanField()
-    period = models.IntegerField()
+    period = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     is_public = models.BooleanField()
     password = models.CharField(max_length=20, null=True)
     need_auth = models.BooleanField()
@@ -26,7 +27,7 @@ class Group(models.Model):
 class Board(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='boards')
     group = models.ForeignKey('groups.Group', on_delete=models.CASCADE)
-    is_banned = models.IntegerField(default=0) # 0은 승인 완료, 1은 승인 대기, 2는 승인 거절/강퇴
+    is_banned = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(2)]) # 0은 승인 완료, 1은 승인 대기, 2는 승인 거절/강퇴
     rand_name = models.CharField(max_length=20, null=True)
     title = models.CharField(max_length=20)
     background = models.IntegerField(null=True)
@@ -47,7 +48,7 @@ class BoardItem(models.Model):
     title = models.CharField(max_length=20)
     content = models.CharField(null=True, max_length=100)
     check = models.BooleanField() # 횟수 측정 여부
-    check_goal = models.IntegerField(null=True) # 목표 횟수
+    check_goal = models.IntegerField(null=True, validators=[MinValueValidator(2)]) # 목표 횟수
     check_cnt = models.IntegerField(default=0) # 현재까지 수행한 횟수
     finished = models.BooleanField(default=False)
 
