@@ -398,7 +398,7 @@ class BoardUpdateView(APIView):
         
         board_serializer = BoardCreateSerializer(instance=board, data=data)
         
-        if board_serializer.is_valid(raise_exception=True):        
+        if board_serializer.is_valid(raise_exception=True):
             boarditem_serializers = []
             for i in range(len(items)):
                 bs = BoardItemCreateSerializer(instance=board.items.all()[i], data=items[i])

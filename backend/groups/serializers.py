@@ -45,8 +45,13 @@ class BoardItemCreateSerializer(serializers.ModelSerializer):
         fields = ('item_id', 'title', 'content', 'check', 'check_goal')
 
     def validate_check_goal(self, value):
-        if self.instance.check and value < 2:
-            raise ValidationError("목표 횟수는 2 이상으로 지정해야 합니다.")
+        if type(self.initial_data) is list:
+            for data in self.initial_data:
+                if data['check'] and data['check_goal'] < 2:
+                    raise ValidationError("목표 횟수는 2 이상으로 지정해야 합니다.")
+        else:
+            if self.initial_data['check'] and value < 2:
+                raise ValidationError("목표 횟수는 2 이상으로 지정해야 합니다.")
         return value
 
 
