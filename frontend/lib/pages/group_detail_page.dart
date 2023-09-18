@@ -19,7 +19,7 @@ class GroupDetail extends StatefulWidget
 // with WidgetsBindingObserver
 {
   // final int initialIndex;
-  final bool isPublic, admin, isMember, chat;
+  final bool isPublic, admin, isMember, chat, needBack;
   final int? bingoId, size, groupId;
   // final String start;
   const GroupDetail({
@@ -29,6 +29,7 @@ class GroupDetail extends StatefulWidget
     // this.initialIndex = 1,
     this.bingoId,
     this.size,
+    this.needBack = false,
     required this.admin,
     required this.isMember,
     required this.chat,
@@ -72,6 +73,15 @@ class _GroupDetailState extends State<GroupDetail> {
     // WidgetsBinding.instance.addObserver(this);
   }
 
+  FutureBool onBackAction() {
+    toBack(context);
+    if (getPrev(context)) {
+      changePrev(context, false);
+      toBack(context);
+    }
+    return Future.value(false);
+  }
+
   // @override
   // void dispose() {
   //   super.dispose();
@@ -88,10 +98,7 @@ class _GroupDetailState extends State<GroupDetail> {
       }
     });
     return WillPopScope(
-      onWillPop: () {
-        toBack(context);
-        return Future.value(false);
-      },
+      onWillPop: onBackAction,
       child: Scaffold(
         backgroundColor: whiteColor,
         resizeToAvoidBottomInset: true,

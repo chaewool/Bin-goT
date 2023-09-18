@@ -71,18 +71,20 @@ class _GroupMainState extends State<GroupMain> {
       child: groupDetailModel != null
           ? Column(
               children: [
-                if (groupDetailModel!.hasImage)
-                  CustomBoxContainer(
-                    width: getWidth(context),
-                    child: CachedNetworkImage(
-                      imageUrl: '${dotenv.env['fileUrl']}/groups/$groupId',
-                      fit: BoxFit.fitWidth,
-                      placeholder: (context, url) => const CustomBoxContainer(
-                        width: 200,
-                        height: 200,
-                      ),
-                    ),
-                  ),
+                groupDetailModel!.hasImage
+                    ? CustomBoxContainer(
+                        width: getWidth(context),
+                        child: CachedNetworkImage(
+                          imageUrl: '${dotenv.env['fileUrl']}/groups/$groupId',
+                          fit: BoxFit.fitWidth,
+                          placeholder: (context, url) =>
+                              const CustomBoxContainer(
+                            width: 200,
+                            height: 200,
+                          ),
+                        ),
+                      )
+                    : const SizedBox(height: 30),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
                   child: Column(

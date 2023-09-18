@@ -350,8 +350,7 @@ bool? getNeedAuth(BuildContext context) =>
 bool? alreadyStarted(BuildContext context) =>
     context.read<GlobalGroupProvider>().alreadyStarted;
 
-bool watchPrev(BuildContext context) =>
-    context.watch<GlobalGroupProvider>().prev;
+bool getPrev(BuildContext context) => context.read<GlobalGroupProvider>().prev;
 
 String? getGroupName(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupName;

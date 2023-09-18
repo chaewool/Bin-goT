@@ -449,7 +449,7 @@ class GlobalBingoProvider extends ChangeNotifier {
         'title': null,
         'content': null,
         'check': false,
-        'check_goal': 0,
+        'check_goal': 2,
       },
     );
   }

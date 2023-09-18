@@ -5,7 +5,6 @@ import 'package:bin_got/main.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
-import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -87,9 +86,11 @@ class _BingoFormState extends State<BingoForm> {
       bool correctGoal = true;
       for (var element in (data['items'] as List)) {
         final title = element['title'].trim();
+        // print('check => ${element['check']}');
         if (title != null && title != '') {
           cnt += 1;
-        } else if (element['check']) {
+        }
+        if (element['check']) {
           try {
             var checkGoal = element['check_goal'];
             if (checkGoal is String) {
@@ -139,21 +140,29 @@ class _BingoFormState extends State<BingoForm> {
             ),
           });
           showSpinner(context, true);
+          print(bingoData);
 
           BingoProvider()
               .editOwnBingo(groupId!, bingoId, bingoData)
               .then((value) {
+            print(4444);
             showSpinner(context, false);
+            print(5555);
+            toBack(context);
 
-            toOtherPage(
-              context,
-              page: const BingoDetail(),
-            )();
+            // toOtherPage(
+            //   context,
+            //   page: const BingoDetail(),
+            // )();
           }).catchError((_) {
+            print(1);
+            showSpinner(context, false);
             showErrorModal(context);
           });
         }
       }).catchError((_) {
+        print(2);
+        showSpinner(context, false);
         showErrorModal(context);
       });
     } else {
@@ -201,11 +210,15 @@ class _BingoFormState extends State<BingoForm> {
       toastString = '그룹 생성이 완료되었습니다.';
       changeGroupIndex(context, 1);
       showToast(context);
+      changePrev(context, true);
       afterFewSec(
         1000,
         jumpToOtherPage(
           context,
-          page: InputPassword(isPublic: true, groupId: groupId),
+          page: InputPassword(
+            isPublic: true,
+            groupId: groupId,
+          ),
         ),
       );
       // toOtherPage(
@@ -216,6 +229,7 @@ class _BingoFormState extends State<BingoForm> {
       //   ),
       // )();
     }).catchError((error) {
+      showSpinner(context, false);
       showAlert(
         context,
         title: '그룹 생성 오류',
@@ -279,6 +293,7 @@ class _BingoFormState extends State<BingoForm> {
         }
       }).catchError((e) {
         print('catch error : $e');
+        showSpinner(context, false);
         showAlert(
           context,
           title: '가입 오류',
@@ -430,9 +445,7 @@ class _BingoFormState extends State<BingoForm> {
           const CustomBoxContainer(
             color: Colors.transparent,
             height: 70,
-            child: AppBarWithBack(
-              transparent: true,
-            ),
+            child: AppBarWithBack(transparent: true),
           ),
           if (watchSpinner(context))
             CustomBoxContainer(

@@ -237,10 +237,6 @@ class _GroupFormState extends State<GroupForm> {
 
   @override
   Widget build(BuildContext context) {
-    if (watchPrev(context)) {
-      toBack(context);
-      changePrev(context, false);
-    }
     return Scaffold(
         backgroundColor: whiteColor,
         appBar: AppBarWithBack(

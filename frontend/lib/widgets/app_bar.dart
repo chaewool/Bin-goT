@@ -179,6 +179,10 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
       transparent: true,
       onPressedBack: () {
         toBack(context);
+        if (getPrev(context)) {
+          changePrev(context, false);
+          toBack(context);
+        }
         setPublic(context, null);
       },
       actions: onlyBack
@@ -396,8 +400,15 @@ class MyPageAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AppBarWithBack(
-      actions: [
+    return AppBarWithBack(
+      onPressedBack: () {
+        toBack(context);
+        if (getPrev(context)) {
+          changePrev(context, false);
+          toBack(context);
+        }
+      },
+      actions: const [
         // IconButtonInRow(
         //   onPressed: () => shareGroup(
         //     groupId: 2,

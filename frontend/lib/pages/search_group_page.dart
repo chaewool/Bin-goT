@@ -112,9 +112,11 @@ class _SearchGroupState extends State<SearchGroup> {
 
   @override
   Widget build(BuildContext context) {
-    if (watchPrev(context)) {
-      changePrev(context, false);
-    }
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (getPrev(context)) {
+    //     changePrev(context, false);
+    //   }
+    // });
     return WillPopScope(
       onWillPop: () {
         toOtherPage(context, page: const Main())();

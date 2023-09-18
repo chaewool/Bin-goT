@@ -10,9 +10,9 @@ import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
+import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
-import 'package:bin_got/widgets/text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
@@ -44,6 +44,9 @@ class _GroupChatState extends State<GroupChat> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (getChats(context).isNotEmpty) {
+        context.read<GlobalGroupProvider>().clearChat();
+      }
       groupId = getGroupId(context)!;
       print('group id => $groupId');
       initLoadingData(context, 0);
@@ -92,9 +95,6 @@ class _GroupChatState extends State<GroupChat> {
   }
 
   void readChats([bool more = true]) {
-    if (getChats(context).isNotEmpty) {
-      context.read<GlobalGroupProvider>().clearChat();
-    }
     GroupProvider()
         .readGroupChatList(groupId, getLastId(context, 0))
         .then((data) {
@@ -176,87 +176,59 @@ class _GroupChatState extends State<GroupChat> {
   Widget build(BuildContext context) {
     print('appbar => $appBarHeight, bottom => $bottomBarHeight');
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.only(top: appBarHeight),
+      body: GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
         child: Stack(
           children: [
-            GestureDetector(
-              onTap: () {
-                FocusManager.instance.primaryFocus?.unfocus();
-              },
-              child: Column(
-                children: [
-                  Expanded(
-                    child: CustomBoxContainer(
-                      width: getWidth(context),
-                      height: getHeight(context) - bottomBarHeight,
-                      child: InfiniteScroll(
-                        // color: greyColor.withOpacity(0.2),
-                        color: whiteColor,
-                        controller: controller,
-                        cnt: 50,
-                        reverse: true,
-                        data: watchChats(context),
-                        mode: 0,
-                        emptyWidget: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            CustomText(
-                              center: true,
-                              fontSize: FontSize.titleSize,
-                              content: '채팅 기록이 없습니다.',
-                              height: 1.5,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            Padding(
+              padding: EdgeInsets.only(top: appBarHeight, bottom: 80),
+              child: ChatInfiniteScroll(
+                  // color: greyColor.withOpacity(0.2),
+                  color: whiteColor,
+                  controller: controller,
+                  data: watchChats(context)),
             ),
             const CustomBoxContainer(
               color: Colors.transparent,
-              width: 100,
-              height: 100,
+              height: 70,
               child: AppBarWithBack(transparent: true),
             ),
             if (showImg)
               CustomBoxContainer(
                 hasRoundEdge: false,
                 width: getWidth(context),
-                height: getHeight(context) - 80,
+                height: getHeight(context) - 80 + appBarHeight,
                 color: blackColor.withOpacity(0.8),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CustomBoxContainer(
-                        height: getHeight(context) - 200,
-                        hasRoundEdge: false,
-                        color: Colors.transparent,
-                        image: DecorationImage(
-                          image: FileImage(File(selectedImage!.path)),
-                        ),
+                child: ColWithPadding(
+                  vertical: 10,
+                  children: [
+                    CustomBoxContainer(
+                      height: getHeight(context) - 150,
+                      hasRoundEdge: false,
+                      color: Colors.transparent,
+                      image: DecorationImage(
+                        image: FileImage(File(selectedImage!.path)),
                       ),
-                      CustomButton(
-                        onPressed: deleteImg,
-                        content: '취소',
-                        color: whiteColor,
-                      )
-                    ],
-                  ),
+                    ),
+                    CustomButton(
+                      onPressed: deleteImg,
+                      content: '취소',
+                      color: whiteColor,
+                    )
+                  ],
                 ),
               ),
-            Positioned(
-              top: getHeight(context) - 100,
-              child: GroupChatBottomBar(
-                addChat: addChat,
-                selectedImage: selectedImage,
-                imagePicker: chatImagePicker,
-              ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                GroupChatBottomBar(
+                  addChat: addChat,
+                  selectedImage: selectedImage,
+                  imagePicker: chatImagePicker,
+                ),
+              ],
             ),
             if (watchSpinner(context))
               CustomBoxContainer(

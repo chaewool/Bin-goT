@@ -150,6 +150,7 @@ class CircleContainer extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
   final ReturnVoid? onTap;
   final Color? color;
+  final Gradient? gradient;
 
   const CircleContainer({
     super.key,
@@ -160,6 +161,7 @@ class CircleContainer extends StatelessWidget {
     this.onTap,
     this.color,
     this.border = true,
+    this.gradient,
   });
 
   @override
@@ -175,6 +177,7 @@ class CircleContainer extends StatelessWidget {
           shape: BoxShape.circle,
           border: border ? Border.all(color: greyColor) : null,
           boxShadow: boxShadow,
+          gradient: gradient,
         ),
         child: child,
       ),
