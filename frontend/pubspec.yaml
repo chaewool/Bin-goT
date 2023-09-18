@@ -33,11 +33,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  
+
   contained_tab_bar_view: ^0.8.0
   calendar_date_picker2: ^0.5.2
   share: ^2.0.4
@@ -62,6 +61,8 @@ dependencies:
   image_gallery_saver: ^2.0.3
   flutter_snake_navigationbar: ^0.6.1
   intl: ^0.18.0
+  share_plus: ^7.1.0
+  path_provider: ^2.1.1
 
 dev_dependencies:
   flutter_test:

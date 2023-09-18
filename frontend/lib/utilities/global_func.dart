@@ -83,13 +83,12 @@ TextTemplate defaultText({
 //* 공유
 void shareGroup({
   required int groupId,
-  required bool isPublic,
   required groupName,
 }) async {
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
 
-  String url = await DynamicLink().buildDynamicLink(isPublic, groupId);
+  String url = await DynamicLink().buildDynamicLink(groupId);
 
   if (isKakaoTalkSharingAvailable) {
     try {

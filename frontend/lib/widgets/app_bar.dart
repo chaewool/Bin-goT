@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bin_got/pages/group_admin_page.dart';
 import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/pages/main_page.dart';
@@ -11,6 +13,7 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 const double appBarHeight = 50;
 
@@ -200,7 +203,6 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                       icon: shareIcon,
                       onPressed: () => shareGroup(
                         groupId: groupId,
-                        isPublic: getPublic(context)!,
                         groupName: getGroupName(context),
                       ),
                     )
@@ -334,36 +336,10 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     void shareBingo() async {
-      //* 카카오톡 공유 코드
-      // bool isKakaoTalkSharingAvailable =
-      //     await ShareClient.instance.isKakaoTalkSharingAvailable();
+      File file = await context.read<GlobalBingoProvider>().bingoToXFile();
 
-      // if (isKakaoTalkSharingAvailable) {
-      //   try {
-      //     Uri uri = await ShareClient.instance.shareDefault(
-      //       template: defaultText(
-      //         id: bingoId,
-      //         isGroup: false,
-      //       ),
-      //     );
-      //     await ShareClient.instance.launchKakaoTalk(uri);
-      //     print('카카오톡 공유 완료');
-      //   } catch (error) {
-      //     print('카카오톡 공유 실패 $error');
-      //   }
-      // } else {
-      //   try {
-      //     Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
-      //       template: defaultText(
-      //         id: bingoId,
-      //         isGroup: false,
-      //       ),
-      //     );
-      //     await launchBrowserTab(shareUrl, popupOpen: true);
-      //   } catch (error) {
-      //     print('카카오톡 공유 실패 $error');
-      //   }
-      // }
+      Share.shareXFiles([XFile(file.path)], text: "테스트")
+          .then((value) => file.delete());
     }
 
     return AppBarWithBack(
