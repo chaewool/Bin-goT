@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
-import 'package:bin_got/main.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
@@ -51,7 +50,6 @@ class _BingoFormState extends State<BingoForm> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? thumbnail;
   bool changed = true;
-  String toastString = '';
   late final size;
 
   @override
@@ -143,16 +141,23 @@ class _BingoFormState extends State<BingoForm> {
           print(bingoData);
 
           BingoProvider()
-              .editOwnBingo(groupId!, bingoId, bingoData)
+              .editOwnBingo(getGroupId(context)!, bingoId, bingoData)
               .then((value) {
-            print(4444);
+            // applyRefresh(context, true);
             showSpinner(context, false);
-            print(5555);
+            setBingoData(context, data);
+            setToastString(context, '빙고 수정이 완료되었습니다.');
+            changeGroupIndex(context, 0);
+            showToast(context);
             toBack(context);
 
             // toOtherPage(
             //   context,
-            //   page: const BingoDetail(),
+            //   page: const GroupDetail(
+            //     admin: false,
+            //     isMember: true,
+            //     chat: false,
+            //   ),
             // )();
           }).catchError((_) {
             print(1);
@@ -207,7 +212,7 @@ class _BingoFormState extends State<BingoForm> {
     GroupProvider().createOwnGroup(formData).then((groupId) {
       showSpinner(context, false);
       // initBingoData(context);
-      toastString = '그룹 생성이 완료되었습니다.';
+      setToastString(context, '그룹 생성이 완료되었습니다.');
       changeGroupIndex(context, 1);
       showToast(context);
       changePrev(context, true);
@@ -259,7 +264,7 @@ class _BingoFormState extends State<BingoForm> {
         print('빙고 생성 성공');
         // initBingoData(context);
         if (getNeedAuth(context) == true) {
-          toastString = '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.';
+          setToastString(context, '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.');
           showToast(context);
           afterFewSec(
             1000,
@@ -269,7 +274,7 @@ class _BingoFormState extends State<BingoForm> {
             ),
           );
         } else {
-          toastString = '성공적으로 가입되었습니다.';
+          setToastString(context, '성공적으로 가입되었습니다.');
           changeGroupIndex(context, 1);
           showToast(context);
           afterFewSec(
@@ -456,7 +461,8 @@ class _BingoFormState extends State<BingoForm> {
                 children: [CustomCirCularIndicator()],
               ),
             ),
-          if (watchAfterWork(context)) CustomToast(content: toastString)
+          if (watchAfterWork(context))
+            CustomToast(content: watchToastString(context))
         ],
       ),
     );

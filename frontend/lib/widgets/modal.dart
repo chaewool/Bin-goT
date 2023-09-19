@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bin_got/oss_licenses.dart';
+import 'package:bin_got/pages/license_detail_page.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -18,6 +20,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter/foundation.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 //* 빙고
 class BingoModal extends StatefulWidget {
@@ -170,7 +175,8 @@ class _BingoModalState extends State<BingoModal> {
                           children: [
                             Expanded(
                               child: CustomInput(
-                                explain: '이루고 싶은 목표를\n설정해주세요',
+                                explain:
+                                    widget.isDetail ? '' : '이루고 싶은 목표를\n설정해주세요',
                                 needMore: true,
                                 // width: 170,
                                 // height: 200,
@@ -202,7 +208,7 @@ class _BingoModalState extends State<BingoModal> {
                                     CustomInput(
                                       enabled: !widget.isDetail,
                                       width: 45,
-                                      height: 30,
+                                      height: 40,
                                       onlyNum: true,
                                       explain: '2 이상의 숫자',
                                       setValue: (value) =>
@@ -309,6 +315,7 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
     )
         .then((value) {
       showToast(context);
+      setToastString(context, '인증 채팅이 생성되었습니다');
       toBack(context);
       widget.afterClose();
     });
@@ -476,7 +483,10 @@ class CustomAlert extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: CustomText(content: title),
-      content: CustomText(content: content),
+      content: CustomText(
+        content: content,
+        height: 1.4,
+      ),
       actions: [
         CustomButton(
           color: palePinkColor,
@@ -642,6 +652,112 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
   }
 }
 
+//* 개인 정보 처리 방침
+class PolicyModal extends StatelessWidget {
+  final WebViewController controller = WebViewController()
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..loadRequest(Uri.parse('https://sites.google.com/view/bingot-privacy/홈'));
+  PolicyModal({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomModal(
+      cancelText: '닫기',
+      hasConfirm: false,
+      children: [
+        Expanded(
+          child: WebViewWidget(controller: controller),
+        )
+      ],
+    );
+  }
+}
+
+//* 라이선스
+class LicenseModal extends StatelessWidget {
+  const LicenseModal({super.key});
+
+  static Future<List<Package>> loadLicenses() async {
+    // merging non-dart dependency list using LicenseRegistry.
+    final lm = <String, List<String>>{};
+    await for (var l in LicenseRegistry.licenses) {
+      for (var p in l.packages) {
+        final lp = lm.putIfAbsent(p, () => []);
+        lp.addAll(l.paragraphs.map((p) => p.text));
+      }
+    }
+    final licenseList = ossLicenses.toList();
+    for (var key in lm.keys) {
+      licenseList.add(Package(
+        name: key,
+        description: '',
+        authors: [],
+        version: '',
+        license: lm[key]!.join('\n\n'),
+        isMarkdown: false,
+        isSdk: false,
+        isDirectDependency: false,
+      ));
+    }
+    return licenseList..sort((a, b) => a.name.compareTo(b.name));
+  }
+
+  static final licenses = loadLicenses();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomModal(
+      title: '라이선스',
+      cancelText: '닫기',
+      hasConfirm: false,
+      children: [
+        Expanded(
+          child: FutureBuilder<List<Package>>(
+              future: licenses,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.separated(
+                      padding: const EdgeInsets.all(0),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final package = snapshot.data![index];
+                        return ListTile(
+                          title: CustomText(
+                            content: '${package.name} ${package.version}',
+                          ),
+                          subtitle: package.description.isNotEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: CustomText(
+                                    content: package.description,
+                                    color: greyColor,
+                                    fontSize: FontSize.smallSize,
+                                    height: 1.1,
+                                  ),
+                                )
+                              : null,
+                          trailing: const Icon(rightIcon),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  LicenseDetailPage(package: package),
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) =>
+                          const CustomDivider());
+                }
+                return const CustomCirCularIndicator();
+              }),
+        ),
+      ],
+    );
+  }
+}
+
 //* 모달 기본
 class CustomModal extends StatelessWidget {
   final String? title;
@@ -715,65 +831,65 @@ class CustomModal extends StatelessWidget {
 }
 
 //* 알림 설정
-class NotificationModal extends StatefulWidget {
-  const NotificationModal({super.key});
+// class NotificationModal extends StatefulWidget {
+//   const NotificationModal({super.key});
 
-  @override
-  State<NotificationModal> createState() => _NotificationModalState();
-}
+//   @override
+//   State<NotificationModal> createState() => _NotificationModalState();
+// }
 
-class _NotificationModalState extends State<NotificationModal> {
-  StringList notificationList = [
-    '진행률/랭킹 알림',
-    '남은 기간 알림',
-    '채팅 알림',
-    '인증 완료 알림',
-  ];
-  List<StringList> notificationOptions = [
-    ['ON', 'OFF'],
-    ['세 달', '한 달', '일주일', '3일'],
-    ['ON', 'OFF'],
-    ['ON', 'OFF']
-  ];
-  IntList idxList = [0, 0, 0, 0];
-  void changeIdx(int i) {
-    if (i != 1) {
-      setState(() {
-        idxList[i] = 1 - idxList[i];
-      });
-    } else if (idxList[i] < 3) {
-      setState(() {
-        idxList[i] += 1;
-      });
-    } else {
-      setState(() {
-        idxList[i] = 0;
-      });
-    }
-  }
+// class _NotificationModalState extends State<NotificationModal> {
+//   StringList notificationList = [
+//     '진행률/랭킹 알림',
+//     '남은 기간 알림',
+//     '채팅 알림',
+//     '인증 완료 알림',
+//   ];
+//   List<StringList> notificationOptions = [
+//     ['ON', 'OFF'],
+//     ['세 달', '한 달', '일주일', '3일'],
+//     ['ON', 'OFF'],
+//     ['ON', 'OFF']
+//   ];
+//   IntList idxList = [0, 0, 0, 0];
+//   void changeIdx(int i) {
+//     if (i != 1) {
+//       setState(() {
+//         idxList[i] = 1 - idxList[i];
+//       });
+//     } else if (idxList[i] < 3) {
+//       setState(() {
+//         idxList[i] += 1;
+//       });
+//     } else {
+//       setState(() {
+//         idxList[i] = 0;
+//       });
+//     }
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return CustomModal(
-      title: '알림 설정',
-      children: [
-        for (int i = 0; i < 4; i += 1)
-          RowWithPadding(
-            vertical: 10,
-            horizontal: 25,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CustomText(content: notificationList[i]),
-              CustomButton(
-                content: notificationOptions[i][idxList[i]],
-                onPressed: () => changeIdx(i),
-              )
-            ],
-          )
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return CustomModal(
+//       title: '알림 설정',
+//       children: [
+//         for (int i = 0; i < 4; i += 1)
+//           RowWithPadding(
+//             vertical: 10,
+//             horizontal: 25,
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               CustomText(content: notificationList[i]),
+//               CustomButton(
+//                 content: notificationOptions[i][idxList[i]],
+//                 onPressed: () => changeIdx(i),
+//               )
+//             ],
+//           )
+//       ],
+//     );
+//   }
+// }
 
 //* 입력창이 있는 모달
 class InputModal extends StatelessWidget {

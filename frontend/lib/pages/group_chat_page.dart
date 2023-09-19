@@ -185,10 +185,11 @@ class _GroupChatState extends State<GroupChat> {
             Padding(
               padding: EdgeInsets.only(top: appBarHeight, bottom: 80),
               child: ChatInfiniteScroll(
-                  // color: greyColor.withOpacity(0.2),
-                  color: whiteColor,
-                  controller: controller,
-                  data: watchChats(context)),
+                // color: greyColor.withOpacity(0.2),
+                color: whiteColor,
+                controller: controller,
+                data: watchChats(context),
+              ),
             ),
             const CustomBoxContainer(
               color: Colors.transparent,

@@ -86,7 +86,7 @@ class _GroupFormState extends State<GroupForm> {
 
   late final Map<String, dynamic> groupData;
 
-  void Function(dynamic) setGroupData(String key) {
+  void Function(dynamic) setData(String key) {
     return (value) => groupData[key] = value;
   }
 
@@ -165,10 +165,38 @@ class _GroupFormState extends State<GroupForm> {
                   'update_img': isImageUpdated,
                 }))
             .then((_) {
-          print('성공함');
-          toBack(context);
+          // applyRefresh(context, true);
+          GroupProvider().readGroupDetail(getGroupId(context)!).then((data) {
+            setGroupData(context, data);
+            setLoading(context, false);
+            toBack(context);
+          }).catchError((error) {
+            print(error);
+            setLoading(context, false);
+            showAlert(
+              context,
+              title: '오류 발생',
+              content: '오류가 발생해 그룹 정보를 받아올 수 없습니다',
+              hasCancel: false,
+              onPressed: () {
+                toBack(context);
+                toBack(context);
+              },
+            )();
+          });
         }).catchError((error) {
-          print('오류');
+          toBack(context);
+          setLoading(context, false);
+          showAlert(
+            context,
+            title: '오류 발생',
+            content: '오류가 발생해 그룹 정보를 받아올 수 없습니다',
+            hasCancel: false,
+            onPressed: () {
+              toBack(context);
+              toBack(context);
+            },
+          )();
         });
       }
     }
@@ -213,7 +241,7 @@ class _GroupFormState extends State<GroupForm> {
     setState(() {
       selectedIndex[i] = j;
     });
-    setGroupData(i == 0 ? 'size' : 'need_auth')(convertedValues[i][j]);
+    setData(i == 0 ? 'size' : 'need_auth')(convertedValues[i][j]);
   }
 
   void applyDay(List<DateTime?> dateList) {
@@ -255,7 +283,7 @@ class _GroupFormState extends State<GroupForm> {
                 explainTitleType: 0,
                 explain: '그룹명을 입력하세요.',
                 maxLength: 20,
-                setValue: setGroupData('groupname'),
+                setValue: setData('groupname'),
                 initialValue: groupData.containsKey('groupname')
                     ? groupData['groupname']
                     : getGroupName(context),
@@ -265,7 +293,7 @@ class _GroupFormState extends State<GroupForm> {
                 explain: '2에서 30 사이의 숫자로 입력하세요.',
                 explainTitleType: 0,
                 onlyNum: true,
-                setValue: setGroupData('headcount'),
+                setValue: setData('headcount'),
                 initialValue: groupData.containsKey('headcount')
                     ? groupData['headcount'].toString()
                     : context.read<GlobalGroupProvider>().headCount?.toString(),
@@ -440,7 +468,7 @@ class _GroupFormState extends State<GroupForm> {
                                       setState(() {
                                         isChecked = !isChecked;
                                       });
-                                      setGroupData('is_public')(isChecked);
+                                      setData('is_public')(isChecked);
                                     },
                                   ),
                                 ],
@@ -452,7 +480,7 @@ class _GroupFormState extends State<GroupForm> {
                               title: '비밀번호',
                               explain: '비밀번호',
                               maxLength: 20,
-                              setValue: setGroupData('password'),
+                              setValue: setData('password'),
                               initialValue: groupData.containsKey('password')
                                   ? groupData['password']
                                   : context
@@ -471,7 +499,7 @@ class _GroupFormState extends State<GroupForm> {
                 explainTitleType: 2,
                 needMore: true,
                 maxLength: 1000,
-                setValue: setGroupData('description'),
+                setValue: setData('description'),
                 initialValue: groupData.containsKey('description')
                     ? groupData['description']
                     : context.read<GlobalGroupProvider>().description,
@@ -481,7 +509,7 @@ class _GroupFormState extends State<GroupForm> {
                 explainTitleType: 2,
                 needMore: true,
                 maxLength: 1000,
-                setValue: setGroupData('rule'),
+                setValue: setData('rule'),
                 initialValue: groupData.containsKey('rule')
                     ? groupData['rule']
                     : context.read<GlobalGroupProvider>().rule,

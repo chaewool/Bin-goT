@@ -1,25 +1,27 @@
 import 'package:bin_got/fcm_settings.dart';
-import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
+import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 class Intro extends StatefulWidget {
-  // final bool? isPublic;
-  final int? groupId;
-  final int initialIndex;
+  // final int? groupId;
+  // final int initialIndex;
   const Intro({
     super.key,
-    // this.isPublic,
-    this.groupId,
-    this.initialIndex = 1,
+    // this.groupId,
+    // this.initialIndex = 1,
   });
 
   @override
@@ -82,15 +84,7 @@ class _IntroState extends State<Intro> {
     // initNoti();
     afterFewSec(2000, () {
       if (!showLoginBtn) {
-        toOtherPageWithoutPath(
-          context,
-          page: widget.groupId == null
-              ? Main(initialPage: widget.initialIndex)
-              : InputPassword(
-                  isPublic: true,
-                  groupId: widget.groupId!,
-                ),
-        );
+        toOtherPageWithoutPath(context, page: const Main());
       }
     });
   }

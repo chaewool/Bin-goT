@@ -178,16 +178,18 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
       }
     }
 
+    void toBackAction() {
+      toBack(context);
+      if (getPrev(context)) {
+        changePrev(context, false);
+        toBack(context);
+        // setPublic(context, null);
+      }
+    }
+
     return AppBarWithBack(
       transparent: true,
-      onPressedBack: () {
-        toBack(context);
-        if (getPrev(context)) {
-          changePrev(context, false);
-          toBack(context);
-        }
-        setPublic(context, null);
-      },
+      onPressedBack: toBackAction,
       actions: onlyBack
           ? null
           : [
@@ -302,7 +304,7 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
         context,
         page: GroupForm(
           groupId: groupId,
-          hasImg: context.read<GlobalGroupProvider>().hasImage!,
+          hasImg: context.read<GlobalGroupProvider>().hasImage,
         ),
       )();
     }
@@ -346,7 +348,16 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           .then((value) => file.delete());
     }
 
+    void toBackAction() {
+      toBack(context);
+      if (getPrev(context)) {
+        changePrev(context, false);
+        toBack(context);
+      }
+    }
+
     return AppBarWithBack(
+      onPressedBack: toBackAction,
       transparent: true,
       actions: getBingoId(context) == myBingoId(context)
           ? [
@@ -376,15 +387,8 @@ class MyPageAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBarWithBack(
-      onPressedBack: () {
-        toBack(context);
-        if (getPrev(context)) {
-          changePrev(context, false);
-          toBack(context);
-        }
-      },
-      actions: const [
+    return const AppBarWithBack(
+      actions: [
         // IconButtonInRow(
         //   onPressed: () => shareGroup(
         //     groupId: 2,

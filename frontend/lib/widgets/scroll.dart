@@ -211,9 +211,7 @@ class ChatInfiniteScroll extends StatelessWidget {
                         if (getLastId(context, mode) > 0 &&
                             (data[i].id == getLastId(context, mode)))
                           const Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 40,
-                            ),
+                            padding: EdgeInsets.symmetric(vertical: 40),
                             child: CustomCirCularIndicator(),
                           ),
                         Padding(

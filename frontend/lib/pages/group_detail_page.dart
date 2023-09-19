@@ -19,13 +19,14 @@ class GroupDetail extends StatefulWidget
 // with WidgetsBindingObserver
 {
   // final int initialIndex;
-  final bool isPublic, admin, isMember, chat, needBack;
+  // final bool isPublic,
+  final bool admin, isMember, chat, needBack;
   final int? bingoId, size, groupId;
   // final String start;
   const GroupDetail({
     super.key,
     this.groupId,
-    required this.isPublic,
+    // required this.isPublic,
     // this.initialIndex = 1,
     this.bingoId,
     this.size,
@@ -45,7 +46,7 @@ class _GroupDetailState extends State<GroupDetail> {
   // late int memberState, size;
   // late bool needAuth;
   // late int selectedIndex;
-  bool refresh = false;
+  // bool refresh = false;
   // GlobalKey globalKey = GlobalKey();
   WidgetList nextPages = [
     const BingoDetail(),
@@ -57,7 +58,7 @@ class _GroupDetailState extends State<GroupDetail> {
     const GroupAppBar(),
     const GroupAppBar(),
   ];
-  void changeRefresh() => refresh = true;
+  // void changeRefresh() => refresh = true;
 
   @override
   void initState() {
@@ -90,13 +91,6 @@ class _GroupDetailState extends State<GroupDetail> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (refresh) {
-        setState(() {
-          refresh = false;
-        });
-      }
-    });
     return WillPopScope(
       onWillPop: onBackAction,
       child: Scaffold(
