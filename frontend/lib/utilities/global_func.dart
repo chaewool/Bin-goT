@@ -83,13 +83,12 @@ TextTemplate defaultText({
 //* 공유
 void shareGroup({
   required int groupId,
-  required bool isPublic,
   required groupName,
 }) async {
   bool isKakaoTalkSharingAvailable =
       await ShareClient.instance.isKakaoTalkSharingAvailable();
 
-  String url = await DynamicLink().buildDynamicLink(isPublic, groupId);
+  String url = await DynamicLink().buildDynamicLink(groupId);
 
   if (isKakaoTalkSharingAvailable) {
     try {
@@ -159,14 +158,15 @@ ReturnVoid showAlert(
   bool hasCancel = true,
 }) {
   return () => showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => CustomAlert(
-            title: title,
-            content: content,
-            onPressed: onPressed,
-            hasCancel: hasCancel,
-          ));
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => CustomAlert(
+          title: title,
+          content: content,
+          onPressed: onPressed,
+          hasCancel: hasCancel,
+        ),
+      );
 }
 
 //* modal 띄우기
@@ -259,12 +259,24 @@ void showToast(BuildContext context) =>
 bool watchAfterWork(BuildContext context) =>
     context.watch<NotiProvider>().afterWork;
 
+String watchToastString(BuildContext context) =>
+    context.watch<NotiProvider>().toastString;
+
+void setToastString(BuildContext context, String value) =>
+    context.read<NotiProvider>().setToastString(value);
+
 //* spinner
 void showSpinner(BuildContext context, bool showState) =>
     context.read<NotiProvider>().showSpinner(showState);
 
 bool watchSpinner(BuildContext context) =>
     context.watch<NotiProvider>().spinnerState;
+
+//* refresh state
+// void applyRefresh(BuildContext context, bool refreshState) =>
+//     context.read<NotiProvider>().applyRefresh(refreshState);
+// bool watchRefresh(BuildContext context) =>
+//     context.read<NotiProvider>().refreshState;
 
 //* scroll
 
@@ -341,8 +353,8 @@ int? getBingoSize(BuildContext context) =>
 String? getStart(BuildContext context) =>
     context.read<GlobalGroupProvider>().start;
 
-bool? getPublic(BuildContext context) =>
-    context.read<GlobalGroupProvider>().isPublic;
+// bool? getPublic(BuildContext context) =>
+//     context.read<GlobalGroupProvider>().isPublic;
 
 bool? getNeedAuth(BuildContext context) =>
     context.read<GlobalGroupProvider>().needAuth;
@@ -350,8 +362,7 @@ bool? getNeedAuth(BuildContext context) =>
 bool? alreadyStarted(BuildContext context) =>
     context.read<GlobalGroupProvider>().alreadyStarted;
 
-bool watchPrev(BuildContext context) =>
-    context.watch<GlobalGroupProvider>().prev;
+bool getPrev(BuildContext context) => context.read<GlobalGroupProvider>().prev;
 
 String? getGroupName(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupName;
@@ -362,6 +373,8 @@ GroupChatList getChats(BuildContext context) =>
 GroupChatList watchChats(BuildContext context) =>
     context.watch<GlobalGroupProvider>().chats;
 
+List getRank(BuildContext context) => context.read<GlobalGroupProvider>().rank;
+
 void setStart(BuildContext context, String newStart) =>
     context.read<GlobalGroupProvider>().setStart(newStart);
 
@@ -371,8 +384,8 @@ void setGroupData(BuildContext context, dynamic newVal) =>
 void setGroupId(BuildContext context, int newVal) =>
     context.read<GlobalGroupProvider>().setGroupId(newVal);
 
-void setPublic(BuildContext context, bool? newVal) =>
-    context.read<GlobalGroupProvider>().setPublic(newVal);
+// void setPublic(BuildContext context, bool? newVal) =>
+//     context.read<GlobalGroupProvider>().setPublic(newVal);
 
 void changeGroupIndex(BuildContext context, int index) =>
     context.read<GlobalGroupProvider>().changeIndex(index);
@@ -419,8 +432,14 @@ int? getBingoId(BuildContext context) =>
 int? watchBingoId(BuildContext context) =>
     context.watch<GlobalBingoProvider>().bingoId;
 
+// int watchAchieve(BuildContext context) =>
+//     context.watch<GlobalBingoProvider>().achieve;
+
 DynamicMap getBingoData(BuildContext context) =>
     context.read<GlobalBingoProvider>().data;
+
+DynamicMap watchBingoData(BuildContext context) =>
+    context.watch<GlobalBingoProvider>().data;
 
 String? watchTitle(BuildContext context) =>
     context.watch<GlobalBingoProvider>().title;

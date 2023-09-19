@@ -32,7 +32,6 @@ class DynamicLink {
 
   void _toOtherPage(PendingDynamicLinkData pendingDynamicLinkData) {
     final Uri deepLink = pendingDynamicLinkData.link;
-    print("딥링크 출력: $deepLink");
 
     int groupId = int.parse(deepLink.queryParameters['groupId']!);
 
@@ -43,16 +42,15 @@ class DynamicLink {
     );
 
     final context = NavigatorKey.naviagatorState.currentContext;
-    // Navigator.push(context!, MaterialPageRoute(builder: (context) => page));
     toOtherPage(context!, page: page)();
   }
 
-  Future<String> buildDynamicLink(bool isPublic, int groupId) async {
+  Future<String> buildDynamicLink(int groupId) async {
     String uriPrefix = dotenv.env['dynamicLinkPrefix']!;
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: uriPrefix,
-      link: Uri.parse('$uriPrefix/groups?groupId=$groupId&isPublic=$isPublic'),
+      link: Uri.parse('$uriPrefix/groups?groupId=$groupId'),
       androidParameters:
           AndroidParameters(packageName: dotenv.env['packageName']!),
     );

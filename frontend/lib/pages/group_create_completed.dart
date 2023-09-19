@@ -59,7 +59,6 @@ class GroupCreateCompleted extends StatelessWidget {
               IconButtonInRow(
                 onPressed: () => shareGroup(
                   groupId: groupId,
-                  isPublic: getPublic(context)!,
                   groupName: getGroupName(context),
                 ),
                 icon: shareIcon,

@@ -57,6 +57,11 @@ class _MainState extends State<Main> {
 
   @override
   Widget build(BuildContext context) {
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (getPrev(context)) {
+    //     changePrev(context, false);
+    //   }
+    // });
     return WillPopScope(
       onWillPop: () => exitApp(context),
       child: Scaffold(
