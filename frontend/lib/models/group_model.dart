@@ -77,7 +77,7 @@ class GroupDetailModel {
 class GroupChatModel {
   final int id, userId, badgeId, itemId;
   final String? content;
-  final String username, createdAt;
+  final String username, createdAt, title;
   // title;
   final bool reviewed, hasImage;
   GroupChatModel.fromJson(DynamicMap json)
@@ -88,7 +88,7 @@ class GroupChatModel {
         username = json['username'],
         content = json['content'],
         createdAt = json['created_at'],
-        // title = json['title'],
+        title = json['title'],
         reviewed = json['reviewed'],
         hasImage = json['has_img'];
 }

@@ -20,11 +20,6 @@ class GroupAdmin extends StatelessWidget {
         height: getHeight(context),
         child: GroupAdminTabBar(groupId: groupId),
       ),
-      // bottomNavigationBar: GroupMainBottomBar(
-      //   isMember: true,
-      //   groupId: groupId,
-      //   selectedIndex: null,
-      // ),
     );
   }
 }

@@ -50,6 +50,10 @@ const rankIcon = Icons.align_vertical_bottom_rounded;
 
 const iconList = [confirmIcon, closeIcon, circleIcon];
 
+const talkIcon = Icons.question_answer_outlined;
+const policyIcon = Icons.description_outlined;
+const licenseIcon = Icons.workspace_premium_outlined;
+
 //* background image
 var circle = 'assets/images/circle.jpg';
 var flowers = 'assets/images/flowers.png';

@@ -19,11 +19,11 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   String? get refresh => _refresh;
   int? get id => _id;
 
-  void debugFillProperites(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(StringProperty('token', token));
-    properties.add(StringProperty('refresh', refresh));
-  }
+  // void debugFillProperites(DiagnosticPropertiesBuilder properties) {
+  //   super.debugFillProperties(properties);
+  //   properties.add(StringProperty('token', token));
+  //   properties.add(StringProperty('refresh', refresh));
+  // }
   //* private
 
   void _setToken(String? newToken) => _token = newToken;
@@ -85,12 +85,16 @@ class NotiProvider extends ChangeNotifier {
   static bool _beforeExit = false;
   static bool _afterWork = false;
   static bool _spinnerState = false;
+  static bool _refreshState = false;
+  static String _toastString = '';
 
   //* getter
 
   bool get beforeExit => _beforeExit;
   bool get afterWork => _afterWork;
   bool get spinnerState => _spinnerState;
+  bool get refreshState => _refreshState;
+  String get toastString => _toastString;
 
   //* private
 
@@ -127,11 +131,24 @@ class NotiProvider extends ChangeNotifier {
 
   void _showSpinner(bool showState) => _spinnerState = showState;
 
+  void _applyRefresh(bool state) => _refreshState = state;
+
+  void _setToastString(String value) => _toastString = value;
+
   //* public
 
   FutureBool changePressed() => _changePressed();
   void showToast() => _showToast();
   void showSpinner(bool showState) => _showSpinner(showState);
+  void applyRefresh(bool state) {
+    _applyRefresh(state);
+    notifyListeners();
+  }
+
+  void setToastString(String value) {
+    _setToastString(value);
+    notifyListeners();
+  }
 }
 
 //* scroll
@@ -186,13 +203,13 @@ class GlobalGroupProvider extends ChangeNotifier {
   static int _lastId = 0;
   // static int _page = 1;
   static String? _start;
-  static bool? _isPublic;
+  // static bool? _isPublic;
   static final GroupChatList _chats = [];
   static int _selectedIndex = 1;
   static bool _prev = false;
 
   GroupChatList get chats => _chats;
-  bool? get isPublic => _isPublic;
+  // bool? get isPublic => _isPublic;
   bool get prev => _prev;
 
   int get selectedIndex => _selectedIndex;
@@ -204,17 +221,18 @@ class GlobalGroupProvider extends ChangeNotifier {
   int? get bingoSize => _data?.bingoSize;
   int? get count => _data?.count;
   int? get memberState => _data?.memberState;
-  bool? get hasImage => _data?.hasImage;
+  bool get hasImage => _data?.hasImage ?? false;
   bool? get needAuth => _data?.needAuth;
   bool? get alreadyStarted => _data?.start != null
       ? DateTime.now().difference(DateTime.parse(_data!.start)) >= Duration.zero
       : null;
-  String? get groupName => _data?.groupName;
+  String get groupName => _data?.groupName ?? '';
   String? get start => _data?.start ?? _start;
   String? get end => _data?.end;
-  String? get description => _data?.description;
-  String? get rule => _data?.rule;
+  String get description => _data?.description ?? '';
+  String get rule => _data?.rule ?? '';
   String? get password => _data?.password;
+  List get rank => _data?.rank ?? [];
 
   // int get page => _page;
 
@@ -234,7 +252,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   void _setGroupId(int newVal) => _groupId = newVal;
   // void _setNeedAuth(bool newVal) => _needAuth = newVal;
 
-  void _setPublic(bool? newVal) => _isPublic = newVal;
+  // void _setPublic(bool? newVal) => _isPublic = newVal;
 
   void _addChats(GroupChatList newChats) => _chats.addAll(newChats);
 
@@ -259,7 +277,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void setPublic(bool? val) => _setPublic(val);
+  // void setPublic(bool? val) => _setPublic(val);
 
   void setData(GroupDetailModel detailModel) {
     _setData(detailModel);
@@ -367,7 +385,10 @@ class GlobalBingoProvider extends ChangeNotifier {
   int? get background => _data['background'];
   int? get bingoId => _bingoId;
   int? get lastId => _lastId;
+  int get achieve =>
+      _data['achieve'] != null ? (_data['achieve'] * 100).toInt() : 0;
   String? get title => _data['title'];
+  String? get username => _data['username'];
   bool get hasBlackBox => _data['is_black'];
   bool get hasBorder => _data['has_border'];
   bool get hasRoundEdge => _data['has_round_edge'];
@@ -451,7 +472,7 @@ class GlobalBingoProvider extends ChangeNotifier {
         'title': null,
         'content': null,
         'check': false,
-        'check_goal': 0,
+        'check_goal': 2,
       },
     );
   }
@@ -533,7 +554,10 @@ class GlobalBingoProvider extends ChangeNotifier {
   }
 
   void setOption(String key, dynamic value) => _setOption(key, value);
-  void setData(DynamicMap data) => _setData(data);
+  void setData(DynamicMap data) {
+    _setData(data);
+    notifyListeners();
+  }
   // void setTempData(DynamicMap data) => _setTempData(data);
 
   void setBingoId(int newId) {
@@ -555,7 +579,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   void initKey() => _initKey();
 
   FutureBool bingoToImage() => _bingoToImage();
-  
+
   Future<File> bingoToXFile() async {
     var renderObject = _globalKey.currentContext?.findRenderObject();
     if (renderObject is RenderRepaintBoundary) {
@@ -563,11 +587,11 @@ class GlobalBingoProvider extends ChangeNotifier {
       final image = await boundary.toImage();
       final byteData = await image.toByteData(format: ImageByteFormat.png);
       final pngBytes = byteData?.buffer.asUint8List();
-      
+
       final Directory tempDir = await getTemporaryDirectory();
       File file = await File('${tempDir.path}/img.png').create();
       file.writeAsBytesSync(pngBytes!);
-      
+
       return file;
     }
     return File('');

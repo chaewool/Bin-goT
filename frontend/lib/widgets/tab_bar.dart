@@ -11,10 +11,8 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/image.dart';
-import 'package:bin_got/widgets/list.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/scroll.dart';
-import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:bin_got/widgets/toast.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
@@ -329,290 +327,289 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
 }
 
 //* 메인 페이지 탭
-class MyTabBar extends StatefulWidget {
-  const MyTabBar({super.key});
+// class MyTabBar extends StatefulWidget {
+//   const MyTabBar({super.key});
 
-  @override
-  State<MyTabBar> createState() => _MyTabBarState();
-}
+//   @override
+//   State<MyTabBar> createState() => _MyTabBarState();
+// }
 
-class _MyTabBarState extends State<MyTabBar> {
-  final groupController = ScrollController();
-  final bingoController = ScrollController();
-  MyGroupList groupTabData = [];
-  bool hasNotGroup = true;
-  MyBingoList bingoTabData = [];
-  List<StringList> buttonOptions = [
-    ['종료일 ▼', '종료일 ▲'],
-    ['전체', '진행 중', '완료'],
-  ];
-  late int presentIdx;
+// class _MyTabBarState extends State<MyTabBar> {
+//   final groupController = ScrollController();
+//   final bingoController = ScrollController();
+//   MyGroupList groupTabData = [];
+//   bool hasNotGroup = true;
+//   MyBingoList bingoTabData = [];
+//   List<StringList> buttonOptions = [
+//     ['종료일 ▼', '종료일 ▲'],
+//     ['전체', '진행 중', '완료'],
+//   ];
+//   late int presentIdx;
 
-  List<IntList> idxList = [
-    [1, 0],
-    [1, 0]
-  ];
-  void changeIdx(int idx) {
-    if (idxList[presentIdx][idx] < buttonOptions[idx].length - 1) {
-      setState(() {
-        idxList[presentIdx][idx] += 1;
-      });
-    } else {
-      setState(() {
-        idxList[presentIdx][idx] = 0;
-      });
-    }
+//   List<IntList> idxList = [
+//     [1, 0],
+//     [1, 0]
+//   ];
+//   void changeIdx(int idx) {
+//     if (idxList[presentIdx][idx] < buttonOptions[idx].length - 1) {
+//       setState(() {
+//         idxList[presentIdx][idx] += 1;
+//       });
+//     } else {
+//       setState(() {
+//         idxList[presentIdx][idx] = 0;
+//       });
+//     }
 
-    if (presentIdx == 0) {
-      //* 그룹이 있을 경우에만 적용
-      if (idx == 1 || groupTabData.isNotEmpty) {
-        initLoadingData(context, 1);
-        setLastId(context, 1, 0);
-        groupTabData.clear();
-        setGroupTabData();
-      }
-    } else if (idx == 1 || bingoTabData.isNotEmpty) {
-      initLoadingData(context, 2);
-      setLastId(context, 2, 0);
-      bingoTabData.clear();
-      setBingoTabData();
-    }
-  }
+//     if (presentIdx == 0) {
+//       //* 그룹이 있을 경우에만 적용
+//       if (idx == 1 || groupTabData.isNotEmpty) {
+//         initLoadingData(context, 1);
+//         setLastId(context, 1, 0);
+//         groupTabData.clear();
+//         setGroupTabData();
+//       }
+//     } else if (idx == 1 || bingoTabData.isNotEmpty) {
+//       initLoadingData(context, 2);
+//       setLastId(context, 2, 0);
+//       bingoTabData.clear();
+//       setBingoTabData();
+//     }
+//   }
 
-  void changeTab(int index) {
-    if (presentIdx != index) {
-      setState(() {
-        presentIdx = index;
-      });
-      // if (index == 1 && bingoTabData == null) {
-      //   setBingoTabData();
-      // }
-    }
-  }
+//   void changeTab(int index) {
+//     if (presentIdx != index) {
+//       setState(() {
+//         presentIdx = index;
+//       });
+//       // if (index == 1 && bingoTabData == null) {
+//       //   setBingoTabData();
+//       // }
+//     }
+//   }
 
-  FutureBool setGroupTabData([bool more = true]) {
-    print('last id => ${getLastId(context, 1)}');
-    final answer = UserInfoProvider().getMainGroupData({
-      'order': idxList[0][0],
-      'filter': idxList[0][1],
-      'idx': getLastId(context, 1),
-      // 'page': getPage(context, 1),
-    }).then((groupData) {
-      print('--------------------------');
-      print(idxList[0]);
-      print('group tab bar : ${groupData.groups.length}');
-      // setState(() {
-      // });
-      setState(() {
-        if (groupData.groups.isNotEmpty) {
-          groupTabData.addAll(groupData.groups);
-        }
-        hasNotGroup = groupData.hasNotGroup;
-      });
-      setLoading(context, false);
-      if (more) {
-        setWorking(context, false);
-        setAdditional(context, false);
-      }
-      // increasePage(context, 1);
+//   FutureBool setGroupTabData([bool more = true]) {
+//     print('last id => ${getLastId(context, 1)}');
+//     final answer = UserInfoProvider().getMainGroupData({
+//       'order': idxList[0][0],
+//       'filter': idxList[0][1],
+//       'idx': getLastId(context, 1),
+//       // 'page': getPage(context, 1),
+//     }).then((groupData) {
+//       print('--------------------------');
+//       print(idxList[0]);
+//       print('group tab bar : ${groupData.groups.length}');
+//       // setState(() {
+//       // });
+//       setState(() {
+//         if (groupData.groups.isNotEmpty) {
+//           groupTabData.addAll(groupData.groups);
+//         }
+//         hasNotGroup = groupData.hasNotGroup;
+//       });
+//       setLoading(context, false);
+//       if (more) {
+//         setWorking(context, false);
+//         setAdditional(context, false);
+//       }
+//       // increasePage(context, 1);
 
-      return true;
-    }).catchError((error) {
-      showErrorModal(context);
-      return false;
-    });
-    return Future.value(answer);
-  }
+//       return true;
+//     }).catchError((error) {
+//       showErrorModal(context);
+//       return false;
+//     });
+//     return Future.value(answer);
+//   }
 
-  void setBingoTabData([bool more = true]) {
-    print('--------------- bingo tab last id => ${getLastId(context, 2)}');
-    UserInfoProvider().getMainBingoData({
-      'order': idxList[1][0],
-      'filter': idxList[1][1],
-      'idx': getLastId(context, 2),
-    }).then((bingoData) {
-      if (bingoData.isNotEmpty) {
-        bingoTabData.addAll(bingoData);
-      }
-      setLoading(context, false);
-      if (more) {
-        setWorking(context, false);
-        setAdditional(context, false);
-      }
-      // increasePage(context, 2);
-    });
-  }
+//   void setBingoTabData([bool more = true]) {
+//     print('--------------- bingo tab last id => ${getLastId(context, 2)}');
+//     UserInfoProvider().getMainBingoData({
+//       'order': idxList[1][0],
+//       'filter': idxList[1][1],
+//       'idx': getLastId(context, 2),
+//     }).then((bingoData) {
+//       if (bingoData.isNotEmpty) {
+//         bingoTabData.addAll(bingoData);
+//       }
+//       setLoading(context, false);
+//       if (more) {
+//         setWorking(context, false);
+//         setAdditional(context, false);
+//       }
+//       // increasePage(context, 2);
+//     });
+//   }
 
-  @override
-  void initState() {
-    super.initState();
-    presentIdx = 0;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      initLoadingData(context, 1);
-      if (getLoading(context)) {
-        setGroupTabData(false).then((_) {
-          initLoadingData(context, 2);
-          if (getLoading(context)) {
-            setBingoTabData(false);
-          }
-        });
-      }
+//   @override
+//   void initState() {
+//     super.initState();
+//     presentIdx = 0;
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       initLoadingData(context, 1);
+//       if (getLoading(context)) {
+//         setGroupTabData(false).then((_) {
+//           initLoadingData(context, 2);
+//           if (getLoading(context)) {
+//             setBingoTabData(false);
+//           }
+//         });
+//       }
 
-      groupController.addListener(
-        () {
-          if (groupController.position.pixels >=
-              groupController.position.maxScrollExtent * 0.9) {
-            print('last id => ${getLastId(context, 1)}');
-            if (getLastId(context, 1) != -1) {
-              if (!getWorking(context)) {
-                setWorking(context, true);
-                Future.delayed(const Duration(seconds: 2), () {
-                  if (!getAdditional(context)) {
-                    setAdditional(context, true);
-                    if (getAdditional(context)) {
-                      setGroupTabData();
-                    }
-                  }
-                });
-              }
-            }
-          }
-        },
-      );
-    });
+//       groupController.addListener(
+//         () {
+//           if (groupController.position.pixels >=
+//               groupController.position.maxScrollExtent * 0.9) {
+//             print('last id => ${getLastId(context, 1)}');
+//             if (getLastId(context, 1) != -1) {
+//               if (!getWorking(context)) {
+//                 setWorking(context, true);
+//                 Future.delayed(const Duration(seconds: 2), () {
+//                   if (!getAdditional(context)) {
+//                     setAdditional(context, true);
+//                     if (getAdditional(context)) {
+//                       setGroupTabData();
+//                     }
+//                   }
+//                 });
+//               }
+//             }
+//           }
+//         },
+//       );
+//     });
 
-    bingoController.addListener(
-      () {
-        if (bingoController.position.pixels >=
-            bingoController.position.maxScrollExtent * 0.9) {
-          print('last id => ${getLastId(context, 2)}');
-          if (getLastId(context, 2) != -1) {
-            // print('${getPage(context, 2)}, ${getTotal(context, 2)}');
-            // if (getPage(context, 2) < getTotal(context, 2)!) {
-            if (!getWorking(context)) {
-              setWorking(context, true);
-              Future.delayed(const Duration(seconds: 2), () {
-                if (!getAdditional(context)) {
-                  setAdditional(context, true);
-                  if (getAdditional(context)) {
-                    setBingoTabData();
-                  }
-                }
-              });
-            }
-          }
-        }
-      },
-    );
-  }
+//     bingoController.addListener(
+//       () {
+//         if (bingoController.position.pixels >=
+//             bingoController.position.maxScrollExtent * 0.9) {
+//           print('last id => ${getLastId(context, 2)}');
+//           if (getLastId(context, 2) != -1) {
+//             // print('${getPage(context, 2)}, ${getTotal(context, 2)}');
+//             // if (getPage(context, 2) < getTotal(context, 2)!) {
+//             if (!getWorking(context)) {
+//               setWorking(context, true);
+//               Future.delayed(const Duration(seconds: 2), () {
+//                 if (!getAdditional(context)) {
+//                   setAdditional(context, true);
+//                   if (getAdditional(context)) {
+//                     setBingoTabData();
+//                   }
+//                 }
+//               });
+//             }
+//           }
+//         }
+//       },
+//     );
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return CustomTextTabBar(
-      tabTitles: const ['내 그룹', '내 빙고'],
-      onChange: changeTab,
-      upperView: RowWithPadding(
-        vertical: 10,
-        horizontal: 25,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          for (int i = 0; i < 2; i += 1)
-            Center(
-              child: CustomTextButton(
-                content: buttonOptions[i][idxList[presentIdx][i]],
-                fontSize: FontSize.smallSize,
-                onTap: () => changeIdx(i),
-              ),
-            ),
-        ],
-      ),
-      listItems: [
-        [
-          Expanded(
-            child: GroupInfiniteScroll(
-              controller: groupController,
-              data: groupTabData,
-              mode: 1,
-              emptyWidget: emptyWidget(),
-              hasNotGroupWidget: hasNotGroup
-                  ? Column(
-                      children: [
-                        const SizedBox(height: 40),
-                        const CustomText(
-                          center: true,
-                          content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                          height: 1.7,
-                        ),
-                        const SizedBox(height: 70),
-                        const CustomText(
-                          content: '추천그룹',
-                          fontSize: FontSize.titleSize,
-                        ),
-                        const SizedBox(height: 20),
-                        !watchLoading(context)
-                            ? groupTabData.isNotEmpty
-                                ? Expanded(
-                                    child: ListView.builder(
-                                      itemCount: groupTabData.length,
-                                      itemBuilder: (context, i) {
-                                        return Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              5, 0, 5, 5),
-                                          child: GroupListItem(
-                                            isSearchMode: false,
-                                            groupInfo: groupTabData[i],
-                                            public: groupTabData[i].isPublic!,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  )
-                                : emptyWidget()
-                            : const CustomCirCularIndicator(),
-                      ],
-                    )
-                  : null,
-            ),
-          )
-        ],
-        [
-          Expanded(
-            child: InfiniteScroll(
-              controller: bingoController,
-              data: bingoTabData,
-              mode: 2,
-              emptyWidget: const Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomText(
-                    center: true,
-                    height: 1.7,
-                    content: '조건을 만족하는 빙고가 없어요.',
-                  ),
-                ],
-              ),
-            ),
-          )
-        ]
-      ],
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return CustomTextTabBar(
+//       tabTitles: const ['내 그룹', '내 빙고'],
+//       onChange: changeTab,
+//       upperView: RowWithPadding(
+//         vertical: 10,
+//         horizontal: 25,
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           for (int i = 0; i < 2; i += 1)
+//             Center(
+//               child: CustomTextButton(
+//                 content: buttonOptions[i][idxList[presentIdx][i]],
+//                 fontSize: FontSize.smallSize,
+//                 onTap: () => changeIdx(i),
+//               ),
+//             ),
+//         ],
+//       ),
+//       listItems: [
+//         [
+//           Expanded(
+//             child: GroupInfiniteScroll(
+//               controller: groupController,
+//               data: groupTabData,
+//               mode: 1,
+//               emptyWidget: emptyWidget(),
+//               hasNotGroupWidget: hasNotGroup
+//                   ? Column(
+//                       children: [
+//                         const SizedBox(height: 40),
+//                         const CustomText(
+//                           center: true,
+//                           content: '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+//                           height: 1.7,
+//                         ),
+//                         const SizedBox(height: 70),
+//                         const CustomText(
+//                           content: '추천그룹',
+//                           fontSize: FontSize.titleSize,
+//                         ),
+//                         const SizedBox(height: 20),
+//                         !watchLoading(context)
+//                             ? groupTabData.isNotEmpty
+//                                 ? Expanded(
+//                                     child: ListView.builder(
+//                                       itemCount: groupTabData.length,
+//                                       itemBuilder: (context, i) {
+//                                         return Padding(
+//                                           padding: const EdgeInsets.fromLTRB(
+//                                               5, 0, 5, 5),
+//                                           child: GroupListItem(
+//                                             isSearchMode: false,
+//                                             groupInfo: groupTabData[i],
+//                                             public: groupTabData[i].isPublic!,
+//                                           ),
+//                                         );
+//                                       },
+//                                     ),
+//                                   )
+//                                 : emptyWidget()
+//                             : const CustomCirCularIndicator(),
+//                       ],
+//                     )
+//                   : null,
+//             ),
+//           )
+//         ],
+//         [
+//           Expanded(
+//             child: BingoInfiniteScroll(
+//               controller: bingoController,
+//               data: bingoTabData,
+//               emptyWidget: const Row(
+//                 mainAxisSize: MainAxisSize.max,
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: [
+//                   CustomText(
+//                     center: true,
+//                     height: 1.7,
+//                     content: '조건을 만족하는 빙고가 없어요.',
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           )
+//         ]
+//       ],
+//     );
+//   }
 
-  Row emptyWidget() {
-    return const Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CustomText(
-          center: true,
-          content: '조건을 만족하는 그룹이 없어요.',
-          height: 1.7,
-        ),
-      ],
-    );
-  }
-}
+//   Row emptyWidget() {
+//     return const Row(
+//       mainAxisSize: MainAxisSize.max,
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: [
+//         CustomText(
+//           center: true,
+//           content: '조건을 만족하는 그룹이 없어요.',
+//           height: 1.7,
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 //* tab bar 기본 틀
 class CustomTextTabBar extends StatelessWidget {
@@ -845,9 +842,9 @@ class _MainTabBarState extends State<MainTabBar> {
 
   @override
   Widget build(BuildContext context) {
-    if (watchPrev(context)) {
-      changePrev(context, false);
-    }
+    // if (getPrev(context)) {
+    //   changePrev(context, false);
+    // }
     return Stack(
       children: [
         Column(
@@ -935,21 +932,9 @@ class _MainTabBarState extends State<MainTabBar> {
                                   )
                                 : null,
                           )
-                        : InfiniteScroll(
+                        : BingoInfiniteScroll(
                             controller: bingoController,
                             data: bingoTabData,
-                            mode: 2,
-                            emptyWidget: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                CustomText(
-                                  center: true,
-                                  height: 1.7,
-                                  content: '조건을 만족하는 빙고가 없어요.',
-                                ),
-                              ],
-                            ),
                           ),
                   ),
                 ],

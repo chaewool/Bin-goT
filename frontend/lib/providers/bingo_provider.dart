@@ -50,9 +50,10 @@ class BingoProvider extends ApiProvider {
   FutureDynamicMap _editOwnBingo(
       int groupId, int bingoId, FormData bingoData) async {
     try {
-      await dioWithTokenForm()
+      print('함수 실행');
+      final response = await dioWithTokenForm()
           .put(editBingoUrl(groupId, bingoId), data: bingoData);
-
+      print('response => $response');
       return {};
     } catch (error) {
       print(error);
