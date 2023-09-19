@@ -21,6 +21,8 @@ class GroupCreateView(APIView):
         user = request.user
         img = request.FILES.get('img')
         data = json.loads(request.data.get('data'))
+
+        logger.info(f"받아온 데이터: {data}")
         
         period = (datetime.strptime(data.get('end'), '%Y-%m-%d') - datetime.strptime(data.get('start'), '%Y-%m-%d')).days
 
@@ -381,6 +383,8 @@ class BoardUpdateView(APIView):
         group = board.group
         thumbnail = request.FILES.get('thumbnail')
         data = json.loads(request.data.get('data'))
+        
+        logger.info(f"받아온 데이터: {data}")
         
         if not Board.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
