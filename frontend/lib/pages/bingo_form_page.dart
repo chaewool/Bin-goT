@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
-import 'package:bin_got/main.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
-import 'package:bin_got/widgets/bingo_detail.dart';
 import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -52,7 +50,6 @@ class _BingoFormState extends State<BingoForm> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? thumbnail;
   bool changed = true;
-  String toastString = '';
   late final size;
 
   @override
@@ -87,9 +84,11 @@ class _BingoFormState extends State<BingoForm> {
       bool correctGoal = true;
       for (var element in (data['items'] as List)) {
         final title = element['title'].trim();
+        // print('check => ${element['check']}');
         if (title != null && title != '') {
           cnt += 1;
-        } else if (element['check']) {
+        }
+        if (element['check']) {
           try {
             var checkGoal = element['check_goal'];
             if (checkGoal is String) {
@@ -139,21 +138,36 @@ class _BingoFormState extends State<BingoForm> {
             ),
           });
           showSpinner(context, true);
+          print(bingoData);
 
           BingoProvider()
-              .editOwnBingo(groupId!, bingoId, bingoData)
+              .editOwnBingo(getGroupId(context)!, bingoId, bingoData)
               .then((value) {
+            // applyRefresh(context, true);
             showSpinner(context, false);
+            setBingoData(context, data);
+            setToastString(context, '빙고 수정이 완료되었습니다.');
+            changeGroupIndex(context, 0);
+            showToast(context);
+            toBack(context);
 
-            toOtherPage(
-              context,
-              page: const BingoDetail(),
-            )();
+            // toOtherPage(
+            //   context,
+            //   page: const GroupDetail(
+            //     admin: false,
+            //     isMember: true,
+            //     chat: false,
+            //   ),
+            // )();
           }).catchError((_) {
+            print(1);
+            showSpinner(context, false);
             showErrorModal(context);
           });
         }
       }).catchError((_) {
+        print(2);
+        showSpinner(context, false);
         showErrorModal(context);
       });
     } else {
@@ -198,14 +212,18 @@ class _BingoFormState extends State<BingoForm> {
     GroupProvider().createOwnGroup(formData).then((groupId) {
       showSpinner(context, false);
       // initBingoData(context);
-      toastString = '그룹 생성이 완료되었습니다.';
+      setToastString(context, '그룹 생성이 완료되었습니다.');
       changeGroupIndex(context, 1);
       showToast(context);
+      changePrev(context, true);
       afterFewSec(
         1000,
         jumpToOtherPage(
           context,
-          page: InputPassword(isPublic: true, groupId: groupId),
+          page: InputPassword(
+            isPublic: true,
+            groupId: groupId,
+          ),
         ),
       );
       // toOtherPage(
@@ -216,6 +234,7 @@ class _BingoFormState extends State<BingoForm> {
       //   ),
       // )();
     }).catchError((error) {
+      showSpinner(context, false);
       showAlert(
         context,
         title: '그룹 생성 오류',
@@ -245,7 +264,7 @@ class _BingoFormState extends State<BingoForm> {
         print('빙고 생성 성공');
         // initBingoData(context);
         if (getNeedAuth(context) == true) {
-          toastString = '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.';
+          setToastString(context, '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.');
           showToast(context);
           afterFewSec(
             1000,
@@ -255,7 +274,7 @@ class _BingoFormState extends State<BingoForm> {
             ),
           );
         } else {
-          toastString = '성공적으로 가입되었습니다.';
+          setToastString(context, '성공적으로 가입되었습니다.');
           changeGroupIndex(context, 1);
           showToast(context);
           afterFewSec(
@@ -279,6 +298,7 @@ class _BingoFormState extends State<BingoForm> {
         }
       }).catchError((e) {
         print('catch error : $e');
+        showSpinner(context, false);
         showAlert(
           context,
           title: '가입 오류',
@@ -430,9 +450,7 @@ class _BingoFormState extends State<BingoForm> {
           const CustomBoxContainer(
             color: Colors.transparent,
             height: 70,
-            child: AppBarWithBack(
-              transparent: true,
-            ),
+            child: AppBarWithBack(transparent: true),
           ),
           if (watchSpinner(context))
             CustomBoxContainer(
@@ -443,7 +461,8 @@ class _BingoFormState extends State<BingoForm> {
                 children: [CustomCirCularIndicator()],
               ),
             ),
-          if (watchAfterWork(context)) CustomToast(content: toastString)
+          if (watchAfterWork(context))
+            CustomToast(content: watchToastString(context))
         ],
       ),
     );

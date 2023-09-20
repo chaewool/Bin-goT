@@ -305,8 +305,16 @@ class _ChatListItemState extends State<ChatListItem> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    // if (widget.data.itemId != -1)
-                                    //   CustomText(content: widget.data.title),
+                                    if (widget.data.itemId != -1)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5),
+                                        child: CustomText(
+                                          content: '목표 : ${widget.data.title}',
+                                          color: whiteColor,
+                                          fontSize: FontSize.largeSize,
+                                        ),
+                                      ),
                                     if (widget.data.hasImage == true)
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -329,7 +337,6 @@ class _ChatListItemState extends State<ChatListItem> {
                                           height: 100,
                                         ),
                                       ),
-
                                     if (widget.data.content != null)
                                       Padding(
                                         padding: const EdgeInsets.symmetric(

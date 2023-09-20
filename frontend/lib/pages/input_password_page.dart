@@ -41,8 +41,8 @@ class _InputPasswordState extends State<InputPassword> {
         ),
       )();
 
-  void toNextPage([bool public = true, member = true]) {
-    setPublic(context, public);
+  void toNextPage([member = true]) {
+    // setPublic(context, public);
     setGroupId(context, widget.groupId);
     if (widget.bingoId != null) {
       setBingoId(context, widget.bingoId!);
@@ -59,7 +59,7 @@ class _InputPasswordState extends State<InputPassword> {
         admin: widget.admin,
         chat: widget.chat,
         // password: '',
-        isPublic: widget.isPublic,
+        // isPublic: widget.isPublic,
         // initialIndex: widget.initialIndex,
         bingoId: widget.bingoId,
         size: widget.size,
@@ -150,7 +150,7 @@ class _InputPasswordState extends State<InputPassword> {
       showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
     } else {
       GroupProvider().checkPassword(widget.groupId, password).then((_) {
-        toNextPage(false, false);
+        toNextPage(false);
       }).catchError((error) {
         print(error);
         return error;
@@ -164,7 +164,7 @@ class _InputPasswordState extends State<InputPassword> {
       onWillPop: () {
         toBack(context);
         toBack(context);
-        setPublic(context, null);
+        // setPublic(context, null);
         return Future.value(false);
       },
       child: const CustomBoxContainer(),
