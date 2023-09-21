@@ -48,15 +48,6 @@ class _BingoBoardState extends State<BingoBoard> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // watchBackground(context) != null
-        //     ? CustomBoxContainer(
-        //         hasRoundEdge: false,
-        //         image: DecorationImage(
-        //           image: AssetImage(backgroundList[watchBackground(context)!]),
-        //           fit: BoxFit.fill,
-        //         ),
-        //       )
-        //     : const SizedBox(),
         Column(
           children: [
             for (int i = 0; i < size!; i += 1)
@@ -68,8 +59,7 @@ class _BingoBoardState extends State<BingoBoard> {
                         child: Padding(
                           padding: EdgeInsets.all(applyGap()),
                           child: DragTarget<int>(
-                            builder: (context, candidateData, rejectedData) =>
-                                EachBingo(
+                            builder: (context, _, rejectedData) => EachBingo(
                               size: size!,
                               isDetail: widget.isDetail,
                               index: size! * i + j,
@@ -147,11 +137,9 @@ class EachBingo extends StatelessWidget {
     return CustomBoxContainer(
       onTap: showModal(
         context,
-        page: BingoModal(
-          index: index,
-          cnt: size * size,
-          isDetail: isDetail,
-        ),
+        page: isDetail
+            ? BingoDetailModal(index: index, cnt: size * size)
+            : BingoFormModal(index: index, cnt: size * size),
       ),
       child: CustomBoxContainer(
         color: watchHasBlackBox(context) ? blackColor : whiteColor,
@@ -169,7 +157,8 @@ class EachBingo extends StatelessWidget {
                 cutText: true,
               ),
             ),
-            if (context.watch<GlobalBingoProvider>().isCheckTheme ||
+            if (!isDetail &&
+                    context.watch<GlobalBingoProvider>().isCheckTheme ||
                 (isDetail && watchFinished(context)![index]))
               Center(
                 child: CustomIcon(

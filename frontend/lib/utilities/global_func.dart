@@ -9,6 +9,7 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/modal.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
@@ -18,7 +19,7 @@ import 'package:provider/provider.dart';
 //* 함수
 
 //* 지연
-void afterFewSec(int millisec, ReturnVoid afterFunc) =>
+void afterFewSec(ReturnVoid afterFunc, [int millisec = 1000]) =>
     Future.delayed(Duration(milliseconds: millisec), afterFunc);
 
 //* 이미지
@@ -27,39 +28,78 @@ void imagePicker(
   ReturnVoid? elseFunc,
   void Function(XFile?)? thenFunc,
 }) async {
-  Permission.storage.request().then((value) {
-    if (value == PermissionStatus.denied ||
-        value == PermissionStatus.permanentlyDenied) {
-      showAlert(
-        context,
-        title: '미디어 접근 권한 거부',
-        content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 수정하시겠습니까?',
-        hasCancel: true,
-        onPressed: () {
-          openAppSettings();
-          toBack(context);
-        },
-      )();
-    } else {
-      if (elseFunc != null) {
-        elseFunc();
+  WidgetsFlutterBinding.ensureInitialized();
+  DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+  final deviceInfo = await deviceInfoPlugin.deviceInfo;
+  if (int.parse(deviceInfo.data['version']['release']) < 13) {
+    Permission.storage.request().then((value) {
+      if (value == PermissionStatus.denied ||
+          value == PermissionStatus.permanentlyDenied) {
+        showAlert(
+          context,
+          title: '미디어 접근 권한 거부',
+          content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 수정하시겠습니까?',
+          hasCancel: true,
+          onPressed: () {
+            openAppSettings();
+            toBack(context);
+          },
+        )();
       } else {
-        final ImagePicker picker = ImagePicker();
-        picker
-            .pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 70,
-        )
-            .then((localImage) {
-          if (thenFunc != null) {
-            thenFunc(localImage);
-          }
-        }).catchError((error) {
-          showErrorModal(context);
-        });
+        if (elseFunc != null) {
+          elseFunc();
+        } else {
+          final ImagePicker picker = ImagePicker();
+          picker
+              .pickImage(
+            source: ImageSource.gallery,
+            imageQuality: 70,
+          )
+              .then((localImage) {
+            if (thenFunc != null) {
+              thenFunc(localImage);
+            }
+          }).catchError((error) {
+            showErrorModal(context);
+          });
+        }
       }
-    }
-  });
+    });
+  } else {
+    Permission.photos.request().then((value) {
+      if (value == PermissionStatus.denied ||
+          value == PermissionStatus.permanentlyDenied) {
+        showAlert(
+          context,
+          title: '미디어 접근 권한 거부',
+          content: '미디어 접근 권한이 없습니다. 설정에서 접근 권한을 수정하시겠습니까?',
+          hasCancel: true,
+          onPressed: () {
+            openAppSettings();
+            toBack(context);
+          },
+        )();
+      } else {
+        if (elseFunc != null) {
+          elseFunc();
+        } else {
+          final ImagePicker picker = ImagePicker();
+          picker
+              .pickImage(
+            source: ImageSource.gallery,
+            imageQuality: 70,
+          )
+              .then((localImage) {
+            if (thenFunc != null) {
+              thenFunc(localImage);
+            }
+          }).catchError((error) {
+            showErrorModal(context);
+          });
+        }
+      }
+    });
+  }
 }
 
 //* 공유 템플릿
@@ -420,8 +460,8 @@ void setBingoId(BuildContext context, int id) =>
 void setBingoSize(BuildContext context, int size) =>
     context.read<GlobalBingoProvider>().setBingoSize(size);
 
-// void setIsMine(BuildContext context, bool isMine) =>
-//     context.read<GlobalBingoProvider>().setIsMine(isMine);
+void setIsCheckTheme(BuildContext context, bool checkState) =>
+    context.read<GlobalBingoProvider>().setIsCheckTheme(checkState);
 
 void initBingoData(BuildContext context) =>
     context.read<GlobalBingoProvider>().initData();

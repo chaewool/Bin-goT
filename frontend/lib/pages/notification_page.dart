@@ -72,38 +72,45 @@ class _NotificationSettingsState extends State<NotificationSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: whiteColor,
-      appBar: AppBarWithBack(
-        onPressedBack: () {
-          toBack(context);
-          applyNoti();
-        },
+    return WillPopScope(
+      onWillPop: () {
+        applyNoti();
+        toBack(context);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        backgroundColor: whiteColor,
+        appBar: AppBarWithBack(
+          onPressedBack: () {
+            applyNoti();
+            toBack(context);
+          },
+        ),
+        body: ColWithPadding(children: [
+          for (int i = 0; i < 4; i += 1)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Flexible(flex: 2, child: SizedBox()),
+                Flexible(
+                  flex: 4,
+                  child: CustomText(
+                    content: notificationList[i],
+                    fontSize: FontSize.smallSize,
+                  ),
+                ),
+                Flexible(
+                  flex: 2,
+                  child: CustomSwitch(
+                    value: optionList[i],
+                    onChanged: (value) => changeIdx(i, value),
+                  ),
+                ),
+                const Flexible(flex: 2, child: SizedBox()),
+              ],
+            ),
+        ]),
       ),
-      body: ColWithPadding(children: [
-        for (int i = 0; i < 4; i += 1)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Flexible(flex: 2, child: SizedBox()),
-              Flexible(
-                flex: 4,
-                child: CustomText(
-                  content: notificationList[i],
-                  fontSize: FontSize.smallSize,
-                ),
-              ),
-              Flexible(
-                flex: 2,
-                child: CustomSwitch(
-                  value: optionList[i],
-                  onChanged: (value) => changeIdx(i, value),
-                ),
-              ),
-              const Flexible(flex: 2, child: SizedBox()),
-            ],
-          ),
-      ]),
     );
   }
 }

@@ -19,7 +19,7 @@ class CustomButton extends StatelessWidget {
     super.key,
     required this.onPressed,
     required this.content,
-    this.fontSize = FontSize.smallSize,
+    this.fontSize = FontSize.textSize,
     this.enabled = true,
     this.color,
     this.textColor,
@@ -167,7 +167,7 @@ class CreateGroupButton extends StatelessWidget {
       left: getWidth(context) - 80,
       top: getHeight(context) - 170,
       child: FloatingActionButton(
-        backgroundColor: Colors.transparent,
+        backgroundColor: transparentColor,
         onPressed: toOtherPage(context, page: const GroupForm()),
         child: const CircleContainer(
           radius: 30,

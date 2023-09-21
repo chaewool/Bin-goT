@@ -57,37 +57,6 @@ class _CustomSnakeBottomBarState extends State<CustomSnakeBottomBar> {
   }
 }
 
-//* 메인 하단 바
-// class MainBottomBar extends StatelessWidget {
-//   const MainBottomBar({
-//     super.key,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     const WidgetList nextPages = [MyPage(), Main()];
-//     final items = [
-//       customBottomBarIcon(label: '설정 페이지', iconData: settingsIcon),
-//       customBottomBarIcon(label: '메인 페이지', iconData: homeIcon),
-//       customBottomBarIcon(label: '그룹 검색 바 띄우기', iconData: searchIcon),
-//     ];
-//     // void afterWork(int index) {
-//     //   if (index != 2) {
-//     //     changeSearchMode!();
-//     //   } else {
-//     //     toOtherPage(context, page: nextPages[index]);
-//     //   }
-//     // }
-
-//     return CustomSnakeBottomBar(
-//       // selectedIndex: selectedIndex,
-//       // afterWork: afterWork,
-//       items: items,
-//       nextPages: nextPages,
-//     );
-//   }
-// }
-
 //* 그룹에서의 하단 바
 class GroupMainBottomBar extends StatelessWidget {
   // final int groupId,

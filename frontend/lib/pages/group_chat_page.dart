@@ -192,7 +192,7 @@ class _GroupChatState extends State<GroupChat> {
               ),
             ),
             const CustomBoxContainer(
-              color: Colors.transparent,
+              color: transparentColor,
               height: 70,
               child: AppBarWithBack(transparent: true),
             ),
@@ -208,7 +208,7 @@ class _GroupChatState extends State<GroupChat> {
                     CustomBoxContainer(
                       height: getHeight(context) - 150,
                       hasRoundEdge: false,
-                      color: Colors.transparent,
+                      color: transparentColor,
                       image: DecorationImage(
                         image: FileImage(File(selectedImage!.path)),
                       ),

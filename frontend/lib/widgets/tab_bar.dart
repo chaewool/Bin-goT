@@ -49,14 +49,12 @@ class _BingoTabBarState extends State<BingoTabBar> {
         views: List.generate(4, (index) => tabViews(index)),
         onChange: (index) {
           final isCheckTheme = context.read<GlobalBingoProvider>().isCheckTheme;
-          void setCheckTheme(bool value) =>
-              context.read<GlobalBingoProvider>().setIsCheckTheme(value);
           if (index == 3) {
             if (!isCheckTheme) {
-              setCheckTheme(true);
+              setIsCheckTheme(context, true);
             }
           } else if (isCheckTheme) {
-            setCheckTheme(false);
+            setIsCheckTheme(context, false);
           }
         },
       ),
