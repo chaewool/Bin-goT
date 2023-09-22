@@ -16,7 +16,6 @@ class NotificationSettings extends StatefulWidget {
 }
 
 class _NotificationSettingsState extends State<NotificationSettings> {
-  // List initialOption = [];
   BoolList optionList = List.generate(4, (index) => false);
   StringList notificationList = [
     '진행률/랭킹 알림',
@@ -35,10 +34,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
         optionList[2] = data.chat;
         optionList[3] = data.check;
       });
-      print('${data.rank}, ${data.due}, ${data.chat}, ${data.check}');
-      // initialOption = List.from(optionList);
     }).catchError((error) {
-      print(error);
+      showErrorModal(context);
     });
   }
 
@@ -48,25 +45,12 @@ class _NotificationSettingsState extends State<NotificationSettings> {
     });
   }
 
-  // void cancelChange() {
-  //   optionList = List.from(initialOption);
-  // }
-
-  void applyNoti() {
-    print('${{
+  void applyNoti() async {
+    await UserInfoProvider().changeNoti({
       'noti_rank': optionList[0],
       'noti_due': optionList[1],
       'noti_chat': optionList[2],
       'noti_check': optionList[3],
-    }}');
-    UserInfoProvider().changeNoti({
-      'noti_rank': optionList[0],
-      'noti_due': optionList[1],
-      'noti_chat': optionList[2],
-      'noti_check': optionList[3],
-    }).then((_) {
-      print('apply');
-      // initialOption = List.from(optionList);
     });
   }
 

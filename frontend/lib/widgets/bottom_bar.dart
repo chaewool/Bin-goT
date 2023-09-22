@@ -32,7 +32,6 @@ class CustomSnakeBottomBar extends StatefulWidget {
 class _CustomSnakeBottomBarState extends State<CustomSnakeBottomBar> {
   @override
   Widget build(BuildContext context) {
-    // print('index => ${widget.selectedIndex}');
     return SnakeNavigationBar.gradient(
       elevation: 0.8,
       shape: const RoundedRectangleBorder(
@@ -59,36 +58,17 @@ class _CustomSnakeBottomBarState extends State<CustomSnakeBottomBar> {
 
 //* 그룹에서의 하단 바
 class GroupMainBottomBar extends StatelessWidget {
-  // final int groupId,
-  // final int selectedIndex;
   final int? size, bingoId;
   final bool isMember;
-  // final bool needAuth;
-  // final void Function(int) changeIndex;
   const GroupMainBottomBar({
     super.key,
-    // required this.groupId,
     this.isMember = true,
-    // required this.needAuth,
     this.size,
-    // required this.selectedIndex,
     this.bingoId,
-    // required this.changeIndex,
   });
 
   @override
   Widget build(BuildContext context) {
-    print('isMember => $isMember');
-    // void changeIndex(int index) {
-    //   final bingoId = myBingoId(context);
-    //   if (groupSelectedIndex(context) == 0 &&
-    //       bingoId != null &&
-    //       getBingoId(context) != bingoId) {
-    //     setBingoId(context, bingoId);
-    //   }
-    //   changeGroupIndex(context, index);
-    // }
-
     return isMember
         ? CustomSnakeBottomBar(
             items: [
@@ -99,27 +79,6 @@ class GroupMainBottomBar extends StatelessWidget {
             selectedIndex: groupSelectedIndex(context),
             changeIndex: (index) => changeGroupIndex(context, index),
           )
-        // BottomNavigationBar(
-        //     showSelectedLabels: false,
-        //     showUnselectedLabels: false,
-        //     items: [
-        //       for (int i = 0; i < 3; i += 1)
-        //         BottomNavigationBarItem(
-        //           icon: Center(
-        //             child: CustomIconButton(
-        //               onPressed: toOtherPage(
-        //                 context,
-        //                 page: nextPages[i],
-        //               ),
-        //               icon: bottomBarIcons[i],
-        //               size: 40,
-        //               color: greyColor,
-        //             ),
-        //           ),
-        //           label: 'home',
-        //         ),
-        //     ],
-        //   )
         : BottomAppBar(
             child: GestureDetector(
               onTap: () {
@@ -166,7 +125,6 @@ class FormBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // CustomButton(onPressed: () => toBack(context), content: '취소'),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),

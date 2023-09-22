@@ -77,7 +77,7 @@ class CustomInput extends StatelessWidget {
                   onlyNum ? [FilteringTextInputFormatter.digitsOnly] : null,
               enabled: enabled,
               textAlign: TextAlign.start,
-              textAlignVertical: TextAlignVertical.center,
+              textAlignVertical: TextAlignVertical.bottom,
               onChanged: setValue,
               onSubmitted: onSubmitted,
               textInputAction: needSearch ? TextInputAction.search : null,

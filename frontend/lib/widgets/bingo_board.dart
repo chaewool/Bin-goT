@@ -27,7 +27,6 @@ class _BingoBoardState extends State<BingoBoard> {
   @override
   void initState() {
     super.initState();
-    print('widget => ${widget.bingoSize}, get => ${getBingoSize(context)}');
     setState(() {
       size = widget.bingoSize ?? getBingoSize(context);
     });
