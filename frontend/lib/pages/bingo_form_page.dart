@@ -77,100 +77,104 @@ class _BingoFormState extends State<BingoForm> {
   }
 
   void createOrEditBingo() async {
-    if (changed) {
-      final data = context.read<GlobalBingoProvider>().data;
-      if (data['title'] == null) {
-        return showAlert(
-          context,
-          title: '필수 항목 누락',
-          content: '빙고명을 입력해주세요',
-          hasCancel: false,
-        )();
-      }
-      int cnt = 0;
-      bool correctGoal = true;
-      for (var element in (data['items'] as List)) {
-        final title = element['title'].trim();
-        // print('check => ${element['check']}');
-        if (title != null && title != '') {
-          cnt += 1;
+    try {
+      if (changed) {
+        final data = context.read<GlobalBingoProvider>().data;
+        if (data['title'] == null) {
+          return showAlert(
+            context,
+            title: '필수 항목 누락',
+            content: '빙고명을 입력해주세요',
+            hasCancel: false,
+          )();
         }
-        if (element['check']) {
-          try {
-            var checkGoal = element['check_goal'];
-            if (checkGoal is String) {
-              element['check_goal'] = int.parse(checkGoal);
-            }
-            if (element['check_goal'] < 2) {
+        int cnt = 0;
+        bool correctGoal = true;
+        for (var element in (data['items'] as List)) {
+          final title = element['title'].trim();
+          // print('check => ${element['check']}');
+          if (title != null && title != '') {
+            cnt += 1;
+          }
+          if (element['check']) {
+            try {
+              var checkGoal = element['check_goal'];
+              if (checkGoal is String) {
+                element['check_goal'] = int.parse(checkGoal);
+              }
+              if (element['check_goal'] < 2) {
+                correctGoal = false;
+              }
+            } catch (error) {
+              print(error);
               correctGoal = false;
             }
-          } catch (error) {
-            print(error);
-            correctGoal = false;
           }
         }
-      }
 
-      if (cnt != size * size) {
+        if (cnt != size * size) {
+          return showAlert(
+            context,
+            title: '필수 항목 누락',
+            content: '빙고칸 내부를 채워주세요',
+            hasCancel: false,
+          )();
+        }
+        if (!correctGoal) {
+          return showAlert(
+            context,
+            title: '유효하지 않은 값',
+            content: '목표 달성 횟수를 2 이상의 숫자로 입력해주세요.',
+            hasCancel: false,
+          )();
+        }
+        print('bingo data => $data');
+
+        bingoToThumb().then((_) {
+          final bingoId = getBingoId(context);
+          print(bingoId);
+          if (bingoId == null || bingoId == 0) {
+            widget.beforeJoin ? joinGroup(data) : createGroup(data);
+          } else {
+            //* 빙고 수정
+            final bingoData = FormData.fromMap({
+              'data': jsonEncode(data),
+              'thumbnail': MultipartFile.fromBytes(
+                thumbnail!,
+                filename: 'thumbnail.png',
+                contentType: MediaType('image', 'png'),
+              ),
+            });
+            showSpinner(context, true);
+            print(bingoData);
+
+            BingoProvider()
+                .editOwnBingo(getGroupId(context)!, bingoId, bingoData)
+                .then((value) {
+              afterWork('빙고 수정이 완료되었습니다.', 0, () {
+                setBingoData(context, data);
+                toBack(context);
+              });
+            }).catchError((_) {
+              print(1);
+              showSpinner(context, false);
+              showErrorModal(context);
+            });
+          }
+        }).catchError((_) {
+          print(2);
+          showSpinner(context, false);
+          showErrorModal(context);
+        });
+      } else {
         return showAlert(
           context,
           title: '필수 항목 누락',
-          content: '빙고칸 내부를 채워주세요',
-          hasCancel: false,
+          content: '변경사항이 없습니다.',
         )();
       }
-      if (!correctGoal) {
-        return showAlert(
-          context,
-          title: '유효하지 않은 값',
-          content: '목표 달성 횟수를 2 이상의 숫자로 입력해주세요.',
-          hasCancel: false,
-        )();
-      }
-      print('bingo data => $data');
-
-      bingoToThumb().then((_) {
-        final bingoId = getBingoId(context);
-        print(bingoId);
-        if (bingoId == null || bingoId == 0) {
-          widget.beforeJoin ? joinGroup(data) : createGroup(data);
-        } else {
-          //* 빙고 수정
-          final bingoData = FormData.fromMap({
-            'data': jsonEncode(data),
-            'thumbnail': MultipartFile.fromBytes(
-              thumbnail!,
-              filename: 'thumbnail.png',
-              contentType: MediaType('image', 'png'),
-            ),
-          });
-          showSpinner(context, true);
-          print(bingoData);
-
-          BingoProvider()
-              .editOwnBingo(getGroupId(context)!, bingoId, bingoData)
-              .then((value) {
-            afterWork('빙고 수정이 완료되었습니다.', 0, () {
-              setBingoData(context, data);
-              toBack(context);
-            });
-          }).catchError((_) {
-            print(1);
-            showSpinner(context, false);
-            showErrorModal(context);
-          });
-        }
-      }).catchError((_) {
-        print(2);
-        showSpinner(context, false);
-        showErrorModal(context);
-      });
-    } else {
-      return showAlert(
-        context,
-        title: '필수 항목 누락',
-        content: '변경사항이 없습니다.',
-      )();
+    } catch (_) {
+      showErrorModal(context);
     }
   }
 
@@ -295,6 +299,7 @@ class _BingoFormState extends State<BingoForm> {
       body: Stack(
         children: [
           CustomBoxContainer(
+            hasRoundEdge: false,
             width: getWidth(context),
             height: getHeight(context),
             color: whiteColor,
@@ -302,7 +307,7 @@ class _BingoFormState extends State<BingoForm> {
                 ? DecorationImage(
                     image:
                         AssetImage(backgroundList[watchBackground(context)!]),
-                    fit: BoxFit.fill,
+                    fit: BoxFit.fitHeight,
                   )
                 : null,
             child: Padding(

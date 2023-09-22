@@ -7,7 +7,7 @@ class UserInfoProvider extends ApiProvider {
   //* public
   FutureBool changeBadge(DynamicMap data) => _changeBadge(data);
   Future<ProfilModel> getProfile() => _getProfile();
-  FutureDynamic getBadges() => _getBadges();
+  Future<BadgeList> getBadges() => _getBadges();
   FutureDynamic checkName(String name) => _checkName(name);
   FutureDynamic changeName(String name) => _changeName(name);
   Future<MainGroupListModel> getMainGroupData(DynamicMap queryParameters) =>
@@ -24,7 +24,6 @@ class UserInfoProvider extends ApiProvider {
       await updateApi(changeBadgeUrl, data: data);
       return true;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -32,7 +31,6 @@ class UserInfoProvider extends ApiProvider {
   Future<ProfilModel> _getProfile() async {
     try {
       final response = await dioWithToken().get(profileUrl);
-      print(response.data);
       ProfilModel profile = ProfilModel.fromJson(response.data);
       return profile;
     } catch (error) {
@@ -40,7 +38,7 @@ class UserInfoProvider extends ApiProvider {
     }
   }
 
-  FutureDynamic _getBadges() async {
+  Future<BadgeList> _getBadges() async {
     try {
       final response = await dioWithToken().get(badgeListUrl);
 
@@ -77,19 +75,16 @@ class UserInfoProvider extends ApiProvider {
   Future<MainGroupListModel> _getMainGroupData(
       DynamicMap queryParameters) async {
     try {
-      print('url : $mainGroupTabUrl, query : $queryParameters');
       final response = await dioWithToken()
           .get(mainGroupTabUrl, queryParameters: queryParameters);
 
       final data = response.data;
-      // print('data : $data');
       MyGroupList myGroupList;
       if (data['groups'].isNotEmpty) {
         myGroupList = data['groups']
             .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
             .toList();
-        print(
-            '요청 last_id => ${myGroupList.last.id}, length = ${myGroupList.length}');
+
         GlobalGroupProvider()
             .setLastId(myGroupList.length == 10 ? myGroupList.last.id : -1);
       } else {
@@ -97,33 +92,20 @@ class UserInfoProvider extends ApiProvider {
         GlobalGroupProvider().setLastId(-1);
       }
       bool hasNotGroup = data['is_recommend'];
-      print('recommend => $hasNotGroup');
-      // GlobalGroupProvider().setTotalPage(data['last_page']);
-
-      // GlobalGroupProvider()
-      //     .setLastId(myGroupList.length == 10 ? data['last_idx'] : -1);
-
-      print(GlobalGroupProvider().lastId);
 
       return MainGroupListModel.fromJson(
           {'groups': myGroupList, 'is_recommend': hasNotGroup});
-      // }
-      // GlobalGroupProvider().setLastId(data['last_idx']);
-      // return MainGroupListModel.fromJson({'groups': [], 'is_recommend': true});
     } catch (error) {
-      print('mainTabGroupError: $error');
       throw Error();
     }
   }
 
   Future<MyBingoList> _getMainBingoData(DynamicMap queryParameters) async {
     try {
-      print('in!!');
       final response = await dioWithToken()
           .get(mainBingoTabUrl, queryParameters: queryParameters);
-      print(response);
+
       final data = response.data['boards'];
-      // GlobalBingoProvider().setTotalPage(response.data['last_page']);
 
       if (data.isNotEmpty) {
         MyBingoList myBingoList = data
@@ -132,15 +114,10 @@ class UserInfoProvider extends ApiProvider {
         GlobalBingoProvider()
             .setLastId(myBingoList.length == 10 ? myBingoList.last.id : -1);
 
-        print('data : $data');
         return myBingoList;
       }
       return [];
-      // }
-      // return [];
     } catch (error) {
-      print('mainTabBingoError: $error');
-      // UserProvider.logout();
       throw Error();
     }
   }

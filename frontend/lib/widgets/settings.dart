@@ -10,7 +10,9 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
+import 'package:bin_got/widgets/toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -179,86 +181,90 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: ColWithPadding(
-        horizontal: 15,
-        vertical: 10,
-        mainAxisSize: MainAxisSize.max,
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          profile(context),
-          eachSection(
-            // flex: 2,
-            title: '설정',
-            options: [
-              eachOption(
-                icon: bellIcon,
-                title: '알림 설정',
-                onTap: toOtherPage(
-                  context,
-                  page: const NotificationSettings(),
-                ),
-              )
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          child: ColWithPadding(
+            horizontal: 15,
+            vertical: 10,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              profile(context),
+              eachSection(
+                title: '설정',
+                options: [
+                  eachOption(
+                    icon: bellIcon,
+                    title: '알림 설정',
+                    onTap: toOtherPage(
+                      context,
+                      page: const NotificationSettings(),
+                    ),
+                  )
+                ],
+              ),
+              eachSection(
+                title: '소통',
+                options: [
+                  eachOption(
+                    icon: helpIcon,
+                    title: '도움말',
+                    onTap: toOtherPage(
+                      context,
+                      page: const Help(),
+                    ),
+                  ),
+                  eachOption(
+                    icon: talkIcon,
+                    title: '문의하기',
+                    onTap: sendEmail,
+                  ),
+                ],
+              ),
+              eachSection(
+                title: '방침',
+                options: [
+                  eachOption(
+                    icon: policyIcon,
+                    title: '개인 정보 처리 방침',
+                    onTap: showModal(
+                      context,
+                      page: PolicyModal(),
+                    ),
+                  ),
+                  eachOption(
+                    icon: licenseIcon,
+                    title: '라이선스',
+                    onTap: showModal(
+                      context,
+                      page: const LicenseModal(),
+                    ),
+                  ),
+                ],
+              ),
+              eachSection(
+                title: '기타',
+                hasDivider: false,
+                options: [
+                  eachOption(
+                    icon: exitIcon,
+                    title: '로그아웃',
+                    onTap: showAlert(
+                      context,
+                      title: '로그아웃 확인',
+                      content: '로그아웃하시겠습니까?',
+                      onPressed: logout,
+                    ),
+                    moveToOther: false,
+                  ),
+                ],
+              ),
             ],
           ),
-          eachSection(
-            title: '소통',
-            options: [
-              eachOption(
-                icon: helpIcon,
-                title: '도움말',
-                onTap: toOtherPage(
-                  context,
-                  page: const Help(),
-                ),
-              ),
-              eachOption(
-                icon: talkIcon,
-                title: '문의하기',
-                onTap: sendEmail,
-              ),
-            ],
-          ),
-          eachSection(
-            title: '방침',
-            options: [
-              eachOption(
-                icon: policyIcon,
-                title: '개인 정보 처리 방침',
-                onTap: showModal(
-                  context,
-                  page: PolicyModal(),
-                ),
-              ),
-              eachOption(
-                icon: licenseIcon,
-                title: '라이선스',
-                onTap: showModal(
-                  context,
-                  page: const LicenseModal(),
-                ),
-              ),
-            ],
-          ),
-          eachSection(
-            title: '기타',
-            hasDivider: false,
-            options: [
-              eachOption(
-                icon: exitIcon,
-                title: '로그아웃',
-                onTap: showAlert(
-                  context,
-                  title: '로그아웃 확인',
-                  content: '로그아웃하시겠습니까?',
-                  onPressed: logout,
-                ),
-                moveToOther: false,
-              ),
-            ],
-          ),
-        ],
-      ),
+        ),
+        if (watchAfterWork(context))
+          CustomToast(content: watchToastString(context))
+      ],
     );
   }
 
@@ -362,7 +368,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                             child: IconButtonInRow(
                               onPressed: showModal(context,
                                   page: ChangeNameModal(
-                                    username: username,
+                                    username: newName['value'],
                                     afterWork: (value) {
                                       setState(() {
                                         newName['value'] = value;
@@ -385,7 +391,6 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: CustomBoxContainer(
-              // borderColor: greyColor,
               boxShadow: [defaultShadow],
               child: RowWithPadding(
                 vertical: 10,
@@ -394,7 +399,6 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                 children: [
                   for (int i = 0; i < 3; i += 1)
                     Column(
-                      // crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomIcon(
                           icon: iconList[i],
@@ -441,11 +445,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
         ),
         const SizedBox(height: 5),
         ...options,
-        if (hasDivider)
-          const Divider(
-            thickness: 1,
-            color: greyColor,
-          )
+        if (hasDivider) const CustomDivider(vertical: 10),
       ],
     );
   }

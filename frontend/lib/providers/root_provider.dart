@@ -20,11 +20,6 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   String? get refresh => _refresh;
   int? get id => _id;
 
-  // void debugFillProperites(DiagnosticPropertiesBuilder properties) {
-  //   super.debugFillProperties(properties);
-  //   properties.add(StringProperty('token', token));
-  //   properties.add(StringProperty('refresh', refresh));
-  // }
   //* private
 
   void _setToken(String? newToken) => _token = newToken;
@@ -44,7 +39,6 @@ class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   //* public
   FutureBool initVar() async {
     final userInfo = await _readStorage();
-    print('initVar: $userInfo');
     if (userInfo.isNotEmpty) {
       _setToken(userInfo?['token']);
       _setRefresh(userInfo?['refresh']);
@@ -98,11 +92,6 @@ class NotiProvider extends ChangeNotifier {
   String get toastString => _toastString;
 
   //* private
-
-  // void _storeBool(String key, bool value) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setBool(key, value);
-  // }
 
   FutureBool _changePressed() {
     if (!_beforeExit) {
@@ -163,7 +152,6 @@ class GlobalScrollProvider extends ChangeNotifier {
   bool get working => _working;
   bool get additional => _additional;
   int? get lastId => _lastId;
-  // int get page => _page;
 
   void setWorking(bool newVal) {
     _setWorking(newVal);
@@ -198,7 +186,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   static final GroupChatList _chats = [];
   static int _selectedIndex = 1;
   static bool _prev = false;
-  static bool _enable = false;
+  static bool _enable = true;
 
   GroupChatList get chats => _chats;
   bool get prev => _prev;
@@ -255,6 +243,8 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void _toPrevPage(bool value) => _prev = value;
 
+  void _initData() => _data = null;
+
 //* public
   void setLastId(int value) => _setLastId(value);
 
@@ -294,6 +284,11 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void toPrevPage(bool value) {
     _toPrevPage(value);
+    notifyListeners();
+  }
+
+  void initData() {
+    _initData();
     notifyListeners();
   }
 }
@@ -458,7 +453,6 @@ class GlobalBingoProvider extends ChangeNotifier {
         pngBytes!,
         name: title,
       );
-      print('성공!!!');
       return true;
     }
     return false;

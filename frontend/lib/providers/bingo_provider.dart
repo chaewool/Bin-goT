@@ -6,10 +6,8 @@ class BingoProvider extends ApiProvider {
   //* public
   FutureDynamicMap readBingoDetail(int groupId, int bingoId) =>
       _readBingoDetail(groupId, bingoId);
-  // FutureInt createOwnBingo(FormData bingoData) => _createOwnBingo(bingoData);
   FutureDynamicMap editOwnBingo(int groupId, int bingoId, FormData bingoData) =>
       _editOwnBingo(groupId, bingoId, bingoData);
-  // FutureDynamicMap deleteOwnBingo(int bingoId) => _deleteOwnBingo(bingoId);
 
   FutureDynamicMap makeCompleteMessage(int groupId, FormData completeData) =>
       _makeCompleteMessage(groupId, completeData);
@@ -18,45 +16,20 @@ class BingoProvider extends ApiProvider {
     try {
       final response =
           await dioWithToken().get(bingoDetailUrl(groupId, bingoId));
-      print('response: $response');
-
       return response.data;
-      // return BingoDetailModel.fromJson(response.data);
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
-
-  //* create
-  // FutureInt _createOwnBingo(FormData bingoData) async {
-  //   try {
-  //     final dioWithForm = dioWithToken();
-  //     dioWithForm.options.contentType = 'multipart/form-data';
-  //     print(createBingoUrl);
-  //     final response = await dioWithForm.post(createBingoUrl, data: bingoData);
-  //     print(response);
-  //     if (response.statusCode == 200) {
-  //       return response.data['board_id'];
-  //     }
-  //     throw Error();
-  //   } catch (error) {
-  //     print(error);
-  //     throw Error();
-  //   }
-  // }
 
   //* update
   FutureDynamicMap _editOwnBingo(
       int groupId, int bingoId, FormData bingoData) async {
     try {
-      print('함수 실행');
-      final response = await dioWithTokenForm()
+      await dioWithTokenForm()
           .put(editBingoUrl(groupId, bingoId), data: bingoData);
-      print('response => $response');
       return {};
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -67,15 +40,9 @@ class BingoProvider extends ApiProvider {
     try {
       final response = await dioWithTokenForm()
           .post(groupReviewCreateUrl(groupId), data: completeData);
-      print('------------ response => $response');
       return response.data;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
-
-  //* delete
-  // FutureDynamicMap _deleteOwnBingo(int bingoId) =>
-  //     deleteApi(deleteBingoUrl(bingoId));
 }

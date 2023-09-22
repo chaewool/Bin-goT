@@ -37,14 +37,19 @@ class CustomSwitch extends StatelessWidget {
 
 //* divider
 class CustomDivider extends StatelessWidget {
-  const CustomDivider({super.key});
+  final double vertical, thickness;
+  const CustomDivider({
+    super.key,
+    this.vertical = 10,
+    this.thickness = 1,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.symmetric(vertical: vertical),
       child: Divider(
-        thickness: 1,
+        thickness: thickness,
         color: greyColor.withOpacity(0.5),
       ),
     );

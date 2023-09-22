@@ -184,7 +184,7 @@ class _BingoFormModalState extends State<BingoFormModal> {
                               children: [
                                 CustomInput(
                                   width: 45,
-                                  height: 40,
+                                  height: 30,
                                   onlyNum: true,
                                   explain: '2 이상의 숫자',
                                   setValue: (value) =>
@@ -318,7 +318,7 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
                       const CustomDivider(),
                       Center(
                         child: CustomText(
-                          content: item['content'],
+                          content: item['content'] ?? '',
                         ),
                       ),
                       if (item['check'])
@@ -540,13 +540,9 @@ class ChangeNameModal extends StatelessWidget {
           if (afterWork != null) {
             afterWork!(newVal);
           }
+          setToastString(context, '닉네임이 변경되었습니다.');
           toBack(context);
-          showAlert(
-            context,
-            title: '닉네임 변경 완료',
-            content: '닉네임이 변경되었습니다.',
-            hasCancel: false,
-          )();
+          showToast(context);
         });
       } else {
         showAlert(context, title: '닉네임 오류', content: '닉네임이 변경되지 않았습니다')();
@@ -560,6 +556,7 @@ class ChangeNameModal extends StatelessWidget {
     return InputModal(
       title: '닉네임 설정',
       type: '닉네임',
+      initialValue: username,
       setValue: setName,
       onPressed: changeName,
     );
@@ -677,8 +674,9 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
                               child: Column(
                                 children: [
                                   CircleContainer(
-                                    onTap: () =>
-                                        selectBadge(data[2 * index + di].id),
+                                    onTap: () => data[2 * index + di].hasBadge
+                                        ? selectBadge(data[2 * index + di].id)
+                                        : () {},
                                     boxShadow:
                                         data[2 * index + di].id == badgeId
                                             ? [
@@ -757,6 +755,50 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
   }
 }
 
+//* 정보 표시 모달
+class InfoModal extends StatelessWidget {
+  final String? title;
+  final WidgetList children;
+  const InfoModal({
+    super.key,
+    this.title,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: whiteColor,
+      child: CustomBoxContainer(
+        color: whiteColor,
+        width: getWidth(context) * 0.85,
+        child: ColWithPadding(
+          vertical: 20,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (title != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Center(
+                  child: CustomText(
+                    content: title!,
+                    fontSize: FontSize.largeSize,
+                  ),
+                ),
+              ),
+            ...children,
+            const RowWithPadding(
+              horizontal: 50,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [ExitButton(isIconType: false, buttonText: '닫기')],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 //* 개인 정보 처리 방침
 class PolicyModal extends StatelessWidget {
   final WebViewController controller = WebViewController()
@@ -768,9 +810,7 @@ class PolicyModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(
-      cancelText: '닫기',
-      hasConfirm: false,
+    return InfoModal(
       children: [
         Expanded(
           child: WebViewWidget(controller: controller),
@@ -781,12 +821,39 @@ class PolicyModal extends StatelessWidget {
 }
 
 //* 라이선스
-class LicenseModal extends StatelessWidget {
+class LicenseModal extends StatefulWidget {
   const LicenseModal({super.key});
 
-  static StringList fontList = [];
+  static StringList fontList = [
+    '- RIDIBatang, 리디주식회사, ridicorp.com',
+    '- 교보손글씨 2021 성지영 서체, 교보문고, kyobobook.co.kr',
+    '- Korail, 코레일, info.korail.com',
+    '- KorailRoundGothic, 코레일, info.korail.com',
+    '- Kimm, 한국기계연구원, kimm.re.kr',
+    '- Ttangs, 티에스푸드, tsbudae.com'
+  ];
 
-  static Future<List<Package>> loadLicenses() async {
+  static StringList imageList = [
+    'https://pixabay.com/ko/vectors/꽃들-배경-맛좋은-예쁜-4931217/',
+    'https://pixabay.com/ko/vectors/액자-나뭇잎-수채화-배경-4822807/',
+    'https://pixabay.com/ko/vectors/나뭇잎-무늬-미술-설계-6629581/',
+    'https://pixabay.com/ko/illustrations/배경-무늬-레몬-조직-설계-1193727/',
+    'https://pixabay.com/ko/vectors/주택-바늘-마을-산-풍경-8194751/',
+    'https://pixabay.com/ko/illustrations/딸기-분홍-과일-배경-7021062/',
+    'freepik, rawpixel.com, https://kr.freepik.com/free-vector/cute-celebration-background-cute-grid-pattern-with-colorful-bokeh-vector_19100235.htm#query=background&position=43&from_view=keyword&track=sph',
+    'freepik, rawpixel.com, https://kr.freepik.com/free-vector/weather-seamless-pattern-background-vector-cute-doodle-illustration-for-kids_15847161.htm?query=background',
+    'freepik, rawpixel.com, https://kr.freepik.com/free-vector/blue-pastel-background-grid-pattern-cute-design-vector_20346221.htm#page=3&query=background&position=40&from_view=keyword&track=sph',
+    'https://unsplash.com/ko/사진/rjohWsfOn0Y'
+  ];
+
+  @override
+  State<LicenseModal> createState() => _LicenseModalState();
+}
+
+class _LicenseModalState extends State<LicenseModal> {
+  List<Package> licenses = [];
+
+  FutureBool loadLicenses() async {
     // merging non-dart dependency list using LicenseRegistry.
     final lm = <String, List<String>>{};
     await for (var l in LicenseRegistry.licenses) {
@@ -808,41 +875,95 @@ class LicenseModal extends StatelessWidget {
         isDirectDependency: false,
       ));
     }
-    return licenseList..sort((a, b) => a.name.compareTo(b.name));
+    licenses = licenseList..sort((a, b) => a.name.compareTo(b.name));
+    return Future.value(true);
   }
 
-  static final licenses = loadLicenses();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setLoading(context, true);
+      loadLicenses().then((_) {
+        setLoading(context, false);
+      }).catchError((_) {
+        setLoading(context, false);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(
+    return InfoModal(
       title: '라이선스',
-      cancelText: '닫기',
-      hasConfirm: false,
       children: [
-        const CustomText(
-          content: '글꼴',
-          fontSize: FontSize.largeSize,
-        ),
-        const CustomText(
-          content: '이미지',
-          fontSize: FontSize.largeSize,
-        ),
-        const CustomText(
-          content: '오픈 소스',
-          fontSize: FontSize.largeSize,
-        ),
         Expanded(
-          child: FutureBuilder<List<Package>>(
-              future: licenses,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.separated(
-                      padding: const EdgeInsets.all(0),
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        final package = snapshot.data![index];
-                        return ListTile(
+          child: SingleChildScrollView(
+            child: ColWithPadding(
+              horizontal: 20,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: CustomText(content: '글꼴'),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: CustomText(
+                    content:
+                        '해당 서비스에 포함된 모든 글꼴은 개인 및 기업 사용자를 포함한 모든 사용자에게 무료로 제공되며, 수정 및 재배포가 가능한 글꼴임을 밝힙니다.',
+                    fontSize: FontSize.smallSize,
+                    height: 1.3,
+                  ),
+                ),
+                for (String font in LicenseModal.fontList)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: CustomText(
+                      content: font,
+                      fontSize: FontSize.smallSize,
+                      height: 1.3,
+                    ),
+                  ),
+                const SizedBox(height: 40),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: CustomText(content: '이미지'),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: CustomText(
+                    content:
+                        '''해당 서비스에 포함된 모든 사진은 개인 및 기업 사용자를 포함한 모든 사용자에게 무료로 제공되며, 수정 및 재배포가 가능한 사진임을 밝힙니다.''',
+                    fontSize: FontSize.smallSize,
+                    height: 1.3,
+                  ),
+                ),
+                for (String image in LicenseModal.imageList)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: CustomText(
+                      content: '- $image',
+                      fontSize: FontSize.smallSize,
+                      height: 1.3,
+                    ),
+                  ),
+                const SizedBox(height: 40),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: CustomText(
+                    content: '오픈 소스',
+                    fontSize: FontSize.largeSize,
+                  ),
+                ),
+                if (!watchLoading(context))
+                  for (Package package in licenses)
+                    Column(
+                      children: [
+                        ListTile(
                           title: CustomText(
                             content: '${package.name} ${package.version}',
                           ),
@@ -858,19 +979,18 @@ class LicenseModal extends StatelessWidget {
                                 )
                               : null,
                           trailing: const Icon(rightIcon),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  LicenseDetailPage(package: package),
-                            ),
+                          onTap: toOtherPage(
+                            context,
+                            page: LicenseDetailPage(package: package),
                           ),
-                        );
-                      },
-                      separatorBuilder: (context, index) =>
-                          const CustomDivider());
-                }
-                return const CustomCirCularIndicator();
-              }),
+                        ),
+                        const CustomDivider(vertical: 0)
+                      ],
+                    ),
+                if (watchLoading(context)) const CustomCirCularIndicator()
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -956,73 +1076,13 @@ class CustomModal extends StatelessWidget {
   }
 }
 
-//* 알림 설정
-// class NotificationModal extends StatefulWidget {
-//   const NotificationModal({super.key});
-
-//   @override
-//   State<NotificationModal> createState() => _NotificationModalState();
-// }
-
-// class _NotificationModalState extends State<NotificationModal> {
-//   StringList notificationList = [
-//     '진행률/랭킹 알림',
-//     '남은 기간 알림',
-//     '채팅 알림',
-//     '인증 완료 알림',
-//   ];
-//   List<StringList> notificationOptions = [
-//     ['ON', 'OFF'],
-//     ['세 달', '한 달', '일주일', '3일'],
-//     ['ON', 'OFF'],
-//     ['ON', 'OFF']
-//   ];
-//   IntList idxList = [0, 0, 0, 0];
-//   void changeIdx(int i) {
-//     if (i != 1) {
-//       setState(() {
-//         idxList[i] = 1 - idxList[i];
-//       });
-//     } else if (idxList[i] < 3) {
-//       setState(() {
-//         idxList[i] += 1;
-//       });
-//     } else {
-//       setState(() {
-//         idxList[i] = 0;
-//       });
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return CustomModal(
-//       title: '알림 설정',
-//       children: [
-//         for (int i = 0; i < 4; i += 1)
-//           RowWithPadding(
-//             vertical: 10,
-//             horizontal: 25,
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               CustomText(content: notificationList[i]),
-//               CustomButton(
-//                 content: notificationOptions[i][idxList[i]],
-//                 onPressed: () => changeIdx(i),
-//               )
-//             ],
-//           )
-//       ],
-//     );
-//   }
-// }
-
 //* 입력창이 있는 모달
 class InputModal extends StatelessWidget {
   final String title, type;
   final void Function(String value) setValue;
   final ReturnVoid onPressed;
   final ReturnVoid? onCancelPressed;
+  final String? initialValue;
   const InputModal({
     super.key,
     required this.title,
@@ -1030,6 +1090,7 @@ class InputModal extends StatelessWidget {
     required this.setValue,
     required this.onPressed,
     this.onCancelPressed,
+    this.initialValue,
   });
 
   @override
@@ -1046,6 +1107,7 @@ class InputModal extends StatelessWidget {
           ),
           child: CustomInput(
             explain: '$type을 입력해주세요',
+            initialValue: initialValue,
             maxLength: 20,
             setValue: setValue,
           ),

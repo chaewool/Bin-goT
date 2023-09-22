@@ -13,8 +13,6 @@ class GroupInfiniteScroll extends StatelessWidget {
   final Widget emptyWidget;
   final Widget? hasNotGroupWidget;
   final ScrollController controller;
-  // final MyGroupModel? myGroupModel;
-  // final bool isGroupMode, isChatMode, isSearchMode, hasNotGroup;
   const GroupInfiniteScroll({
     super.key,
     required this.data,
@@ -22,16 +20,13 @@ class GroupInfiniteScroll extends StatelessWidget {
     required this.mode,
     required this.controller,
     this.hasNotGroupWidget,
-    // required this.myGroupModel,
   });
 
   @override
   Widget build(BuildContext context) {
-    print(
-        'widget => $hasNotGroupWidget,\nmode => $mode, lastId => ${getLastId(context, mode)}');
     return CustomBoxContainer(
       hasRoundEdge: mode == 1,
-      color: palePinkColor.withOpacity(0.8),
+      color: palePinkColor.withOpacity(0.5),
       child: !watchLoading(context)
           ? data.isNotEmpty
               ? Padding(
@@ -53,8 +48,6 @@ class GroupInfiniteScroll extends StatelessWidget {
                           itemBuilder: (context, i) {
                             return Column(
                               children: [
-                                // i < getPage(context, mode) * 10
-                                //     ?
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(5, 0, 5, 5),
@@ -64,8 +57,6 @@ class GroupInfiniteScroll extends StatelessWidget {
                                     public: data[i].isPublic,
                                   ),
                                 ),
-                                // if (hasNotGroupWidget == null &&
-                                //     getLastId(context, mode) != -1)
                                 if (getLastId(context, mode) > 0 &&
                                     (data[i].id == getLastId(context, mode)))
                                   const Padding(
@@ -84,7 +75,6 @@ class GroupInfiniteScroll extends StatelessWidget {
                 )
               : emptyWidget
           : const CustomCirCularIndicator(),
-      // CustomText(content: '빙고 정보를 불러오는 중입니다')
     );
   }
 }
@@ -92,21 +82,17 @@ class GroupInfiniteScroll extends StatelessWidget {
 class BingoInfiniteScroll extends StatelessWidget {
   final MyBingoList data;
   final ScrollController controller;
-  // final MyGroupModel? myGroupModel;
-  // final bool isGroupMode, isChatMode, isSearchMode, hasNotGroup;
   const BingoInfiniteScroll({
     super.key,
     required this.data,
     required this.controller,
-    // this.isChatMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
     const mode = 2;
-    print('last id => ${getLastId(context, mode)}');
     return CustomBoxContainer(
-      color: palePinkColor.withOpacity(0.8),
+      color: palePinkColor.withOpacity(0.5),
       child: !watchLoading(context)
           ? data.isNotEmpty
               ? ListView.builder(
@@ -170,43 +156,27 @@ class BingoInfiniteScroll extends StatelessWidget {
 
 class ChatInfiniteScroll extends StatelessWidget {
   final GroupChatList data;
-  // final int cnt, mode;
-  // final Widget emptyWidget;
-  // final bool reverse;
   final ScrollController controller;
-  final Color color;
-  // final MyGroupModel? myGroupModel;
-  // final bool isGroupMode, isChatMode, isSearchMode, hasNotGroup;
   const ChatInfiniteScroll({
     super.key,
     required this.data,
-    // this.cnt = 10,
-    // required this.emptyWidget,
-    // required this.mode,
     required this.controller,
-    // this.reverse = false,
-    this.color = palePinkColor,
-    // this.isChatMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
     const mode = 0;
-    print('last id => ${getLastId(context, mode)}');
     return CustomBoxContainer(
-      color: color,
+      color: whiteColor,
       child: !watchLoading(context)
           ? data.isNotEmpty
               ? ListView.builder(
                   controller: controller,
                   reverse: true,
-                  // hasNotGroupWidget ?? const SizedBox(),
                   itemCount: data.length,
                   itemBuilder: (context, i) {
                     return Column(
                       children: [
-                        // i < getPage(context, mode) * cnt
-                        // ?
                         if (getLastId(context, mode) > 0 &&
                             (data[i].id == getLastId(context, mode)))
                           const Padding(
@@ -224,7 +194,6 @@ class ChatInfiniteScroll extends StatelessWidget {
                                 : null,
                           ),
                         ),
-                        // : const SizedBox(),
                       ],
                     );
                   },
@@ -244,7 +213,6 @@ class ChatInfiniteScroll extends StatelessWidget {
                   ],
                 )
           : const CustomCirCularIndicator(),
-      // CustomText(content: '빙고 정보를 불러오는 중입니다')
     );
   }
 }

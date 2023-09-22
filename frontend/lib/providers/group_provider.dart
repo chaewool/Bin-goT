@@ -21,7 +21,6 @@ class GroupProvider extends ApiProvider {
         order: order,
         public: public,
         lastId: lastId,
-        // page: page,
       );
 
   FutureDynamic _searchGroupList({
@@ -32,14 +31,6 @@ class GroupProvider extends ApiProvider {
     required int lastId,
   }) async {
     try {
-      print(searchGroupUrl);
-      print('${{
-        'period': period,
-        'keyword': keyword,
-        'order': order,
-        'public': public,
-        'idx': lastId,
-      }}');
       final response = await dioWithToken().get(
         searchGroupUrl,
         queryParameters: {
@@ -50,24 +41,21 @@ class GroupProvider extends ApiProvider {
           'idx': lastId,
         },
       );
-      print('data => ${response.data}');
       List groups = response.data['groups'];
       MyGroupList groupList;
       if (groups.isNotEmpty) {
         groupList = response.data['groups']
             .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
             .toList();
-        print('group list => $groupList');
 
-        // GlobalScrollProvider().setTotalPage(response.data['last_page']);
-        GlobalScrollProvider().setLastId(groupList.last.id);
+        GlobalScrollProvider()
+            .setLastId(groupList.length == 10 ? groupList.last.id : -1);
       } else {
         groupList = [];
         GlobalScrollProvider().setLastId(-1);
       }
       return groupList;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -75,21 +63,12 @@ class GroupProvider extends ApiProvider {
   //* check password
   Future<DynamicMap> checkPassword(int groupId, String password) async {
     try {
-      print('groupId: $groupId');
-      print(checkPasswordUrl(groupId));
       final response = await dioWithToken().post(
         checkPasswordUrl(groupId),
         data: {'password': password},
       );
-      print('response: ${response.data}');
-      // print(
-      //     'type => userId : ${response.data['rank'][0]['user_id'].runtimeType}');
-      // print(
-      //     'type => bingoId : ${response.data['rank'][0]['board_id'].runtimeType}');
-      // return response;
       return response.data;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -97,15 +76,11 @@ class GroupProvider extends ApiProvider {
   //* detail
   Future<GroupDetailModel> readGroupDetail(int groupId) async {
     try {
-      print('groupId: $groupId');
-      print(groupDetailUrl(groupId));
       final response = await dioWithToken().get(groupDetailUrl(groupId));
-      print('response: ${response.data}');
       GroupDetailModel groupDetail = GroupDetailModel.fromJson(response.data);
       groupDetail.rank.sort((a, b) => b.achieve.compareTo(a.achieve));
       return groupDetail;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -113,12 +88,9 @@ class GroupProvider extends ApiProvider {
   //* join
   FutureDynamic joinGroup(int groupId, FormData groupData) async {
     try {
-      final response =
-          await dioWithTokenForm().post(joinGroupUrl(groupId), data: groupData);
-      print(response);
+      await dioWithTokenForm().post(joinGroupUrl(groupId), data: groupData);
       return Future.value(true);
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -128,13 +100,9 @@ class GroupProvider extends ApiProvider {
     try {
       final response =
           await dioWithTokenForm().post(createGroupUrl, data: groupData);
-      print(response);
-      // if (response.statusCode == 200) {
+
       return response.data['group_id'];
-      // }
-      // throw Error();
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -146,13 +114,10 @@ class GroupProvider extends ApiProvider {
   //* update
   FutureDynamic editOwnGroup(int groupId, FormData groupData) async {
     try {
-      print(groupData);
-      // final response =
       await dioWithTokenForm().put(editGroupUrl(groupId), data: groupData);
 
       return {};
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -175,7 +140,6 @@ class GroupProvider extends ApiProvider {
       rankList.sort((a, b) => b.achieve.compareTo(a.achieve));
       return rankList;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -186,7 +150,6 @@ class GroupProvider extends ApiProvider {
 
   Future<GroupAdminTabModel> _getAdminTabData(int groupId) async {
     try {
-      print(getMembersUrl(groupId));
       final response = await dioWithToken().get(getMembersUrl(groupId));
 
       final data = response.data;
@@ -210,8 +173,6 @@ class GroupProvider extends ApiProvider {
         'need_auth': false,
       });
     } catch (error) {
-      print('mainTabError: $error');
-      // UserProvider.logout();
       throw Error();
     }
   }
@@ -225,14 +186,11 @@ class GroupProvider extends ApiProvider {
       );
       final data = response.data;
       if (data.isNotEmpty) {
-        print(data);
         GroupChatList chats = data
             .map<GroupChatModel>((json) => GroupChatModel.fromJson(json))
             .toList();
 
         int id = chats.last.id;
-
-        print('provider last id => $id');
         GlobalScrollProvider().setLastId(id != 0 ? id : -1);
         return chats;
       } else {
@@ -240,7 +198,6 @@ class GroupProvider extends ApiProvider {
         return [];
       }
     } catch (error) {
-      print('chat error => $error');
       throw Error();
     }
   }
@@ -249,13 +206,11 @@ class GroupProvider extends ApiProvider {
   FutureDynamicMap createGroupChatChat(
       int groupId, FormData groupChatData) async {
     try {
-      print(groupChatCreateUrl(groupId));
       final response = await dioWithTokenForm()
           .post(groupChatCreateUrl(groupId), data: groupChatData);
 
       return response.data;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
@@ -263,13 +218,10 @@ class GroupProvider extends ApiProvider {
   //* check review
   FutureBool checkReview(int groupId, int reviewId) async {
     try {
-      print(groupReviewCheckUrl(groupId));
-      final response = await dioWithToken()
+      await dioWithToken()
           .put(groupReviewCheckUrl(groupId), data: {'review_id': reviewId});
-      print(response.data);
       return true;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }

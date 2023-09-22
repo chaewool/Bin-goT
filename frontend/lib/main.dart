@@ -11,10 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-// int? groupId;
-// int? isPublic;
-// Widget nextPage = Intro();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
