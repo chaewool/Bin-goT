@@ -1,6 +1,7 @@
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:flutter/material.dart';
 
+//* indicator
 class CustomCirCularIndicator extends StatelessWidget {
   const CustomCirCularIndicator({super.key});
 
@@ -14,6 +15,7 @@ class CustomCirCularIndicator extends StatelessWidget {
   }
 }
 
+//* switch
 class CustomSwitch extends StatelessWidget {
   final bool value;
   final void Function(bool) onChanged;
@@ -33,6 +35,7 @@ class CustomSwitch extends StatelessWidget {
   }
 }
 
+//* divider
 class CustomDivider extends StatelessWidget {
   const CustomDivider({super.key});
 

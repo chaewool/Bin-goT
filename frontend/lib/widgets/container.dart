@@ -71,18 +71,26 @@ class BingoGallery extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: CachedNetworkImage(
-                  imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
-                  placeholder: (context, url) => CustomBoxContainer(
-                    color: whiteColor,
-                    width: (getWidth(context) - 40) / 2,
-                    height: (getWidth(context) - 40) / 2,
+                child: CustomBoxContainer(
+                  width: (getWidth(context) - 60) / 2,
+                  height: (getWidth(context) - 60) / 2,
+                  child: CachedNetworkImage(
+                    imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) => CustomBoxContainer(
+                      color: whiteColor,
+                      width: (getWidth(context) - 60) / 2,
+                      height: (getWidth(context) - 60) / 2,
+                    ),
                   ),
                 ),
               ),
-              CustomText(
-                content: bingo.groupName,
-                cutText: true,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: CustomText(
+                  content: bingo.groupName,
+                  cutText: true,
+                ),
               )
             ],
           ),
@@ -154,7 +162,7 @@ class CircleContainer extends StatelessWidget {
 
   const CircleContainer({
     super.key,
-    this.radius = 25,
+    this.radius = 33,
     required this.child,
     this.center = true,
     this.boxShadow,
@@ -216,7 +224,7 @@ class CustomAnimatedPage extends StatelessWidget {
               ),
               if (appBar != null)
                 CustomBoxContainer(
-                  color: Colors.transparent,
+                  color: transparentColor,
                   width: getWidth(context),
                   height: 100,
                   child: appBar!,
@@ -235,7 +243,7 @@ class CustomAnimatedPage extends StatelessWidget {
               ),
               if (appBar != null)
                 CustomBoxContainer(
-                  color: Colors.transparent,
+                  color: transparentColor,
                   width: getWidth(context),
                   height: 100,
                   child: appBar!,

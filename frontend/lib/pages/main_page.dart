@@ -27,6 +27,7 @@ class _MainState extends State<Main> {
   // double boxHeight = 100;
   // double radius = 40;
   late int selectedIndex;
+  bool enable = true;
   WidgetList nextPages = const [CustomSearchBar(), MainTabBar(), Settings()];
   final List<BottomNavigationBarItem> items = [
     customBottomBarIcon(label: '그룹 검색 바 띄우기', iconData: searchIcon),
@@ -36,9 +37,17 @@ class _MainState extends State<Main> {
   // final List<Color> backgroundColors = [whiteColor, paleRedColor, whiteColor];
 
   void changeIndex(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
+    if (enable) {
+      print(enable);
+      setState(() {
+        selectedIndex = index;
+        print(selectedIndex);
+        enable = false;
+        afterFewSec(() {
+          enable = true;
+        });
+      });
+    }
   }
 
   @override

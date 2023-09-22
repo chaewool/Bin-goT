@@ -35,13 +35,14 @@ class GroupAdminTabModel {
 }
 
 class GroupRankModel {
-  final int userId, bingoId;
+  final int userId, bingoId, rank;
   final double achieve;
   final String nickname;
   GroupRankModel.fromJson(DynamicMap json)
       : userId = json['user_id'],
         achieve = json['achieve'],
         bingoId = json['board_id'],
+        rank = json['rank'],
         nickname = json['nickname'];
 }
 
