@@ -2,19 +2,18 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
 //* 색
-const backgroundColor = Color(0xFFF4FCF9);
+// const backgroundColor = Color(0xFFF4FCF9);
 const blackColor = Colors.black;
 const whiteColor = Colors.white;
 const greyColor = Color(0xFF757070);
 const redColor = Colors.red;
-const greenColor = Colors.green;
 const blueColor = Colors.blue;
-// const paleRedColor = Color(0xFFFcF4F4);
 const paleRedColor = Color(0xFFE59394);
 const palePinkColor = Color(0xFFEFB9B3);
 const darkGreyColor = Color(0xFF403B3E);
-const beigeColor = Color(0xFFF4DBCC);
-const paleOrangeColor = Color(0xFFDDA990);
+// const beigeColor = Color(0xFFF4DBCC);
+// const paleOrangeColor = Color(0xFFDDA990);
+const transparentColor = Colors.transparent;
 
 //* 글씨 크기
 const double sloganSize = 30;
@@ -66,7 +65,6 @@ const StringList matchFont = [
   'Kyobo',
   'Korail',
   'KorailRoundGothic',
-  // 'KorailCondensed',
   'Kimm',
   'Ttangs'
 ];
@@ -77,13 +75,16 @@ var defaultShadow = BoxShadow(
     blurRadius: 4,
     spreadRadius: 0,
     offset: const Offset(1, 2));
+
 const thickerShadow = BoxShadow(
     color: greyColor, blurRadius: 3, spreadRadius: 1, offset: Offset(3, 3));
+
 var shadowWithOpacity = BoxShadow(
     color: Colors.black.withOpacity(0.15),
     spreadRadius: 0,
     blurRadius: 4,
     offset: const Offset(0, 3));
+
 const selectedShadow = BoxShadow(
   color: blueColor,
   blurRadius: 3,

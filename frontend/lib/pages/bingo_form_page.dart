@@ -60,12 +60,19 @@ class _BingoFormState extends State<BingoForm> {
     if (getBingoId(context) == null || getBingoId(context) == 0) {
       initBingoData(context);
     }
-    // ?? getBingoSize(context);
-    // if (getGroupId(context) != null) {
-    //   setOption(context, 'group_id', getGroupId(context));
-    // }
     if (getItems(context).isEmpty) {
       context.read<GlobalBingoProvider>().initItems(size * size);
+    }
+  }
+
+  void afterWork(String message, int nextIndex, ReturnVoid? afterFunc) {
+    showSpinner(context, false);
+    setToastString(context, message);
+    changeGroupIndex(context, nextIndex);
+    showToast(context);
+    setIsCheckTheme(context, false);
+    if (afterFunc != null) {
+      afterFunc();
     }
   }
 
@@ -143,22 +150,10 @@ class _BingoFormState extends State<BingoForm> {
           BingoProvider()
               .editOwnBingo(getGroupId(context)!, bingoId, bingoData)
               .then((value) {
-            // applyRefresh(context, true);
-            showSpinner(context, false);
-            setBingoData(context, data);
-            setToastString(context, '빙고 수정이 완료되었습니다.');
-            changeGroupIndex(context, 0);
-            showToast(context);
-            toBack(context);
-
-            // toOtherPage(
-            //   context,
-            //   page: const GroupDetail(
-            //     admin: false,
-            //     isMember: true,
-            //     chat: false,
-            //   ),
-            // )();
+            afterWork('빙고 수정이 완료되었습니다.', 0, () {
+              setBingoData(context, data);
+              toBack(context);
+            });
           }).catchError((_) {
             print(1);
             showSpinner(context, false);
@@ -210,29 +205,18 @@ class _BingoFormState extends State<BingoForm> {
     });
     showSpinner(context, true);
     GroupProvider().createOwnGroup(formData).then((groupId) {
-      showSpinner(context, false);
-      // initBingoData(context);
-      setToastString(context, '그룹 생성이 완료되었습니다.');
-      changeGroupIndex(context, 1);
-      showToast(context);
-      changePrev(context, true);
-      afterFewSec(
-        1000,
-        jumpToOtherPage(
-          context,
-          page: InputPassword(
-            isPublic: true,
-            groupId: groupId,
+      afterWork('그룹 생성이 완료되었습니다.', 1, () {
+        changePrev(context, true);
+        afterFewSec(
+          jumpToOtherPage(
+            context,
+            page: InputPassword(
+              isPublic: true,
+              groupId: groupId,
+            ),
           ),
-        ),
-      );
-      // toOtherPage(
-      //   context,
-      //   page: GroupCreateCompleted(
-      //     groupId: groupId,
-      //     password: widget.beforeData?['password'] ?? '',
-      //   ),
-      // )();
+        );
+      });
     }).catchError((error) {
       showSpinner(context, false);
       showAlert(
@@ -264,37 +248,23 @@ class _BingoFormState extends State<BingoForm> {
         print('빙고 생성 성공');
         // initBingoData(context);
         if (getNeedAuth(context) == true) {
-          setToastString(context, '가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.');
-          showToast(context);
-          afterFewSec(
-            1000,
-            () => toOtherPageWithoutPath(
-              context,
-              page: const Main(),
-            ),
-          );
+          afterWork('가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.', 1, () {
+            afterFewSec(
+              () => toOtherPageWithoutPath(
+                context,
+                page: const Main(),
+              ),
+            );
+          });
         } else {
-          setToastString(context, '성공적으로 가입되었습니다.');
-          changeGroupIndex(context, 1);
-          showToast(context);
-          afterFewSec(
-            1000,
-            jumpToOtherPage(
-              context,
-              page: InputPassword(isPublic: true, groupId: groupId),
-            ),
-          );
-
-          // showAlert(
-          //   context,
-          //   title: '가입 완료',
-          //   content: '성공적으로 가입되었습니다.',
-          //   hasCancel: false,
-          //   onPressed: jumpToOtherPage(
-          //     context,
-          //     page: InputPassword(isPublic: true, groupId: groupId),
-          //   ),
-          // )();
+          afterWork('성공적으로 가입되었습니다.', 1, () {
+            afterFewSec(
+              jumpToOtherPage(
+                context,
+                page: InputPassword(isPublic: true, groupId: groupId),
+              ),
+            );
+          });
         }
       }).catchError((e) {
         print('catch error : $e');
@@ -448,7 +418,7 @@ class _BingoFormState extends State<BingoForm> {
             ),
           ),
           const CustomBoxContainer(
-            color: Colors.transparent,
+            color: transparentColor,
             height: 70,
             child: AppBarWithBack(transparent: true),
           ),

@@ -15,11 +15,9 @@ import 'package:provider/provider.dart';
 
 class BingoDetail extends StatefulWidget {
   final int? size;
-  // final GlobalKey globalKey;
   const BingoDetail({
     super.key,
     this.size,
-    // required this.globalKey,
   });
 
   @override
@@ -63,18 +61,9 @@ class _BingoDetailState extends State<BingoDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // GlobalKey globalKey = GlobalKey();
-
     print('bingo id => ${getBingoId(context)}');
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (watchRefresh(context)) {
-    //     applyRefresh(context, false);
-    //   }
-    // });
 
-    return
-        // watchBingoId(context) != null ?
-        Stack(
+    return Stack(
       children: [
         !watchLoading(context)
             ? RepaintBoundary(

@@ -30,6 +30,7 @@ class GroupInfiniteScroll extends StatelessWidget {
     print(
         'widget => $hasNotGroupWidget,\nmode => $mode, lastId => ${getLastId(context, mode)}');
     return CustomBoxContainer(
+      hasRoundEdge: mode == 1,
       color: palePinkColor.withOpacity(0.8),
       child: !watchLoading(context)
           ? data.isNotEmpty
@@ -91,14 +92,12 @@ class GroupInfiniteScroll extends StatelessWidget {
 class BingoInfiniteScroll extends StatelessWidget {
   final MyBingoList data;
   final ScrollController controller;
-  final Color color;
   // final MyGroupModel? myGroupModel;
   // final bool isGroupMode, isChatMode, isSearchMode, hasNotGroup;
   const BingoInfiniteScroll({
     super.key,
     required this.data,
     required this.controller,
-    this.color = palePinkColor,
     // this.isChatMode = false,
   });
 
@@ -107,7 +106,7 @@ class BingoInfiniteScroll extends StatelessWidget {
     const mode = 2;
     print('last id => ${getLastId(context, mode)}');
     return CustomBoxContainer(
-      color: color,
+      color: palePinkColor.withOpacity(0.8),
       child: !watchLoading(context)
           ? data.isNotEmpty
               ? ListView.builder(
