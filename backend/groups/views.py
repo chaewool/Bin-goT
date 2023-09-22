@@ -120,14 +120,17 @@ class GroupDetailView(APIView):
         serializer = GroupDetailSerializer(group)
         ranker = RedisRanker(group_id)
         rank = []
+        idx = 1
         for ranker_id in ranker.getTops(3):
             r = get_user_model().objects.get(id=ranker_id)
             rank.append({
                 'user_id': int(ranker_id), 
                 'nickname': Board.objects.get(group=group, user=r).rand_name, 
                 'achieve': ranker.getScore(ranker_id) / (group.size ** 2), 
-                'board_id': Board.objects.get(group=group, user=r).id
+                'board_id': Board.objects.get(group=group, user=r).id,
+                'rank': idx
                 })
+            idx += 1
         
         data = {**serializer.data, 'is_participant': is_participant, 'rand_name': rand_name, 'board_id': board_id, 'rank': rank}
         
