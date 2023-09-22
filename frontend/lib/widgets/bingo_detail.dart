@@ -55,25 +55,25 @@ class _BingoDetailState extends State<BingoDetail> {
         setFinished(context, i, data['items'][i]['finished']);
       }
       setLoading(context, false);
-      print('bingo data => ${getBingoData(context)}');
+    }).catchError((_) {
+      showErrorModal(context);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    print('bingo id => ${getBingoId(context)}');
-
     return Stack(
       children: [
         !watchLoading(context)
             ? RepaintBoundary(
                 key: context.watch<GlobalBingoProvider>().globalKey,
                 child: CustomBoxContainer(
+                  hasRoundEdge: false,
                   image: watchBackground(context) != null
                       ? DecorationImage(
                           image: AssetImage(
                               backgroundList[watchBackground(context)!]),
-                          fit: BoxFit.fill,
+                          fit: BoxFit.fitHeight,
                         )
                       : null,
                   child: Column(
@@ -152,40 +152,11 @@ class _BingoDetailState extends State<BingoDetail> {
                 ),
               )
             : const CustomCirCularIndicator(),
-        // FutureBuilder(
-        //   future:
-        //   builder: (context, snapshot) {
-        //     if (snapshot.hasData) {
-        //       context.read<GlobalBingoProvider>().initKey();
-        //       final DynamicMap data = snapshot.data!;
-        //       // print('--------- bingo data => $data');
-        //       final int achieve = (data['achieve']! * 100).toInt();
-        //       // print(achieve);
-        //       // groupId = data['group'];
-        //       setBingoData(context, data);
-        //       final length = bingoSize * bingoSize;
-        //       // print(length);
-        //       initFinished(context, length);
-        //       for (int i = 0; i < length; i += 1) {
-        //         setFinished(context, i, data['items'][i]['finished']);
-        //       }
-        //       // print(getBingoData(context));
-
-        //       return
-        //     }
-        //     return const Center(child: CustomCirCularIndicator());
-        //   },
-        // ),
         if (watchAfterWork(context))
           CustomToast(
             content: watchToastString(context),
           )
       ],
     );
-    // : const CustomBoxContainer(
-    //     color: blackColor,
-    //     width: 100,
-    //     height: 100,
-    //   );
   }
 }

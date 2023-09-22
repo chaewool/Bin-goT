@@ -13,19 +13,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 class GroupMain extends StatefulWidget {
-  // final int groupId;
-  // final String password;
-  // final void Function({
-  //   int? newMemberState,
-  //   int? newSize,
-  //   bool? newNeedAuth,
-  //   int? newBingoId,
-  // }) applyNew;
   const GroupMain({
     super.key,
-    // required this.groupId,
-    // required this.password,
-    // required this.applyNew,
   });
 
   @override
@@ -33,7 +22,6 @@ class GroupMain extends StatefulWidget {
 }
 
 class _GroupMainState extends State<GroupMain> {
-  // GroupDetailModel? groupDetailModel;
   int? memberState;
   int? groupId;
   @override
@@ -41,18 +29,14 @@ class _GroupMainState extends State<GroupMain> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       groupId = getGroupId(context);
-      // setPublic(context, widget.isPublic);
       setLoading(context, true);
       readGroupDetail();
     });
   }
 
   void readGroupDetail() {
-    print('----------- read group detail');
     GroupProvider().readGroupDetail(groupId!).then((data) {
       setState(() {
-        print('set state 실행');
-        // groupDetailModel = data;
         memberState = data.memberState;
       });
       setGroupData(context, data);
@@ -77,50 +61,48 @@ class _GroupMainState extends State<GroupMain> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomBoxContainer(
-      child: !watchLoading(context)
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                context.watch<GlobalGroupProvider>().hasImage
-                    ? CustomBoxContainer(
-                        width: getWidth(context),
-                        child: CachedNetworkImage(
-                          imageUrl: '${dotenv.env['fileUrl']}/groups/$groupId',
-                          fit: BoxFit.fitWidth,
-                          placeholder: (context, url) =>
-                              const CustomBoxContainer(
-                            width: 200,
-                            height: 200,
-                          ),
+    return !watchLoading(context)
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              context.watch<GlobalGroupProvider>().hasImage
+                  ? CustomBoxContainer(
+                      width: getWidth(context),
+                      height: 200,
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            '${dotenv.env['fileUrl']}/groups/${context.watch<GlobalGroupProvider>().groupId}',
+                        fit: BoxFit.fitWidth,
+                        placeholder: (context, url) => CustomBoxContainer(
+                          width: getWidth(context),
+                          height: 200,
                         ),
-                      )
-                    : const SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      groupHeader(context),
-                      const SizedBox(height: 20),
-                      ShowContentBox(
-                        contentTitle: '설명',
-                        content:
-                            context.watch<GlobalGroupProvider>().description,
                       ),
-                      ShowContentBox(
-                        contentTitle: '규칙',
-                        content: context.watch<GlobalGroupProvider>().rule,
-                      ),
-                      if (memberState != 0) groupRankTop3(context),
-                    ],
-                  ),
+                    )
+                  : const SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    groupHeader(context),
+                    const SizedBox(height: 20),
+                    ShowContentBox(
+                      contentTitle: '설명',
+                      content: context.watch<GlobalGroupProvider>().description,
+                    ),
+                    ShowContentBox(
+                      contentTitle: '규칙',
+                      content: context.watch<GlobalGroupProvider>().rule,
+                    ),
+                    if (memberState != 0) groupRankTop3(context),
+                  ],
                 ),
-              ],
-            )
-          : const Center(child: CustomCirCularIndicator()),
-    );
+              ),
+            ],
+          )
+        : const Center(child: CustomCirCularIndicator());
   }
 
   Padding groupRankTop3(BuildContext context) {
@@ -145,9 +127,7 @@ class _GroupMainState extends State<GroupMain> {
           ),
           if (getRank(context).isNotEmpty)
             for (int i = 0; i < getRank(context).length; i += 1)
-              RankListItem(
-                rankListItem: getRank(context)[i],
-              ),
+              RankListItem(rankListItem: getRank(context)[i]),
           if (getRank(context).isEmpty)
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,

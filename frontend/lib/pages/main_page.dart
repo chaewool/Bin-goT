@@ -43,7 +43,9 @@ class _MainState extends State<Main> {
         selectedIndex = index;
         print(selectedIndex);
         enable = false;
-        afterFewSec(() {
+      });
+      afterFewSec(() {
+        setState(() {
           enable = true;
         });
       });

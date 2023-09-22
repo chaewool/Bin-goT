@@ -20,10 +20,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class GroupChat extends StatefulWidget {
-  // final int bingoId;
   const GroupChat({
     super.key,
-    // required this.bingoId,
   });
 
   @override
@@ -31,14 +29,12 @@ class GroupChat extends StatefulWidget {
 }
 
 class _GroupChatState extends State<GroupChat> {
-  // GroupChatList chats = [];
   int groupId = 0;
   final controller = ScrollController();
   bool showImg = false;
   XFile? selectedImage;
   GlobalKey bottomBarKey = GlobalKey();
   double appBarHeight = 50;
-  double bottomBarHeight = 50;
 
   @override
   void initState() {
@@ -48,7 +44,6 @@ class _GroupChatState extends State<GroupChat> {
         context.read<GlobalGroupProvider>().clearChat();
       }
       groupId = getGroupId(context)!;
-      print('group id => $groupId');
       initLoadingData(context, 0);
       if (getLoading(context)) {
         readChats(false);
@@ -56,60 +51,43 @@ class _GroupChatState extends State<GroupChat> {
       setState(() {
         appBarHeight = MediaQuery.of(context).padding.top;
       });
-      getImgHeight();
     });
 
     controller.addListener(() {
-      // print(
-      // 'pixels => ${controller.position.pixels}, max => ${controller.position.maxScrollExtent}');
       if (controller.position.pixels >=
           controller.position.maxScrollExtent * 0.95) {
-        print('last id => ${getLastId(context, 0)}');
         if (getLastId(context, 0) != -1) {
-          // print('${getPage(context, 0)}, ${getTotal(context, 0)}');
-          // if (getPage(context, 1) < getTotal(context, 1)!) {
           if (!getWorking(context)) {
             setWorking(context, true);
-            Future.delayed(const Duration(seconds: 2), () {
+            afterFewSec(() {
               if (!getAdditional(context)) {
                 setAdditional(context, true);
                 if (getAdditional(context)) {
                   readChats();
                 }
               }
-            });
+            }, 2000);
           }
         }
       }
     });
   }
 
-  void getImgHeight() {
-    if (bottomBarKey.currentContext != null) {
-      final renderBox =
-          bottomBarKey.currentContext!.findRenderObject() as RenderBox;
-      setState(() {
-        bottomBarHeight = renderBox.size.height;
-      });
-    }
-  }
-
   void readChats([bool more = true]) {
     GroupProvider()
         .readGroupChatList(groupId, getLastId(context, 0))
         .then((data) {
-      print('read chat data => $data');
-      print('last id => ${getLastId(context, 0)}');
       if (data.isNotEmpty) {
         context.read<GlobalGroupProvider>().addChats(data);
       }
       setLoading(context, false);
-      print('read loading ${getLoading(context)}');
       if (more) {
         setWorking(context, false);
         setAdditional(context, false);
       }
-    }).catchError((error) {});
+    }).catchError((error) {
+      showErrorModal(context);
+    });
   }
 
   void addChat(StringMap inputData, XFile? image) {
@@ -147,6 +125,8 @@ class _GroupChatState extends State<GroupChat> {
                 },
               ),
             );
+      }).catchError((_) {
+        showErrorModal(context);
       });
     }
   }
@@ -174,7 +154,6 @@ class _GroupChatState extends State<GroupChat> {
 
   @override
   Widget build(BuildContext context) {
-    print('appbar => $appBarHeight, bottom => $bottomBarHeight');
     return Scaffold(
       body: GestureDetector(
         onTap: () {
@@ -185,8 +164,6 @@ class _GroupChatState extends State<GroupChat> {
             Padding(
               padding: EdgeInsets.only(top: appBarHeight, bottom: 80),
               child: ChatInfiniteScroll(
-                // color: greyColor.withOpacity(0.2),
-                color: whiteColor,
                 controller: controller,
                 data: watchChats(context),
               ),

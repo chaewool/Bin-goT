@@ -82,18 +82,18 @@ class _MemberListState extends State<MemberList> {
               ? '해당 회원을 탈퇴시키겠습니까?'
               : '가입 신청 ${grant ? '승인' : '거부'}하시겠습니까?',
           onPressed: () async {
-            print(getGroupId(context));
-            print(
-              {'target_id': widget.id, 'grant': grant},
-            );
-            await GroupProvider().grantThisMember(
+            GroupProvider().grantThisMember(
               getGroupId(context)!,
               {'target_id': widget.id, 'grant': grant},
-            );
-            setState(() {
-              showElement = false;
+            ).then((value) {
+              setState(() {
+                showElement = false;
+              });
+              toBack(context);
+            }).catchError((_) {
+              showAlert(context,
+                  title: '요청 실패', content: '오류가 발생해 요청한 작업이 처리되지 않았습니다.')();
             });
-            toBack(context);
           },
         )();
       } catch (error) {
@@ -105,7 +105,6 @@ class _MemberListState extends State<MemberList> {
     return widget.isMember
         ? CustomList(
             height: 70,
-            // boxShadow: const [defaultShadow],
             border: true,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,22 +177,11 @@ class _MemberListState extends State<MemberList> {
                             content: '거부',
                             onPressed: () => manageMember(false),
                           ),
-                          // IconButtonInRow(
-                          //   icon: confirmIcon,
-                          //   onPressed: () => manageMember(true),
-                          //   color: greenColor,
-                          // ),
-                          // IconButtonInRow(
-                          //   icon: closeIcon,
-                          //   onPressed: () => manageMember(false),
-                          //   color: widget.isMember ? blackColor : redColor,
-                          // ),
                         ],
                       )
                     ],
                   ),
                 ),
-                // Image.network('${dotenv.env['fileUrl']}/bingos/$bingoId'),
               )
             : const SizedBox();
   }

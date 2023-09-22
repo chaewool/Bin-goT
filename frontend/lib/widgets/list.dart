@@ -10,6 +10,7 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/row_col.dart';
+import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,6 @@ class GroupListItem extends StatelessWidget {
     return CustomList(
       height: 70,
       boxShadow: [shadowWithOpacity],
-      // border: true,
       onTap: toOtherPage(
         context,
         page: InputPassword(
@@ -120,17 +120,13 @@ class RankListItem extends StatelessWidget {
             radius: 20,
             border: false,
             child: CustomText(
-              content: '${rankListItem.rank != -1 ? rankListItem : '-'}',
+              content: '${rankListItem.rank != -1 ? rankListItem.rank : '-'}',
               fontSize: FontSize.largeSize,
               color: whiteColor,
               bold: true,
             ),
           ),
           CustomText(content: rankListItem.nickname),
-          // CustomPaint(
-          //   size: Size(20, 20),
-          //   painter: PieChart,
-          // ),
           CustomText(
             content: '${(rankListItem.achieve * 100).toInt()}%',
             fontSize: FontSize.smallSize,
@@ -183,28 +179,6 @@ class CustomList extends StatelessWidget {
     );
   }
 }
-
-//* 빙고 목록
-// class BingoList extends StatelessWidget {
-//   const BingoList({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return CustomList(
-//       height: 70,
-//       boxShadow: const [defaultShadow],
-//       onTap: toOtherPage(context, page: const BingoDetail()),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: const [
-//           CustomText(content: '빙고 이름'),
-//           CustomText(content: '그룹 이름'),
-//           CustomText(content: 'D-day'),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 //* 채팅 목록
 class ChatListItem extends StatefulWidget {
@@ -302,14 +276,15 @@ class _ChatListItemState extends State<ChatListItem> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     if (widget.data.itemId != -1)
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 5),
-                                        child: CustomText(
-                                          content: '목표 : ${widget.data.title}',
-                                          color: whiteColor,
-                                          fontSize: FontSize.largeSize,
-                                        ),
+                                      Column(
+                                        children: [
+                                          CustomText(
+                                            content: widget.data.title,
+                                            color: whiteColor,
+                                            fontSize: FontSize.largeSize,
+                                          ),
+                                          const CustomDivider(),
+                                        ],
                                       ),
                                     if (widget.data.hasImage == true)
                                       Padding(
@@ -322,6 +297,7 @@ class _ChatListItemState extends State<ChatListItem> {
                                             context,
                                             page: InteractiveViewer(
                                               child: ChatImage(
+                                                hasRoundEdge: false,
                                                 widget: widget,
                                                 height: getHeight(context),
                                                 onTap: () => toBack(context),
@@ -329,8 +305,7 @@ class _ChatListItemState extends State<ChatListItem> {
                                               ),
                                             ),
                                           ),
-                                          width: 100,
-                                          height: 100,
+                                          height: 150,
                                         ),
                                       ),
                                     if (widget.data.content != null)
@@ -345,20 +320,6 @@ class _ChatListItemState extends State<ChatListItem> {
                                         ),
                                       ),
                                     if (widget.data.itemId != -1 && !reviewed)
-                                      // reviewed
-                                      //     ? const Center(
-                                      //         child: Padding(
-                                      //           padding: EdgeInsets.symmetric(
-                                      //             vertical: 5,
-                                      //           ),
-                                      //           child: CustomText(
-                                      //             content: '인증된 채팅입니다',
-                                      //             color: greyColor,
-                                      //             fontSize: FontSize.chatSize,
-                                      //           ),
-                                      //         ),
-                                      //       )
-                                      //     :
                                       Center(
                                         child: CustomButton(
                                           onPressed: confirmMessage,
@@ -383,12 +344,16 @@ class _ChatListItemState extends State<ChatListItem> {
                             ],
                           )
                         : Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 10,
+                            ),
                             child: ChatImage(
                               onTap: showModal(
                                 context,
                                 page: InteractiveViewer(
                                   child: ChatImage(
+                                    hasRoundEdge: false,
                                     widget: widget,
                                     height: getHeight(context),
                                     onTap: () => toBack(context),
@@ -397,11 +362,9 @@ class _ChatListItemState extends State<ChatListItem> {
                                 ),
                               ),
                               widget: widget,
-                              height: 100,
-                              width: 100,
+                              height: 150,
                             ),
                           ),
-
                     if (!isMine)
                       CustomText(
                         color: greyColor,
@@ -409,7 +372,6 @@ class _ChatListItemState extends State<ChatListItem> {
                             widget.data.createdAt.split(' ')[1].substring(0, 5),
                         fontSize: FontSize.smallSize,
                       )
-                    // checkAndTimeInfo()
                   ],
                 )
               ],
@@ -421,60 +383,46 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   CustomText checkAndTimeInfo() {
-    return
-        // Column(
-        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   crossAxisAlignment:
-        //       isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        //   children: [
-        // if (widget.data.itemId != -1 && reviewed)
-        //   const Row(
-        //     mainAxisAlignment: MainAxisAlignment.end,
-        //     children: [
-        //       CustomIcon(
-        //         icon: checkIcon,
-        //         color: darkGreyColor,
-        //         size: 25,
-        //       ),
-        //     ],
-        //   ),
-        CustomText(
+    return CustomText(
       color: greyColor,
       content: widget.data.createdAt.split(' ')[1].substring(0, 5),
       fontSize: FontSize.smallSize,
-      //   ),
-      // ],
     );
   }
 }
 
 class ChatImage extends StatelessWidget {
-  const ChatImage({
-    super.key,
-    required this.widget,
-    required this.height,
-    this.width,
-    this.onTap,
-    this.transparent = true,
-  });
-
   final ChatListItem widget;
   final double height;
   final double? width;
   final ReturnVoid? onTap;
   final bool transparent;
+  final bool hasRoundEdge;
+
+  const ChatImage({
+    super.key,
+    required this.widget,
+    required this.height,
+    this.hasRoundEdge = true,
+    this.width,
+    this.onTap,
+    this.transparent = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
-      hasRoundEdge: false,
       color: transparent ? transparentColor : blackColor.withOpacity(0.8),
       width: width,
       height: height,
       onTap: onTap,
-      child: CachedNetworkImage(
-        imageUrl:
-            '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${widget.data.id}',
+      child: ClipRRect(
+        borderRadius: hasRoundEdge ? BorderRadius.circular(8) : null,
+        child: CachedNetworkImage(
+          fit: BoxFit.fitWidth,
+          imageUrl:
+              '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${widget.data.id}',
+        ),
       ),
     );
   }

@@ -15,14 +15,9 @@ import 'package:bin_got/widgets/icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class GroupDetail extends StatefulWidget
-// with WidgetsBindingObserver
-{
-  // final int initialIndex;
-  // final bool isPublic,
+class GroupDetail extends StatefulWidget {
   final bool admin, isMember, chat, needBack;
   final int? bingoId, size, groupId;
-  // final String start;
   const GroupDetail({
     super.key,
     this.groupId,
@@ -60,11 +55,11 @@ class _GroupDetailState extends State<GroupDetail> {
         toOtherPage(context, page: const GroupChat())();
       }
     });
-
-    // WidgetsBinding.instance.addObserver(this);
   }
 
   FutureBool onBackAction() {
+    initBingoData(context);
+    context.read<GlobalGroupProvider>().initData();
     toBack(context);
     if (getPrev(context)) {
       changePrev(context, false);
@@ -72,12 +67,6 @@ class _GroupDetailState extends State<GroupDetail> {
     }
     return Future.value(false);
   }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   // WidgetsBinding.instance.removeObserver(this);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -109,8 +98,6 @@ class _GroupDetailState extends State<GroupDetail> {
           ],
         ),
         bottomNavigationBar: GroupMainBottomBar(
-          // selectedIndex: groupSelectedIndex(context),
-          // changeIndex: changeIndex,
           isMember: widget.isMember,
           size: context.watch<GlobalGroupProvider>().bingoSize ??
               context.watch<GlobalBingoProvider>().bingoSize,

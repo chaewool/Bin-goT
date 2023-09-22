@@ -14,9 +14,7 @@ class UserProvider extends ApiProvider {
   //* login
   FutureDynamicMap _login() async {
     //* 카카오톡 설치 여부 확인
-    print('in');
     if (await isKakaoTalkInstalled()) {
-      print('installed');
       try {
         return _kakaoLogin(true);
       } catch (error) {
@@ -39,13 +37,9 @@ class UserProvider extends ApiProvider {
   FutureDynamicMap _confirmToken() async {
     try {
       if (token == null || token == '') return {'token': null};
-      print('토큰 유효성 검사 => $token');
-
       await dioForVerify().post(verifyTokenUrl, data: {'token': token});
-
       return {};
     } catch (error) {
-      print('오류 발생');
       throw Error();
     }
   }
@@ -73,7 +67,6 @@ class UserProvider extends ApiProvider {
         serviceTokenUrl,
         data: {'kakao_id': user.id},
       );
-      // final data = ServiceTokenModel.fromJson(json);
       return json.data;
     } catch (error) {
       // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
@@ -81,7 +74,6 @@ class UserProvider extends ApiProvider {
       if (error is PlatformException && error.code == 'CANCELED') {
         return {};
       }
-      print('kakao login: $error');
       throw Error();
     }
   }

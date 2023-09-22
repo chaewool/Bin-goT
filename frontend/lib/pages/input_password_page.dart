@@ -42,11 +42,9 @@ class _InputPasswordState extends State<InputPassword> {
       )();
 
   void toNextPage([member = true]) {
-    // setPublic(context, public);
     setGroupId(context, widget.groupId);
     if (widget.bingoId != null) {
       setBingoId(context, widget.bingoId!);
-      // setIsMine(context, true);
     }
     if (widget.size != null) {
       setBingoSize(context, widget.size!);
@@ -58,13 +56,9 @@ class _InputPasswordState extends State<InputPassword> {
         groupId: widget.groupId,
         admin: widget.admin,
         chat: widget.chat,
-        // password: '',
-        // isPublic: widget.isPublic,
-        // initialIndex: widget.initialIndex,
         bingoId: widget.bingoId,
         size: widget.size,
         isMember: member ? !widget.isSearchMode : false,
-        // data: data,
       ),
     )();
   }
@@ -145,15 +139,13 @@ class _InputPasswordState extends State<InputPassword> {
   }
 
   void verifyPassword(String? password) {
-    print('password => $password');
     if (password == null || password == '') {
       showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
     } else {
       GroupProvider().checkPassword(widget.groupId, password).then((_) {
         toNextPage(false);
       }).catchError((error) {
-        print(error);
-        return error;
+        showErrorModal(context);
       });
     }
   }
@@ -164,7 +156,6 @@ class _InputPasswordState extends State<InputPassword> {
       onWillPop: () {
         toBack(context);
         toBack(context);
-        // setPublic(context, null);
         return Future.value(false);
       },
       child: const CustomBoxContainer(),
