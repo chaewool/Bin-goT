@@ -26,16 +26,12 @@ class GroupDetail extends StatefulWidget
   const GroupDetail({
     super.key,
     this.groupId,
-    // required this.isPublic,
-    // this.initialIndex = 1,
     this.bingoId,
     this.size,
     this.needBack = false,
     required this.admin,
     required this.isMember,
     required this.chat,
-
-    // required this.start,
   });
 
   @override
@@ -43,11 +39,6 @@ class GroupDetail extends StatefulWidget
 }
 
 class _GroupDetailState extends State<GroupDetail> {
-  // late int memberState, size;
-  // late bool needAuth;
-  // late int selectedIndex;
-  // bool refresh = false;
-  // GlobalKey globalKey = GlobalKey();
   WidgetList nextPages = [
     const BingoDetail(),
     const GroupMain(),
@@ -58,7 +49,6 @@ class _GroupDetailState extends State<GroupDetail> {
     const GroupAppBar(),
     const GroupAppBar(),
   ];
-  // void changeRefresh() => refresh = true;
 
   @override
   void initState() {

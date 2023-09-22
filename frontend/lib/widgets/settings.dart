@@ -202,7 +202,6 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
             ],
           ),
           eachSection(
-            // flex: 4,
             title: '소통',
             options: [
               eachOption(
@@ -221,7 +220,6 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
             ],
           ),
           eachSection(
-            // flex: 4,
             title: '방침',
             options: [
               eachOption(
@@ -243,7 +241,6 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
             ],
           ),
           eachSection(
-            // flex: 2,
             title: '기타',
             hasDivider: false,
             options: [
@@ -331,7 +328,8 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                           ),
                         ),
                         child: badgeId != 0
-                            ? Center(
+                            ? Padding(
+                                padding: const EdgeInsets.all(10.0),
                                 child: CachedNetworkImage(
                                   imageUrl:
                                       '${dotenv.env['fileUrl']}/badges/$badgeId',
@@ -352,7 +350,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                             flex: 5,
                             child: Center(
                               child: CustomText(
-                                content: username,
+                                content: newName['value']!,
                                 fontSize: FontSize.largeSize,
                                 color: whiteColor,
                                 bold: true,
@@ -362,10 +360,15 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                           Flexible(
                             flex: 2,
                             child: IconButtonInRow(
-                              onPressed: showModal(
-                                context,
-                                page: const ChangeNameModal(),
-                              ),
+                              onPressed: showModal(context,
+                                  page: ChangeNameModal(
+                                    username: username,
+                                    afterWork: (value) {
+                                      setState(() {
+                                        newName['value'] = value;
+                                      });
+                                    },
+                                  )),
                               icon: editIcon,
                               color: whiteColor,
                               size: 20,
@@ -420,7 +423,6 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
   }
 
   ColWithPadding eachSection({
-    // required int flex,
     required String title,
     required WidgetList options,
     bool hasDivider = true,

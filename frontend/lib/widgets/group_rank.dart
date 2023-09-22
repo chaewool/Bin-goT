@@ -9,14 +9,8 @@ import 'package:bin_got/widgets/list.dart';
 import 'package:flutter/material.dart';
 
 class GroupRank extends StatefulWidget {
-  // final int groupId;
-  // final bool isMember;
-  // final String password;
   const GroupRank({
     super.key,
-    // required this.groupId,
-    // required this.isMember,
-    // required this.password,
   });
 
   @override
@@ -52,7 +46,6 @@ class _GroupRankState extends State<GroupRank> {
             ? ListView.builder(
                 itemCount: rankList.length,
                 itemBuilder: (context, index) => RankListItem(
-                  rank: index + 1,
                   rankListItem: rankList[index],
                 ),
               )

@@ -99,17 +99,10 @@ class GroupProvider extends ApiProvider {
     try {
       print('groupId: $groupId');
       print(groupDetailUrl(groupId));
-      final response = await dioWithToken().get(
-        groupDetailUrl(groupId),
-        // queryParameters: {'password': password},
-      );
+      final response = await dioWithToken().get(groupDetailUrl(groupId));
       print('response: ${response.data}');
-      // print(
-      //     'type => userId : ${response.data['rank'][0]['user_id'].runtimeType}');
-      // print(
-      //     'type => bingoId : ${response.data['rank'][0]['board_id'].runtimeType}');
       GroupDetailModel groupDetail = GroupDetailModel.fromJson(response.data);
-      // return response;
+      groupDetail.rank.sort((a, b) => b.achieve.compareTo(a.achieve));
       return groupDetail;
     } catch (error) {
       print(error);
@@ -179,8 +172,10 @@ class GroupProvider extends ApiProvider {
       RankList rankList = response.data.map<GroupRankModel>((json) {
         return GroupRankModel.fromJson(json);
       }).toList();
+      rankList.sort((a, b) => b.achieve.compareTo(a.achieve));
       return rankList;
     } catch (error) {
+      print(error);
       throw Error();
     }
   }

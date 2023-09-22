@@ -77,15 +77,10 @@ class _GroupMainState extends State<GroupMain> {
 
   @override
   Widget build(BuildContext context) {
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (watchRefresh(context)) {
-    //     applyRefresh(context, false);
-    //     readGroupDetail();
-    //   }
-    // });
     return CustomBoxContainer(
       child: !watchLoading(context)
           ? Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 context.watch<GlobalGroupProvider>().hasImage
                     ? CustomBoxContainer(
@@ -105,6 +100,7 @@ class _GroupMainState extends State<GroupMain> {
                   padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       groupHeader(context),
                       const SizedBox(height: 20),
@@ -150,7 +146,6 @@ class _GroupMainState extends State<GroupMain> {
           if (getRank(context).isNotEmpty)
             for (int i = 0; i < getRank(context).length; i += 1)
               RankListItem(
-                rank: i + 1,
                 rankListItem: getRank(context)[i],
               ),
           if (getRank(context).isEmpty)

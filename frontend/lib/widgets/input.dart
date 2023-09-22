@@ -14,9 +14,7 @@ class CustomInput extends StatelessWidget {
   final Color filledColor;
   final FontSize fontSize;
   final int? maxLength;
-  // final String title;
   final String? initialValue;
-  // final String? Function() returnValue;
   final void Function(String) setValue;
   final void Function(String)? onSubmitted;
   final Widget? suffixIcon;
@@ -34,7 +32,6 @@ class CustomInput extends StatelessWidget {
     this.filledColor = whiteColor,
     this.fontSize = FontSize.smallSize,
     this.maxLength,
-    // this.title = '',
     this.horizontal = 0,
     this.vertical = 0,
     this.initialValue,
@@ -43,7 +40,6 @@ class CustomInput extends StatelessWidget {
     this.suffixIcon,
     this.explainTitle,
     this.autofocus = false,
-    // required this.returnValue,
   });
 
   @override
@@ -85,7 +81,6 @@ class CustomInput extends StatelessWidget {
               onChanged: setValue,
               onSubmitted: onSubmitted,
               textInputAction: needSearch ? TextInputAction.search : null,
-              // focusNode: inputFocus,
             ),
           ),
         ],
@@ -98,14 +93,12 @@ class CustomInput extends StatelessWidget {
 class InputDate extends StatefulWidget {
   final String explain;
   final String? start, end;
-  // final Function(BuildContext, String) onSubmit;
   final Function(List<DateTime?>) applyDay;
   const InputDate({
     super.key,
     required this.explain,
     required this.start,
     required this.end,
-    // required this.onSubmit,
     required this.applyDay,
   });
 
@@ -127,34 +120,14 @@ class _InputDateState extends State<InputDate> {
     ];
   }
 
-  // String _getValueText(
-  //   CalendarDatePicker2Type datePickerType,
-  //   List<DateTime?> values,
-  // ) {
-  //   values =
-  //       values.map((e) => e != null ? DateUtils.dateOnly(e) : null).toList();
-
-  //   if (values.isNotEmpty) {
-  //     final startDate = values[0].toString().replaceAll('00:00:00.000', '');
-  //     final endDate = values.length > 1
-  //         ? values[1].toString().replaceAll('00:00:00.000', '')
-  //         : 'null';
-  //     return '$startDate to $endDate';
-  //   } else {
-  //     return 'null';
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     const dayTextStyle =
         TextStyle(color: darkGreyColor, fontWeight: FontWeight.w500);
+
     const weekendTextStyle =
         TextStyle(color: paleRedColor, fontWeight: FontWeight.w500);
-    const anniversaryTextStyle = TextStyle(
-      color: redColor,
-      fontWeight: FontWeight.w700,
-    );
+
     final config = CalendarDatePicker2WithActionButtonsConfig(
       firstDate: DateTime.now(),
       lastDate: DateTime(DateTime.now().year + 1, 12, 31),
@@ -182,23 +155,9 @@ class _InputDateState extends State<InputDate> {
             date.weekday == DateTime.sunday) {
           textStyle = weekendTextStyle;
         }
-        // if (DateUtils.isSameDay(date, DateTime(2021, 1, 25))) {
-        //   textStyle = anniversaryTextStyle;
-        // }
+
         return textStyle;
       },
-      // dayBuilder: ({
-      //   required date,
-      //   textStyle,
-      //   decoration,
-      //   isSelected,
-      //   isDisabled,
-      //   isToday,
-      // }) {
-      //   Widget? dayWidget;
-
-      //   return dayWidget;
-      // },
       yearBuilder: ({
         required year,
         decoration,
@@ -255,10 +214,7 @@ class _InputDateState extends State<InputDate> {
         );
         if (values != null) {
           widget.applyDay(values);
-          // print(_getValueText(
-          //   config.calendarType,
-          //   values,
-          // ));
+
           setState(() {
             calendarPickerValue = values;
           });

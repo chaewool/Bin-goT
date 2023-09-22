@@ -93,14 +93,10 @@ class GroupListItem extends StatelessWidget {
 
 //* 순위 목록
 class RankListItem extends StatelessWidget {
-  final int rank;
   final GroupRankModel rankListItem;
-  // final bool isMember;
   const RankListItem({
     super.key,
-    required this.rank,
     required this.rankListItem,
-    // required this.isMember,
   });
 
   @override
@@ -124,7 +120,7 @@ class RankListItem extends StatelessWidget {
             radius: 20,
             border: false,
             child: CustomText(
-              content: '$rank',
+              content: '${rankListItem.rank != -1 ? rankListItem : '-'}',
               fontSize: FontSize.largeSize,
               color: whiteColor,
               bold: true,
@@ -472,7 +468,7 @@ class ChatImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomBoxContainer(
       hasRoundEdge: false,
-      color: transparent ? Colors.transparent : blackColor.withOpacity(0.8),
+      color: transparent ? transparentColor : blackColor.withOpacity(0.8),
       width: width,
       height: height,
       onTap: onTap,
