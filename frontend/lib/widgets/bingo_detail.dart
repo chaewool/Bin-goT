@@ -84,7 +84,8 @@ class _BingoDetailState extends State<BingoDetail> {
                       Flexible(
                         flex: 2,
                         child: CustomText(
-                          content: watchTitle(context) ?? '',
+                          content:
+                              context.watch<GlobalBingoProvider>().title ?? '',
                           fontSize: FontSize.titleSize,
                         ),
                       ),
