@@ -463,8 +463,13 @@ void setBingoSize(BuildContext context, int size) =>
 void setIsCheckTheme(BuildContext context, bool checkState) =>
     context.read<GlobalBingoProvider>().setIsCheckTheme(checkState);
 
-void initBingoData(BuildContext context) =>
-    context.read<GlobalBingoProvider>().initData();
+void initBingoFormData(BuildContext context, [bool editMode = true]) =>
+    context.read<GlobalBingoProvider>().initFormData(editMode);
+
+void applyBingoData(BuildContext context) =>
+    context.read<GlobalBingoProvider>().applyData();
+// void initBingoData(BuildContext context) =>
+//     context.read<GlobalBingoProvider>().initData();
 
 //* var
 int? getBingoId(BuildContext context) =>
@@ -475,51 +480,72 @@ int? watchBingoId(BuildContext context) =>
 // int watchAchieve(BuildContext context) =>
 //     context.watch<GlobalBingoProvider>().achieve;
 
-DynamicMap getBingoData(BuildContext context) =>
-    context.read<GlobalBingoProvider>().data;
+DynamicMap getBingoData(BuildContext context, [bool isDetail = true]) =>
+    isDetail
+        ? context.read<GlobalBingoProvider>().data
+        : context.read<GlobalBingoProvider>().formData;
+
+// DynamicMap getBingoFormData(BuildContext context) =>
+//     context.read<GlobalBingoProvider>().formData;
 
 DynamicMap watchBingoData(BuildContext context) =>
     context.watch<GlobalBingoProvider>().data;
 
-String? watchTitle(BuildContext context) =>
-    context.watch<GlobalBingoProvider>().title;
+String? watchTitle(BuildContext context, [bool isDetail = false]) => isDetail
+    ? context.watch<GlobalBingoProvider>().title
+    : context.watch<GlobalBingoProvider>().formTitle;
 
-int? watchBackground(BuildContext context) =>
-    context.watch<GlobalBingoProvider>().background;
+int? watchBackground(BuildContext context, [bool isDetail = true]) => isDetail
+    ? context.watch<GlobalBingoProvider>().background
+    : context.watch<GlobalBingoProvider>().formBackground;
 
-bool watchHasBlackBox(BuildContext context) =>
-    context.watch<GlobalBingoProvider>().hasBlackBox;
+bool watchHasBlackBox(BuildContext context, [bool isDetail = true]) => isDetail
+    ? context.watch<GlobalBingoProvider>().hasBlackBox
+    : context.watch<GlobalBingoProvider>().formHasBlackBox;
 
-bool watchHasRoundEdge(BuildContext context) =>
-    context.watch<GlobalBingoProvider>().hasRoundEdge;
+bool watchHasRoundEdge(BuildContext context, [bool isDetail = true]) => isDetail
+    ? context.watch<GlobalBingoProvider>().hasRoundEdge
+    : context.watch<GlobalBingoProvider>().formHasRoundEdge;
 
-bool watchHasBorder(BuildContext context) =>
-    context.watch<GlobalBingoProvider>().hasBorder;
+bool watchHasBorder(BuildContext context, [bool isDetail = true]) => isDetail
+    ? context.watch<GlobalBingoProvider>().hasBorder
+    : context.watch<GlobalBingoProvider>().formHasBorder;
 
 BoolList? watchFinished(BuildContext context) =>
     context.watch<GlobalBingoProvider>().finished;
 
-int? watchGap(BuildContext context) => context.watch<GlobalBingoProvider>().gap;
+int? watchGap(BuildContext context, [bool isDetail = true]) => isDetail
+    ? context.watch<GlobalBingoProvider>().gap
+    : context.watch<GlobalBingoProvider>().formGap;
 
-int? watchFont(BuildContext context) =>
-    context.watch<GlobalBingoProvider>().font;
+int? watchFont(BuildContext context, [bool isDetail = true]) => isDetail
+    ? context.watch<GlobalBingoProvider>().font
+    : context.watch<GlobalBingoProvider>().formFont;
 
-int? watchCheckIcon(BuildContext context) =>
-    context.watch<GlobalBingoProvider>().checkIcon;
+int? watchCheckIcon(BuildContext context, [bool isDetail = true]) => isDetail
+    ? context.watch<GlobalBingoProvider>().checkIcon
+    : context.watch<GlobalBingoProvider>().formCheckIcon;
 
 List getItems(BuildContext context) =>
     context.read<GlobalBingoProvider>().items;
 
-String? watchItemTitle(BuildContext context, int index) =>
-    context.watch<GlobalBingoProvider>().item(index)['title'];
+String? watchItemTitle(BuildContext context, int index,
+        [bool isDetail = true]) =>
+    isDetail
+        ? context.watch<GlobalBingoProvider>().item(index)['title']
+        : context.watch<GlobalBingoProvider>().formItem(index)['title'];
 
-DynamicMap readItem(BuildContext context, int index) =>
-    context.read<GlobalBingoProvider>().item(index);
+DynamicMap readItem(BuildContext context, int index, [bool isDetail = true]) =>
+    isDetail
+        ? context.read<GlobalBingoProvider>().item(index)
+        : context.read<GlobalBingoProvider>().formItem(index);
 
-String getStringFont(BuildContext context) => matchFont[watchFont(context)!];
+String getStringFont(BuildContext context, [bool isDetail = true]) =>
+    matchFont[watchFont(context, isDetail)!];
 
-IconData getCheckIconData(BuildContext context) =>
-    iconList[watchCheckIcon(context)!];
+IconData getCheckIconData(BuildContext context, [bool isDetail = true]) =>
+    iconList[watchCheckIcon(context, isDetail)!];
 
 // bool? getIsMine(BuildContext context) =>
 //     context.read<GlobalBingoProvider>().isMine;
+
