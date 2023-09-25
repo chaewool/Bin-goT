@@ -273,7 +273,8 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     void shareBingo() async {
       File file = await context.read<GlobalBingoProvider>().bingoToXFile();
 
-      Share.shareXFiles([XFile(file.path)], text: "테스트")
+      Share.shareXFiles([XFile(file.path)],
+              text: context.read<GlobalBingoProvider>().title)
           .then((value) => file.delete());
     }
 

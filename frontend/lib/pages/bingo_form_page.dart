@@ -58,7 +58,9 @@ class _BingoFormState extends State<BingoForm> {
     print('before data => ${widget.beforeData}');
     size = widget.bingoSize;
     if (getBingoId(context) == null || getBingoId(context) == 0) {
-      initBingoData(context);
+      initBingoFormData(context, false);
+    } else {
+      initBingoFormData(context, true);
     }
     if (getItems(context).isEmpty) {
       context.read<GlobalBingoProvider>().initItems(size * size);
@@ -71,6 +73,7 @@ class _BingoFormState extends State<BingoForm> {
     changeGroupIndex(context, nextIndex);
     showToast(context);
     setIsCheckTheme(context, false);
+    applyBingoData(context);
     if (afterFunc != null) {
       afterFunc();
     }
@@ -303,10 +306,10 @@ class _BingoFormState extends State<BingoForm> {
             width: getWidth(context),
             height: getHeight(context),
             color: whiteColor,
-            image: watchBackground(context) != null
+            image: watchBackground(context, false) != null
                 ? DecorationImage(
-                    image:
-                        AssetImage(backgroundList[watchBackground(context)!]),
+                    image: AssetImage(
+                        backgroundList[watchBackground(context, false)!]),
                     fit: BoxFit.fitHeight,
                   )
                 : null,

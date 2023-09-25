@@ -58,7 +58,7 @@ class _GroupDetailState extends State<GroupDetail> {
   }
 
   FutureBool onBackAction() {
-    initBingoData(context);
+    context.read<GlobalBingoProvider>().initData();
     context.read<GlobalGroupProvider>().initData();
     toBack(context);
     if (getPrev(context)) {

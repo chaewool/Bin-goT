@@ -44,7 +44,9 @@ class _BingoFormModalState extends State<BingoFormModal> {
   void initState() {
     super.initState();
     newIdx = widget.index;
-    item = {...readItem(context, newIdx)};
+    item = {...readItem(context, newIdx, false)};
+    print('item => $item');
+    print(readItem(context, newIdx));
   }
 
   void initialize() {
@@ -66,13 +68,13 @@ class _BingoFormModalState extends State<BingoFormModal> {
         if (newIdx < widget.cnt - 1) {
           setState(() {
             newIdx += 1;
-            item = {...readItem(context, newIdx)};
+            item = {...readItem(context, newIdx, false)};
           });
         }
       } else if (newIdx > 0) {
         setState(() {
           newIdx -= 1;
-          item = {...readItem(context, newIdx)};
+          item = {...readItem(context, newIdx, false)};
         });
       }
     }
@@ -85,6 +87,7 @@ class _BingoFormModalState extends State<BingoFormModal> {
 
     void applyItem() {
       setItem(context, newIdx, item);
+      print('item => $item');
       print(readItem(context, newIdx));
       toBack(context);
     }
@@ -260,7 +263,7 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
   @override
   Widget build(BuildContext context) {
     void moveBingo(bool toRight) {
-      setItem(context, newIdx, item);
+      // setItem(context, newIdx, item);
       if (toRight) {
         if (newIdx < widget.cnt - 1) {
           setState(() {
