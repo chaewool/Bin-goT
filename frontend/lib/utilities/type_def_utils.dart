@@ -4,6 +4,8 @@ import 'package:bin_got/models/user_info_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+//? 타입 정의
+
 //* 기본
 typedef ReturnVoid = void Function();
 typedef StringList = List<String>;

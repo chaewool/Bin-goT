@@ -1,6 +1,7 @@
 import 'package:bin_got/pages/help_page.dart';
 import 'package:bin_got/pages/notification_page.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
+import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -21,7 +22,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-//* 마이페이지 메인
+//? 설정
 class Settings extends StatefulWidget {
   const Settings({super.key});
 
@@ -53,7 +54,9 @@ class _SettingsState extends State<Settings> {
         cntList[2] = data.ownBadges;
       });
     }).catchError((error) {
-      showErrorModal(context);
+      cntList[0] = 0;
+      cntList[1] = 0;
+      cntList[2] = 0;
     });
   }
 
@@ -179,6 +182,24 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
     });
   }
 
+  void exitService() {
+    UserProvider().exitService().then((_) {
+      deleteVar(context);
+      showAlert(
+        context,
+        title: '탈퇴 완료',
+        content: '성공적으로 탈퇴되었습니다',
+        onPressed: () => toOtherPageWithoutPath(context),
+      )();
+    }).catchError((_) {
+      showAlert(
+        context,
+        title: '탈퇴 실패',
+        content: '오류가 발생해 탈퇴에 실패했습니다',
+      )();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -247,13 +268,24 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                 hasDivider: false,
                 options: [
                   eachOption(
-                    icon: exitIcon,
+                    icon: logoutIcon,
                     title: '로그아웃',
                     onTap: showAlert(
                       context,
                       title: '로그아웃 확인',
                       content: '로그아웃하시겠습니까?',
                       onPressed: logout,
+                    ),
+                    moveToOther: false,
+                  ),
+                  eachOption(
+                    icon: exitIcon,
+                    title: '회원 탈퇴',
+                    onTap: showAlert(
+                      context,
+                      title: '탈퇴 확인',
+                      content: '서비스에서 탈퇴하시겠습니까?',
+                      onPressed: exitService,
                     ),
                     moveToOther: false,
                   ),

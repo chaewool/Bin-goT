@@ -1,6 +1,8 @@
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
+//? row, col 응용
+
 //* padding + col
 class ColWithPadding extends StatelessWidget {
   final double vertical, horizontal;

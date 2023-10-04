@@ -8,7 +8,7 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-//* 빙고판
+//? 빙고판
 class BingoBoard extends StatefulWidget {
   final bool isDetail;
   final int? bingoSize;
@@ -33,7 +33,7 @@ class _BingoBoardState extends State<BingoBoard> {
   }
 
   double applyGap() {
-    switch (watchGap(context)) {
+    switch (watchGap(context, widget.isDetail)) {
       case 0:
         return 0;
       case 1:
@@ -100,7 +100,7 @@ class EachBingo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color convertedColor() =>
-        watchHasBlackBox(context) ? whiteColor : blackColor;
+        watchHasBlackBox(context, isDetail) ? whiteColor : blackColor;
     return Draggable<int>(
       feedback: isDetail
           ? const SizedBox()
@@ -114,7 +114,8 @@ class EachBingo extends StatelessWidget {
                 hasRoundEdge: false,
                 child: Center(
                   child: CustomText(
-                    content: watchItemTitle(context, index) ?? '빙고칸 제목',
+                    content:
+                        watchItemTitle(context, index, isDetail) ?? '빙고칸 제목',
                     font: getStringFont(context),
                   ),
                 ),
@@ -141,16 +142,17 @@ class EachBingo extends StatelessWidget {
             : BingoFormModal(index: index, cnt: size * size),
       ),
       child: CustomBoxContainer(
-        color: watchHasBlackBox(context) ? blackColor : whiteColor,
-        hasRoundEdge: watchHasRoundEdge(context),
-        borderColor: watchHasBorder(context) == true ? convertedColor() : null,
+        color: watchHasBlackBox(context, isDetail) ? blackColor : whiteColor,
+        hasRoundEdge: watchHasRoundEdge(context, isDetail),
+        borderColor:
+            watchHasBorder(context, isDetail) == true ? convertedColor() : null,
         child: Stack(
           children: [
             Center(
               child: CustomText(
                 color: convertedColor(),
-                content: watchItemTitle(context, index) ?? '빙고칸 제목',
-                font: getStringFont(context),
+                content: watchItemTitle(context, index, isDetail) ?? '빙고칸 제목',
+                font: getStringFont(context, isDetail),
                 center: true,
                 maxLines: 2,
                 cutText: true,
@@ -161,7 +163,7 @@ class EachBingo extends StatelessWidget {
                 (isDetail && watchFinished(context)![index]))
               Center(
                 child: CustomIcon(
-                  icon: getCheckIconData(context),
+                  icon: getCheckIconData(context, isDetail),
                   size: 80,
                   color: convertedColor(),
                 ),

@@ -1,69 +1,120 @@
-//* 도움말 페이지
-import 'package:bin_got/providers/user_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
+import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/accordian.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/modal.dart';
-import 'package:bin_got/widgets/row_col.dart';
-import 'package:bin_got/widgets/text.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:flutter/material.dart';
 
-class Help extends StatelessWidget {
+//? 도움말
+class Help extends StatefulWidget {
   const Help({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    StringList questionList = [
-      '그룹은 어떻게 만드나요?',
-      '빙고는 어떻게 생성하나요?',
-      '그룹 초대는 어떻게 하나요?',
-    ];
-    StringList answerList = ['이렇게 만듭니다', '저렇게 생성합니다', '그렇게 합니다'];
+  State<Help> createState() => _HelpState();
+}
 
-    void exitService() {
-      UserProvider().exitService().then((_) {
-        deleteVar(context);
-        showAlert(
-          context,
-          title: '탈퇴 완료',
-          content: '성공적으로 탈퇴되었습니다',
-          onPressed: () => toOtherPageWithoutPath(context),
-        )();
-      }).catchError((_) {
-        showAlert(
-          context,
-          title: '탈퇴 실패',
-          content: '오류가 발생해 탈퇴에 실패했습니다',
-        )();
+class _HelpState extends State<Help> {
+  //* 변수
+  StringList imagePathList = List.from(backgroundList);
+  int index = 0;
+  late int length;
+
+  @override
+  void initState() {
+    super.initState();
+    //* 변수 초기화
+    length = imagePathList.length;
+  }
+
+  //* 이미지 변경
+  void moveTo([toRight = false]) {
+    if (toRight) {
+      if (index < length - 1) {
+        setState(() {
+          index += 1;
+        });
+      }
+    } else if (index > 0) {
+      setState(() {
+        index -= 1;
       });
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AppBarWithBack(title: '도움말'),
-      body: SingleChildScrollView(
-          child: ColWithPadding(
-        horizontal: 20,
-        vertical: 10,
+      body: Stack(
         children: [
-          for (int i = 0; i < 3; i += 1)
-            EachAccordion(
-              question: CustomText(content: 'Q. ${questionList[i]}'),
-              answer: CustomText(content: 'A. ${answerList[i]}'),
+          // CustomIconButton(
+          //   onPressed: () => moveTo(false),
+          //   icon: leftIcon,
+          //   size: 40,
+          //   color: index > 0 ? palePinkColor : greyColor,
+          // ),
+          //* 도움말 이미지
+          CustomBoxContainer(
+            height: getHeight(context),
+            child: Image.asset(
+              imagePathList[index],
+              fit: BoxFit.fitHeight,
             ),
-          CustomButton(
-            onPressed: showModal(
-              context,
-              page: CustomModal(
-                onPressed: exitService,
-                children: const [CustomText(content: '정말 탈퇴하시겠어요?')],
-              ),
+          ),
+          //* 이미지 이동 버튼
+          CustomBoxContainer(
+            color: transparentColor,
+            height: getHeight(context),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CustomIconButton(
+                  onPressed: () => moveTo(false),
+                  icon: leftIcon,
+                  color: index > 0 ? greyColor : greyColor.withOpacity(0.3),
+                  size: 70,
+                ),
+                CustomIconButton(
+                  onPressed: () => moveTo(true),
+                  icon: rightIcon,
+                  color: index < length - 1
+                      ? greyColor
+                      : greyColor.withOpacity(0.3),
+                  size: 70,
+                ),
+                // FloatingActionButton(
+                //   heroTag: 'leftIcon',
+                //   backgroundColor: transparentColor,
+                //   onPressed: () => moveTo(false),
+                //   child: CustomIcon(
+                //     icon: leftIcon,
+                //     color: index > 0 ? palePinkColor : greyColor,
+                //   ),
+                // ),
+                // FloatingActionButton(
+                //   heroTag: 'rightIcon',
+                //   backgroundColor: transparentColor,
+                //   onPressed: () => moveTo(true),
+                //   child: CustomIcon(
+                //     icon: rightIcon,
+                //     color: index < length - 1 ? palePinkColor : greyColor,
+                //   ),
+                // ),
+              ],
             ),
-            content: '회원 탈퇴',
-          )
+          ),
+
+          // CustomIconButton(
+          //   onPressed: () => moveTo(true),
+          //   icon: rightIcon,
+          //   size: 40,
+          //   color: index < length - 1 ? palePinkColor : greyColor,
+          // ),
         ],
-      )),
+      ),
     );
   }
 }

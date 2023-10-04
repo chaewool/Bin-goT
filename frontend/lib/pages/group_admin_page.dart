@@ -5,6 +5,7 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:flutter/material.dart';
 
+//? 그룹 관리 (회원 강퇴, 가입 승인/거부)
 class GroupAdmin extends StatelessWidget {
   final int groupId;
   const GroupAdmin({

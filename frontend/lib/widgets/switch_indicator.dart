@@ -1,6 +1,8 @@
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:flutter/material.dart';
 
+//* 스피너, 스위치, 선
+
 //* indicator
 class CustomCirCularIndicator extends StatelessWidget {
   const CustomCirCularIndicator({super.key});

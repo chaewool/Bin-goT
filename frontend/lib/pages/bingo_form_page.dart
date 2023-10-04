@@ -27,10 +27,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:http_parser/http_parser.dart';
 
+//? 빙고 생성/수정
 class BingoForm extends StatefulWidget {
   final int bingoSize;
   final bool needAuth, beforeJoin;
-  // final bool beforeJoin;
   final DynamicMap? beforeData;
   final XFile? groupImg;
   const BingoForm({
@@ -50,36 +50,44 @@ class _BingoFormState extends State<BingoForm> {
   GlobalKey globalKey = GlobalKey();
   Uint8List? thumbnail;
   bool changed = true;
-  late final size;
+  late final int size;
 
   @override
   void initState() {
     super.initState();
-    print('before data => ${widget.beforeData}');
     size = widget.bingoSize;
+    //* 생성, 수정 분기 처리
     if (getBingoId(context) == null || getBingoId(context) == 0) {
-      initBingoData(context);
+      initBingoFormData(context, false);
+    } else {
+      initBingoFormData(context, true);
     }
+    //* items
     if (getItems(context).isEmpty) {
       context.read<GlobalBingoProvider>().initItems(size * size);
     }
   }
 
+  //* 완료 후 작업
   void afterWork(String message, int nextIndex, ReturnVoid? afterFunc) {
     showSpinner(context, false);
     setToastString(context, message);
     changeGroupIndex(context, nextIndex);
     showToast(context);
     setIsCheckTheme(context, false);
+    applyBingoData(context);
     if (afterFunc != null) {
       afterFunc();
     }
   }
 
+  //* 빙고 생성/수정
   void createOrEditBingo() async {
     try {
+      //* 변경된 부분이 있는 경우
       if (changed) {
         final data = context.read<GlobalBingoProvider>().data;
+        //* 제목
         if (data['title'] == null) {
           return showAlert(
             context,
@@ -88,11 +96,11 @@ class _BingoFormState extends State<BingoForm> {
             hasCancel: false,
           )();
         }
+        //* 빙고 칸 내부 & 목표 달성 횟수 확인
         int cnt = 0;
         bool correctGoal = true;
         for (var element in (data['items'] as List)) {
           final title = element['title'].trim();
-          // print('check => ${element['check']}');
           if (title != null && title != '') {
             cnt += 1;
           }
@@ -106,12 +114,11 @@ class _BingoFormState extends State<BingoForm> {
                 correctGoal = false;
               }
             } catch (error) {
-              print(error);
               correctGoal = false;
             }
           }
         }
-
+        //* 빙고칸 내부
         if (cnt != size * size) {
           return showAlert(
             context,
@@ -120,6 +127,7 @@ class _BingoFormState extends State<BingoForm> {
             hasCancel: false,
           )();
         }
+        //* 목표 달성 횟수
         if (!correctGoal) {
           return showAlert(
             context,
@@ -128,11 +136,11 @@ class _BingoFormState extends State<BingoForm> {
             hasCancel: false,
           )();
         }
-        print('bingo data => $data');
 
+        //* 썸네일 생성 후 작업 요청
         bingoToThumb().then((_) {
           final bingoId = getBingoId(context);
-          print(bingoId);
+          //* 빙고 생성
           if (bingoId == null || bingoId == 0) {
             widget.beforeJoin ? joinGroup(data) : createGroup(data);
           } else {
@@ -146,7 +154,6 @@ class _BingoFormState extends State<BingoForm> {
               ),
             });
             showSpinner(context, true);
-            print(bingoData);
 
             BingoProvider()
                 .editOwnBingo(getGroupId(context)!, bingoId, bingoData)
@@ -156,16 +163,15 @@ class _BingoFormState extends State<BingoForm> {
                 toBack(context);
               });
             }).catchError((_) {
-              print(1);
               showSpinner(context, false);
-              showErrorModal(context);
+              showErrorModal(context, '빙고 수정 오류', '빙고 수정에 실패했습니다.');
             });
           }
         }).catchError((_) {
-          print(2);
           showSpinner(context, false);
-          showErrorModal(context);
+          showErrorModal(context, '빙고 생성/수정 오류', '빙고 생성/수정에 실패했습니다.');
         });
+        //* 변경되지 않은 경우
       } else {
         return showAlert(
           context,
@@ -174,10 +180,11 @@ class _BingoFormState extends State<BingoForm> {
         )();
       }
     } catch (_) {
-      showErrorModal(context);
+      showErrorModal(context, '빙고 생성/수정 오류', '빙고 생성/수정에 실패했습니다.');
     }
   }
 
+  //* 빙고 썸네일 생성
   FutureBool bingoToThumb() async {
     var renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject is RenderRepaintBoundary) {
@@ -190,52 +197,59 @@ class _BingoFormState extends State<BingoForm> {
     return true;
   }
 
+  //* 그룹 생성
   void createGroup(DynamicMap bingoData) {
-    print('data => ${widget.beforeData}, ㅠㅐㅁ');
-    final formData = FormData.fromMap({
-      'data': jsonEncode(widget.beforeData),
-      'board_data': jsonEncode(bingoData),
-      'thumbnail': MultipartFile.fromBytes(
-        thumbnail!,
-        filename: 'thumbnail.png',
-        contentType: MediaType('image', 'png'),
-      ),
-      'img': widget.groupImg != null
-          ? MultipartFile.fromFileSync(
-              widget.groupImg!.path,
-              contentType: MediaType('image', 'png'),
-            )
-          : null,
-    });
-    showSpinner(context, true);
-    GroupProvider().createOwnGroup(formData).then((groupId) {
-      afterWork('그룹 생성이 완료되었습니다.', 1, () {
-        changePrev(context, true);
-        afterFewSec(
-          jumpToOtherPage(
-            context,
-            page: InputPassword(
-              isPublic: true,
-              groupId: groupId,
+    try {
+      final formData = FormData.fromMap({
+        'data': jsonEncode(widget.beforeData),
+        'board_data': jsonEncode(bingoData),
+        'thumbnail': MultipartFile.fromBytes(
+          thumbnail!,
+          filename: 'thumbnail.png',
+          contentType: MediaType('image', 'png'),
+        ),
+        'img': widget.groupImg != null
+            ? MultipartFile.fromFileSync(
+                widget.groupImg!.path,
+                contentType: MediaType('image', 'png'),
+              )
+            : null,
+      });
+      showSpinner(context, true);
+      GroupProvider().createOwnGroup(formData).then((groupId) {
+        afterWork('그룹 생성이 완료되었습니다.', 1, () {
+          changePrev(context, true);
+          afterFewSec(
+            jumpToOtherPage(
+              context,
+              page: InputPassword(
+                isPublic: true,
+                groupId: groupId,
+              ),
             ),
-          ),
+          );
+        });
+      }).catchError((error) {
+        showSpinner(context, false);
+        showErrorModal(
+          context,
+          '그룹 생성 오류',
+          '오류가 발생해 그룹이 생성되지 않았습니다.',
         );
       });
-    }).catchError((error) {
-      showSpinner(context, false);
-      showAlert(
+    } catch (_) {
+      showErrorModal(
         context,
-        title: '그룹 생성 오류',
-        content: '오류가 발생해 그룹이 생성되지 않았습니다.',
-        hasCancel: false,
-      )();
-    });
+        '그룹 생성 오류',
+        '오류가 발생해 그룹이 생성되지 않았습니다.',
+      );
+    }
   }
 
+  //* 그룹 가입
   void joinGroup(DynamicMap bingoData) async {
     try {
       final groupId = getGroupId(context)!;
-      print('data => $bingoData');
       final formData = FormData.fromMap({
         'board_data': jsonEncode(bingoData),
         'thumbnail': MultipartFile.fromBytes(
@@ -247,10 +261,7 @@ class _BingoFormState extends State<BingoForm> {
       showSpinner(context, true);
       GroupProvider().joinGroup(groupId, formData).then((data) {
         showSpinner(context, false);
-        print('그룹 가입 성공 => $data');
-        print('form data : $bingoData');
-        print('빙고 생성 성공');
-        // initBingoData(context);
+        //* 가입 승인 필요 시
         if (getNeedAuth(context) == true) {
           afterWork('가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.', 1, () {
             afterFewSec(
@@ -270,25 +281,13 @@ class _BingoFormState extends State<BingoForm> {
             );
           });
         }
-      }).catchError((e) {
-        print('catch error : $e');
+      }).catchError((_) {
         showSpinner(context, false);
-        showAlert(
-          context,
-          title: '가입 오류',
-          content: '오류가 발생해 가입이 되지 않았습니다.',
-          hasCancel: false,
-        )();
+        showErrorModal(context, '가입 오류', '오류가 발생해 가입이 되지 않았습니다.');
       });
-    } catch (error) {
-      print('error : $error');
+    } catch (_) {
       showSpinner(context, false);
-      showAlert(
-        context,
-        title: '가입 오류',
-        content: '오류가 발생해 가입이 되지 않았습니다.',
-        hasCancel: false,
-      )();
+      showErrorModal(context, '가입 오류', '오류가 발생해 가입이 되지 않았습니다.');
     }
   }
 
@@ -303,10 +302,10 @@ class _BingoFormState extends State<BingoForm> {
             width: getWidth(context),
             height: getHeight(context),
             color: whiteColor,
-            image: watchBackground(context) != null
+            image: watchBackground(context, false) != null
                 ? DecorationImage(
-                    image:
-                        AssetImage(backgroundList[watchBackground(context)!]),
+                    image: AssetImage(
+                        backgroundList[watchBackground(context, false)!]),
                     fit: BoxFit.fitHeight,
                   )
                 : null,
@@ -316,6 +315,7 @@ class _BingoFormState extends State<BingoForm> {
                 horizontal: 10,
                 vertical: 5,
                 children: [
+                  //* 빙고명 라벨 & 입력창
                   Flexible(
                     flex: 5,
                     child: Padding(
@@ -358,6 +358,8 @@ class _BingoFormState extends State<BingoForm> {
                       ),
                     ),
                   ),
+
+                  //* 빙고판 라벨 & 빙고판
                   Flexible(
                     flex: 12,
                     child: Padding(
@@ -403,7 +405,9 @@ class _BingoFormState extends State<BingoForm> {
                       ),
                     ),
                   ),
+                  //* 빙고 설정 변경 탭 바
                   const Flexible(flex: 9, child: BingoTabBar()),
+
                   Flexible(
                     flex: 2,
                     child: Row(children: [
@@ -422,11 +426,14 @@ class _BingoFormState extends State<BingoForm> {
               ),
             ),
           ),
+          //* 앱바
           const CustomBoxContainer(
             color: transparentColor,
             height: 70,
             child: AppBarWithBack(transparent: true),
           ),
+
+          //* 스피너
           if (watchSpinner(context))
             CustomBoxContainer(
               color: blackColor.withOpacity(0.4),
@@ -436,6 +443,7 @@ class _BingoFormState extends State<BingoForm> {
                 children: [CustomCirCularIndicator()],
               ),
             ),
+          //* 토스트
           if (watchAfterWork(context))
             CustomToast(content: watchToastString(context))
         ],

@@ -23,6 +23,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/foundation.dart';
 
+//? 모달
+
 //* 빙고 칸 내용 입력
 class BingoFormModal extends StatefulWidget {
   final int index, cnt;
@@ -44,7 +46,7 @@ class _BingoFormModalState extends State<BingoFormModal> {
   void initState() {
     super.initState();
     newIdx = widget.index;
-    item = {...readItem(context, newIdx)};
+    item = {...readItem(context, newIdx, false)};
   }
 
   void initialize() {
@@ -66,13 +68,13 @@ class _BingoFormModalState extends State<BingoFormModal> {
         if (newIdx < widget.cnt - 1) {
           setState(() {
             newIdx += 1;
-            item = {...readItem(context, newIdx)};
+            item = {...readItem(context, newIdx, false)};
           });
         }
       } else if (newIdx > 0) {
         setState(() {
           newIdx -= 1;
-          item = {...readItem(context, newIdx)};
+          item = {...readItem(context, newIdx, false)};
         });
       }
     }
@@ -85,7 +87,6 @@ class _BingoFormModalState extends State<BingoFormModal> {
 
     void applyItem() {
       setItem(context, newIdx, item);
-      print(readItem(context, newIdx));
       toBack(context);
     }
 
@@ -181,6 +182,7 @@ class _BingoFormModalState extends State<BingoFormModal> {
                           ),
                           if (item['check'])
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 CustomInput(
                                   width: 45,
@@ -260,7 +262,7 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
   @override
   Widget build(BuildContext context) {
     void moveBingo(bool toRight) {
-      setItem(context, newIdx, item);
+      // setItem(context, newIdx, item);
       if (toRight) {
         if (newIdx < widget.cnt - 1) {
           setState(() {
@@ -336,8 +338,7 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
                   ),
                 ),
                 CustomIconButton(
-                  onPressed:
-                      newIdx < widget.cnt - 1 ? () => moveBingo(true) : () {},
+                  onPressed: () => moveBingo(true),
                   icon: rightIcon,
                   size: 40,
                   color: newIdx < widget.cnt - 1 ? palePinkColor : greyColor,
@@ -625,7 +626,6 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
 
   void changeBadge() {
     UserInfoProvider().changeBadge({'badge_id': badgeId}).then((data) {
-      print('성공 => $data');
       toBack(context);
       widget.onPressed(badgeId);
     }).catchError((_) {
@@ -720,36 +720,6 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
             return const CustomCirCularIndicator();
           },
         ),
-        // for (int i = 0; i < 4; i += 1)
-        //   Row(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: [
-        //       for (int j = 0; j < 3; j += 1)
-        //         ColWithPadding(
-        //           vertical: 8,
-        //           horizontal: 8,
-        //           children: [
-        //             CircleContainer(
-        //               onTap: () => selectBadge(3 * i + j),
-        //               boxShadow: 3 * i + j == badgeIdx
-        //                   ? [
-        //                       const BoxShadow(
-        //                           blurRadius: 3,
-        //                           spreadRadius: 3,
-        //                           color: blueColor)
-        //                     ]
-        //                   : null,
-        //               child: Image.network(
-        //                   '${dotenv.env['fileUrl']}/badges/${3 * i + j}'),
-        //             ),
-        //             const Padding(
-        //               padding: EdgeInsets.all(8.0),
-        //               child: CustomText(content: '배지명'),
-        //             )
-        //           ],
-        //         ),
-        //     ],
-        //   ),
       ],
     );
   }

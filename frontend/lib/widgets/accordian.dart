@@ -4,11 +4,13 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/list.dart';
+import 'package:bin_got/widgets/list_item.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+//? 아코디언
 
 class EachAccordion extends StatefulWidget {
   final Widget question, answer;
@@ -77,7 +79,7 @@ class _MemberListState extends State<MemberList> {
       try {
         showAlert(
           context,
-          title: '가입 신청 ${grant ? '승인' : '거부'}',
+          title: widget.isMember ? '회원 탈퇴' : '가입 신청 ${grant ? '승인' : '거부'}',
           content: widget.isMember
               ? '해당 회원을 탈퇴시키겠습니까?'
               : '가입 신청 ${grant ? '승인' : '거부'}하시겠습니까?',
@@ -91,14 +93,18 @@ class _MemberListState extends State<MemberList> {
               });
               toBack(context);
             }).catchError((_) {
-              showAlert(context,
-                  title: '요청 실패', content: '오류가 발생해 요청한 작업이 처리되지 않았습니다.')();
+              showErrorModal(
+                  context,
+                  '${widget.isMember ? '회원 탈퇴' : '가입 신청 ${grant ? '승인' : '거부'}'} 발생',
+                  '오류가 발생해 요청이 처리되지 않았습니다.');
             });
           },
         )();
       } catch (error) {
-        showAlert(context,
-            title: '요청 실패', content: '오류가 발생해 요청한 작업이 처리되지 않았습니다.')();
+        showErrorModal(
+            context,
+            '${widget.isMember ? '회원 탈퇴' : '가입 신청 ${grant ? '승인' : '거부'}'} 발생',
+            '오류가 발생해 요청이 처리되지 않았습니다.');
       }
     }
 

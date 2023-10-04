@@ -11,11 +11,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 
+//? 전역 변수
+
 //* token, user data
 class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   static String? _token, _refresh;
   static int? _id;
 
+  //* getter
   String? get token => _token;
   String? get refresh => _refresh;
   int? get id => _id;
@@ -179,14 +182,15 @@ class GlobalScrollProvider extends ChangeNotifier {
 
 //* group data
 class GlobalGroupProvider extends ChangeNotifier {
-  static GroupDetailModel? _data;
   static int? _groupId;
   static int _lastId = 0;
-  static String? _start;
-  static final GroupChatList _chats = [];
   static int _selectedIndex = 1;
+  static String? _start;
   static bool _prev = false;
   static bool _enable = true;
+  static GroupDetailModel? _data;
+  static final GroupChatList _chats = [];
+  static final RankList _rankList = [];
 
   GroupChatList get chats => _chats;
   bool get prev => _prev;
@@ -195,6 +199,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   int? get lastId => _lastId;
   int? get groupId => _groupId;
 
+  //* read group
   int? get bingoId => _data?.bingoId;
   int? get headCount => _data?.headCount;
   int? get bingoSize => _data?.bingoSize;
@@ -205,6 +210,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   bool? get alreadyStarted => _data?.start != null
       ? DateTime.now().difference(DateTime.parse(_data!.start)) >= Duration.zero
       : null;
+  bool get enable => _enable;
   String get groupName => _data?.groupName ?? '';
   String? get start => _data?.start ?? _start;
   String? get end => _data?.end;
@@ -212,6 +218,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   String get rule => _data?.rule ?? '';
   String? get password => _data?.password;
   List get rank => _data?.rank ?? [];
+  RankList get rankList => _rankList;
 
   void _setData(GroupDetailModel detailModel) => _data = detailModel;
 
@@ -229,21 +236,21 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void _changeIndex(int index) {
     if (index != _selectedIndex) {
-      if (_enable) {
-        _selectedIndex = index;
-        notifyListeners();
-        _enable = false;
-        afterFewSec(() {
-          _enable = true;
-          notifyListeners();
-        });
-      }
+      _selectedIndex = index;
+      notifyListeners();
     }
   }
 
   void _toPrevPage(bool value) => _prev = value;
 
   void _initData() => _data = null;
+
+  void _setRank(RankList value) {
+    _rankList.clear();
+    _rankList.addAll(value);
+  }
+
+  void _setEnable(bool value) => _enable = value;
 
 //* public
   void setLastId(int value) => _setLastId(value);
@@ -277,10 +284,7 @@ class GlobalGroupProvider extends ChangeNotifier {
     _clearChat();
   }
 
-  void changeIndex(int index) {
-    _changeIndex(index);
-    notifyListeners();
-  }
+  void changeIndex(int index) => _changeIndex(index);
 
   void toPrevPage(bool value) {
     _toPrevPage(value);
@@ -291,11 +295,23 @@ class GlobalGroupProvider extends ChangeNotifier {
     _initData();
     notifyListeners();
   }
+
+  void setRank(RankList value) {
+    _setRank(value);
+    notifyListeners();
+  }
+
+  void setEnable(bool value) {
+    _setEnable(value);
+    notifyListeners();
+  }
 }
 
 //* bingo data
 class GlobalBingoProvider extends ChangeNotifier {
-  static DynamicMap _data = {
+  static DynamicMap _data = {};
+
+  static DynamicMap _formData = {
     'group_id': 0,
     'title': null,
     'background': null,
@@ -318,53 +334,63 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   //* getter
   DynamicMap get data => _data;
+  GlobalKey get globalKey => _globalKey;
 
   int? get bingoSize => _bingoSize;
-
+  int? get bingoId => _bingoId;
+  int? get lastId => _lastId;
   int? get groupId => _data['group'];
+
+  //* read group
   int? get gap => _data['around_kan'];
   int? get checkIcon => _data['complete_icon'];
   int? get font => _data['font'];
   int? get background => _data['background'];
-  int? get bingoId => _bingoId;
-  int? get lastId => _lastId;
   int get achieve =>
       _data['achieve'] != null ? (_data['achieve'] * 100).toInt() : 0;
+
   String? get title => _data['title'];
   String? get username => _data['username'];
   bool get hasBlackBox => _data['is_black'];
   bool get hasBorder => _data['has_border'];
   bool get hasRoundEdge => _data['has_round_edge'];
-  bool get isCheckTheme => _isCheckTheme;
   BoolList get finished => _finished;
   List get items => _data['items'];
-  GlobalKey get globalKey => _globalKey;
+
+  //* create/update group
+  DynamicMap get formData => _formData;
+  int? get formGap => _formData['around_kan'];
+  int? get formCheckIcon => _formData['complete_icon'];
+  int? get formFont => _formData['font'];
+  int? get formBackground => _formData['background'];
+  String? get formTitle => _formData['title'];
+
+  bool get formHasBlackBox => _formData['is_black'];
+  bool get formHasBorder => _formData['has_border'];
+  bool get formHasRoundEdge => _formData['has_round_edge'];
+  bool get isCheckTheme => _isCheckTheme;
+  List get formItems => _formData['items'];
 
   //* private
   DynamicMap _item(int index) => items[index];
+  DynamicMap _formItem(int index) => formItems[index];
 
   void _setIsCheckTheme(bool value) => _isCheckTheme = value;
   void _setData(DynamicMap newData) => _data = {...newData};
   void _setBingoId(int newVal) => _bingoId = newVal;
   void _setBingoSize(int newVal) => _bingoSize = newVal;
-  void _setOption(String key, dynamic value) => _data[key] = value;
+  void _setOption(String key, dynamic value) => _formData[key] = value;
 
   void _changeBackground(int i) {
-    if (_data['background'] == i) {
-      _data['background'] = null;
+    if (_formData['background'] == i) {
+      _formData['background'] = null;
     } else {
-      _data['background'] = i;
+      _formData['background'] = i;
     }
   }
 
   void _setLastId(int value) => _lastId = value;
 
-  void setLastId(int value) => _setLastId(value);
-
-  void initFinished(int size) =>
-      _finished = List.generate(size, (index) => false);
-
-  void setFinished(int index, bool value) => _setFinished(index, value);
   void _setFinished(int index, bool value) => _finished[index] = value;
 
   void _changeData(int tabIndex, int i) {
@@ -381,10 +407,10 @@ class GlobalBingoProvider extends ChangeNotifier {
         ];
         switch (i) {
           case 3:
-            _data[keyList[i]] += _data[keyList[i]] < 2 ? 1 : -2;
+            _formData[keyList[i]] += _formData[keyList[i]] < 2 ? 1 : -2;
             break;
           default:
-            _data[keyList[i]] = !_data[keyList[i]];
+            _formData[keyList[i]] = !_formData[keyList[i]];
             break;
         }
         break;
@@ -398,7 +424,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   }
 
   void _initItems(int cnt) {
-    _data['items'] = List.generate(
+    _formData['items'] = List.generate(
       cnt,
       (index) => {
         'item_id': index,
@@ -411,35 +437,42 @@ class GlobalBingoProvider extends ChangeNotifier {
   }
 
   void _setItem(int index, DynamicMap item) {
-    _data['items'][index] = {...item};
+    _formData['items'][index] = {...item};
   }
 
   void _changeItem(int index1, int index2) {
-    final content1 = _data['items'][index1];
+    final content1 = _formData['items'][index1];
     content1['item_id'] = index2;
-    final content2 = _data['items'][index2];
+    final content2 = _formData['items'][index2];
     content2['item_id'] = index1;
     _setItem(index1, content2);
     _setItem(index2, content1);
   }
 
-  void _initKey() {
-    _globalKey = GlobalKey();
+  void _initKey() => _globalKey = GlobalKey();
+
+  void _initFormData(editMode) {
+    if (editMode) {
+      _formData = Map.from(_data);
+      _formData['items'] = List.from(_data['items']);
+    } else {
+      _formData = {
+        'group_id': 0,
+        'title': null,
+        'background': null,
+        'is_black': false,
+        'has_border': true,
+        'has_round_edge': false,
+        'around_kan': 0,
+        'complete_icon': 0,
+        'font': 0,
+        'items': <DynamicMap>[],
+      };
+    }
   }
 
   void _initData() {
-    _data = {
-      'group_id': 0,
-      'title': null,
-      'background': null,
-      'is_black': false,
-      'has_border': true,
-      'has_round_edge': false,
-      'around_kan': 0,
-      'complete_icon': 0,
-      'font': 0,
-      'items': <DynamicMap>[],
-    };
+    _data.clear();
   }
 
   FutureBool _bingoToImage() async {
@@ -451,7 +484,7 @@ class GlobalBingoProvider extends ChangeNotifier {
       final pngBytes = byteData?.buffer.asUint8List();
       await ImageGallerySaver.saveImage(
         pngBytes!,
-        name: title,
+        name: formTitle,
       );
       return true;
     }
@@ -460,6 +493,14 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   //* public
   DynamicMap item(int index) => _item(index);
+  DynamicMap formItem(int index) => _formItem(index);
+
+  void setLastId(int value) => _setLastId(value);
+
+  void initFinished(int size) =>
+      _finished = List.generate(size, (index) => false);
+
+  void setFinished(int index, bool value) => _setFinished(index, value);
 
   void setIsCheckTheme(bool value) {
     _setIsCheckTheme(value);
@@ -498,9 +539,15 @@ class GlobalBingoProvider extends ChangeNotifier {
     _setBingoSize(newSize);
   }
 
+  void initFormData(bool editMode) => _initFormData(editMode);
+
   void initData() => _initData();
 
   void initKey() => _initKey();
+
+  void applyData() {
+    _setData(_formData);
+  }
 
   FutureBool bingoToImage() => _bingoToImage();
 

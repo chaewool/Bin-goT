@@ -8,6 +8,8 @@ import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
+//? 버튼
+
 //* 기본 버튼
 class CustomButton extends StatelessWidget {
   final ReturnVoid onPressed;
@@ -78,12 +80,13 @@ class CustomIconButton extends StatelessWidget {
   final ReturnVoid onPressed;
   final Color color;
   final double size;
-  const CustomIconButton(
-      {super.key,
-      required this.onPressed,
-      required this.icon,
-      this.size = 30,
-      this.color = blackColor});
+  const CustomIconButton({
+    super.key,
+    required this.onPressed,
+    required this.icon,
+    this.size = 30,
+    this.color = blackColor,
+  });
 
   @override
   Widget build(BuildContext context) {

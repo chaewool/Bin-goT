@@ -3,18 +3,22 @@ import 'package:bin_got/providers/api_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 
+//? 사용자 정보, 설정 api
 class UserInfoProvider extends ApiProvider {
   //* public
   FutureBool changeBadge(DynamicMap data) => _changeBadge(data);
   Future<ProfilModel> getProfile() => _getProfile();
   Future<BadgeList> getBadges() => _getBadges();
-  FutureDynamic checkName(String name) => _checkName(name);
-  FutureDynamic changeName(String name) => _changeName(name);
+  FutureDynamic checkName(String name) =>
+      createApi(checkNameUrl, data: {'username': name});
+  FutureDynamic changeName(String name) =>
+      createApi(changeNameUrl, data: {'username': name});
   Future<MainGroupListModel> getMainGroupData(DynamicMap queryParameters) =>
       _getMainGroupData(queryParameters);
   Future<MyBingoList> getMainBingoData(DynamicMap queryParameters) =>
       _getMainBingoData(queryParameters);
-  FutureDynamic changeNoti(DynamicMap data) => _changeNoti(data);
+  FutureDynamic changeNoti(DynamicMap data) =>
+      updateApi(changenotiUrl, data: data);
 
   FutureDynamic getNoti() => _getNoti();
 
@@ -62,15 +66,6 @@ class UserInfoProvider extends ApiProvider {
       throw Error();
     }
   }
-
-  FutureDynamic _changeNoti(DynamicMap data) =>
-      updateApi(changenotiUrl, data: data);
-
-  FutureDynamic _checkName(String name) =>
-      createApi(checkNameUrl, data: {'username': name});
-
-  FutureDynamic _changeName(String name) =>
-      createApi(changeNameUrl, data: {'username': name});
 
   Future<MainGroupListModel> _getMainGroupData(
       DynamicMap queryParameters) async {
