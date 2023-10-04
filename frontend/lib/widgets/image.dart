@@ -2,6 +2,8 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:flutter/material.dart';
 
+//? 이미지
+
 class ModifiedImage extends StatelessWidget {
   final String image;
   final double width, height;

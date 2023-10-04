@@ -1,6 +1,8 @@
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:flutter/material.dart';
 
+//? 텍스트
+
 //* text 기본 틀
 class CustomText extends StatelessWidget {
   final String content;

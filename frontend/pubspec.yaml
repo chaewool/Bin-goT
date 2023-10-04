@@ -62,7 +62,6 @@ dependencies:
   kakao_flutter_sdk_user: ^1.5.0
   kakao_flutter_sdk_share: ^1.5.0
   flutter_local_notifications: ^14.1.0
-  flutter_snake_navigationbar: ^0.6.1
 
 dev_dependencies:
   flutter_test:

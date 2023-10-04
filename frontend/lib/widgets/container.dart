@@ -9,11 +9,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+//? 컨테이너 응용
+
 //* 그룹 메인 내용 출력
 class ShowContentBox extends StatelessWidget {
   final String contentTitle, content;
-  const ShowContentBox(
-      {super.key, required this.contentTitle, required this.content});
+  const ShowContentBox({
+    super.key,
+    required this.contentTitle,
+    required this.content,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -188,63 +193,5 @@ class CircleContainer extends StatelessWidget {
         child: child,
       ),
     );
-  }
-}
-
-//* animated container with page view
-class CustomAnimatedPage extends StatelessWidget {
-  final Widget nextPage;
-  final Widget? appBar;
-  final bool needScroll;
-  const CustomAnimatedPage({
-    super.key,
-    required this.nextPage,
-    this.appBar,
-    this.needScroll = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return needScroll
-        ? Stack(
-            children: [
-              Padding(
-                padding:
-                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                child: SingleChildScrollView(
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    child: nextPage,
-                  ),
-                ),
-              ),
-              if (appBar != null)
-                CustomBoxContainer(
-                  color: transparentColor,
-                  width: getWidth(context),
-                  height: 100,
-                  child: appBar!,
-                ),
-            ],
-          )
-        : Stack(
-            children: [
-              Padding(
-                padding:
-                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 500),
-                  child: nextPage,
-                ),
-              ),
-              if (appBar != null)
-                CustomBoxContainer(
-                  color: transparentColor,
-                  width: getWidth(context),
-                  height: 100,
-                  child: appBar!,
-                ),
-            ],
-          );
   }
 }

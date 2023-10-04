@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+//? 상단 바 (앱 바)
+
 const double appBarHeight = 50;
 
 //* appBar 기본 틀
@@ -63,16 +65,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
   final WidgetList? actions;
   final String? title;
-  final ReturnVoid? onPressedBack, onPressedClose;
-  final IconData? otherIcon;
+  final ReturnVoid? onPressedBack;
   final bool transparent;
   const AppBarWithBack({
     super.key,
     this.actions,
     this.title,
     this.onPressedBack,
-    this.onPressedClose,
-    this.otherIcon,
     this.transparent = false,
   });
 
@@ -87,14 +86,6 @@ class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
       title: title,
       actions: [
         ...?actions,
-        if (onPressedClose != null)
-          Padding(
-            padding: const EdgeInsets.only(right: 15),
-            child: CustomIconButton(
-              onPressed: onPressedClose!,
-              icon: otherIcon ?? closeIcon,
-            ),
-          )
       ],
     );
   }
@@ -146,35 +137,33 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
       transparent: true,
       onPressedBack: toBackAction,
       actions: [
-        watchMemberState(context) == 2
-            ? IconButtonInRow(
-                icon: settingsIcon,
-                onPressed: toOtherPage(
-                  context,
-                  page: GroupAdmin(groupId: groupId),
-                ),
-              )
-            : const SizedBox(),
-        (watchMemberState(context) != 0) && alreadyStarted(context) == false
-            ? IconButtonInRow(
-                icon: shareIcon,
-                onPressed: () => shareGroup(
-                  groupId: groupId,
-                  groupName: getGroupName(context),
-                ),
-              )
-            : const SizedBox(),
-        watchMemberState(context) == 1
-            ? IconButtonInRow(
-                icon: exitIcon,
-                onPressed: showAlert(
-                  context,
-                  title: '그룹 탈퇴 확인',
-                  content: '정말 그룹을 탈퇴하시겠습니까?',
-                  onPressed: exitThisGroup,
-                ),
-              )
-            : const SizedBox(),
+        if (watchMemberState(context) == 2)
+          IconButtonInRow(
+            icon: settingsIcon,
+            onPressed: toOtherPage(
+              context,
+              page: GroupAdmin(groupId: groupId),
+            ),
+          ),
+        if ((watchMemberState(context) != 0) &&
+            alreadyStarted(context) == false)
+          IconButtonInRow(
+            icon: shareIcon,
+            onPressed: () => shareGroup(
+              groupId: groupId,
+              groupName: getGroupName(context),
+            ),
+          ),
+        if (watchMemberState(context) == 1)
+          IconButtonInRow(
+            icon: exitIcon,
+            onPressed: showAlert(
+              context,
+              title: '그룹 탈퇴 확인',
+              content: '정말 그룹을 탈퇴하시겠습니까?',
+              onPressed: exitThisGroup,
+            ),
+          ),
       ],
     );
   }
@@ -273,9 +262,10 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     void shareBingo() async {
       File file = await context.read<GlobalBingoProvider>().bingoToXFile();
 
-      Share.shareXFiles([XFile(file.path)],
-              text: context.read<GlobalBingoProvider>().title)
-          .then((value) => file.delete());
+      Share.shareXFiles(
+        [XFile(file.path)],
+        text: context.read<GlobalBingoProvider>().title,
+      ).then((value) => file.delete());
     }
 
     void toBackAction() {

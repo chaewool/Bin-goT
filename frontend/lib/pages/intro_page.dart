@@ -11,6 +11,7 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+//? 인트로 (토큰 확인, 자동 로그인)
 class Intro extends StatefulWidget {
   const Intro({
     super.key,
@@ -21,6 +22,7 @@ class Intro extends StatefulWidget {
 }
 
 class _IntroState extends State<Intro> {
+  //* 변수
   BoolList showList = List.generate(3, (_) => false);
   bool showLoginBtn = false;
   WidgetList appInfo = [
@@ -38,6 +40,7 @@ class _IntroState extends State<Intro> {
     ),
   ];
 
+  //* 토큰 만료 여부 확인
   void verifyToken() async {
     try {
       await context.read<AuthProvider>().initVar();
@@ -62,6 +65,7 @@ class _IntroState extends State<Intro> {
   @override
   void initState() {
     super.initState();
+    //* 투명도 조절 애니메이션 관련
     for (int i = 0; i < 3; i += 1) {
       afterFewSec(() {
         setState(() {
@@ -69,7 +73,9 @@ class _IntroState extends State<Intro> {
         });
       }, 500 * i + 500);
     }
+    //* 토큰 만료 여부 검사
     verifyToken();
+    //* 메인 페이지로 이동
     afterFewSec(() {
       if (!showLoginBtn) {
         toOtherPageWithoutPath(context, page: const Main());
@@ -88,6 +94,7 @@ class _IntroState extends State<Intro> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
+              //* 앱 정보
               for (int i = 0; i < 3; i += 1)
                 AnimatedOpacity(
                   opacity: showList[i] ? 1 : 0,
@@ -97,6 +104,7 @@ class _IntroState extends State<Intro> {
               const SizedBox(height: 100)
             ],
           ),
+          //* 로그인 버튼
           if (showLoginBtn)
             Column(
               mainAxisSize: MainAxisSize.max,

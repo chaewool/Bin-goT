@@ -3,10 +3,13 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/container.dart';
-import 'package:bin_got/widgets/list.dart';
+import 'package:bin_got/widgets/list_item.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
+//? 스크롤
+
+//* 그룹 스크롤
 class GroupInfiniteScroll extends StatelessWidget {
   final List data;
   final int mode;
@@ -79,6 +82,7 @@ class GroupInfiniteScroll extends StatelessWidget {
   }
 }
 
+//* 빙고 스크롤
 class BingoInfiniteScroll extends StatelessWidget {
   final MyBingoList data;
   final ScrollController controller;
@@ -154,6 +158,7 @@ class BingoInfiniteScroll extends StatelessWidget {
   }
 }
 
+//* 채팅 스크롤
 class ChatInfiniteScroll extends StatelessWidget {
   final GroupChatList data;
   final ScrollController controller;

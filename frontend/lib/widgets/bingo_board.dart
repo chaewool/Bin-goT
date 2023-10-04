@@ -8,7 +8,7 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-//* 빙고판
+//? 빙고판
 class BingoBoard extends StatefulWidget {
   final bool isDetail;
   final int? bingoSize;
