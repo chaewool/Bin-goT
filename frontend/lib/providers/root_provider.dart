@@ -81,6 +81,8 @@ class NotiProvider extends ChangeNotifier {
   static bool _afterWork = false;
   static bool _spinnerState = false;
   static bool _refreshState = false;
+  static const bool _enable = true;
+  // static int _selectedIndex = 1;
   static String _toastString = '';
 
   //* getter
@@ -90,6 +92,7 @@ class NotiProvider extends ChangeNotifier {
   bool get spinnerState => _spinnerState;
   bool get refreshState => _refreshState;
   String get toastString => _toastString;
+  // int get selectedIndex => _selectedIndex;
 
   //* private
 
@@ -125,6 +128,23 @@ class NotiProvider extends ChangeNotifier {
 
   void _setToastString(String value) => _toastString = value;
 
+  // void _changeIndex(int index) {
+  //   if (index != _selectedIndex) {
+  //     // if (_enable) {
+  //     _selectedIndex = index;
+  //     // _enable = false;
+  //     notifyListeners();
+  //     // }
+  //   }
+  // }
+
+  // void _enableBottomBar() {
+  //   if (_enable) {
+  //     _enable = true;
+  //     notifyListeners();
+  //   }
+  // }
+
   //* public
 
   FutureBool changePressed() => _changePressed();
@@ -139,6 +159,9 @@ class NotiProvider extends ChangeNotifier {
     _setToastString(value);
     notifyListeners();
   }
+
+  // void changeIndex(int index) => _changeIndex(index);
+  // void enableBottomBar() => _enableBottomBar();
 }
 
 //* scroll
@@ -184,6 +207,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   static int _lastId = 0;
   static String? _start;
   static final GroupChatList _chats = [];
+  static final RankList _rankList = [];
   static int _selectedIndex = 1;
   static bool _prev = false;
   static bool _enable = true;
@@ -206,6 +230,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   bool? get alreadyStarted => _data?.start != null
       ? DateTime.now().difference(DateTime.parse(_data!.start)) >= Duration.zero
       : null;
+  bool get enable => _enable;
   String get groupName => _data?.groupName ?? '';
   String? get start => _data?.start ?? _start;
   String? get end => _data?.end;
@@ -213,6 +238,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   String get rule => _data?.rule ?? '';
   String? get password => _data?.password;
   List get rank => _data?.rank ?? [];
+  RankList get rankList => _rankList;
 
   void _setData(GroupDetailModel detailModel) => _data = detailModel;
 
@@ -230,21 +256,21 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void _changeIndex(int index) {
     if (index != _selectedIndex) {
-      if (_enable) {
-        _selectedIndex = index;
-        notifyListeners();
-        _enable = false;
-        afterFewSec(() {
-          _enable = true;
-          notifyListeners();
-        });
-      }
+      _selectedIndex = index;
+      notifyListeners();
     }
   }
 
   void _toPrevPage(bool value) => _prev = value;
 
   void _initData() => _data = null;
+
+  void _setRank(RankList value) {
+    _rankList.clear();
+    _rankList.addAll(value);
+  }
+
+  void _setEnable(bool value) => _enable = value;
 
 //* public
   void setLastId(int value) => _setLastId(value);
@@ -287,6 +313,16 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void initData() {
     _initData();
+    notifyListeners();
+  }
+
+  void setRank(RankList value) {
+    _setRank(value);
+    notifyListeners();
+  }
+
+  void setEnable(bool value) {
+    _setEnable(value);
     notifyListeners();
   }
 }

@@ -4,7 +4,6 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/list.dart';
-import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,6 +23,7 @@ class GroupMain extends StatefulWidget {
 class _GroupMainState extends State<GroupMain> {
   int? memberState;
   int? groupId;
+
   @override
   void initState() {
     super.initState();
@@ -64,6 +64,7 @@ class _GroupMainState extends State<GroupMain> {
     return !watchLoading(context)
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
             children: [
               context.watch<GlobalGroupProvider>().hasImage
                   ? CustomBoxContainer(
@@ -80,25 +81,22 @@ class _GroupMainState extends State<GroupMain> {
                       ),
                     )
                   : const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    groupHeader(context),
-                    const SizedBox(height: 20),
-                    ShowContentBox(
-                      contentTitle: '설명',
-                      content: context.watch<GlobalGroupProvider>().description,
-                    ),
-                    ShowContentBox(
-                      contentTitle: '규칙',
-                      content: context.watch<GlobalGroupProvider>().rule,
-                    ),
-                    if (memberState != 0) groupRankTop3(context),
-                  ],
-                ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  groupHeader(context),
+                  const SizedBox(height: 20),
+                  ShowContentBox(
+                    contentTitle: '설명',
+                    content: context.watch<GlobalGroupProvider>().description,
+                  ),
+                  ShowContentBox(
+                    contentTitle: '규칙',
+                    content: context.watch<GlobalGroupProvider>().rule,
+                  ),
+                  if (memberState != 0) groupRankTop3(context),
+                ],
               ),
             ],
           )
@@ -107,39 +105,44 @@ class _GroupMainState extends State<GroupMain> {
 
   Padding groupRankTop3(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RowWithPadding(
-            vertical: 10,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const CustomText(content: '순위'),
-              TextButton(
-                onPressed: () => changeGroupIndex(context, 2),
-                child: const CustomText(
-                  content: '전체보기',
-                  fontSize: FontSize.smallSize,
-                ),
-              )
-            ],
-          ),
-          if (getRank(context).isNotEmpty)
-            for (int i = 0; i < getRank(context).length; i += 1)
-              RankListItem(rankListItem: getRank(context)[i]),
-          if (getRank(context).isEmpty)
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      padding: const EdgeInsets.symmetric(vertical: 30),
+      child: CustomBoxContainer(
+        width: 300,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
               children: [
-                CustomText(
-                  content: '달성한 목표가 있는 그룹원이\n존재하지 않습니다.',
-                  height: 1.5,
-                  center: true,
-                ),
+                const CustomText(content: '순위'),
+                TextButton(
+                  onPressed: () {
+                    changeGroupIndex(context, 2);
+                  },
+                  child: const CustomText(
+                    content: '전체보기',
+                    fontSize: FontSize.smallSize,
+                  ),
+                )
               ],
-            )
-        ],
+            ),
+            if (getRank(context).isNotEmpty)
+              for (int i = 0; i < getRank(context).length; i += 1)
+                RankListItem(rankListItem: getRank(context)[i]),
+            if (getRank(context).isEmpty)
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomText(
+                    content: '달성한 목표가 있는 그룹원이\n존재하지 않습니다.',
+                    height: 1.5,
+                    center: true,
+                  ),
+                ],
+              )
+          ],
+        ),
       ),
     );
   }

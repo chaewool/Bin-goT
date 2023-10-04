@@ -87,8 +87,6 @@ class _BingoFormModalState extends State<BingoFormModal> {
 
     void applyItem() {
       setItem(context, newIdx, item);
-      print('item => $item');
-      print(readItem(context, newIdx));
       toBack(context);
     }
 
@@ -184,6 +182,7 @@ class _BingoFormModalState extends State<BingoFormModal> {
                           ),
                           if (item['check'])
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 CustomInput(
                                   width: 45,
@@ -339,8 +338,7 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
                   ),
                 ),
                 CustomIconButton(
-                  onPressed:
-                      newIdx < widget.cnt - 1 ? () => moveBingo(true) : () {},
+                  onPressed: () => moveBingo(true),
                   icon: rightIcon,
                   size: 40,
                   color: newIdx < widget.cnt - 1 ? palePinkColor : greyColor,

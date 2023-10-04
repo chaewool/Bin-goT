@@ -78,12 +78,13 @@ class CustomIconButton extends StatelessWidget {
   final ReturnVoid onPressed;
   final Color color;
   final double size;
-  const CustomIconButton(
-      {super.key,
-      required this.onPressed,
-      required this.icon,
-      this.size = 30,
-      this.color = blackColor});
+  const CustomIconButton({
+    super.key,
+    required this.onPressed,
+    required this.icon,
+    this.size = 30,
+    this.color = blackColor,
+  });
 
   @override
   Widget build(BuildContext context) {

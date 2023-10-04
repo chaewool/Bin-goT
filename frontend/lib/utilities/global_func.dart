@@ -375,8 +375,11 @@ void initLoadingData(BuildContext context, int mode) {
 int? myBingoId(BuildContext context) =>
     context.read<GlobalGroupProvider>().bingoId;
 
-int groupSelectedIndex(BuildContext context) =>
+int watchGroupIndex(BuildContext context) =>
     context.watch<GlobalGroupProvider>().selectedIndex;
+
+int readGroupIndex(BuildContext context) =>
+    context.read<GlobalGroupProvider>().selectedIndex;
 
 int? watchMemberState(BuildContext context) =>
     context.watch<GlobalGroupProvider>().memberState;
@@ -430,8 +433,9 @@ void setGroupId(BuildContext context, int newVal) =>
 void changeGroupIndex(BuildContext context, int index) =>
     context.read<GlobalGroupProvider>().changeIndex(index);
 
-void changePrev(BuildContext context, bool value) =>
-    context.read<GlobalGroupProvider>().toPrevPage(value);
+void changePrev(BuildContext context, bool value) {
+  context.read<GlobalGroupProvider>().toPrevPage(value);
+}
 
 //* bingo data
 

@@ -146,35 +146,33 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
       transparent: true,
       onPressedBack: toBackAction,
       actions: [
-        watchMemberState(context) == 2
-            ? IconButtonInRow(
-                icon: settingsIcon,
-                onPressed: toOtherPage(
-                  context,
-                  page: GroupAdmin(groupId: groupId),
-                ),
-              )
-            : const SizedBox(),
-        (watchMemberState(context) != 0) && alreadyStarted(context) == false
-            ? IconButtonInRow(
-                icon: shareIcon,
-                onPressed: () => shareGroup(
-                  groupId: groupId,
-                  groupName: getGroupName(context),
-                ),
-              )
-            : const SizedBox(),
-        watchMemberState(context) == 1
-            ? IconButtonInRow(
-                icon: exitIcon,
-                onPressed: showAlert(
-                  context,
-                  title: '그룹 탈퇴 확인',
-                  content: '정말 그룹을 탈퇴하시겠습니까?',
-                  onPressed: exitThisGroup,
-                ),
-              )
-            : const SizedBox(),
+        if (watchMemberState(context) == 2)
+          IconButtonInRow(
+            icon: settingsIcon,
+            onPressed: toOtherPage(
+              context,
+              page: GroupAdmin(groupId: groupId),
+            ),
+          ),
+        if ((watchMemberState(context) != 0) &&
+            alreadyStarted(context) == false)
+          IconButtonInRow(
+            icon: shareIcon,
+            onPressed: () => shareGroup(
+              groupId: groupId,
+              groupName: getGroupName(context),
+            ),
+          ),
+        if (watchMemberState(context) == 1)
+          IconButtonInRow(
+            icon: exitIcon,
+            onPressed: showAlert(
+              context,
+              title: '그룹 탈퇴 확인',
+              content: '정말 그룹을 탈퇴하시겠습니까?',
+              onPressed: exitThisGroup,
+            ),
+          ),
       ],
     );
   }

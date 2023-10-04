@@ -1,5 +1,6 @@
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/container.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ class CustomInput extends StatelessWidget {
   final void Function(String) setValue;
   final void Function(String)? onSubmitted;
   final Widget? suffixIcon;
+  final double? contentHorizontalPadding;
 
   const CustomInput({
     super.key,
@@ -40,6 +42,7 @@ class CustomInput extends StatelessWidget {
     this.suffixIcon,
     this.explainTitle,
     this.autofocus = false,
+    this.contentHorizontalPadding,
   });
 
   @override
@@ -49,41 +52,38 @@ class CustomInput extends StatelessWidget {
         vertical: vertical!,
         horizontal: horizontal!,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: width,
-            height: height,
-            child: TextField(
-              autofocus: autofocus,
-              controller: TextEditingController(text: initialValue),
-              decoration: InputDecoration(
-                filled: filled,
-                fillColor: filledColor,
-                border: const OutlineInputBorder(),
-                hintText: explain,
-                focusColor: whiteColor,
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: palePinkColor),
-                ),
-                suffixIcon: suffixIcon,
-              ),
-              maxLength: maxLength,
-              style: TextStyle(fontSize: convertedFontSize(fontSize)),
-              maxLines: needMore ? 7 : 1,
-              keyboardType: onlyNum ? TextInputType.number : null,
-              inputFormatters:
-                  onlyNum ? [FilteringTextInputFormatter.digitsOnly] : null,
-              enabled: enabled,
-              textAlign: TextAlign.start,
-              textAlignVertical: TextAlignVertical.bottom,
-              onChanged: setValue,
-              onSubmitted: onSubmitted,
-              textInputAction: needSearch ? TextInputAction.search : null,
+      child: CustomBoxContainer(
+        width: width,
+        height: height,
+        child: TextField(
+          autofocus: autofocus,
+          controller: TextEditingController(text: initialValue),
+          decoration: InputDecoration(
+            filled: filled,
+            fillColor: filledColor,
+            border: const OutlineInputBorder(),
+            hintText: explain,
+            focusColor: whiteColor,
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: palePinkColor),
             ),
+            suffixIcon: suffixIcon,
+            contentPadding:
+                needMore ? null : const EdgeInsets.symmetric(horizontal: 10),
           ),
-        ],
+          maxLength: maxLength,
+          style: TextStyle(fontSize: convertedFontSize(fontSize)),
+          maxLines: needMore ? 7 : 1,
+          keyboardType: onlyNum ? TextInputType.number : null,
+          inputFormatters:
+              onlyNum ? [FilteringTextInputFormatter.digitsOnly] : null,
+          enabled: enabled,
+          textAlign: TextAlign.start,
+          textAlignVertical: TextAlignVertical.center,
+          onChanged: setValue,
+          onSubmitted: onSubmitted,
+          textInputAction: needSearch ? TextInputAction.search : null,
+        ),
       ),
     );
   }

@@ -20,7 +20,7 @@ const shareIcon = Icons.share;
 const copyIcon = Icons.copy;
 const addIcon = Icons.add;
 const backIcon = Icons.arrow_back_rounded;
-const exitIcon = Icons.output_rounded;
+const logoutIcon = Icons.output_rounded;
 const settingsIcon = Icons.settings;
 const editIcon = Icons.edit;
 const deleteIcon = Icons.delete_outline_rounded;
@@ -38,6 +38,7 @@ const saveIcon = Icons.save;
 const sendIcon = Icons.send;
 const circleIcon = Icons.circle_outlined;
 const alertIcon = Icons.add_circle_outline;
+const exitIcon = Icons.person_remove_alt_1_outlined;
 
 const leftIcon = Icons.chevron_left_rounded;
 const rightIcon = Icons.chevron_right_rounded;

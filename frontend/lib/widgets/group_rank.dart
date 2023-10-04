@@ -1,12 +1,12 @@
 //* 그룹 내 달성률 랭킹
-import 'package:bin_got/providers/group_provider.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/list.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GroupRank extends StatefulWidget {
   const GroupRank({
@@ -18,22 +18,13 @@ class GroupRank extends StatefulWidget {
 }
 
 class _GroupRankState extends State<GroupRank> {
-  late int groupId;
-  RankList rankList = [];
+  // int groupId = 0;
+  // RankList rankList = [];
+  // bool enable = true;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      groupId = getGroupId(context)!;
-      setLoading(context, true);
-      GroupProvider().groupRank(groupId).then((data) {
-        setState(() {
-          rankList.addAll(data);
-        });
-        setLoading(context, false);
-      });
-    });
   }
 
   @override
@@ -42,11 +33,13 @@ class _GroupRankState extends State<GroupRank> {
       padding: const EdgeInsets.fromLTRB(10, 30, 10, 0),
       child: CustomBoxContainer(
         color: whiteColor,
-        child: !watchLoading(context) && rankList.isNotEmpty
+        child: !watchLoading(context) &&
+                context.watch<GlobalGroupProvider>().rankList.isNotEmpty
             ? ListView.builder(
-                itemCount: rankList.length,
+                itemCount: context.watch<GlobalGroupProvider>().rankList.length,
                 itemBuilder: (context, index) => RankListItem(
-                  rankListItem: rankList[index],
+                  rankListItem:
+                      context.watch<GlobalGroupProvider>().rankList[index],
                 ),
               )
             : const CustomCirCularIndicator(),

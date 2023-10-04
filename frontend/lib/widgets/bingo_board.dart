@@ -99,6 +99,7 @@ class EachBingo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('size => $size');
     Color convertedColor() =>
         watchHasBlackBox(context, isDetail) ? whiteColor : blackColor;
     return Draggable<int>(

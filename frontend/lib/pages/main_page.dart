@@ -3,8 +3,6 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
-import 'package:bin_got/widgets/container.dart';
-import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/search_bar.dart';
 import 'package:bin_got/widgets/settings.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
@@ -23,32 +21,31 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  // bool isSearchMode = false;
-  // double boxHeight = 100;
-  // double radius = 40;
   late int selectedIndex;
   bool enable = true;
   WidgetList nextPages = const [CustomSearchBar(), MainTabBar(), Settings()];
-  final List<BottomNavigationBarItem> items = [
-    customBottomBarIcon(label: '그룹 검색 바 띄우기', iconData: searchIcon),
-    customBottomBarIcon(label: '메인 페이지', iconData: homeIcon),
-    customBottomBarIcon(label: '설정 페이지', iconData: settingsIcon),
+  late final PageController pageController;
+  final List<IconData> items = [
+    searchIcon,
+    homeIcon,
+    settingsIcon,
+    // customBottomBarIcon(label: '그룹 검색 바 띄우기', iconData: searchIcon),
+    // customBottomBarIcon(label: '메인 페이지', iconData: homeIcon),
+    // customBottomBarIcon(label: '설정 페이지', iconData: settingsIcon),
   ];
-  // final List<Color> backgroundColors = [whiteColor, paleRedColor, whiteColor];
 
-  void changeIndex(int index) {
-    if (enable) {
-      print(enable);
+  void changeIndex(int index, [bottomBar = false]) {
+    if (index != selectedIndex) {
       setState(() {
         selectedIndex = index;
-        print(selectedIndex);
-        enable = false;
       });
-      afterFewSec(() {
-        setState(() {
-          enable = true;
-        });
-      });
+      if (bottomBar) {
+        pageController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      }
     }
   }
 
@@ -56,6 +53,16 @@ class _MainState extends State<Main> {
   void initState() {
     super.initState();
     selectedIndex = widget.initialPage;
+    pageController = PageController(initialPage: selectedIndex);
+    pageController.addListener(
+      () {
+        if (pageController.page!.round() != selectedIndex) {
+          setState(() {
+            selectedIndex = pageController.page!.round();
+          });
+        }
+      },
+    );
     // WidgetsBinding.instance.addPostFrameCallback(
     //   (_) {
     //     setState(() {
@@ -67,25 +74,33 @@ class _MainState extends State<Main> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    pageController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (getPrev(context)) {
-    //     changePrev(context, false);
-    //   }
-    // });
     return WillPopScope(
       onWillPop: () => exitApp(context),
       child: Scaffold(
         backgroundColor: whiteColor,
         resizeToAvoidBottomInset: false,
-        body: CustomAnimatedPage(
-          // changeIndex: changeIndex,
-          nextPage: nextPages[selectedIndex],
+        body: PageView.builder(
+          controller: pageController,
+          onPageChanged: changeIndex,
+          itemCount: 3,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              child: nextPages[index],
+            );
+          },
         ),
-        bottomNavigationBar: CustomSnakeBottomBar(
+        bottomNavigationBar: CustomNavigationBar(
           selectedIndex: selectedIndex,
           items: items,
-          changeIndex: changeIndex,
+          changeIndex: (index) => changeIndex(index, true),
         ),
       ),
     );

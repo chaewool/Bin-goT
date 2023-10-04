@@ -1,5 +1,4 @@
 import 'package:bin_got/pages/bingo_form_page.dart';
-import 'package:bin_got/providers/bingo_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
@@ -26,39 +25,36 @@ class BingoDetail extends StatefulWidget {
 
 class _BingoDetailState extends State<BingoDetail> {
   int bingoSize = 0;
-  int bingoId = 0;
+  // int bingoId = 0;
+  // bool enable = true;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       bingoSize = context.read<GlobalBingoProvider>().bingoSize ??
           context.read<GlobalGroupProvider>().bingoSize!;
-
-      bingoId = getBingoId(context) ?? myBingoId(context)!;
-      context.read<GlobalBingoProvider>().initKey();
-      setLoading(context, true);
-      readBingoDetail();
     });
   }
 
-  void readBingoDetail() {
-    BingoProvider()
-        .readBingoDetail(
-      getGroupId(context)!,
-      bingoId,
-    )
-        .then((data) {
-      setBingoData(context, data);
-      final length = bingoSize * bingoSize;
-      initFinished(context, length);
-      for (int i = 0; i < length; i += 1) {
-        setFinished(context, i, data['items'][i]['finished']);
-      }
-      setLoading(context, false);
-    }).catchError((_) {
-      showErrorModal(context);
-    });
-  }
+  // void readBingoDetail() {
+  //   BingoProvider()
+  //       .readBingoDetail(
+  //     getGroupId(context)!,
+  //     bingoId,
+  //   )
+  //       .then((data) {
+  //     setBingoData(context, data);
+  //     final length = bingoSize * bingoSize;
+  //     initFinished(context, length);
+  //     for (int i = 0; i < length; i += 1) {
+  //       setFinished(context, i, data['items'][i]['finished']);
+  //     }
+  //     setLoading(context, false);
+  //     print(data);
+  //   }).catchError((_) {
+  //     showErrorModal(context);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

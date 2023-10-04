@@ -10,7 +10,6 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/row_col.dart';
-import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -276,15 +275,13 @@ class _ChatListItemState extends State<ChatListItem> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     if (widget.data.itemId != -1)
-                                      Column(
-                                        children: [
-                                          CustomText(
-                                            content: widget.data.title,
-                                            color: whiteColor,
-                                            fontSize: FontSize.largeSize,
-                                          ),
-                                          const CustomDivider(),
-                                        ],
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10),
+                                        child: CustomText(
+                                          content: widget.data.title,
+                                          color: blackColor,
+                                        ),
                                       ),
                                     if (widget.data.hasImage == true)
                                       Padding(
@@ -305,7 +302,7 @@ class _ChatListItemState extends State<ChatListItem> {
                                               ),
                                             ),
                                           ),
-                                          height: 150,
+                                          height: 250,
                                         ),
                                       ),
                                     if (widget.data.content != null)
@@ -362,7 +359,7 @@ class _ChatListItemState extends State<ChatListItem> {
                                 ),
                               ),
                               widget: widget,
-                              height: 150,
+                              height: 250,
                             ),
                           ),
                     if (!isMine)

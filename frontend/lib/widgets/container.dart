@@ -12,8 +12,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 //* 그룹 메인 내용 출력
 class ShowContentBox extends StatelessWidget {
   final String contentTitle, content;
-  const ShowContentBox(
-      {super.key, required this.contentTitle, required this.content});
+  const ShowContentBox({
+    super.key,
+    required this.contentTitle,
+    required this.content,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -193,56 +196,85 @@ class CircleContainer extends StatelessWidget {
 
 //* animated container with page view
 class CustomAnimatedPage extends StatelessWidget {
-  final Widget nextPage;
-  final Widget? appBar;
-  final bool needScroll;
+  final WidgetList nextPages;
+  final WidgetList? appBarList;
+  final int selectedIndex;
   const CustomAnimatedPage({
     super.key,
-    required this.nextPage,
-    this.appBar,
-    this.needScroll = false,
+    required this.nextPages,
+    required this.selectedIndex,
+    this.appBarList,
   });
 
   @override
   Widget build(BuildContext context) {
-    return needScroll
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   enableBottomBar();
+    // });
+    return appBarList != null
         ? Stack(
             children: [
-              Padding(
-                padding:
-                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                child: SingleChildScrollView(
+              Visibility(
+                visible: selectedIndex == 0,
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(top: MediaQuery.of(context).padding.top),
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    child: nextPage,
+                    duration: const Duration(seconds: 1),
+                    child: nextPages[0],
                   ),
                 ),
               ),
-              if (appBar != null)
-                CustomBoxContainer(
-                  color: transparentColor,
-                  width: getWidth(context),
-                  height: 100,
-                  child: appBar!,
+              Visibility(
+                visible: selectedIndex == 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).padding.top),
+                      child: SingleChildScrollView(
+                        child: AnimatedContainer(
+                          duration: const Duration(seconds: 1),
+                          child: nextPages[1],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+              Visibility(
+                visible: selectedIndex == 2,
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                  child: AnimatedContainer(
+                    duration: const Duration(seconds: 1),
+                    child: nextPages[2],
+                  ),
+                ),
+              ),
+              CustomBoxContainer(
+                color: transparentColor,
+                width: getWidth(context),
+                height: 80,
+                child: appBarList![selectedIndex],
+              ),
             ],
           )
         : Stack(
             children: [
-              Padding(
-                padding:
-                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 500),
-                  child: nextPage,
-                ),
-              ),
-              if (appBar != null)
-                CustomBoxContainer(
-                  color: transparentColor,
-                  width: getWidth(context),
-                  height: 100,
-                  child: appBar!,
+              for (int i = 0; i < 3; i += 1)
+                Visibility(
+                  visible: i == selectedIndex,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).padding.top),
+                    child: AnimatedContainer(
+                      duration: const Duration(seconds: 1),
+                      child: nextPages[i],
+                    ),
+                  ),
                 ),
             ],
           );
