@@ -165,7 +165,6 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
               )
             : const SizedBox(),
         watchMemberState(context) == 1
-            // && today.difference(start) < Duration.zero
             ? IconButtonInRow(
                 icon: exitIcon,
                 onPressed: showAlert(

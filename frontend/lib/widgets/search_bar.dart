@@ -14,19 +14,8 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
 class CustomSearchBar extends StatefulWidget {
-  // final int public;
-  // final int period;
-  // final String? query;
-  // final bool isMain;
-  // final int sortIdx;
-
   const CustomSearchBar({
     super.key,
-    // this.public = 0,
-    // this.period = 0,
-    // this.query,
-    // this.isMain = false,
-    // this.sortIdx = 0,
   });
 
   @override
@@ -50,6 +39,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   ScrollController controller = ScrollController();
   bool showSearchBar = true;
   int result = 3;
+  bool initial = true;
 
   @override
   void initState() {
@@ -59,25 +49,21 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       initLoadingData(context, 0);
       if (getLoading(context)) {
         setLoading(context, false);
-        // search(false);
       }
-      // getOffset();
       controller.addListener(() {
         if (controller.position.pixels >=
             controller.position.maxScrollExtent * 0.9) {
-          // print('${getPage(context, 0)}, ${getTotal(context, 0)}');
           if (getLastId(context, 0) != -1) {
-            // if (getPage(context, 1) < getTotal(context, 1)!) {
             if (!getWorking(context)) {
               setWorking(context, true);
-              Future.delayed(const Duration(seconds: 2), () {
+              afterFewSec(() {
                 if (!getAdditional(context)) {
                   setAdditional(context, true);
                   if (getAdditional(context)) {
                     search();
                   }
                 }
-              });
+              }, 2000);
             }
           }
         }
@@ -106,16 +92,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
         result -= 1;
       }
       search(false);
-
-      // toOtherPage(
-      //   context,
-      //   page: SearchGroup(
-      //     public: result,
-      //     period: index.toInt(),
-      //     query: keyword['value'],
-      //     order: sortIdx,
-      //   ),
-      // )();
     } else {
       showModal(
         context,
@@ -138,7 +114,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     print(publicPrivate);
   }
 
-  bool Function() isPossible() => () => index != 0 || keyword['value'] != '';
+  // bool Function() isPossible() => () => index != 0 || keyword['value'] != '';
 
   void changeSort(int value) {
     setState(() {
@@ -147,14 +123,12 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   }
 
   void search([bool more = true]) {
+    if (initial) {
+      setState(() {
+        initial = false;
+      });
+    }
     setLastId(context, 0, 0);
-    print('''
-    keyword: $keyword,
-      public: $result,
-      order: $sortIdx,
-      period: $index,
-      lastId: ${getLastId(context, 0)}
-''');
     GroupProvider()
         .searchGroupList(
       keyword: keyword['value'],
@@ -165,11 +139,15 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     )
         .then((newGroups) {
       if (!more) {
-        groups.clear();
+        setState(() {
+          groups.clear();
+        });
       }
-      setState(() {
-        groups.addAll(newGroups);
-      });
+      if (newGroups.isNotEmpty) {
+        setState(() {
+          groups.addAll(newGroups);
+        });
+      }
       setLoading(context, false);
       if (more) {
         setWorking(context, false);
@@ -194,6 +172,15 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
               child: Row(
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: CustomIconButton(
+                      onPressed: changeShowSearchBar,
+                      icon: showSearchBar
+                          ? Icons.keyboard_arrow_up_outlined
+                          : Icons.keyboard_arrow_down_outlined,
+                    ),
+                  ),
                   Expanded(
                     child: CustomInput(
                       explain: '그룹명을 입력하세요',
@@ -210,15 +197,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: CustomIconButton(
-                      onPressed: changeShowSearchBar,
-                      icon: showSearchBar
-                          ? Icons.keyboard_arrow_up_outlined
-                          : Icons.keyboard_arrow_down_outlined,
-                    ),
-                  )
                 ],
               ),
             ),
@@ -268,15 +246,24 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                     '그룹 정렬',
                     [
                       for (int i = 0; i < 2; i += 1)
-                        CustomBoxContainer(
-                          onTap: () => changeSort(i),
-                          color: sortIdx == i ? paleRedColor : whiteColor,
-                          borderColor: sortIdx == i ? paleRedColor : greyColor,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CustomText(
-                              content: '시작일 ${i == 0 ? '▲' : '▼'}',
-                              color: sortIdx == i ? whiteColor : blackColor,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: CustomBoxContainer(
+                            width: 90,
+                            onTap: () => changeSort(i),
+                            color: sortIdx == i ? paleRedColor : whiteColor,
+                            borderColor:
+                                sortIdx == i ? paleRedColor : greyColor,
+                            child: Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: CustomText(
+                                  content: '시작일 ${i == 0 ? '▲' : '▼'}',
+                                  color: sortIdx == i ? whiteColor : blackColor,
+                                  fontSize: FontSize.smallSize,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -286,62 +273,74 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                     '공개 여부 필터',
                     [
                       for (int i = 0; i < 2; i += 1)
-                        CustomBoxContainer(
-                          onTap: () => changePublicPrivate(i),
-                          color: publicPrivate[i] ? paleRedColor : whiteColor,
-                          borderColor:
-                              publicPrivate[i] ? paleRedColor : greyColor,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CustomText(
-                              content: i == 0 ? '공개 그룹' : '비공개 그룹',
-                              color: publicPrivate[i] ? whiteColor : blackColor,
-                              fontSize: FontSize.smallSize,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: CustomBoxContainer(
+                            width: 90,
+                            onTap: () => changePublicPrivate(i),
+                            color: publicPrivate[i] ? paleRedColor : whiteColor,
+                            borderColor:
+                                publicPrivate[i] ? paleRedColor : greyColor,
+                            child: Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: CustomText(
+                                  content: i == 0 ? '공개 그룹' : '비공개 그룹',
+                                  color: publicPrivate[i]
+                                      ? whiteColor
+                                      : blackColor,
+                                  fontSize: FontSize.smallSize,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                     ],
                   ),
+                  RowWithPadding(
+                    vertical: 10,
+                    horizontal: 20,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      index != 0 || keyword['value'] != ''
+                          ? Expanded(
+                              child: CustomButton(
+                                onPressed: onSearchAction,
+                                content: '검색',
+                              ),
+                            )
+                          : const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: CustomText(
+                                content: '그룹명을 입력하거나, 기간을 선택해주세요',
+                                fontSize: FontSize.smallSize,
+                                color: paleRedColor,
+                              ),
+                            ),
+                    ],
+                  ),
                 ],
               ),
-            RowWithPadding(
-              vertical: 10,
-              horizontal: 20,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                isPossible()()
-                    ? Expanded(
-                        child: CustomButton(
-                          onPressed: onSearchAction,
-                          content: '검색',
-                        ),
-                      )
-                    : const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: CustomText(
-                          content: '그룹명을 입력하거나, 기간을 선택해주세요',
-                          fontSize: FontSize.smallSize,
-                          color: paleRedColor,
-                        ),
-                      ),
-              ],
-            ),
             Expanded(
               child: GroupInfiniteScroll(
                 controller: controller,
                 data: groups,
                 mode: 0,
-                emptyWidget: const Padding(
-                  padding: EdgeInsets.only(top: 40),
+                emptyWidget: Padding(
+                  padding: const EdgeInsets.only(top: 40),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      CustomText(
-                        center: true,
-                        content: '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
-                        height: 1.5,
-                      ),
+                      initial
+                          ? const SizedBox()
+                          : const CustomText(
+                              center: true,
+                              content:
+                                  '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
+                              height: 1.5,
+                            ),
                     ],
                   ),
                 ),
@@ -357,11 +356,12 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   RowWithPadding searchOptions(String optionTitle, WidgetList children) {
     return RowWithPadding(
       vertical: 12,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomText(
-          content: optionTitle,
-          fontSize: FontSize.smallSize,
+        Expanded(
+          child: CustomText(
+            content: optionTitle,
+            fontSize: FontSize.smallSize,
+          ),
         ),
         ...children
       ],
