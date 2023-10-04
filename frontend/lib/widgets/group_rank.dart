@@ -1,31 +1,18 @@
-//* 그룹 내 달성률 랭킹
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
-import 'package:bin_got/widgets/list.dart';
+import 'package:bin_got/widgets/list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class GroupRank extends StatefulWidget {
+//? 그룹 내 달성률 순위
+
+class GroupRank extends StatelessWidget {
   const GroupRank({
     super.key,
   });
-
-  @override
-  State<GroupRank> createState() => _GroupRankState();
-}
-
-class _GroupRankState extends State<GroupRank> {
-  // int groupId = 0;
-  // RankList rankList = [];
-  // bool enable = true;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

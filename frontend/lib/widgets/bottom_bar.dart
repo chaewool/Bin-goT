@@ -12,37 +12,24 @@ import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+//? 하단 바
+
 //* custom bottom bar
 
 class CustomNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final List<IconData> items;
-  // final List<BottomNavigationBarItem> items;
-  // final bool isGroup;
   final void Function(int) changeIndex;
   const CustomNavigationBar({
     super.key,
     required this.selectedIndex,
     required this.items,
     required this.changeIndex,
-    // this.isGroup = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return
-        // BottomNavigationBar(
-        //   items: items,
-        //   backgroundColor: whiteColor,
-        //   selectedItemColor: whiteColor,
-        //   unselectedItemColor: greyColor,
-        //   selectedIconTheme: IconThemeData(),
-        //   currentIndex: selectedIndex,
-        //   onTap: changeIndex,
-        //   showSelectedLabels: false,
-        //   showUnselectedLabels: false,
-        // );
-        CustomBoxContainer(
+    return CustomBoxContainer(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 30),
         child: Row(
@@ -72,50 +59,6 @@ class CustomNavigationBar extends StatelessWidget {
   }
 }
 
-//* snake bottom bar
-// class CustomSnakeBottomBar extends StatefulWidget {
-//   final int selectedIndex;
-//   final List<BottomNavigationBarItem> items;
-//   final void Function(int) changeIndex;
-//   const CustomSnakeBottomBar({
-//     super.key,
-//     required this.selectedIndex,
-//     required this.items,
-//     required this.changeIndex,
-//   });
-
-//   @override
-//   State<CustomSnakeBottomBar> createState() => _CustomSnakeBottomBarState();
-// }
-
-// class _CustomSnakeBottomBarState extends State<CustomSnakeBottomBar> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return SnakeNavigationBar.gradient(
-//       snakeShape: SnakeShape.indicator,
-//       elevation: 0.8,
-//       shape: const RoundedRectangleBorder(
-//         borderRadius: BorderRadius.only(
-//           topLeft: Radius.circular(25),
-//           topRight: Radius.circular(25),
-//         ),
-//       ),
-//       snakeViewGradient: const LinearGradient(
-//         colors: [paleRedColor, palePinkColor],
-//       ),
-//       unselectedItemGradient: const LinearGradient(
-//         colors: [greyColor, greyColor],
-//       ),
-//       selectedItemGradient: const LinearGradient(
-//         colors: [whiteColor, whiteColor],
-//       ),
-//       currentIndex: widget.selectedIndex,
-//       onTap: widget.changeIndex,
-//       items: widget.items,
-//     );
-//   }
-// }
-
 //* 그룹에서의 하단 바
 class GroupMainBottomBar extends StatelessWidget {
   final int? size, bingoId;
@@ -134,14 +77,7 @@ class GroupMainBottomBar extends StatelessWidget {
     return isMember
         ? CustomNavigationBar(
             changeIndex: changeIndex!,
-            items: const [
-              boardIcon,
-              homeIcon,
-              rankIcon
-              // customBottomBarIcon(label: '빙고 상세 페이지', iconData: boardIcon),
-              // customBottomBarIcon(label: '그룹 메인 페이지', iconData: homeIcon),
-              // customBottomBarIcon(label: '그룹 내 순위 페이지', iconData: rankIcon),
-            ],
+            items: const [boardIcon, homeIcon, rankIcon],
             selectedIndex: watchGroupIndex(context),
           )
         : BottomAppBar(
@@ -229,6 +165,7 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
   Widget build(BuildContext context) {
     StringMap data = {'content': ''};
 
+    //* 채팅 추가
     void addChat() {
       widget.addChat(data, widget.selectedImage);
       setState(() {

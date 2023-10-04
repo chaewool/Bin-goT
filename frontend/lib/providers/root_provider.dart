@@ -11,11 +11,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 
+//? 전역 변수
+
 //* token, user data
 class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   static String? _token, _refresh;
   static int? _id;
 
+  //* getter
   String? get token => _token;
   String? get refresh => _refresh;
   int? get id => _id;
@@ -81,8 +84,6 @@ class NotiProvider extends ChangeNotifier {
   static bool _afterWork = false;
   static bool _spinnerState = false;
   static bool _refreshState = false;
-  static const bool _enable = true;
-  // static int _selectedIndex = 1;
   static String _toastString = '';
 
   //* getter
@@ -92,7 +93,6 @@ class NotiProvider extends ChangeNotifier {
   bool get spinnerState => _spinnerState;
   bool get refreshState => _refreshState;
   String get toastString => _toastString;
-  // int get selectedIndex => _selectedIndex;
 
   //* private
 
@@ -128,23 +128,6 @@ class NotiProvider extends ChangeNotifier {
 
   void _setToastString(String value) => _toastString = value;
 
-  // void _changeIndex(int index) {
-  //   if (index != _selectedIndex) {
-  //     // if (_enable) {
-  //     _selectedIndex = index;
-  //     // _enable = false;
-  //     notifyListeners();
-  //     // }
-  //   }
-  // }
-
-  // void _enableBottomBar() {
-  //   if (_enable) {
-  //     _enable = true;
-  //     notifyListeners();
-  //   }
-  // }
-
   //* public
 
   FutureBool changePressed() => _changePressed();
@@ -159,9 +142,6 @@ class NotiProvider extends ChangeNotifier {
     _setToastString(value);
     notifyListeners();
   }
-
-  // void changeIndex(int index) => _changeIndex(index);
-  // void enableBottomBar() => _enableBottomBar();
 }
 
 //* scroll
@@ -202,15 +182,15 @@ class GlobalScrollProvider extends ChangeNotifier {
 
 //* group data
 class GlobalGroupProvider extends ChangeNotifier {
-  static GroupDetailModel? _data;
   static int? _groupId;
   static int _lastId = 0;
-  static String? _start;
-  static final GroupChatList _chats = [];
-  static final RankList _rankList = [];
   static int _selectedIndex = 1;
+  static String? _start;
   static bool _prev = false;
   static bool _enable = true;
+  static GroupDetailModel? _data;
+  static final GroupChatList _chats = [];
+  static final RankList _rankList = [];
 
   GroupChatList get chats => _chats;
   bool get prev => _prev;

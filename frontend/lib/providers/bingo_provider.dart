@@ -2,6 +2,7 @@ import 'package:bin_got/providers/api_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:dio/dio.dart';
 
+//? 빙고 api
 class BingoProvider extends ApiProvider {
   //* public
   FutureDynamicMap readBingoDetail(int groupId, int bingoId) =>
@@ -11,6 +12,7 @@ class BingoProvider extends ApiProvider {
 
   FutureDynamicMap makeCompleteMessage(int groupId, FormData completeData) =>
       _makeCompleteMessage(groupId, completeData);
+
   //* detail
   FutureDynamicMap _readBingoDetail(int groupId, int bingoId) async {
     try {

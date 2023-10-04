@@ -3,6 +3,9 @@ import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
+//? toast
+
+//* toast
 class CustomToast extends StatelessWidget {
   final double height, width;
   final Color color;

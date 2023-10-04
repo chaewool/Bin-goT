@@ -17,6 +17,7 @@ import 'package:bin_got/widgets/icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+//? 빙고 상세, 그룹 메인, 그룹 순위
 class GroupDetail extends StatefulWidget {
   final bool admin, isMember, chat, needBack;
   final int? bingoId, size, groupId;
@@ -36,8 +37,7 @@ class GroupDetail extends StatefulWidget {
 }
 
 class _GroupDetailState extends State<GroupDetail> {
-  late final PageController pageController;
-  // bool enable = true;
+  //* 변수
   int bingoSize = 0;
   int bingoId = 0;
   WidgetList nextPages = [
@@ -50,7 +50,9 @@ class _GroupDetailState extends State<GroupDetail> {
     const GroupAppBar(),
     const GroupAppBar(),
   ];
+  late final PageController pageController;
 
+  //* 빙고 정보 불러오기
   void readBingoDetail() {
     BingoProvider()
         .readBingoDetail(
@@ -65,33 +67,26 @@ class _GroupDetailState extends State<GroupDetail> {
         setFinished(context, i, data['items'][i]['finished']);
       }
       setLoading(context, false);
-      print(data);
     }).catchError((_) {
-      showErrorModal(context);
+      showErrorModal(context, '빙고 정보 불러오기 오류', '빙고 정보를 불러오는 데 실패했습니다.');
     });
   }
 
+  //* 빙고 정보 적용
   void applyBingoDetail() {
-    // if (enable) {
-    print('read group index in bingo detail => ${readGroupIndex(context)}');
-    print(getBingoData(context));
     setState(() {
       bingoSize = context.read<GlobalBingoProvider>().bingoSize ??
           context.read<GlobalGroupProvider>().bingoSize!;
       bingoId = getBingoId(context) ?? myBingoId(context)!;
-      // enable = false;
     });
 
     context.read<GlobalBingoProvider>().initKey();
     setLoading(context, true);
     readBingoDetail();
-    // }
   }
 
+  //* 그룹 순위 적용
   void applyGroupRank() {
-    print('read group index in group rank => ${readGroupIndex(context)}');
-    // if (enable) {
-    // groupId = getGroupId(context)!;
     setLoading(context, true);
     GroupProvider().groupRank(getGroupId(context)!).then((data) {
       if (data.isNotEmpty) {
@@ -102,16 +97,27 @@ class _GroupDetailState extends State<GroupDetail> {
       }
       setLoading(context, false);
     });
-    // }
+  }
+
+  //* 뒤로 가기
+  FutureBool onBackAction() {
+    context.read<GlobalBingoProvider>().initData();
+    context.read<GlobalGroupProvider>().initData();
+    toBack(context);
+    if (getPrev(context)) {
+      changePrev(context, false);
+      toBack(context);
+    }
+    return Future.value(false);
   }
 
   @override
   void initState() {
     super.initState();
+    //* 페이지 이동 시
     pageController = PageController(initialPage: readGroupIndex(context));
     pageController.addListener(
       () {
-        print('page controller => ${pageController.page}');
         final newIndex = pageController.page!.round();
         if (newIndex != readGroupIndex(context)) {
           setState(() {
@@ -136,6 +142,7 @@ class _GroupDetailState extends State<GroupDetail> {
       },
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      //* 다른 페이지로 이동해야할 경우
       if (widget.admin) {
         toOtherPage(context, page: GroupAdmin(groupId: widget.groupId!))();
       } else if (widget.chat) {
@@ -144,21 +151,11 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
+  //* 종료
   @override
   void dispose() {
     super.dispose();
     pageController.dispose();
-  }
-
-  FutureBool onBackAction() {
-    context.read<GlobalBingoProvider>().initData();
-    context.read<GlobalGroupProvider>().initData();
-    toBack(context);
-    if (getPrev(context)) {
-      changePrev(context, false);
-      toBack(context);
-    }
-    return Future.value(false);
   }
 
   @override
@@ -173,6 +170,7 @@ class _GroupDetailState extends State<GroupDetail> {
             SizedBox(
               width: getWidth(context),
               height: getHeight(context) - 80,
+              //* 화면
               child: PageView(
                 controller: pageController,
                 onPageChanged: (index) => changeGroupIndex(context, index),
@@ -203,12 +201,14 @@ class _GroupDetailState extends State<GroupDetail> {
                 ],
               ),
             ),
+            //* 앱 바
             CustomBoxContainer(
               color: transparentColor,
               width: getWidth(context),
               height: 80,
               child: appbarList[watchGroupIndex(context)],
             ),
+            //* 채팅창 이동 버튼
             if (watchMemberState(context) != 0)
               Positioned(
                 left: getWidth(context) - 80,
@@ -224,6 +224,7 @@ class _GroupDetailState extends State<GroupDetail> {
               ),
           ],
         ),
+        //* 하단 바
         bottomNavigationBar: GroupMainBottomBar(
           isMember: widget.isMember,
           size: context.watch<GlobalGroupProvider>().bingoSize ??

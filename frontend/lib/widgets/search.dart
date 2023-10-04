@@ -13,16 +13,17 @@ import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 
-class CustomSearchBar extends StatefulWidget {
-  const CustomSearchBar({
+//? 검색
+class Search extends StatefulWidget {
+  const Search({
     super.key,
   });
 
   @override
-  State<CustomSearchBar> createState() => _CustomSearchBarState();
+  State<Search> createState() => _SearchState();
 }
 
-class _CustomSearchBarState extends State<CustomSearchBar> {
+class _SearchState extends State<Search> {
   final StringList period = <String>[
     '기간 미선택',
     '하루 ~ 한 달',
@@ -111,10 +112,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     setState(() {
       publicPrivate[i] = !publicPrivate[i];
     });
-    print(publicPrivate);
   }
-
-  // bool Function() isPossible() => () => index != 0 || keyword['value'] != '';
 
   void changeSort(int value) {
     setState(() {

@@ -15,6 +15,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+//* 목록 아이템
+
 //* 그룹 목록
 class GroupListItem extends StatelessWidget {
   final bool isSearchMode;
@@ -388,6 +390,7 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 }
 
+//* 채팅 이미지
 class ChatImage extends StatelessWidget {
   final ChatListItem widget;
   final double height;

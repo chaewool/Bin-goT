@@ -1,6 +1,7 @@
 import 'package:bin_got/dl_settings.dart';
 import 'package:bin_got/fcm_settings.dart';
 import 'package:bin_got/models/group_model.dart';
+import 'package:bin_got/navigator_key.dart';
 import 'package:bin_got/pages/intro_page.dart';
 import 'package:bin_got/pages/main_page.dart';
 import 'package:bin_got/providers/root_provider.dart';
@@ -15,6 +16,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+
+//? 공통 함수, 변수
 
 //* 함수
 
@@ -60,7 +63,7 @@ void imagePicker(
               thenFunc(localImage);
             }
           }).catchError((error) {
-            showErrorModal(context);
+            showErrorModal(context, '이미지 선택 오류', '이미지 선택 시 오류가 발생했습니다.');
           });
         }
       }
@@ -94,7 +97,7 @@ void imagePicker(
               thenFunc(localImage);
             }
           }).catchError((error) {
-            showErrorModal(context);
+            showErrorModal(context, '이미지 선택 오류', '이미지 선택 시 오류가 발생했습니다.');
           });
         }
       }
@@ -105,12 +108,9 @@ void imagePicker(
 //* 공유 템플릿
 TextTemplate defaultText({
   required int id,
-  // required bool isGroup,
-  // String? password,
   required String groupName,
   required String url,
 }) {
-  print(url);
   return TextTemplate(
     text: '$groupName 그룹에서\n당신을 기다리고 있어요\n그룹에 참여하여\n같이 빈 곳을 채워보세요 :)\n',
     buttonTitle: '앱으로 이동하기/앱 설치하기',
@@ -125,40 +125,34 @@ void shareGroup({
   required int groupId,
   required groupName,
 }) async {
-  bool isKakaoTalkSharingAvailable =
-      await ShareClient.instance.isKakaoTalkSharingAvailable();
+  try {
+    bool isKakaoTalkSharingAvailable =
+        await ShareClient.instance.isKakaoTalkSharingAvailable();
 
-  String url = await DynamicLink().buildDynamicLink(groupId);
+    String url = await DynamicLink().buildDynamicLink(groupId);
 
-  if (isKakaoTalkSharingAvailable) {
-    try {
+    if (isKakaoTalkSharingAvailable) {
       Uri uri = await ShareClient.instance.shareDefault(
         template: defaultText(
           id: groupId,
-          // password: password,
           groupName: groupName,
           url: url,
         ),
       );
       await ShareClient.instance.launchKakaoTalk(uri);
-      print('카카오톡 공유 완료');
-    } catch (error) {
-      print('카카오톡 공유 실패 $error');
-    }
-  } else {
-    try {
+    } else {
       Uri shareUrl = await WebSharerClient.instance.makeDefaultUrl(
         template: defaultText(
           id: groupId,
           groupName: groupName,
-          // password: password,
           url: url,
         ),
       );
       await launchBrowserTab(shareUrl, popupOpen: true);
-    } catch (error) {
-      print('카카오톡 공유 실패 $error');
     }
+  } catch (_) {
+    final context = NavigatorKey.naviagatorState.currentContext;
+    showErrorModal(context!, '공유 실패', '빙고 공유에 실패했습니다');
   }
 }
 
@@ -242,19 +236,25 @@ void login(BuildContext context) async {
 }
 
 //* modal
-void showLoginModal(BuildContext context) => showAlert(
-      context,
-      title: '토큰 만료',
-      content: '토큰이 만료되었습니다. 재로그인하시겠습니까?',
-      onPressed: () => login(context),
-    )();
 
-void showErrorModal(BuildContext context) => showAlert(
-      context,
-      title: '오류 발생',
-      content: '오류가 발생했습니다.',
-      hasCancel: false,
-    )();
+void showErrorModal(BuildContext context, String title, String content) {
+  late final bool hasCancel;
+  ReturnVoid? onPressed;
+
+  if (context.read<AuthProvider>().token != null) {
+    hasCancel = false;
+  } else {
+    title = '토큰 만료';
+    content = '토큰이 만료되었습니다. 재로그인하시겠습니까?';
+    hasCancel = true;
+    onPressed = () => toOtherPageWithoutPath(context);
+  }
+  return showAlert(context,
+      title: title,
+      content: content,
+      hasCancel: hasCancel,
+      onPressed: onPressed)();
+}
 
 //* date
 String returnDate(GroupChatModel data) => data.createdAt.split(' ')[0];
@@ -262,18 +262,13 @@ String returnDate(GroupChatModel data) => data.createdAt.split(' ')[0];
 //* token
 String? getToken(BuildContext context) => context.read<AuthProvider>().token;
 
-void setToken(BuildContext context, String newToken) =>
-    context.read<AuthProvider>().setStoreToken(newToken);
-
 void setTokens(BuildContext context, String newToken, String newRefresh) {
   context.read<AuthProvider>().setStoreToken(newToken);
   context.read<AuthProvider>().setStoreRefresh(newRefresh);
 }
 
-void deleteVar(BuildContext context) {
-  context.read<AuthProvider>().deleteVar();
-  // context.read<NotiProvider>().deleteVar();
-}
+void deleteVar(BuildContext context) =>
+    context.read<AuthProvider>().deleteVar();
 
 //* id
 int? getId(BuildContext context) => context.read<AuthProvider>().id;
@@ -311,12 +306,6 @@ void showSpinner(BuildContext context, bool showState) =>
 
 bool watchSpinner(BuildContext context) =>
     context.watch<NotiProvider>().spinnerState;
-
-//* refresh state
-// void applyRefresh(BuildContext context, bool refreshState) =>
-//     context.read<NotiProvider>().applyRefresh(refreshState);
-// bool watchRefresh(BuildContext context) =>
-//     context.read<NotiProvider>().refreshState;
 
 //* scroll
 
@@ -366,7 +355,6 @@ void setAdditional(BuildContext context, bool value) =>
 void initLoadingData(BuildContext context, int mode) {
   setLoading(context, true);
   setLastId(context, mode, 0);
-  // initPage(context, mode);
   setAdditional(context, false);
   setWorking(context, false);
 }
@@ -384,9 +372,6 @@ int readGroupIndex(BuildContext context) =>
 int? watchMemberState(BuildContext context) =>
     context.watch<GlobalGroupProvider>().memberState;
 
-int? getMemberState(BuildContext context) =>
-    context.read<GlobalGroupProvider>().memberState;
-
 int? getGroupId(BuildContext context) =>
     context.read<GlobalGroupProvider>().groupId;
 
@@ -395,9 +380,6 @@ int? getBingoSize(BuildContext context) =>
 
 String? getStart(BuildContext context) =>
     context.read<GlobalGroupProvider>().start;
-
-// bool? getPublic(BuildContext context) =>
-//     context.read<GlobalGroupProvider>().isPublic;
 
 bool? getNeedAuth(BuildContext context) =>
     context.read<GlobalGroupProvider>().needAuth;
@@ -426,9 +408,6 @@ void setGroupData(BuildContext context, dynamic newVal) =>
 
 void setGroupId(BuildContext context, int newVal) =>
     context.read<GlobalGroupProvider>().setGroupId(newVal);
-
-// void setPublic(BuildContext context, bool? newVal) =>
-//     context.read<GlobalGroupProvider>().setPublic(newVal);
 
 void changeGroupIndex(BuildContext context, int index) =>
     context.read<GlobalGroupProvider>().changeIndex(index);
@@ -472,28 +451,15 @@ void initBingoFormData(BuildContext context, [bool editMode = true]) =>
 
 void applyBingoData(BuildContext context) =>
     context.read<GlobalBingoProvider>().applyData();
-// void initBingoData(BuildContext context) =>
-//     context.read<GlobalBingoProvider>().initData();
 
 //* var
 int? getBingoId(BuildContext context) =>
     context.read<GlobalBingoProvider>().bingoId;
-int? watchBingoId(BuildContext context) =>
-    context.watch<GlobalBingoProvider>().bingoId;
-
-// int watchAchieve(BuildContext context) =>
-//     context.watch<GlobalBingoProvider>().achieve;
 
 DynamicMap getBingoData(BuildContext context, [bool isDetail = true]) =>
     isDetail
         ? context.read<GlobalBingoProvider>().data
         : context.read<GlobalBingoProvider>().formData;
-
-// DynamicMap getBingoFormData(BuildContext context) =>
-//     context.read<GlobalBingoProvider>().formData;
-
-DynamicMap watchBingoData(BuildContext context) =>
-    context.watch<GlobalBingoProvider>().data;
 
 String? watchTitle(BuildContext context, [bool isDetail = false]) => isDetail
     ? context.watch<GlobalBingoProvider>().title
@@ -549,7 +515,3 @@ String getStringFont(BuildContext context, [bool isDetail = true]) =>
 
 IconData getCheckIconData(BuildContext context, [bool isDetail = true]) =>
     iconList[watchCheckIcon(context, isDetail)!];
-
-// bool? getIsMine(BuildContext context) =>
-//     context.read<GlobalBingoProvider>().isMine;
-

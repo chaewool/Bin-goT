@@ -23,6 +23,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/foundation.dart';
 
+//? 모달
+
 //* 빙고 칸 내용 입력
 class BingoFormModal extends StatefulWidget {
   final int index, cnt;
@@ -45,8 +47,6 @@ class _BingoFormModalState extends State<BingoFormModal> {
     super.initState();
     newIdx = widget.index;
     item = {...readItem(context, newIdx, false)};
-    print('item => $item');
-    print(readItem(context, newIdx));
   }
 
   void initialize() {
@@ -626,7 +626,6 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
 
   void changeBadge() {
     UserInfoProvider().changeBadge({'badge_id': badgeId}).then((data) {
-      print('성공 => $data');
       toBack(context);
       widget.onPressed(badgeId);
     }).catchError((_) {
@@ -721,36 +720,6 @@ class _SelectBadgeModalState extends State<SelectBadgeModal> {
             return const CustomCirCularIndicator();
           },
         ),
-        // for (int i = 0; i < 4; i += 1)
-        //   Row(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: [
-        //       for (int j = 0; j < 3; j += 1)
-        //         ColWithPadding(
-        //           vertical: 8,
-        //           horizontal: 8,
-        //           children: [
-        //             CircleContainer(
-        //               onTap: () => selectBadge(3 * i + j),
-        //               boxShadow: 3 * i + j == badgeIdx
-        //                   ? [
-        //                       const BoxShadow(
-        //                           blurRadius: 3,
-        //                           spreadRadius: 3,
-        //                           color: blueColor)
-        //                     ]
-        //                   : null,
-        //               child: Image.network(
-        //                   '${dotenv.env['fileUrl']}/badges/${3 * i + j}'),
-        //             ),
-        //             const Padding(
-        //               padding: EdgeInsets.all(8.0),
-        //               child: CustomText(content: '배지명'),
-        //             )
-        //           ],
-        //         ),
-        //     ],
-        //   ),
       ],
     );
   }

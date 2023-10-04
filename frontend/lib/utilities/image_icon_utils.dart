@@ -1,6 +1,8 @@
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
+//? 이미지, 아이콘 목록
+
 //* logo
 var halfLogo = Image.asset(
   'assets/logos/bin_got_logo_1x.png',
@@ -14,10 +16,7 @@ var kakaoLogin = Image.asset(
 
 //* icon
 const searchIcon = Icons.search_rounded;
-const myPageIcon = Icons.person;
-const createGroupIcon = Icons.add_circle_outline_outlined;
 const shareIcon = Icons.share;
-const copyIcon = Icons.copy;
 const addIcon = Icons.add;
 const backIcon = Icons.arrow_back_rounded;
 const logoutIcon = Icons.output_rounded;
@@ -37,7 +36,6 @@ const helpIcon = Icons.help_outline;
 const saveIcon = Icons.save;
 const sendIcon = Icons.send;
 const circleIcon = Icons.circle_outlined;
-const alertIcon = Icons.add_circle_outline;
 const exitIcon = Icons.person_remove_alt_1_outlined;
 
 const leftIcon = Icons.chevron_left_rounded;

@@ -9,6 +9,7 @@ import 'package:bin_got/widgets/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+//? 비밀번호 입력 여부 판단
 class InputPassword extends StatefulWidget {
   final bool isPublic, needCheck, isSearchMode, admin, chat;
   final int groupId, initialIndex;
@@ -31,7 +32,10 @@ class InputPassword extends StatefulWidget {
 }
 
 class _InputPasswordState extends State<InputPassword> {
+  //* 변수
   StringMap password = {'value': ''};
+
+  //* 로그인 확인 모달
   Future<bool?> showLoginModal() => showModal(
         context,
         page: CustomAlert(
@@ -41,6 +45,7 @@ class _InputPasswordState extends State<InputPassword> {
         ),
       )();
 
+  //* 페이지 이동
   void toNextPage([member = true]) {
     setGroupId(context, widget.groupId);
     if (widget.bingoId != null) {
@@ -63,6 +68,19 @@ class _InputPasswordState extends State<InputPassword> {
     )();
   }
 
+  //* 비밀번호 확인
+  void verifyPassword(String? password) {
+    if (password == null || password == '') {
+      showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
+    } else {
+      GroupProvider().checkPassword(widget.groupId, password).then((_) {
+        toNextPage(false);
+      }).catchError((error) {
+        showAlert(context, title: '비밀번호 오류', content: '비밀번호가 맞지 않습니다.')();
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +92,8 @@ class _InputPasswordState extends State<InputPassword> {
           showLoginModal().then((_) {
             toNextPage();
           }).catchError((_) {
-            showErrorModal(context);
+            showAlert(context,
+                title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
           });
         } else {
           try {
@@ -89,7 +108,8 @@ class _InputPasswordState extends State<InputPassword> {
             showLoginModal().then((_) {
               toNextPage();
             }).catchError((_) {
-              showErrorModal(context);
+              showAlert(context,
+                  title: '로그인 오류', content: '오류가 발생해 로그인에 실패했습니다.')();
             });
           }
         }
@@ -123,6 +143,7 @@ class _InputPasswordState extends State<InputPassword> {
     });
   }
 
+  //* 토큰 만료 여부 확인
   FutureBool verifyToken() async {
     try {
       await context.read<AuthProvider>().initVar();
@@ -135,18 +156,6 @@ class _InputPasswordState extends State<InputPassword> {
     } catch (error) {
       showLoginModal();
       return Future.value(false);
-    }
-  }
-
-  void verifyPassword(String? password) {
-    if (password == null || password == '') {
-      showAlert(context, title: '유효하지 않은 비밀번호', content: '비밀번호를 입력해주세요')();
-    } else {
-      GroupProvider().checkPassword(widget.groupId, password).then((_) {
-        toNextPage(false);
-      }).catchError((error) {
-        showErrorModal(context);
-      });
     }
   }
 

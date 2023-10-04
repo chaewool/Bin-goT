@@ -9,6 +9,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+//? 컨테이너 응용
+
 //* 그룹 메인 내용 출력
 class ShowContentBox extends StatelessWidget {
   final String contentTitle, content;
@@ -191,92 +193,5 @@ class CircleContainer extends StatelessWidget {
         child: child,
       ),
     );
-  }
-}
-
-//* animated container with page view
-class CustomAnimatedPage extends StatelessWidget {
-  final WidgetList nextPages;
-  final WidgetList? appBarList;
-  final int selectedIndex;
-  const CustomAnimatedPage({
-    super.key,
-    required this.nextPages,
-    required this.selectedIndex,
-    this.appBarList,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   enableBottomBar();
-    // });
-    return appBarList != null
-        ? Stack(
-            children: [
-              Visibility(
-                visible: selectedIndex == 0,
-                child: Padding(
-                  padding:
-                      EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                  child: AnimatedContainer(
-                    duration: const Duration(seconds: 1),
-                    child: nextPages[0],
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: selectedIndex == 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).padding.top),
-                      child: SingleChildScrollView(
-                        child: AnimatedContainer(
-                          duration: const Duration(seconds: 1),
-                          child: nextPages[1],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Visibility(
-                visible: selectedIndex == 2,
-                child: Padding(
-                  padding:
-                      EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                  child: AnimatedContainer(
-                    duration: const Duration(seconds: 1),
-                    child: nextPages[2],
-                  ),
-                ),
-              ),
-              CustomBoxContainer(
-                color: transparentColor,
-                width: getWidth(context),
-                height: 80,
-                child: appBarList![selectedIndex],
-              ),
-            ],
-          )
-        : Stack(
-            children: [
-              for (int i = 0; i < 3; i += 1)
-                Visibility(
-                  visible: i == selectedIndex,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).padding.top),
-                    child: AnimatedContainer(
-                      duration: const Duration(seconds: 1),
-                      child: nextPages[i],
-                    ),
-                  ),
-                ),
-            ],
-          );
   }
 }

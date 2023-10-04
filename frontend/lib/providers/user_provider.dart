@@ -3,12 +3,12 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-//* user
+//? 회원 api
 class UserProvider extends ApiProvider {
   //* public function
   FutureDynamicMap login() async => _login();
   FutureDynamicMap confirmToken() => _confirmToken();
-  FutureDynamicMap exitService() => _exitService();
+  FutureDynamicMap exitService() => deleteApi(exitServiceUrl);
 
   //* private function
   //* login
@@ -38,16 +38,6 @@ class UserProvider extends ApiProvider {
     try {
       if (token == null || token == '') return {'token': null};
       await dioForVerify().post(verifyTokenUrl, data: {'token': token});
-      return {};
-    } catch (error) {
-      throw Error();
-    }
-  }
-
-  //* exit
-  FutureDynamicMap _exitService() async {
-    try {
-      await deleteApi(exitServiceUrl);
       return {};
     } catch (error) {
       throw Error();

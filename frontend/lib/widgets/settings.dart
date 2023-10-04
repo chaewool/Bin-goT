@@ -22,7 +22,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-//* 마이페이지 메인
+//? 설정
 class Settings extends StatefulWidget {
   const Settings({super.key});
 
@@ -54,7 +54,9 @@ class _SettingsState extends State<Settings> {
         cntList[2] = data.ownBadges;
       });
     }).catchError((error) {
-      showErrorModal(context);
+      cntList[0] = 0;
+      cntList[1] = 0;
+      cntList[2] = 0;
     });
   }
 

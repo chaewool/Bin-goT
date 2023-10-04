@@ -1,4 +1,3 @@
-//* 도움말 페이지
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -8,6 +7,7 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:flutter/material.dart';
 
+//? 도움말
 class Help extends StatefulWidget {
   const Help({super.key});
 
@@ -16,15 +16,19 @@ class Help extends StatefulWidget {
 }
 
 class _HelpState extends State<Help> {
+  //* 변수
   StringList imagePathList = List.from(backgroundList);
   int index = 0;
   late int length;
+
   @override
   void initState() {
     super.initState();
+    //* 변수 초기화
     length = imagePathList.length;
   }
 
+  //* 이미지 변경
   void moveTo([toRight = false]) {
     if (toRight) {
       if (index < length - 1) {
@@ -51,6 +55,7 @@ class _HelpState extends State<Help> {
           //   size: 40,
           //   color: index > 0 ? palePinkColor : greyColor,
           // ),
+          //* 도움말 이미지
           CustomBoxContainer(
             height: getHeight(context),
             child: Image.asset(
@@ -58,6 +63,7 @@ class _HelpState extends State<Help> {
               fit: BoxFit.fitHeight,
             ),
           ),
+          //* 이미지 이동 버튼
           CustomBoxContainer(
             color: transparentColor,
             height: getHeight(context),

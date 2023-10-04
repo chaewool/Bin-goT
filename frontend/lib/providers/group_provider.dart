@@ -5,24 +5,10 @@ import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:dio/dio.dart';
 
-//* group provider
+//? 그룹 api
 class GroupProvider extends ApiProvider {
+  //* private
   //* search
-  FutureDynamic searchGroupList({
-    int? period,
-    String? keyword,
-    int? order,
-    required int public,
-    required int lastId,
-  }) =>
-      _searchGroupList(
-        period: period,
-        keyword: keyword,
-        order: order,
-        public: public,
-        lastId: lastId,
-      );
-
   FutureDynamic _searchGroupList({
     int? period,
     String? keyword,
@@ -60,18 +46,58 @@ class GroupProvider extends ApiProvider {
     }
   }
 
-  //* check password
-  Future<DynamicMap> checkPassword(int groupId, String password) async {
+  //* group members
+  Future<GroupAdminTabModel> _getAdminTabData(int groupId) async {
     try {
-      final response = await dioWithToken().post(
-        checkPasswordUrl(groupId),
-        data: {'password': password},
-      );
-      return response.data;
+      final response = await dioWithToken().get(getMembersUrl(groupId));
+
+      final data = response.data;
+      if (data.isNotEmpty) {
+        GroupMemberList applicants = data['applicants']
+            .map<GroupMemberModel>((json) => GroupMemberModel.fromJson(json))
+            .toList();
+        GroupMemberList members = data['members']
+            .map<GroupMemberModel>((json) => GroupMemberModel.fromJson(json))
+            .toList();
+        bool needAuth = data['need_auth'];
+        return GroupAdminTabModel.fromJson({
+          'applicants': applicants,
+          'members': members,
+          'need_auth': needAuth,
+        });
+      }
+      return GroupAdminTabModel.fromJson({
+        'applicants': [],
+        'members': [],
+        'need_auth': false,
+      });
     } catch (error) {
       throw Error();
     }
   }
+
+  //* public
+  //* search
+  FutureDynamic searchGroupList({
+    int? period,
+    String? keyword,
+    int? order,
+    required int public,
+    required int lastId,
+  }) =>
+      _searchGroupList(
+        period: period,
+        keyword: keyword,
+        order: order,
+        public: public,
+        lastId: lastId,
+      );
+
+  //* check password
+  Future<DynamicMap> checkPassword(int groupId, String password) => createApi(
+        checkPasswordUrl(groupId),
+        data: {'password': password},
+      );
 
   //* detail
   Future<GroupDetailModel> readGroupDetail(int groupId) async {
@@ -148,37 +174,8 @@ class GroupProvider extends ApiProvider {
   Future<GroupAdminTabModel> getAdminTabData(int groupId) =>
       _getAdminTabData(groupId);
 
-  Future<GroupAdminTabModel> _getAdminTabData(int groupId) async {
-    try {
-      final response = await dioWithToken().get(getMembersUrl(groupId));
-
-      final data = response.data;
-      if (data.isNotEmpty) {
-        GroupMemberList applicants = data['applicants']
-            .map<GroupMemberModel>((json) => GroupMemberModel.fromJson(json))
-            .toList();
-        GroupMemberList members = data['members']
-            .map<GroupMemberModel>((json) => GroupMemberModel.fromJson(json))
-            .toList();
-        bool needAuth = data['need_auth'];
-        return GroupAdminTabModel.fromJson({
-          'applicants': applicants,
-          'members': members,
-          'need_auth': needAuth,
-        });
-      }
-      return GroupAdminTabModel.fromJson({
-        'applicants': [],
-        'members': [],
-        'need_auth': false,
-      });
-    } catch (error) {
-      throw Error();
-    }
-  }
-
   //* chat list
-  FutureDynamic readGroupChatList(int groupId, int lastId) async {
+  Future<GroupChatList> readGroupChatList(int groupId, int lastId) async {
     try {
       final response = await dioWithToken().get(
         groupChatListUrl(groupId),
@@ -208,7 +205,6 @@ class GroupProvider extends ApiProvider {
     try {
       final response = await dioWithTokenForm()
           .post(groupChatCreateUrl(groupId), data: groupChatData);
-
       return response.data;
     } catch (error) {
       throw Error();

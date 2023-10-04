@@ -5,6 +5,8 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+//? 입력창
+
 //* input
 class CustomInput extends StatelessWidget {
   final String? explain;

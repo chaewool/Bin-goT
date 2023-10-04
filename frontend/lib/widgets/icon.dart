@@ -1,6 +1,8 @@
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:flutter/material.dart';
 
+//? 아이콘
+
 class CustomIcon extends StatelessWidget {
   final Color color;
   final double size;
@@ -20,14 +22,4 @@ class CustomIcon extends StatelessWidget {
       size: size,
     );
   }
-}
-
-BottomNavigationBarItem customBottomBarIcon({
-  required String label,
-  required IconData iconData,
-}) {
-  return BottomNavigationBarItem(
-    icon: Icon(iconData),
-    label: label,
-  );
 }

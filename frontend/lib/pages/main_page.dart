@@ -3,12 +3,12 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
-import 'package:bin_got/widgets/search_bar.dart';
+import 'package:bin_got/widgets/search.dart';
 import 'package:bin_got/widgets/settings.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
 import 'package:flutter/material.dart';
 
-//* 메인 페이지
+//? 메인 (검색, 내 그룹/내 빙고, 설정)
 class Main extends StatefulWidget {
   final int initialPage;
   const Main({
@@ -21,19 +21,17 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
+  //* 변수
   late int selectedIndex;
-  bool enable = true;
-  WidgetList nextPages = const [CustomSearchBar(), MainTabBar(), Settings()];
+  WidgetList nextPages = const [Search(), MainTabBar(), Settings()];
   late final PageController pageController;
   final List<IconData> items = [
     searchIcon,
     homeIcon,
     settingsIcon,
-    // customBottomBarIcon(label: '그룹 검색 바 띄우기', iconData: searchIcon),
-    // customBottomBarIcon(label: '메인 페이지', iconData: homeIcon),
-    // customBottomBarIcon(label: '설정 페이지', iconData: settingsIcon),
   ];
 
+  //* 페이지 변경
   void changeIndex(int index, [bottomBar = false]) {
     if (index != selectedIndex) {
       setState(() {
@@ -53,6 +51,7 @@ class _MainState extends State<Main> {
   void initState() {
     super.initState();
     selectedIndex = widget.initialPage;
+    //* 페이지 이동 시
     pageController = PageController(initialPage: selectedIndex);
     pageController.addListener(
       () {
@@ -63,16 +62,9 @@ class _MainState extends State<Main> {
         }
       },
     );
-    // WidgetsBinding.instance.addPostFrameCallback(
-    //   (_) {
-    //     setState(() {
-    //       boxHeight =
-    //           getHeight(context) - 50 - MediaQuery.of(context).padding.top;
-    //     });
-    //   },
-    // );
   }
 
+  //* 종료
   @override
   void dispose() {
     super.dispose();
@@ -86,6 +78,7 @@ class _MainState extends State<Main> {
       child: Scaffold(
         backgroundColor: whiteColor,
         resizeToAvoidBottomInset: false,
+        //* 화면
         body: PageView.builder(
           controller: pageController,
           onPageChanged: changeIndex,
@@ -97,6 +90,7 @@ class _MainState extends State<Main> {
             );
           },
         ),
+        //* 하단 바
         bottomNavigationBar: CustomNavigationBar(
           selectedIndex: selectedIndex,
           items: items,

@@ -1,19 +1,5 @@
 import 'package:bin_got/utilities/type_def_utils.dart';
 
-// class GroupModel {
-//   final int id, headCount, count;
-//   final String name, start, end;
-//   final bool isPublic;
-//   GroupModel.fromJson(DynamicMap json)
-//       : id = json['id'],
-//         headCount = json['headcount'],
-//         count = json['count'],
-//         name = json['group_name'],
-//         start = json['start'],
-//         end = json['end'],
-//         isPublic = json['is_public'];
-// }
-
 class GroupMemberModel {
   final int id, bingoId, badgeId;
   final String username;
@@ -48,13 +34,10 @@ class GroupRankModel {
 
 class GroupDetailModel {
   final int headCount, count, bingoSize, memberState, bingoId;
-  // final int? bingoId;
   final String groupName, nickname, start, end, password, description, rule;
   final bool hasImage, needAuth;
   final List rank;
   GroupDetailModel.fromJson(DynamicMap json)
-
-      // : id = json['id'],
       : bingoId = json['board_id'],
         headCount = json['headcount'],
         bingoSize = json['size'],
@@ -69,7 +52,6 @@ class GroupDetailModel {
         description = json['description'],
         rule = json['rule'],
         password = json['password'],
-        // rank = json['rank'];
         rank = json['rank']
             .map((eachRank) => GroupRankModel.fromJson(eachRank))
             .toList();
@@ -79,7 +61,6 @@ class GroupChatModel {
   final int id, userId, badgeId, itemId;
   final String? content;
   final String username, createdAt, title;
-  // title;
   final bool reviewed, hasImage;
   GroupChatModel.fromJson(DynamicMap json)
       : id = json['id'],

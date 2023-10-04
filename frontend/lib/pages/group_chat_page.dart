@@ -19,6 +19,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+//? 그룹 채팅
 class GroupChat extends StatefulWidget {
   const GroupChat({
     super.key,
@@ -29,30 +30,36 @@ class GroupChat extends StatefulWidget {
 }
 
 class _GroupChatState extends State<GroupChat> {
+  //* 변수
   int groupId = 0;
-  final controller = ScrollController();
+  double appBarHeight = 50;
   bool showImg = false;
   XFile? selectedImage;
+  final controller = ScrollController();
   GlobalKey bottomBarKey = GlobalKey();
-  double appBarHeight = 50;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      //* 채팅 데이터 초기화
       if (getChats(context).isNotEmpty) {
         context.read<GlobalGroupProvider>().clearChat();
       }
+      //* 변수 초기화
       groupId = getGroupId(context)!;
+      setState(() {
+        appBarHeight = MediaQuery.of(context).padding.top;
+      });
+
+      //* 채팅 불러오기
       initLoadingData(context, 0);
       if (getLoading(context)) {
         readChats(false);
       }
-      setState(() {
-        appBarHeight = MediaQuery.of(context).padding.top;
-      });
     });
 
+    //* 무한 스크롤 적용
     controller.addListener(() {
       if (controller.position.pixels >=
           controller.position.maxScrollExtent * 0.95) {
@@ -73,6 +80,7 @@ class _GroupChatState extends State<GroupChat> {
     });
   }
 
+  //* 채팅 목록 불러오기
   void readChats([bool more = true]) {
     GroupProvider()
         .readGroupChatList(groupId, getLastId(context, 0))
@@ -86,10 +94,11 @@ class _GroupChatState extends State<GroupChat> {
         setAdditional(context, false);
       }
     }).catchError((error) {
-      showErrorModal(context);
+      showErrorModal(context, '채팅 불러오기 오류', '오류가 발생해 채팅 목록을 불러올 수 없습니다');
     });
   }
 
+  //* 채팅 추가
   void addChat(StringMap inputData, XFile? image) {
     final content = inputData['content'];
     if (content != '' || image != null) {
@@ -126,11 +135,12 @@ class _GroupChatState extends State<GroupChat> {
               ),
             );
       }).catchError((_) {
-        showErrorModal(context);
+        showErrorModal(context, '채팅 생성 오류', '채팅 생성에 실패했습니다.');
       });
     }
   }
 
+  //* 이미지 선택
   void chatImagePicker() {
     return imagePicker(
       context,
@@ -145,6 +155,7 @@ class _GroupChatState extends State<GroupChat> {
     );
   }
 
+  //* 이미지 삭제
   void deleteImg() {
     setState(() {
       selectedImage = null;
@@ -156,11 +167,10 @@ class _GroupChatState extends State<GroupChat> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Stack(
           children: [
+            //* 채팅 목록
             Padding(
               padding: EdgeInsets.only(top: appBarHeight, bottom: 80),
               child: ChatInfiniteScroll(
@@ -168,11 +178,13 @@ class _GroupChatState extends State<GroupChat> {
                 data: watchChats(context),
               ),
             ),
+            //* 앱 바
             const CustomBoxContainer(
               color: transparentColor,
               height: 70,
               child: AppBarWithBack(transparent: true),
             ),
+            //* 이미지 미리보기
             if (showImg)
               CustomBoxContainer(
                 hasRoundEdge: false,
@@ -198,6 +210,7 @@ class _GroupChatState extends State<GroupChat> {
                   ],
                 ),
               ),
+            //* 채팅 입력창
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -208,6 +221,7 @@ class _GroupChatState extends State<GroupChat> {
                 ),
               ],
             ),
+            //* 스피너
             if (watchSpinner(context))
               CustomBoxContainer(
                 hasRoundEdge: false,
