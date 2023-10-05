@@ -83,15 +83,18 @@ def create_board(request, group, is_banned, rand_name):
     board_serializer = BoardCreateSerializer(data=data)
     boarditem_serializer = BoardItemCreateSerializer(data=items, many=True)
     
-    if board_serializer.is_valid(raise_exception=True) and boarditem_serializer.is_valid(raise_exception=True):
-        board = board_serializer.save(user=user, group=group)
-        
-        url = 'boards' + '/' + str(board.id)
-        upload_image(url, thumbnail)
-        
-        boarditem_serializer.save(board=board)
-        
-        user.cnt_boards += 1
-        user.save()
-        
-        check_cnt_boards(user)
+    try:
+        if board_serializer.is_valid(raise_exception=True) and boarditem_serializer.is_valid(raise_exception=True):
+            board = board_serializer.save(user=user, group=group)
+            
+            url = 'boards' + '/' + str(board.id)
+            upload_image(url, thumbnail)
+            
+            boarditem_serializer.save(board=board)
+            
+            user.cnt_boards += 1
+            user.save()
+            
+            check_cnt_boards(user)
+    except:
+        return '빙고판이 올바르지 않습니다.'
