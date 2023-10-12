@@ -38,11 +38,12 @@ class _MainState extends State<Main> {
         selectedIndex = index;
       });
       if (bottomBar) {
-        pageController.animateToPage(
-          index,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.ease,
-        );
+        pageController.jumpToPage(index);
+        // pageController.animateToPage(
+        //   index,
+        //   duration: const Duration(milliseconds: 500),
+        //   curve: Curves.ease,
+        // );
       }
     }
   }
@@ -53,15 +54,15 @@ class _MainState extends State<Main> {
     selectedIndex = widget.initialPage;
     //* 페이지 이동 시
     pageController = PageController(initialPage: selectedIndex);
-    pageController.addListener(
-      () {
-        if (pageController.page!.round() != selectedIndex) {
-          setState(() {
-            selectedIndex = pageController.page!.round();
-          });
-        }
-      },
-    );
+    // pageController.addListener(
+    //   () {
+    //     if (pageController.page!.round() != selectedIndex) {
+    //       setState(() {
+    //         selectedIndex = pageController.page!.round();
+    //       });
+    //     }
+    //   },
+    // );
   }
 
   //* 종료
@@ -73,6 +74,7 @@ class _MainState extends State<Main> {
 
   @override
   Widget build(BuildContext context) {
+    print('build!!!!');
     return WillPopScope(
       onWillPop: () => exitApp(context),
       child: Scaffold(
@@ -85,7 +87,9 @@ class _MainState extends State<Main> {
           itemCount: 3,
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              padding: EdgeInsets.only(
+                top: getStatusBarHeight(context),
+              ),
               child: nextPages[index],
             );
           },

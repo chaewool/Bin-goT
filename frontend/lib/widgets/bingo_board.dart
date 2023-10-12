@@ -29,6 +29,7 @@ class _BingoBoardState extends State<BingoBoard> {
     super.initState();
     setState(() {
       size = widget.bingoSize ?? getBingoSize(context);
+      print('size => $size');
     });
   }
 
@@ -124,7 +125,7 @@ class EachBingo extends StatelessWidget {
       childWhenDragging: isDetail
           ? draggableBox(context, convertedColor)
           : CustomBoxContainer(
-              hasRoundEdge: watchHasRoundEdge(context),
+              hasRoundEdge: watchHasRoundEdge(context, isDetail),
               color: whiteColor,
             ),
       data: index,

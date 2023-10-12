@@ -185,12 +185,13 @@ class GlobalGroupProvider extends ChangeNotifier {
   static int? _groupId;
   static int _lastId = 0;
   static int _selectedIndex = 1;
-  static String? _start;
+  static String? _start, _end;
   static bool _prev = false;
   static bool _enable = true;
   static GroupDetailModel? _data;
   static final GroupChatList _chats = [];
   static final RankList _rankList = [];
+  static PageController? _pageController;
 
   GroupChatList get chats => _chats;
   bool get prev => _prev;
@@ -198,6 +199,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   int get selectedIndex => _selectedIndex;
   int? get lastId => _lastId;
   int? get groupId => _groupId;
+  PageController? get pageController => _pageController;
 
   //* read group
   int? get bingoId => _data?.bingoId;
@@ -207,13 +209,10 @@ class GlobalGroupProvider extends ChangeNotifier {
   int? get memberState => _data?.memberState;
   bool get hasImage => _data?.hasImage ?? false;
   bool? get needAuth => _data?.needAuth;
-  bool? get alreadyStarted => _data?.start != null
-      ? DateTime.now().difference(DateTime.parse(_data!.start)) >= Duration.zero
-      : null;
   bool get enable => _enable;
   String get groupName => _data?.groupName ?? '';
   String? get start => _data?.start ?? _start;
-  String? get end => _data?.end;
+  String? get end => _data?.end ?? _end;
   String get description => _data?.description ?? '';
   String get rule => _data?.rule ?? '';
   String? get password => _data?.password;
@@ -224,7 +223,9 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void _setLastId(int value) => _lastId = value;
 
-  void _setStart(String newVal) => _start = newVal; //* start??
+  void _setStart(String newVal) => _start = newVal;
+
+  void _setEnd(String newVal) => _end = newVal;
 
   void _setGroupId(int newVal) => _groupId = newVal;
 
@@ -252,6 +253,14 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void _setEnable(bool value) => _enable = value;
 
+  void _initPage() {
+    _pageController = PageController(initialPage: _selectedIndex);
+  }
+
+  void _disposeController() {
+    _pageController!.dispose();
+  }
+
 //* public
   void setLastId(int value) => _setLastId(value);
 
@@ -260,8 +269,9 @@ class GlobalGroupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setStart(String newVal) {
-    _setStart(newVal);
+  void setPeriod(String newStart, String newEnd) {
+    _setStart(newStart);
+    _setEnd(newEnd);
     notifyListeners();
   }
 
@@ -305,6 +315,10 @@ class GlobalGroupProvider extends ChangeNotifier {
     _setEnable(value);
     notifyListeners();
   }
+
+  void initPage() => _initPage();
+
+  void disposeController() => _disposeController();
 }
 
 //* bingo data
@@ -485,6 +499,7 @@ class GlobalBingoProvider extends ChangeNotifier {
       await ImageGallerySaver.saveImage(
         pngBytes!,
         name: formTitle,
+        quality: 100,
       );
       return true;
     }

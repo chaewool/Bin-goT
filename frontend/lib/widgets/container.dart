@@ -52,7 +52,7 @@ class BingoGallery extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void toBingoDetail() {
-      setStart(context, bingo.start);
+      setPeriod(context, bingo.start, bingo.end);
       toOtherPage(context,
           page: InputPassword(
             isPublic: true,

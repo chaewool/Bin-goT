@@ -28,8 +28,10 @@ class GroupInfiniteScroll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
-      hasRoundEdge: mode == 1,
-      color: palePinkColor.withOpacity(0.5),
+      hasRoundEdge: false,
+      // hasRoundEdge: mode == 1,
+      // color: palePinkColor.withOpacity(0.5),
+      color: whiteColor,
       child: !watchLoading(context)
           ? data.isNotEmpty
               ? Padding(
@@ -96,7 +98,9 @@ class BingoInfiniteScroll extends StatelessWidget {
   Widget build(BuildContext context) {
     const mode = 2;
     return CustomBoxContainer(
-      color: palePinkColor.withOpacity(0.5),
+      hasRoundEdge: false,
+      // color: palePinkColor.withOpacity(0.5),
+      color: whiteColor,
       child: !watchLoading(context)
           ? data.isNotEmpty
               ? ListView.builder(

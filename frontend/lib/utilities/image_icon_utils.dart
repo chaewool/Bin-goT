@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 //* logo
 var halfLogo = Image.asset(
-  'assets/logos/bin_got_logo_1x.png',
+  'assets/logos/logo.png',
   scale: 4,
 );
 //* login
@@ -19,7 +19,7 @@ const searchIcon = Icons.search_rounded;
 const shareIcon = Icons.share;
 const addIcon = Icons.add;
 const backIcon = Icons.arrow_back_rounded;
-const logoutIcon = Icons.output_rounded;
+const tempExitIcon = Icons.output_rounded;
 const settingsIcon = Icons.settings;
 const editIcon = Icons.edit;
 const deleteIcon = Icons.delete_outline_rounded;
@@ -36,7 +36,7 @@ const helpIcon = Icons.help_outline;
 const saveIcon = Icons.save;
 const sendIcon = Icons.send;
 const circleIcon = Icons.circle_outlined;
-const exitIcon = Icons.person_remove_alt_1_outlined;
+const exitIcon = Icons.warning_amber_outlined;
 
 const leftIcon = Icons.chevron_left_rounded;
 const rightIcon = Icons.chevron_right_rounded;

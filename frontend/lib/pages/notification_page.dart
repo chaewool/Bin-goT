@@ -73,31 +73,33 @@ class _NotificationSettingsState extends State<NotificationSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: const AppBarWithBack(),
-      body: ColWithPadding(children: [
-        for (int i = 0; i < 4; i += 1)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Flexible(flex: 2, child: SizedBox()),
-              Flexible(
-                flex: 4,
-                child: CustomText(
-                  content: notificationList[i],
-                  fontSize: FontSize.smallSize,
+      appBar: const AppBarWithBack(title: '알림'),
+      body: ColWithPadding(
+        vertical: 30,
+        horizontal: 30,
+        children: [
+          for (int i = 0; i < 4; i += 1)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 4,
+                  child: CustomText(
+                    content: notificationList[i],
+                    fontSize: FontSize.smallSize,
+                  ),
                 ),
-              ),
-              Flexible(
-                flex: 2,
-                child: CustomSwitch(
-                  value: optionList[i],
-                  onChanged: (value) => changeIdx(i, value),
+                Flexible(
+                  flex: 2,
+                  child: CustomSwitch(
+                    value: optionList[i],
+                    onChanged: (value) => changeIdx(i, value),
+                  ),
                 ),
-              ),
-              const Flexible(flex: 2, child: SizedBox()),
-            ],
-          ),
-      ]),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }

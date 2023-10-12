@@ -137,6 +137,7 @@ class _BingoFormModalState extends State<BingoFormModal> {
                               explain: '제목을 입력하세요',
                               setValue: (value) => item['title'] = value,
                               initialValue: item['title'],
+                              maxLength: 50,
                             ),
                           ),
                         ],
@@ -165,6 +166,7 @@ class _BingoFormModalState extends State<BingoFormModal> {
                               fontSize: FontSize.textSize,
                               initialValue: item['content'],
                               setValue: (value) => item['content'] = value,
+                              maxLength: 100,
                             ),
                           ),
                         ],
@@ -251,6 +253,7 @@ class BingoDetailModal extends StatefulWidget {
 class _BingoDetailModalState extends State<BingoDetailModal> {
   late DynamicMap item;
   late int newIdx;
+  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -289,8 +292,8 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
           afterClose: () => toBack(context),
         ),
       ),
-      hasConfirm: alreadyStarted(context) == true &&
-          myBingoId(context) == getBingoId(context),
+      hasConfirm:
+          onGoing(context) == true && myBingoId(context) == getBingoId(context),
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -310,19 +313,36 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
                     horizontal: 10,
                     children: [
                       Center(
-                        child: Expanded(
-                          child: CustomText(
-                            content: item['title'],
-                            fontSize: FontSize.largeSize,
-                          ),
+                        child: CustomText(
+                          content: item['title'],
+                          fontSize: FontSize.largeSize,
                         ),
                       ),
                       const CustomDivider(),
-                      Center(
-                        child: CustomText(
-                          content: item['content'] ?? '',
+                      CustomBoxContainer(
+                        height: 200,
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          controller: scrollController,
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: CustomBoxContainer(
+                                width: 190,
+                                child: CustomText(
+                                  content: item['content'] ?? '',
+                                  height: 1.2,
+                                ),
+                              ),
+                            ),
+                            // ),
+                            // ),
+                          ),
                         ),
                       ),
+                      const SizedBox(height: 10),
                       if (item['check'])
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -391,25 +411,31 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
   }
 
   void sendCompleteMessage() {
-    BingoProvider()
-        .makeCompleteMessage(
-      getGroupId(context)!,
-      FormData.fromMap({
-        ...data,
-        'img': selectedImage != null
-            ? MultipartFile.fromFileSync(
-                selectedImage!.path,
-                contentType: MediaType('image', 'png'),
-              )
-            : null,
-      }),
-    )
-        .then((value) {
-      showToast(context);
-      setToastString(context, '인증 채팅이 생성되었습니다');
-      toBack(context);
-      widget.afterClose();
-    });
+    if (data['content'] != '') {
+      BingoProvider()
+          .makeCompleteMessage(
+        getGroupId(context)!,
+        FormData.fromMap({
+          ...data,
+          'img': selectedImage != null
+              ? MultipartFile.fromFileSync(
+                  selectedImage!.path,
+                  contentType: MediaType('image', 'png'),
+                )
+              : null,
+        }),
+      )
+          .then((value) {
+        showToast(context);
+        setToastString(context, '인증 채팅이 생성되었습니다');
+        toBack(context);
+        widget.afterClose();
+      }).catchError((_) {
+        showErrorModal(context, '인증 채팅 생성 실패', '인증 채팅 생성에 실패했습니다.');
+      });
+    } else {
+      showErrorModal(context, '인증 내용 필요', '인증 내용을 필수로 입력해야 합니다.');
+    }
   }
 
   void deleteImage() {
@@ -420,100 +446,102 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: CustomModal(
-        backgroundColor: palePinkColor.withOpacity(0.65),
-        buttonText: '인증',
-        onPressed: sendCompleteMessage,
-        hasConfirm: true,
-        children: [
-          const CustomText(
-            content: '인증하기',
-            fontSize: FontSize.largeSize,
+    return CustomModal(
+      backgroundColor: palePinkColor.withOpacity(0.65),
+      buttonText: '인증',
+      onPressed: sendCompleteMessage,
+      hasConfirm: true,
+      children: [
+        const CustomText(
+          content: '인증하기',
+          fontSize: FontSize.largeSize,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: CustomText(
+            content: '총 달성 횟수 : ${widget.checkGoal}',
+            fontSize: FontSize.tinySize,
+            color: greyColor,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: CustomText(
-              content: '총 달성 횟수 : ${widget.checkGoal}',
-              fontSize: FontSize.tinySize,
-              color: greyColor,
+        ),
+        ColWithPadding(
+          vertical: 10,
+          horizontal: 30,
+          children: [
+            const RowWithPadding(
+              vertical: 12,
+              children: [
+                CustomText(
+                  content: '인증 내용',
+                  fontSize: FontSize.smallSize,
+                ),
+                SizedBox(width: 5),
+                CustomText(
+                  content: '(필수)',
+                  fontSize: FontSize.tinySize,
+                  color: greyColor,
+                ),
+              ],
             ),
-          ),
-          ColWithPadding(
-            vertical: 10,
-            horizontal: 30,
-            children: [
-              const RowWithPadding(
-                vertical: 12,
-                children: [
-                  CustomText(
-                    content: '인증 내용',
-                    fontSize: FontSize.smallSize,
-                  ),
-                  SizedBox(width: 5),
-                  CustomText(
-                    content: '(필수)',
-                    fontSize: FontSize.tinySize,
-                    color: greyColor,
-                  ),
-                ],
-              ),
-              CustomInput(
-                explain: '내용을 입력해주세요',
-                filled: true,
-                needMore: true,
-                height: 100,
-                fontSize: FontSize.textSize,
-                initialValue: data['content'],
-                setValue: (value) => data['content'] = value,
-              ),
-              const SizedBox(height: 10),
-              const RowWithPadding(
-                vertical: 12,
-                children: [
-                  CustomText(
-                    content: '인증 사진',
-                    fontSize: FontSize.smallSize,
-                  ),
-                  SizedBox(width: 5),
-                  CustomText(
-                    content: '(선택)',
-                    fontSize: FontSize.tinySize,
-                    color: greyColor,
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: selectedImage == null
-                    ? CustomBoxContainer(
-                        onTap: requestImagePicker,
-                        borderColor: greyColor,
-                        hasRoundEdge: false,
-                        width: 270,
-                        height: 150,
-                        child: CustomIconButton(
-                          icon: addIcon,
-                          onPressed: requestImagePicker,
-                          color: greyColor,
-                        ),
-                      )
-                    : CustomBoxContainer(
-                        onTap: requestImagePicker,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: FileImage(File(selectedImage!.path)),
-                        ),
-                        child: CustomIconButton(
-                          onPressed: deleteImage,
-                          icon: closeIcon,
-                        ),
+            CustomInput(
+              explain: '내용을 입력해주세요',
+              filled: true,
+              needMore: true,
+              height: 100,
+              fontSize: FontSize.textSize,
+              initialValue: data['content'],
+              setValue: (value) => data['content'] = value.trim(),
+            ),
+            const SizedBox(height: 10),
+            const RowWithPadding(
+              vertical: 12,
+              children: [
+                CustomText(
+                  content: '인증 사진',
+                  fontSize: FontSize.smallSize,
+                ),
+                SizedBox(width: 5),
+                CustomText(
+                  content: '(선택)',
+                  fontSize: FontSize.tinySize,
+                  color: greyColor,
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: selectedImage == null
+                  ? CustomBoxContainer(
+                      borderRadius: BorderRadius.circular(4),
+                      onTap: requestImagePicker,
+                      borderColor: greyColor,
+                      hasRoundEdge: false,
+                      width: 270,
+                      height: 150,
+                      child: CustomIconButton(
+                        icon: addIcon,
+                        onPressed: requestImagePicker,
+                        color: greyColor,
                       ),
-              ),
-            ],
-          ),
-        ],
-      ),
+                    )
+                  : CustomBoxContainer(
+                      borderRadius: BorderRadius.circular(4),
+                      width: 270,
+                      height: 150,
+                      onTap: requestImagePicker,
+                      image: DecorationImage(
+                        fit: BoxFit.fitHeight,
+                        image: FileImage(File(selectedImage!.path)),
+                      ),
+                      child: CustomIconButton(
+                        onPressed: deleteImage,
+                        icon: closeIcon,
+                      ),
+                    ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -970,6 +998,7 @@ class _LicenseModalState extends State<LicenseModal> {
 //* 모달 기본
 class CustomModal extends StatelessWidget {
   final String? title;
+  final double? height;
   final bool hasConfirm;
   final WidgetList children;
   final ReturnVoid? onPressed, onCancelPressed;
@@ -978,6 +1007,7 @@ class CustomModal extends StatelessWidget {
   const CustomModal({
     super.key,
     this.title,
+    this.height,
     this.hasConfirm = true,
     required this.children,
     this.onPressed,
@@ -997,6 +1027,7 @@ class CustomModal extends StatelessWidget {
         child: CustomBoxContainer(
           color: backgroundColor,
           width: getWidth(context) * 0.85,
+          height: height,
           child: ColWithPadding(
             vertical: 20,
             mainAxisSize: MainAxisSize.min,

@@ -24,6 +24,7 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
+  //* 변수
   final StringList period = <String>[
     '기간 미선택',
     '하루 ~ 한 달',
@@ -72,6 +73,7 @@ class _SearchState extends State<Search> {
     });
   }
 
+  //* 검색 버튼 터치 시
   void onSearchAction() {
     if (!publicPrivate[0] && !publicPrivate[1]) {
       showModal(
@@ -93,6 +95,7 @@ class _SearchState extends State<Search> {
         result -= 1;
       }
       search(false);
+      changeShowSearchBar(false);
     } else {
       showModal(
         context,
@@ -108,18 +111,21 @@ class _SearchState extends State<Search> {
     }
   }
 
+  //* 공개, 비공개 설정
   void changePublicPrivate(int i) {
     setState(() {
       publicPrivate[i] = !publicPrivate[i];
     });
   }
 
+  //* 정렬
   void changeSort(int value) {
     setState(() {
       sortIdx = value;
     });
   }
 
+  //* 검색 데이터 갱신
   void search([bool more = true]) {
     if (initial) {
       setState(() {
@@ -154,199 +160,189 @@ class _SearchState extends State<Search> {
     });
   }
 
-  void changeShowSearchBar() {
+  //* 검색 창 펼침 여부
+  void changeShowSearchBar(bool value) {
     setState(() {
-      showSearchBar = !showSearchBar;
+      showSearchBar = value;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
       children: [
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: CustomIconButton(
-                      onPressed: changeShowSearchBar,
-                      icon: showSearchBar
-                          ? Icons.keyboard_arrow_up_outlined
-                          : Icons.keyboard_arrow_down_outlined,
-                    ),
-                  ),
-                  Expanded(
-                    child: CustomInput(
-                      explain: '그룹명을 입력하세요',
-                      setValue: (value) {
-                        keyword['value'] = value;
-                      },
-                      fontSize: FontSize.textSize,
-                      initialValue: keyword['value'],
-                      needSearch: true,
-                      onSubmitted: (_) => onSearchAction(),
-                      suffixIcon: const CustomIcon(
-                        icon: searchIcon,
-                        color: greyColor,
-                      ),
-                    ),
-                  ),
-                ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: CustomIconButton(
+                  onPressed: () =>
+                      changeShowSearchBar(showSearchBar ? false : true),
+                  icon: showSearchBar
+                      ? Icons.keyboard_arrow_up_outlined
+                      : Icons.keyboard_arrow_down_outlined,
+                ),
               ),
-            ),
-            if (showSearchBar)
-              ColWithPadding(
-                horizontal: 20,
-                children: [
-                  searchOptions(
-                    '기간 선택',
-                    [
-                      Column(
-                        children: [
-                          SliderTheme(
-                            data: SliderThemeData(
-                              overlayShape: SliderComponentShape.noOverlay,
-                            ),
-                            child: Slider(
-                              activeColor: palePinkColor,
-                              thumbColor: palePinkColor,
-                              inactiveColor: palePinkColor.withOpacity(0.5),
-                              min: 0,
-                              max: 5,
-                              divisions: 5,
-                              value: index,
-                              onChanged: (value) {
-                                setState(() {
-                                  index = value;
-                                });
-                              },
-                            ),
-                          ),
-                          if (index != 0)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: CustomText(
-                                content: index.toInt() != 0
-                                    ? period[index.toInt()]
-                                    : '',
-                                fontSize: FontSize.smallSize,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  searchOptions(
-                    '그룹 정렬',
-                    [
-                      for (int i = 0; i < 2; i += 1)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: CustomBoxContainer(
-                            width: 90,
-                            onTap: () => changeSort(i),
-                            color: sortIdx == i ? paleRedColor : whiteColor,
-                            borderColor:
-                                sortIdx == i ? paleRedColor : greyColor,
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: CustomText(
-                                  content: '시작일 ${i == 0 ? '▲' : '▼'}',
-                                  color: sortIdx == i ? whiteColor : blackColor,
-                                  fontSize: FontSize.smallSize,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  searchOptions(
-                    '공개 여부 필터',
-                    [
-                      for (int i = 0; i < 2; i += 1)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: CustomBoxContainer(
-                            width: 90,
-                            onTap: () => changePublicPrivate(i),
-                            color: publicPrivate[i] ? paleRedColor : whiteColor,
-                            borderColor:
-                                publicPrivate[i] ? paleRedColor : greyColor,
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: CustomText(
-                                  content: i == 0 ? '공개 그룹' : '비공개 그룹',
-                                  color: publicPrivate[i]
-                                      ? whiteColor
-                                      : blackColor,
-                                  fontSize: FontSize.smallSize,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  RowWithPadding(
-                    vertical: 10,
-                    horizontal: 20,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      index != 0 || keyword['value'] != ''
-                          ? Expanded(
-                              child: CustomButton(
-                                onPressed: onSearchAction,
-                                content: '검색',
-                              ),
-                            )
-                          : const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10),
-                              child: CustomText(
-                                content: '그룹명을 입력하거나, 기간을 선택해주세요',
-                                fontSize: FontSize.smallSize,
-                                color: paleRedColor,
-                              ),
-                            ),
-                    ],
-                  ),
-                ],
-              ),
-            Expanded(
-              child: GroupInfiniteScroll(
-                controller: controller,
-                data: groups,
-                mode: 0,
-                emptyWidget: Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      initial
-                          ? const SizedBox()
-                          : const CustomText(
-                              center: true,
-                              content:
-                                  '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
-                              height: 1.5,
-                            ),
-                    ],
+              Expanded(
+                child: CustomInput(
+                  explain: '그룹명을 입력하세요',
+                  setValue: (value) {
+                    keyword['value'] = value;
+                  },
+                  fontSize: FontSize.textSize,
+                  initialValue: keyword['value'],
+                  needSearch: true,
+                  onSubmitted: (_) => onSearchAction(),
+                  suffixIcon: const CustomIcon(
+                    icon: searchIcon,
+                    color: greyColor,
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        const CreateGroupButton(),
+        if (showSearchBar)
+          ColWithPadding(
+            horizontal: 20,
+            children: [
+              searchOptions(
+                '기간 선택',
+                [
+                  Column(
+                    children: [
+                      SliderTheme(
+                        data: SliderThemeData(
+                          overlayShape: SliderComponentShape.noOverlay,
+                        ),
+                        child: Slider(
+                          activeColor: palePinkColor,
+                          thumbColor: palePinkColor,
+                          inactiveColor: palePinkColor.withOpacity(0.5),
+                          min: 0,
+                          max: 5,
+                          divisions: 5,
+                          value: index,
+                          onChanged: (value) {
+                            setState(() {
+                              index = value;
+                            });
+                          },
+                        ),
+                      ),
+                      if (index != 0)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: CustomText(
+                            content:
+                                index.toInt() != 0 ? period[index.toInt()] : '',
+                            fontSize: FontSize.smallSize,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+              searchOptions(
+                '그룹 정렬',
+                [
+                  for (int i = 0; i < 2; i += 1)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: CustomBoxContainer(
+                        width: 90,
+                        onTap: () => changeSort(i),
+                        color: sortIdx == i ? paleRedColor : whiteColor,
+                        borderColor: sortIdx == i ? paleRedColor : greyColor,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: CustomText(
+                              content: '시작일 ${i == 0 ? '▲' : '▼'}',
+                              color: sortIdx == i ? whiteColor : blackColor,
+                              fontSize: FontSize.smallSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              searchOptions(
+                '공개 여부 필터',
+                [
+                  for (int i = 0; i < 2; i += 1)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: CustomBoxContainer(
+                        width: 90,
+                        onTap: () => changePublicPrivate(i),
+                        color: publicPrivate[i] ? paleRedColor : whiteColor,
+                        borderColor:
+                            publicPrivate[i] ? paleRedColor : greyColor,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: CustomText(
+                              content: i == 0 ? '공개 그룹' : '비공개 그룹',
+                              color: publicPrivate[i] ? whiteColor : blackColor,
+                              fontSize: FontSize.smallSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              RowWithPadding(
+                vertical: 10,
+                horizontal: 20,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  index != 0 || keyword['value'] != ''
+                      ? Expanded(
+                          child: CustomButton(
+                            onPressed: onSearchAction,
+                            content: '검색',
+                          ),
+                        )
+                      : const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: CustomText(
+                            content: '그룹명을 입력하거나, 기간을 선택해주세요',
+                            fontSize: FontSize.smallSize,
+                            color: paleRedColor,
+                          ),
+                        ),
+                ],
+              ),
+            ],
+          ),
+        Expanded(
+          child: GroupInfiniteScroll(
+            controller: controller,
+            data: groups,
+            mode: 0,
+            emptyWidget: Padding(
+              padding: const EdgeInsets.only(top: 40),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  initial
+                      ? const SizedBox()
+                      : const CustomText(
+                          center: true,
+                          content: '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
+                          height: 1.5,
+                        ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

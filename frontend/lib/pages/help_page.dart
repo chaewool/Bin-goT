@@ -45,74 +45,50 @@ class _HelpState extends State<Help> {
 
   @override
   Widget build(BuildContext context) {
+    final image = Image.asset(
+      imagePathList[index],
+      fit: BoxFit.fitHeight,
+    );
     return Scaffold(
       appBar: const AppBarWithBack(title: '도움말'),
       body: Stack(
         children: [
-          // CustomIconButton(
-          //   onPressed: () => moveTo(false),
-          //   icon: leftIcon,
-          //   size: 40,
-          //   color: index > 0 ? palePinkColor : greyColor,
-          // ),
           //* 도움말 이미지
           CustomBoxContainer(
             height: getHeight(context),
-            child: Image.asset(
-              imagePathList[index],
-              fit: BoxFit.fitHeight,
+            onTap: showModal(
+              context,
+              page: InteractiveViewer(
+                child: CustomBoxContainer(
+                  onTap: () => toBack(context),
+                  color: blackColor,
+                  child: image,
+                ),
+              ),
             ),
+            child: image,
           ),
           //* 이미지 이동 버튼
-          CustomBoxContainer(
-            color: transparentColor,
-            height: getHeight(context),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CustomIconButton(
-                  onPressed: () => moveTo(false),
-                  icon: leftIcon,
-                  color: index > 0 ? greyColor : greyColor.withOpacity(0.3),
-                  size: 70,
-                ),
-                CustomIconButton(
-                  onPressed: () => moveTo(true),
-                  icon: rightIcon,
-                  color: index < length - 1
-                      ? greyColor
-                      : greyColor.withOpacity(0.3),
-                  size: 70,
-                ),
-                // FloatingActionButton(
-                //   heroTag: 'leftIcon',
-                //   backgroundColor: transparentColor,
-                //   onPressed: () => moveTo(false),
-                //   child: CustomIcon(
-                //     icon: leftIcon,
-                //     color: index > 0 ? palePinkColor : greyColor,
-                //   ),
-                // ),
-                // FloatingActionButton(
-                //   heroTag: 'rightIcon',
-                //   backgroundColor: transparentColor,
-                //   onPressed: () => moveTo(true),
-                //   child: CustomIcon(
-                //     icon: rightIcon,
-                //     color: index < length - 1 ? palePinkColor : greyColor,
-                //   ),
-                // ),
-              ],
+          Positioned(
+            top: getHeight(context) / 2 - 60,
+            child: CustomIconButton(
+              onPressed: () => moveTo(false),
+              icon: leftIcon,
+              color: index > 0 ? greyColor : greyColor.withOpacity(0.3),
+              size: 70,
             ),
           ),
-
-          // CustomIconButton(
-          //   onPressed: () => moveTo(true),
-          //   icon: rightIcon,
-          //   size: 40,
-          //   color: index < length - 1 ? palePinkColor : greyColor,
-          // ),
+          Positioned(
+            top: getHeight(context) / 2 - 60,
+            left: getWidth(context) - 70,
+            child: CustomIconButton(
+              onPressed: () => moveTo(true),
+              icon: rightIcon,
+              color:
+                  index < length - 1 ? greyColor : greyColor.withOpacity(0.3),
+              size: 70,
+            ),
+          ),
         ],
       ),
     );

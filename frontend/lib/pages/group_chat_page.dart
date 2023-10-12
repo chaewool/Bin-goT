@@ -37,6 +37,7 @@ class _GroupChatState extends State<GroupChat> {
   XFile? selectedImage;
   final controller = ScrollController();
   GlobalKey bottomBarKey = GlobalKey();
+  StringMap chatText = {'content': ''};
 
   @override
   void initState() {
@@ -49,7 +50,7 @@ class _GroupChatState extends State<GroupChat> {
       //* 변수 초기화
       groupId = getGroupId(context)!;
       setState(() {
-        appBarHeight = MediaQuery.of(context).padding.top;
+        appBarHeight = getStatusBarHeight(context);
       });
 
       //* 채팅 불러오기
@@ -98,25 +99,29 @@ class _GroupChatState extends State<GroupChat> {
     });
   }
 
+  void changeChat(String value) {
+    chatText['content'] = value;
+  }
+
   //* 채팅 추가
-  void addChat(StringMap inputData, XFile? image) {
-    final content = inputData['content'];
-    if (content != '' || image != null) {
+  void addChat() {
+    final content = chatText['content'];
+    if (content != '' || selectedImage != null) {
       showSpinner(context, true);
       if (showImg) {
         setState(() {
           showImg = false;
-          selectedImage = null;
         });
       }
+
       GroupProvider()
           .createGroupChatChat(
         groupId,
         FormData.fromMap({
           'content': content,
-          'img': image != null
+          'img': selectedImage != null
               ? MultipartFile.fromFileSync(
-                  image.path,
+                  selectedImage!.path,
                   contentType: MediaType('image', 'png'),
                 )
               : null,
@@ -130,10 +135,14 @@ class _GroupChatState extends State<GroupChat> {
                   ...data,
                   'content': content,
                   'reviewed': false,
-                  'hasImage': image != null,
+                  'hasImage': selectedImage != null,
                 },
               ),
             );
+        setState(() {
+          chatText['content'] = '';
+          selectedImage = null;
+        });
       }).catchError((_) {
         showErrorModal(context, '채팅 생성 오류', '채팅 생성에 실패했습니다.');
       });
@@ -184,43 +193,63 @@ class _GroupChatState extends State<GroupChat> {
               height: 70,
               child: AppBarWithBack(transparent: true),
             ),
-            //* 이미지 미리보기
-            if (showImg)
-              CustomBoxContainer(
-                hasRoundEdge: false,
-                width: getWidth(context),
-                height: getHeight(context) - 80 + appBarHeight,
-                color: blackColor.withOpacity(0.8),
-                child: ColWithPadding(
-                  vertical: 10,
-                  children: [
-                    CustomBoxContainer(
-                      height: getHeight(context) - 150,
-                      hasRoundEdge: false,
-                      color: transparentColor,
-                      image: DecorationImage(
-                        image: FileImage(File(selectedImage!.path)),
-                      ),
-                    ),
-                    CustomButton(
-                      onPressed: deleteImg,
-                      content: '취소',
-                      color: whiteColor,
-                    )
-                  ],
-                ),
-              ),
             //* 채팅 입력창
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 GroupChatBottomBar(
+                  changeChat: changeChat,
                   addChat: addChat,
-                  selectedImage: selectedImage,
                   imagePicker: chatImagePicker,
                 ),
               ],
             ),
+            //* 이미지 미리보기
+            if (showImg)
+              CustomBoxContainer(
+                hasRoundEdge: false,
+                width: getWidth(context),
+                height: getHeight(context),
+                color: blackColor.withOpacity(0.8),
+                child: Padding(
+                  padding: EdgeInsets.only(top: appBarHeight + 10),
+                  child: ColWithPadding(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    vertical: 10,
+                    children: [
+                      CustomBoxContainer(
+                        height: getHeight(context) * 0.8,
+                        hasRoundEdge: false,
+                        color: transparentColor,
+                        image: DecorationImage(
+                          image: FileImage(File(selectedImage!.path)),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CustomButton(
+                              onPressed: addChat,
+                              content: '전송',
+                              color: paleRedColor,
+                              textColor: whiteColor,
+                            ),
+                            const SizedBox(width: 20),
+                            CustomButton(
+                              onPressed: deleteImg,
+                              content: '취소',
+                              color: whiteColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
             //* 스피너
             if (watchSpinner(context))
               CustomBoxContainer(
