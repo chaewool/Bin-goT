@@ -120,6 +120,11 @@ class _GroupMainState extends State<GroupMain> {
                 TextButton(
                   onPressed: () {
                     changeGroupIndex(context, 2);
+                    getPageController(context).animateToPage(
+                      2,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    );
                   },
                   child: const CustomText(
                     content: '전체보기',

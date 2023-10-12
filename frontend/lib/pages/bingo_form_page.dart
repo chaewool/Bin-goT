@@ -58,12 +58,13 @@ class _BingoFormState extends State<BingoForm> {
     size = widget.bingoSize;
     //* 생성, 수정 분기 처리
     if (getBingoId(context) == null || getBingoId(context) == 0) {
+      print('if sentence!!!!');
       initBingoFormData(context, false);
     } else {
       initBingoFormData(context, true);
     }
     //* items
-    if (getItems(context).isEmpty) {
+    if (getItems(context, false).isEmpty) {
       context.read<GlobalBingoProvider>().initItems(size * size);
     }
   }
@@ -86,7 +87,7 @@ class _BingoFormState extends State<BingoForm> {
     try {
       //* 변경된 부분이 있는 경우
       if (changed) {
-        final data = context.read<GlobalBingoProvider>().data;
+        final data = getBingoData(context, false);
         //* 제목
         if (data['title'] == null) {
           return showAlert(

@@ -593,11 +593,11 @@ class _GroupFormState extends State<GroupForm> {
   Widget groupImage() {
     if (selectedImage == null && !hasImg) {
       return CustomBoxContainer(
-        width: 270,
+        width: 300,
         height: 150,
         onTap: groupFormImagePicker,
-        borderColor: greyColor,
-        hasRoundEdge: false,
+        borderColor: Colors.grey,
+        borderRadius: BorderRadius.circular(4),
         child: CustomIconButton(
           icon: addIcon,
           onPressed: groupFormImagePicker,
@@ -608,7 +608,7 @@ class _GroupFormState extends State<GroupForm> {
       return Column(
         children: [
           CustomBoxContainer(
-            borderColor: greyColor,
+            borderColor: Colors.grey,
             hasRoundEdge: false,
             width: 270,
             height: 150,

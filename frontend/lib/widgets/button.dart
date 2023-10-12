@@ -63,6 +63,7 @@ class ExitButton extends StatelessWidget {
         ? IconButton(
             onPressed: onPressed ?? () => toBack(context),
             icon: CustomIcon(icon: icon),
+            padding: const EdgeInsets.all(0),
           )
         : OutlinedButton(
             onPressed: onPressed ?? () => toBack(context),
@@ -137,16 +138,19 @@ class CustomTextButton extends StatelessWidget {
   final String content;
   final FontSize fontSize;
   final ReturnVoid onTap;
+  final bool transparent;
   const CustomTextButton({
     super.key,
     required this.content,
     required this.onTap,
     this.fontSize = FontSize.textSize,
+    this.transparent = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
+      color: transparent ? transparentColor : whiteColor,
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),

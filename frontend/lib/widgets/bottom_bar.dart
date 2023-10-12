@@ -10,7 +10,6 @@ import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 //? 하단 바
 
@@ -30,27 +29,40 @@ class CustomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(10),
+        topRight: Radius.circular(10),
+      ),
+      color: palePinkColor,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             for (int i = 0; i < 3; i += 1)
               GestureDetector(
                 onTap: () => changeIndex(i),
-                child: CircleContainer(
-                  radius: 26,
-                  border: false,
-                  gradient: selectedIndex == i
-                      ? const LinearGradient(
-                          colors: [paleRedColor, palePinkColor],
-                        )
-                      : null,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   child: CustomIcon(
                     icon: items[i],
                     color: selectedIndex == i ? whiteColor : greyColor,
                   ),
                 ),
+                // CircleContainer(
+                //   radius: 26,
+                //   border: false,
+                //   gradient: selectedIndex == i
+                //       ? const LinearGradient(
+                //           colors: [paleRedColor, palePinkColor],
+                //         )
+                //       : null,
+                //   child: CustomIcon(
+                //     icon: items[i],
+                //     color: selectedIndex == i ? whiteColor : greyColor,
+                //   ),
+                // ),
               )
           ],
         ),
@@ -98,7 +110,7 @@ class GroupMainBottomBar extends StatelessWidget {
               },
               child: CustomBoxContainer(
                 hasRoundEdge: false,
-                height: 50,
+                height: 80,
                 color: paleRedColor,
                 child: Center(
                   child: CustomText(
@@ -146,14 +158,14 @@ class FormBottomBar extends StatelessWidget {
 
 //* 그룹 채팅 입력 하단 바
 class GroupChatBottomBar extends StatefulWidget {
-  final void Function(StringMap, XFile?) addChat;
-  final XFile? selectedImage;
+  final ReturnVoid addChat;
+  final void Function(String) changeChat;
   final ReturnVoid imagePicker;
   const GroupChatBottomBar({
     super.key,
     required this.addChat,
-    required this.selectedImage,
     required this.imagePicker,
+    required this.changeChat,
   });
 
   @override
@@ -163,16 +175,6 @@ class GroupChatBottomBar extends StatefulWidget {
 class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
   @override
   Widget build(BuildContext context) {
-    StringMap data = {'content': ''};
-
-    //* 채팅 추가
-    void addChat() {
-      widget.addChat(data, widget.selectedImage);
-      setState(() {
-        data['content'] = '';
-      });
-    }
-
     return CustomBoxContainer(
       color: greyColor,
       width: getWidth(context),
@@ -192,18 +194,15 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
           Flexible(
             flex: 5,
             child: CustomInput(
-              filled: true,
-              explain: '내용을 입력하세요',
-              setValue: (value) {
-                data['content'] = value.trim();
-              },
-            ),
+                filled: true,
+                explain: '내용을 입력하세요',
+                setValue: widget.changeChat),
           ),
           Flexible(
             child: Padding(
               padding: const EdgeInsets.only(right: 10),
               child: CustomIconButton(
-                onPressed: addChat,
+                onPressed: widget.addChat,
                 icon: sendIcon,
                 color: whiteColor,
               ),

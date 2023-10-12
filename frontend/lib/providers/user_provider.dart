@@ -37,6 +37,7 @@ class UserProvider extends ApiProvider {
   FutureDynamicMap _confirmToken() async {
     try {
       if (token == null || token == '') return {'token': null};
+      print(token);
       await dioForVerify().post(verifyTokenUrl, data: {'token': token});
       return {};
     } catch (error) {

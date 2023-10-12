@@ -1,6 +1,7 @@
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
+import 'package:bin_got/widgets/text.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +14,7 @@ class CustomInput extends StatelessWidget {
   final StringList? explainTitle;
   final bool needMore, onlyNum, enabled, needSearch;
   final double? width, height, vertical, horizontal;
-  final bool filled, autofocus;
+  final bool filled;
   final Color filledColor;
   final FontSize fontSize;
   final int? maxLength;
@@ -43,7 +44,6 @@ class CustomInput extends StatelessWidget {
     this.onSubmitted,
     this.suffixIcon,
     this.explainTitle,
-    this.autofocus = false,
     this.contentHorizontalPadding,
   });
 
@@ -58,7 +58,6 @@ class CustomInput extends StatelessWidget {
         width: width,
         height: height,
         child: TextField(
-          autofocus: autofocus,
           controller: TextEditingController(text: initialValue),
           decoration: InputDecoration(
             filled: filled,
@@ -74,17 +73,17 @@ class CustomInput extends StatelessWidget {
                 needMore ? null : const EdgeInsets.symmetric(horizontal: 10),
           ),
           maxLength: maxLength,
-          style: TextStyle(fontSize: convertedFontSize(fontSize)),
+          style: TextStyle(fontSize: convertedFontSize(fontSize), height: 1.2),
           maxLines: needMore ? 7 : 1,
           keyboardType: onlyNum ? TextInputType.number : null,
           inputFormatters:
               onlyNum ? [FilteringTextInputFormatter.digitsOnly] : null,
-          enabled: enabled,
           textAlign: TextAlign.start,
           textAlignVertical: TextAlignVertical.center,
           onChanged: setValue,
           onSubmitted: onSubmitted,
           textInputAction: needSearch ? TextInputAction.search : null,
+          enabled: enabled,
         ),
       ),
     );
@@ -222,10 +221,25 @@ class _InputDateState extends State<InputDate> {
           });
         }
       },
-      child: CustomInput(
-        explain: widget.explain,
-        enabled: false,
-        setValue: (value) {},
+      child: CustomBoxContainer(
+        width: 300,
+        height: 45,
+        borderColor: Colors.grey,
+        borderRadius: BorderRadius.circular(4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: CustomText(
+                content: widget.explain,
+                color: greyColor,
+                fontSize: FontSize.smallSize,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

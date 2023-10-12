@@ -18,13 +18,14 @@ class MyGroupModel {
 
 class MyBingoModel {
   final int id, size, groupId;
-  final String groupName, status, start;
+  final String groupName, status, start, end;
   MyBingoModel.fromJson(DynamicMap json)
       : id = json['id'],
         groupId = json['group_id'],
         size = json['size'],
         groupName = json['groupname'],
         start = json['start'],
+        end = json['end'],
         status = json['status'];
 }
 

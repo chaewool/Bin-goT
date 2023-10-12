@@ -14,6 +14,7 @@ import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/group_main.dart';
 import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +41,7 @@ class _GroupDetailState extends State<GroupDetail> {
   //* 변수
   int bingoSize = 0;
   int bingoId = 0;
+  double paddingTop = 0;
   WidgetList nextPages = [
     const BingoDetail(),
     const GroupMain(),
@@ -50,10 +52,11 @@ class _GroupDetailState extends State<GroupDetail> {
     const GroupAppBar(),
     const GroupAppBar(),
   ];
-  late final PageController pageController;
+  // late final PageController pageController;
 
   //* 빙고 정보 불러오기
   void readBingoDetail() {
+    print('read bingo');
     BingoProvider()
         .readBingoDetail(
       getGroupId(context)!,
@@ -111,37 +114,45 @@ class _GroupDetailState extends State<GroupDetail> {
     return Future.value(false);
   }
 
+  void onPageChanged(int index) {
+    if (widget.isMember && index != readGroupIndex(context)) {
+      changeGroupIndex(context, index);
+      getPageController(context).jumpToPage(index);
+
+      switch (index) {
+        case 0:
+          applyBingoDetail();
+          break;
+        case 2:
+          applyGroupRank();
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     //* 페이지 이동 시
-    pageController = PageController(initialPage: readGroupIndex(context));
-    pageController.addListener(
-      () {
-        final newIndex = pageController.page!.round();
-        if (newIndex != readGroupIndex(context)) {
-          setState(() {
-            changeGroupIndex(context, newIndex);
-          });
-
-          switch (newIndex) {
-            case 0:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                applyBingoDetail();
-              });
-              break;
-            case 2:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                applyGroupRank();
-              });
-              break;
-            default:
-              break;
-          }
-        }
-      },
-    );
+    context.read<GlobalGroupProvider>().initPage();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        paddingTop = getStatusBarHeight(context);
+      });
+      final index = readGroupIndex(context);
+      switch (index) {
+        case 0:
+          applyBingoDetail();
+          break;
+        case 2:
+          applyGroupRank();
+          break;
+        default:
+          break;
+      }
+
       //* 다른 페이지로 이동해야할 경우
       if (widget.admin) {
         toOtherPage(context, page: GroupAdmin(groupId: widget.groupId!))();
@@ -155,7 +166,8 @@ class _GroupDetailState extends State<GroupDetail> {
   @override
   void dispose() {
     super.dispose();
-    pageController.dispose();
+    // pageController.dispose();
+    // context.read<GlobalGroupProvider>().disposeController();
   }
 
   @override
@@ -172,32 +184,36 @@ class _GroupDetailState extends State<GroupDetail> {
               height: getHeight(context) - 80,
               //* 화면
               child: PageView(
-                controller: pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                controller: getPageController(context),
                 onPageChanged: (index) => changeGroupIndex(context, index),
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).padding.top),
-                    child: nextPages[0],
-                  ),
+                  if (widget.isMember)
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: paddingTop,
+                      ),
+                      child: nextPages[0],
+                    ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).padding.top),
+                          top: paddingTop,
+                        ),
                         child: SingleChildScrollView(
                           child: nextPages[1],
                         ),
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).padding.top),
-                    child: nextPages[2],
-                  ),
+                  if (widget.isMember)
+                    Padding(
+                      padding: EdgeInsets.only(top: paddingTop),
+                      child: nextPages[2],
+                    ),
                 ],
               ),
             ),
@@ -206,7 +222,9 @@ class _GroupDetailState extends State<GroupDetail> {
               color: transparentColor,
               width: getWidth(context),
               height: 80,
-              child: appbarList[watchGroupIndex(context)],
+              child: widget.isMember
+                  ? appbarList[watchGroupIndex(context)]
+                  : const AppBarWithBack(),
             ),
             //* 채팅창 이동 버튼
             if (watchMemberState(context) != 0)
@@ -222,6 +240,9 @@ class _GroupDetailState extends State<GroupDetail> {
                   ),
                 ),
               ),
+            //* 토스트
+            if (watchAfterWork(context))
+              CustomToast(content: watchToastString(context))
           ],
         ),
         //* 하단 바
@@ -229,14 +250,7 @@ class _GroupDetailState extends State<GroupDetail> {
           isMember: widget.isMember,
           size: context.watch<GlobalGroupProvider>().bingoSize ??
               context.watch<GlobalBingoProvider>().bingoSize,
-          changeIndex: (index) {
-            changeGroupIndex(context, index);
-            pageController.animateToPage(
-              index,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.ease,
-            );
-          },
+          changeIndex: onPageChanged,
         ),
       ),
     );

@@ -268,7 +268,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                 hasDivider: false,
                 options: [
                   eachOption(
-                    icon: logoutIcon,
+                    icon: tempExitIcon,
                     title: '로그아웃',
                     onTap: showAlert(
                       context,
@@ -337,7 +337,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
       Icons.format_list_numbered,
       Icons.badge_outlined,
     ];
-    const explainList = ['100% 달성 횟수', '1위 횟수', '배지 개수'];
+    const explainList = ['모두 채운\n빙고판', '랭킹 1위\n', '획득 배지\n'];
     return Padding(
       padding: const EdgeInsets.fromLTRB(5, 10, 5, 15),
       child: Column(
@@ -427,27 +427,32 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
               child: RowWithPadding(
                 vertical: 10,
                 horizontal: 10,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   for (int i = 0; i < 3; i += 1)
-                    Column(
-                      children: [
-                        CustomIcon(
-                          icon: iconList[i],
-                          size: 40,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: CustomText(
-                              content:
-                                  cntList[i] != null ? '${cntList[i]} 개' : ''),
-                        ),
-                        CustomText(
-                          content: explainList[i],
-                          fontSize: FontSize.tinySize,
-                        ),
-                        const SizedBox(height: 10)
-                      ],
+                    Flexible(
+                      child: Column(
+                        children: [
+                          CustomIcon(
+                            icon: iconList[i],
+                            size: 40,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: CustomText(
+                                content: cntList[i] != null
+                                    ? '${cntList[i]} ${i != 1 ? '개' : '회'}'
+                                    : ''),
+                          ),
+                          CustomText(
+                            content: explainList[i],
+                            fontSize: FontSize.tinySize,
+                            center: true,
+                            height: 1.2,
+                          ),
+                          const SizedBox(height: 10)
+                        ],
+                      ),
                     ),
                 ],
               ),

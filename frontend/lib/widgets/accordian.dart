@@ -112,34 +112,42 @@ class _MemberListState extends State<MemberList> {
         ? CustomList(
             height: 70,
             border: true,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircleContainer(
-                  child: CachedNetworkImage(
-                    imageUrl: '${dotenv.env['fileUrl']}/badges/${widget.badge}',
-                    placeholder: (context, url) =>
-                        const SizedBox(width: 50, height: 50),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 7),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CircleContainer(
+                    color: whiteColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            '${dotenv.env['fileUrl']}/badges/${widget.badge}',
+                        placeholder: (context, url) =>
+                            const SizedBox(width: 50, height: 50),
+                      ),
+                    ),
                   ),
-                ),
-                CustomText(content: widget.nickname),
-                getId(context) != widget.id
-                    ? IconButtonInRow(
-                        icon: closeIcon,
-                        onPressed: () => manageMember(false),
-                        color: blackColor,
-                      )
-                    : const CustomBoxContainer(
-                        color: paleRedColor,
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CustomText(
-                            content: '그룹장',
-                            color: whiteColor,
+                  CustomText(content: widget.nickname),
+                  getId(context) != widget.id
+                      ? IconButtonInRow(
+                          icon: closeIcon,
+                          onPressed: () => manageMember(false),
+                          color: blackColor,
+                        )
+                      : const CustomBoxContainer(
+                          color: paleRedColor,
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CustomText(
+                              content: '그룹장',
+                              color: whiteColor,
+                            ),
                           ),
                         ),
-                      ),
-              ],
+                ],
+              ),
             ),
           )
         : showElement
