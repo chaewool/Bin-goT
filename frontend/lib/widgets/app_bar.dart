@@ -145,8 +145,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
               page: GroupAdmin(groupId: groupId),
             ),
           ),
-        if ((watchMemberState(context) != 0) &&
-            alreadyStarted(context) == false)
+        if ((watchMemberState(context) != 0) && onGoing(context) == false)
           IconButtonInRow(
             icon: shareIcon,
             onPressed: () => shareGroup(
@@ -156,7 +155,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         if (watchMemberState(context) == 1)
           IconButtonInRow(
-            icon: exitIcon,
+            icon: tempExitIcon,
             onPressed: showAlert(
               context,
               title: '그룹 탈퇴 확인',
@@ -232,7 +231,7 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBarWithBack(
-      actions: alreadyStarted(context) != true
+      actions: onGoing(context) != true
           ? [
               IconButtonInRow(icon: editIcon, onPressed: onEditAction),
               IconButtonInRow(icon: deleteIcon, onPressed: onDeleteAction),
@@ -254,8 +253,14 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     FutureBool saveBingo() {
-      imagePicker(context,
-          elseFunc: () => context.read<GlobalBingoProvider>().bingoToImage());
+      imagePicker(context, elseFunc: () {
+        context.read<GlobalBingoProvider>().bingoToImage().then((_) {
+          setToastString(context, '빙고판 이미지가 저장되었습니다.');
+          showToast(context);
+        }).catchError((_) {
+          showErrorModal(context, '저장 실패', '빙고판 저장에 실패했습니다.');
+        });
+      });
       return Future.value(true);
     }
 
@@ -264,6 +269,7 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
       Share.shareXFiles(
         [XFile(file.path)],
+        // ignore: use_build_context_synchronously
         text: context.read<GlobalBingoProvider>().title,
       ).then((value) => file.delete());
     }

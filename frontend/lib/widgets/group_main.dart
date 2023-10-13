@@ -90,11 +90,17 @@ class _GroupMainState extends State<GroupMain> {
                   const SizedBox(height: 20),
                   ShowContentBox(
                     contentTitle: '설명',
-                    content: context.watch<GlobalGroupProvider>().description,
+                    content: watchDescription(context) != ''
+                        ? watchDescription(context)
+                        : '작성된 내용이 없습니다',
+                    hasContent: watchDescription(context) != '',
                   ),
                   ShowContentBox(
                     contentTitle: '규칙',
-                    content: context.watch<GlobalGroupProvider>().rule,
+                    content: watchRule(context) != ''
+                        ? watchRule(context)
+                        : '작성된 내용이 없습니다',
+                    hasContent: watchRule(context) != '',
                   ),
                   if (memberState != 0) groupRankTop3(context),
                 ],
@@ -120,6 +126,11 @@ class _GroupMainState extends State<GroupMain> {
                 TextButton(
                   onPressed: () {
                     changeGroupIndex(context, 2);
+                    getPageController(context).animateToPage(
+                      2,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    );
                   },
                   child: const CustomText(
                     content: '전체보기',

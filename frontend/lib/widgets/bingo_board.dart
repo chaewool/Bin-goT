@@ -124,7 +124,7 @@ class EachBingo extends StatelessWidget {
       childWhenDragging: isDetail
           ? draggableBox(context, convertedColor)
           : CustomBoxContainer(
-              hasRoundEdge: watchHasRoundEdge(context),
+              hasRoundEdge: watchHasRoundEdge(context, isDetail),
               color: whiteColor,
             ),
       data: index,

@@ -32,18 +32,12 @@ class _MainState extends State<Main> {
   ];
 
   //* 페이지 변경
-  void changeIndex(int index, [bottomBar = false]) {
+  void changeIndex(int index) {
     if (index != selectedIndex) {
       setState(() {
         selectedIndex = index;
       });
-      if (bottomBar) {
-        pageController.animateToPage(
-          index,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.ease,
-        );
-      }
+      pageController.jumpToPage(index);
     }
   }
 
@@ -53,15 +47,6 @@ class _MainState extends State<Main> {
     selectedIndex = widget.initialPage;
     //* 페이지 이동 시
     pageController = PageController(initialPage: selectedIndex);
-    pageController.addListener(
-      () {
-        if (pageController.page!.round() != selectedIndex) {
-          setState(() {
-            selectedIndex = pageController.page!.round();
-          });
-        }
-      },
-    );
   }
 
   //* 종료
@@ -80,12 +65,14 @@ class _MainState extends State<Main> {
         resizeToAvoidBottomInset: false,
         //* 화면
         body: PageView.builder(
+          physics: const NeverScrollableScrollPhysics(),
           controller: pageController,
-          onPageChanged: changeIndex,
           itemCount: 3,
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              padding: EdgeInsets.only(
+                top: getStatusBarHeight(context),
+              ),
               child: nextPages[index],
             );
           },
@@ -94,7 +81,7 @@ class _MainState extends State<Main> {
         bottomNavigationBar: CustomNavigationBar(
           selectedIndex: selectedIndex,
           items: items,
-          changeIndex: (index) => changeIndex(index, true),
+          changeIndex: (index) => changeIndex(index),
         ),
       ),
     );

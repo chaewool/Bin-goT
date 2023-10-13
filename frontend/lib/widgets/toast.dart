@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -20,7 +21,9 @@ class CustomToast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Positioned(
+      top: getHeight(context) - 200,
+      left: (getWidth(context) - width) / 2,
       child: CustomBoxContainer(
         height: height,
         width: width,

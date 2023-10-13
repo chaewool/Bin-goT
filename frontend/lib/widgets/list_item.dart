@@ -47,6 +47,7 @@ class GroupListItem extends StatelessWidget {
     }
 
     String groupMember = '(${groupInfo.count}/${groupInfo.headCount})';
+
     return CustomList(
       height: 70,
       boxShadow: [shadowWithOpacity],
@@ -105,6 +106,11 @@ class RankListItem extends StatelessWidget {
     void toBingoDetail() {
       setBingoId(context, rankListItem.bingoId);
       changeGroupIndex(context, 0);
+      getPageController(context).animateToPage(
+        0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
     }
 
     return CustomList(
@@ -411,19 +417,22 @@ class ChatImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final CachedNetworkImage networkImage = CachedNetworkImage(
+      fit: BoxFit.fitWidth,
+      imageUrl:
+          '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${widget.data.id}',
+    );
     return CustomBoxContainer(
       color: transparent ? transparentColor : blackColor.withOpacity(0.8),
       width: width,
       height: height,
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: hasRoundEdge ? BorderRadius.circular(8) : null,
-        child: CachedNetworkImage(
-          fit: BoxFit.fitWidth,
-          imageUrl:
-              '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${widget.data.id}',
-        ),
-      ),
+      child: hasRoundEdge
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: networkImage,
+            )
+          : CustomBoxContainer(child: networkImage),
     );
   }
 }

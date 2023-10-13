@@ -8,7 +8,6 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
-import 'package:bin_got/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,101 +36,91 @@ class _BingoDetailState extends State<BingoDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        !watchLoading(context)
-            ? RepaintBoundary(
-                key: context.watch<GlobalBingoProvider>().globalKey,
-                child: CustomBoxContainer(
-                  hasRoundEdge: false,
-                  image: watchBackground(context) != null
-                      ? DecorationImage(
-                          image: AssetImage(
-                              backgroundList[watchBackground(context)!]),
-                          fit: BoxFit.fitHeight,
-                        )
-                      : null,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        flex: 2,
-                        child: CustomText(
-                          content:
-                              context.watch<GlobalBingoProvider>().title ?? '',
-                          fontSize: FontSize.titleSize,
-                        ),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: CustomText(
-                            content:
-                                getBingoData(context).containsKey('username')
-                                    ? getBingoData(context)['username']
-                                    : '',
-                            fontSize: FontSize.smallSize,
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            if (alreadyStarted(context) != true &&
-                                (myBingoId(context) == null ||
-                                    myBingoId(context) == getBingoId(context)))
-                              IconButtonInRow(
-                                onPressed: toOtherPage(
-                                  context,
-                                  page: BingoForm(
-                                    bingoSize: bingoSize,
-                                    needAuth: false,
-                                  ),
-                                ),
-                                icon: editIcon,
-                              ),
-                            const SizedBox(width: 20)
-                          ],
-                        ),
-                      ),
-                      Flexible(
-                        flex: 6,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 20,
-                            horizontal: 10,
-                          ),
-                          child: BingoBoard(
-                            isDetail: true,
-                            bingoSize: bingoSize,
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        child: Center(
-                          child: CustomText(
-                            content:
-                                '달성률 : ${context.watch<GlobalBingoProvider>().achieve}%',
-                            fontSize: FontSize.largeSize,
-                          ),
-                        ),
-                      )
-                    ],
+    return !watchLoading(context)
+        ? RepaintBoundary(
+            key: context.watch<GlobalBingoProvider>().globalKey,
+            child: CustomBoxContainer(
+              hasRoundEdge: false,
+              image: watchBackground(context) != null
+                  ? DecorationImage(
+                      image:
+                          AssetImage(backgroundList[watchBackground(context)!]),
+                      fit: BoxFit.fitHeight,
+                    )
+                  : null,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: CustomText(
+                      content: context.watch<GlobalBingoProvider>().title ?? '',
+                      fontSize: FontSize.titleSize,
+                    ),
                   ),
-                ),
-              )
-            : const CustomCirCularIndicator(),
-        if (watchAfterWork(context))
-          CustomToast(
-            content: watchToastString(context),
+                  Flexible(
+                    flex: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: CustomText(
+                        content: getBingoData(context).containsKey('username')
+                            ? getBingoData(context)['username']
+                            : '',
+                        fontSize: FontSize.smallSize,
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (alreadyStarted(context) != true &&
+                            (myBingoId(context) == null ||
+                                myBingoId(context) == getBingoId(context)))
+                          IconButtonInRow(
+                            onPressed: toOtherPage(
+                              context,
+                              page: BingoForm(
+                                bingoSize: bingoSize,
+                                needAuth: false,
+                              ),
+                            ),
+                            icon: editIcon,
+                          ),
+                        const SizedBox(width: 20)
+                      ],
+                    ),
+                  ),
+                  Flexible(
+                    flex: 6,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 10,
+                      ),
+                      child: BingoBoard(
+                        isDetail: true,
+                        bingoSize: bingoSize,
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Center(
+                      child: CustomText(
+                        content:
+                            '달성률 : ${context.watch<GlobalBingoProvider>().achieve}%',
+                        fontSize: FontSize.largeSize,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           )
-      ],
-    );
+        : const CustomCirCularIndicator();
   }
 }

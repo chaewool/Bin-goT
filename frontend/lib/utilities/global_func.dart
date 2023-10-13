@@ -278,6 +278,8 @@ int? getId(BuildContext context) => context.read<AuthProvider>().id;
 //* size
 double getWidth(BuildContext context) => MediaQuery.of(context).size.width;
 double getHeight(BuildContext context) => MediaQuery.of(context).size.height;
+double getStatusBarHeight(BuildContext context) =>
+    MediaQuery.of(context).padding.top;
 
 //* exit app
 FutureBool exitApp(BuildContext context) =>
@@ -381,11 +383,28 @@ int? getBingoSize(BuildContext context) =>
 String? getStart(BuildContext context) =>
     context.read<GlobalGroupProvider>().start;
 
+String watchDescription(BuildContext context) =>
+    context.watch<GlobalGroupProvider>().description;
+
+String watchRule(BuildContext context) =>
+    context.watch<GlobalGroupProvider>().rule;
+
 bool? getNeedAuth(BuildContext context) =>
     context.read<GlobalGroupProvider>().needAuth;
 
-bool? alreadyStarted(BuildContext context) =>
-    context.read<GlobalGroupProvider>().alreadyStarted;
+bool? alreadyStarted(BuildContext context) {
+  final start = context.read<GlobalGroupProvider>().start;
+  return start != null
+      ? DateTime.now().difference(DateTime.parse(start)) >= Duration.zero
+      : null;
+}
+
+bool? onGoing(BuildContext context) {
+  final end = context.read<GlobalGroupProvider>().end;
+  return alreadyStarted(context) == true && end != null
+      ? DateTime.now().difference(DateTime.parse(end)) < Duration.zero
+      : null;
+}
 
 bool getPrev(BuildContext context) => context.read<GlobalGroupProvider>().prev;
 
@@ -400,8 +419,11 @@ GroupChatList watchChats(BuildContext context) =>
 
 List getRank(BuildContext context) => context.read<GlobalGroupProvider>().rank;
 
-void setStart(BuildContext context, String newStart) =>
-    context.read<GlobalGroupProvider>().setStart(newStart);
+PageController getPageController(BuildContext context) =>
+    context.read<GlobalGroupProvider>().pageController!;
+
+void setPeriod(BuildContext context, String newStart, String newEnd) =>
+    context.read<GlobalGroupProvider>().setPeriod(newStart, newEnd);
 
 void setGroupData(BuildContext context, dynamic newVal) =>
     context.read<GlobalGroupProvider>().setData(newVal);
@@ -496,8 +518,9 @@ int? watchCheckIcon(BuildContext context, [bool isDetail = true]) => isDetail
     ? context.watch<GlobalBingoProvider>().checkIcon
     : context.watch<GlobalBingoProvider>().formCheckIcon;
 
-List getItems(BuildContext context) =>
-    context.read<GlobalBingoProvider>().items;
+List getItems(BuildContext context, [bool isDetail = true]) => isDetail
+    ? context.read<GlobalBingoProvider>().items
+    : context.read<GlobalBingoProvider>().formItems;
 
 String? watchItemTitle(BuildContext context, int index,
         [bool isDetail = true]) =>
@@ -511,7 +534,7 @@ DynamicMap readItem(BuildContext context, int index, [bool isDetail = true]) =>
         : context.read<GlobalBingoProvider>().formItem(index);
 
 String getStringFont(BuildContext context, [bool isDetail = true]) =>
-    matchFont[watchFont(context, isDetail)!];
+    matchFont[watchFont(context, isDetail) ?? 0];
 
 IconData getCheckIconData(BuildContext context, [bool isDetail = true]) =>
     iconList[watchCheckIcon(context, isDetail)!];

@@ -1,4 +1,5 @@
 import 'package:bin_got/models/group_model.dart';
+import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
@@ -146,8 +147,8 @@ class _BingoTabBarState extends State<BingoTabBar> {
     StringList optionList = [
       '둥근 모서리 적용',
       '테두리 적용',
-      '${watchHasBlackBox(context) ? '흰색' : '검은색'}으로 변경',
-      '칸 여백 ${gapList[watchGap(context)!]}'
+      '${watchHasBlackBox(context, false) ? '흰색' : '검은색'}으로 변경',
+      '칸 여백 ${gapList[watchGap(context, false)!]}'
     ];
 
     bool isSelected(int i, int j) {
@@ -155,7 +156,7 @@ class _BingoTabBarState extends State<BingoTabBar> {
       switch (index) {
         case 1:
           final keyList = ['has_round_edge', 'has_border'];
-          return i == 0 && getBingoData(context)[keyList[j]];
+          return i == 0 && getBingoData(context, false)[keyList[j]];
         default:
           return watchFont(context, false) == elementIdx;
       }
@@ -200,9 +201,8 @@ class _BingoTabBarState extends State<BingoTabBar> {
             onPressed: () => changeBingoData(context, 3, i),
             icon: iconList[i],
             size: 70,
-            color: i == context.watch<GlobalBingoProvider>().formCheckIcon
-                ? paleRedColor
-                : greyColor,
+            color:
+                i == watchCheckIcon(context, false) ? paleRedColor : greyColor,
           ),
       ],
     );
@@ -392,8 +392,8 @@ class _MainTabBarState extends State<MainTabBar> {
   ];
 
   List<IntList> idxList = [
-    [1, 0],
-    [1, 0]
+    [1, 1],
+    [1, 1]
   ];
 
   void changeIdx(int idx) {
@@ -544,102 +544,117 @@ class _MainTabBarState extends State<MainTabBar> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Column(
-          children: [
-            RowWithPadding(
-              vertical: 25,
-              min: true,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                for (int i = 0; i < 2; i += 1)
-                  Flexible(
-                    child: GestureDetector(
-                      onTap: () => changeTab(i),
-                      child: Center(
-                        child: CustomText(
-                          content: titleList[i],
-                          bold: true,
-                          color: i == tabBarIndex
-                              ? blackColor
-                              : greyColor.withOpacity(0.5),
-                          fontSize: FontSize.titleSize,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                    child: Row(
+        CustomBoxContainer(
+          child: Column(
+            children: [
+              CustomBoxContainer(
+                gradient:
+                    const LinearGradient(colors: [palePinkColor, paleRedColor]),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    RowWithPadding(
+                      vertical: 25,
+                      min: true,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         for (int i = 0; i < 2; i += 1)
-                          Center(
-                            child: CustomTextButton(
-                              content: buttonOptions[i]
-                                  [idxList[tabBarIndex][i]],
-                              fontSize: FontSize.smallSize,
-                              onTap: () => changeIdx(i),
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: () => changeTab(i),
+                              child: Center(
+                                child: CustomText(
+                                  content: titleList[i],
+                                  bold: true,
+                                  color: i == tabBarIndex
+                                      ? blackColor
+                                      : greyColor.withOpacity(0.5),
+                                  fontSize: FontSize.titleSize,
+                                ),
+                              ),
                             ),
                           ),
                       ],
                     ),
-                  ),
-                  Expanded(
-                    child: tabBarIndex == 0
-                        ? GroupInfiniteScroll(
-                            controller: hasNotGroup
-                                ? ScrollController()
-                                : groupController,
-                            data: groupTabData,
-                            mode: 1,
-                            emptyWidget: const Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CustomText(
-                                  center: true,
-                                  content: '조건을 만족하는 그룹이 없어요.',
-                                  height: 1.7,
-                                ),
-                              ],
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          for (int i = 0; i < 2; i += 1)
+                            Center(
+                              child: CustomTextButton(
+                                transparent: true,
+                                content: buttonOptions[i]
+                                    [idxList[tabBarIndex][i]],
+                                fontSize: FontSize.smallSize,
+                                onTap: () => changeIdx(i),
+                              ),
                             ),
-                            hasNotGroupWidget: hasNotGroup
-                                ? const ColWithPadding(
-                                    vertical: 20,
-                                    children: [
-                                      CustomText(
-                                        center: true,
-                                        content:
-                                            '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
-                                        height: 1.7,
-                                      ),
-                                      SizedBox(
-                                        height: 40,
-                                      ),
-                                      CustomText(
-                                        content: '추천그룹',
-                                        fontSize: FontSize.titleSize,
-                                      ),
-                                    ],
-                                  )
-                                : null,
-                          )
-                        : BingoInfiniteScroll(
-                            controller: bingoController,
-                            data: bingoTabData,
-                          ),
-                  ),
-                ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: tabBarIndex == 0
+                          ? GroupInfiniteScroll(
+                              controller: hasNotGroup
+                                  ? ScrollController()
+                                  : groupController,
+                              data: groupTabData,
+                              mode: 1,
+                              emptyWidget: const Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CustomText(
+                                    center: true,
+                                    content: '조건을 만족하는 그룹이 없어요.',
+                                    height: 1.7,
+                                  ),
+                                ],
+                              ),
+                              hasNotGroupWidget: hasNotGroup
+                                  ? const ColWithPadding(
+                                      vertical: 20,
+                                      children: [
+                                        CustomText(
+                                          center: true,
+                                          content:
+                                              '아직 가입된 그룹이 없어요.\n그룹에 가입하거나\n그룹을 생성해보세요.',
+                                          height: 1.7,
+                                        ),
+                                        SizedBox(
+                                          height: 40,
+                                        ),
+                                        CustomText(
+                                          content: '추천그룹',
+                                          fontSize: FontSize.titleSize,
+                                        ),
+                                      ],
+                                    )
+                                  : null,
+                            )
+                          : BingoInfiniteScroll(
+                              controller: bingoController,
+                              data: bingoTabData,
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        const CreateGroupButton(),
+        const CustomFloatingButton(page: GroupForm(), icon: addIcon),
         if (watchPressed(context))
           const CustomToast(content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다')
       ],

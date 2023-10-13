@@ -1,4 +1,3 @@
-import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -63,6 +62,7 @@ class ExitButton extends StatelessWidget {
         ? IconButton(
             onPressed: onPressed ?? () => toBack(context),
             icon: CustomIcon(icon: icon),
+            padding: const EdgeInsets.all(0),
           )
         : OutlinedButton(
             onPressed: onPressed ?? () => toBack(context),
@@ -137,16 +137,19 @@ class CustomTextButton extends StatelessWidget {
   final String content;
   final FontSize fontSize;
   final ReturnVoid onTap;
+  final bool transparent;
   const CustomTextButton({
     super.key,
     required this.content,
     required this.onTap,
     this.fontSize = FontSize.textSize,
+    this.transparent = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
+      color: transparent ? transparentColor : whiteColor,
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -159,9 +162,13 @@ class CustomTextButton extends StatelessWidget {
   }
 }
 
-class CreateGroupButton extends StatelessWidget {
-  const CreateGroupButton({
+class CustomFloatingButton extends StatelessWidget {
+  final Widget page;
+  final IconData icon;
+  const CustomFloatingButton({
     super.key,
+    required this.page,
+    required this.icon,
   });
 
   @override
@@ -171,14 +178,14 @@ class CreateGroupButton extends StatelessWidget {
       top: getHeight(context) - 170,
       child: FloatingActionButton(
         backgroundColor: transparentColor,
-        onPressed: toOtherPage(context, page: const GroupForm()),
-        child: const CircleContainer(
+        onPressed: toOtherPage(context, page: page),
+        child: CircleContainer(
           radius: 30,
           border: false,
           center: true,
-          gradient: LinearGradient(colors: [paleRedColor, palePinkColor]),
+          gradient: const LinearGradient(colors: [paleRedColor, palePinkColor]),
           child: CustomIcon(
-            icon: addIcon,
+            icon: icon,
             color: whiteColor,
           ),
         ),
