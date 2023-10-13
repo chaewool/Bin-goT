@@ -487,6 +487,7 @@ class _GroupFormState extends State<GroupForm> {
             //* 그룹 설명 입력창
             groupFormInput(
               title: '그룹 설명',
+              explain: '그룹을 설명하는 내용을 입력하세요.',
               explainTitleType: 2,
               needMore: true,
               maxLength: 1000,
@@ -498,6 +499,7 @@ class _GroupFormState extends State<GroupForm> {
             //* 그룹 규칙 입력창
             groupFormInput(
               title: '그룹 규칙',
+              explain: '그룹의 규칙을 입력하세요.',
               explainTitleType: 2,
               needMore: true,
               maxLength: 1000,

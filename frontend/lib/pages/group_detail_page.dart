@@ -5,6 +5,7 @@ import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/widgets/bingo_detail.dart';
+import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/group_rank.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
@@ -13,7 +14,6 @@ import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/group_main.dart';
-import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -56,7 +56,6 @@ class _GroupDetailState extends State<GroupDetail> {
 
   //* 빙고 정보 불러오기
   void readBingoDetail() {
-    print('read bingo');
     BingoProvider()
         .readBingoDetail(
       getGroupId(context)!,
@@ -162,14 +161,6 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
-  //* 종료
-  @override
-  void dispose() {
-    super.dispose();
-    // pageController.dispose();
-    // context.read<GlobalGroupProvider>().disposeController();
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -186,7 +177,6 @@ class _GroupDetailState extends State<GroupDetail> {
               child: PageView(
                 physics: const NeverScrollableScrollPhysics(),
                 controller: getPageController(context),
-                onPageChanged: (index) => changeGroupIndex(context, index),
                 children: [
                   if (widget.isMember)
                     Padding(
@@ -228,18 +218,7 @@ class _GroupDetailState extends State<GroupDetail> {
             ),
             //* 채팅창 이동 버튼
             if (watchMemberState(context) != 0)
-              Positioned(
-                left: getWidth(context) - 80,
-                top: getHeight(context) - 150,
-                child: FloatingActionButton(
-                  backgroundColor: palePinkColor.withOpacity(0.8),
-                  onPressed: toOtherPage(context, page: const GroupChat()),
-                  child: const CustomIcon(
-                    icon: chatIcon,
-                    color: whiteColor,
-                  ),
-                ),
-              ),
+              const CustomFloatingButton(page: GroupChat(), icon: chatIcon),
             //* 토스트
             if (watchAfterWork(context))
               CustomToast(content: watchToastString(context))

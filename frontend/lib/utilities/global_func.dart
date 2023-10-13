@@ -383,6 +383,12 @@ int? getBingoSize(BuildContext context) =>
 String? getStart(BuildContext context) =>
     context.read<GlobalGroupProvider>().start;
 
+String watchDescription(BuildContext context) =>
+    context.watch<GlobalGroupProvider>().description;
+
+String watchRule(BuildContext context) =>
+    context.watch<GlobalGroupProvider>().rule;
+
 bool? getNeedAuth(BuildContext context) =>
     context.read<GlobalGroupProvider>().needAuth;
 

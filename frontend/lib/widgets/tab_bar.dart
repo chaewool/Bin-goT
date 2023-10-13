@@ -1,4 +1,5 @@
 import 'package:bin_got/models/group_model.dart';
+import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
@@ -547,7 +548,8 @@ class _MainTabBarState extends State<MainTabBar> {
           child: Column(
             children: [
               CustomBoxContainer(
-                color: palePinkColor.withOpacity(0.5),
+                gradient:
+                    const LinearGradient(colors: [palePinkColor, paleRedColor]),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(10),
                   bottomRight: Radius.circular(10),
@@ -652,7 +654,7 @@ class _MainTabBarState extends State<MainTabBar> {
             ],
           ),
         ),
-        const CreateGroupButton(),
+        const CustomFloatingButton(page: GroupForm(), icon: addIcon),
         if (watchPressed(context))
           const CustomToast(content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다')
       ],

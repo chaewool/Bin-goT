@@ -40,12 +40,10 @@ class BingoProvider extends ApiProvider {
   FutureDynamicMap _makeCompleteMessage(
       int groupId, FormData completeData) async {
     try {
-      print(groupReviewCreateUrl(groupId));
       final response = await dioWithTokenForm()
           .post(groupReviewCreateUrl(groupId), data: completeData);
       return response.data;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }

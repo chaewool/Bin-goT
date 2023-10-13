@@ -355,7 +355,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   int? get lastId => _lastId;
   int? get groupId => _data['group'];
 
-  //* read group
+  //* read bingo
   int? get gap => _data['around_kan'];
   int? get checkIcon => _data['complete_icon'];
   int? get font => _data['font'];
@@ -371,7 +371,7 @@ class GlobalBingoProvider extends ChangeNotifier {
   BoolList get finished => _finished;
   List get items => _data['items'];
 
-  //* create/update group
+  //* create/update bingo
   DynamicMap get formData => _formData;
   int? get formGap => _formData['around_kan'];
   int? get formCheckIcon => _formData['complete_icon'];
