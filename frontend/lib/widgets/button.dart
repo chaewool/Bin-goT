@@ -178,7 +178,7 @@ class CustomFloatingButton extends StatelessWidget {
       top: getHeight(context) - 170,
       child: FloatingActionButton(
         backgroundColor: transparentColor,
-        onPressed: toOtherPage(context, page: page),
+        onPressed: toOtherPageWithAnimation(context, page: page),
         child: CircleContainer(
           radius: 30,
           border: false,

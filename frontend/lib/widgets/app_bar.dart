@@ -132,7 +132,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
         if (watchMemberState(context) == 2)
           IconButtonInRow(
             icon: settingsIcon,
-            onPressed: toOtherPage(
+            onPressed: toOtherPageWithAnimation(
               context,
               page: GroupAdmin(groupId: groupId),
             ),
@@ -213,7 +213,7 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     void onEditAction() {
-      toOtherPage(
+      toOtherPageWithAnimation(
         context,
         page: GroupForm(
           groupId: groupId,

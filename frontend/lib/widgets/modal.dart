@@ -983,7 +983,7 @@ class _LicenseModalState extends State<LicenseModal> {
                                 )
                               : null,
                           trailing: const Icon(rightIcon),
-                          onTap: toOtherPage(
+                          onTap: toOtherPageWithAnimation(
                             context,
                             page: LicenseDetailPage(package: package),
                           ),

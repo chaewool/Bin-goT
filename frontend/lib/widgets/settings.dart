@@ -216,7 +216,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                   eachOption(
                     icon: bellIcon,
                     title: '알림 설정',
-                    onTap: toOtherPage(
+                    onTap: toOtherPageWithAnimation(
                       context,
                       page: const NotificationSettings(),
                     ),
@@ -229,7 +229,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                   eachOption(
                     icon: helpIcon,
                     title: '도움말',
-                    onTap: toOtherPage(
+                    onTap: toOtherPageWithAnimation(
                       context,
                       page: const Help(),
                     ),

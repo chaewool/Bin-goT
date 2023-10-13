@@ -142,9 +142,10 @@ class _GroupDetailState extends State<GroupDetail> {
 
       //* 다른 페이지로 이동해야할 경우
       if (widget.admin) {
-        toOtherPage(context, page: GroupAdmin(groupId: widget.groupId!))();
+        toOtherPageWithAnimation(context,
+            page: GroupAdmin(groupId: widget.groupId!))();
       } else if (widget.chat) {
-        toOtherPage(context, page: const GroupChat())();
+        toOtherPageWithAnimation(context, page: const GroupChat())();
       }
     });
   }

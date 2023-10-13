@@ -126,7 +126,7 @@ class _GroupFormState extends State<GroupForm> {
             setBingoId(context, 0);
           }
           //* 빙고 생성 페이지로 이동
-          toOtherPage(
+          toOtherPageWithAnimation(
             context,
             page: BingoForm(
               beforeData: groupData,
