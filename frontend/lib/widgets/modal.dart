@@ -265,7 +265,6 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
   @override
   Widget build(BuildContext context) {
     void moveBingo(bool toRight) {
-      // setItem(context, newIdx, item);
       if (toRight) {
         if (newIdx < widget.cnt - 1) {
           setState(() {
@@ -298,7 +297,10 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            CustomText(content: '${newIdx + 1}/${widget.cnt}'),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: CustomText(content: '${newIdx + 1}/${widget.cnt}'),
+            ),
             Row(
               children: [
                 CustomIconButton(
@@ -332,7 +334,11 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
                               child: CustomBoxContainer(
                                 width: 190,
                                 child: CustomText(
-                                  content: item['content'] ?? '',
+                                  content: item['content'] ?? '작성된 내용이 없습니다',
+                                  color: item['content'] != null &&
+                                          item['content'] != ''
+                                      ? blackColor
+                                      : greyColor.withOpacity(0.7),
                                   height: 1.2,
                                 ),
                               ),

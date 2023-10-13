@@ -29,7 +29,6 @@ class _BingoBoardState extends State<BingoBoard> {
     super.initState();
     setState(() {
       size = widget.bingoSize ?? getBingoSize(context);
-      print('size => $size');
     });
   }
 

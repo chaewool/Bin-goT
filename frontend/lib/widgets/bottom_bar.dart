@@ -29,43 +29,28 @@ class CustomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomBoxContainer(
+      height: 80,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(10),
         topRight: Radius.circular(10),
       ),
-      color: palePinkColor,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            for (int i = 0; i < 3; i += 1)
-              GestureDetector(
-                onTap: () => changeIndex(i),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                  child: CustomIcon(
-                    icon: items[i],
-                    color: selectedIndex == i ? whiteColor : greyColor,
-                  ),
+      gradient: const LinearGradient(colors: [palePinkColor, paleRedColor]),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          for (int i = 0; i < 3; i += 1)
+            GestureDetector(
+              onTap: () => changeIndex(i),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                child: CustomIcon(
+                  icon: items[i],
+                  color: selectedIndex == i ? whiteColor : greyColor,
                 ),
-                // CircleContainer(
-                //   radius: 26,
-                //   border: false,
-                //   gradient: selectedIndex == i
-                //       ? const LinearGradient(
-                //           colors: [paleRedColor, palePinkColor],
-                //         )
-                //       : null,
-                //   child: CustomIcon(
-                //     icon: items[i],
-                //     color: selectedIndex == i ? whiteColor : greyColor,
-                //   ),
-                // ),
-              )
-          ],
-        ),
+              ),
+            )
+        ],
       ),
     );
   }

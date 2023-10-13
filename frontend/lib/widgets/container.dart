@@ -14,10 +14,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 //* 그룹 메인 내용 출력
 class ShowContentBox extends StatelessWidget {
   final String contentTitle, content;
+  final bool hasContent;
   const ShowContentBox({
     super.key,
     required this.contentTitle,
     required this.content,
+    this.hasContent = true,
   });
 
   @override
@@ -27,7 +29,9 @@ class ShowContentBox extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(content: contentTitle),
+          CustomText(
+            content: contentTitle,
+          ),
           const SizedBox(height: 20),
           CustomBoxContainer(
             width: 300,
@@ -35,7 +39,10 @@ class ShowContentBox extends StatelessWidget {
             borderColor: greyColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              child: CustomText(content: content),
+              child: CustomText(
+                content: content,
+                color: hasContent ? blackColor : greyColor.withOpacity(0.7),
+              ),
             ),
           )
         ],
@@ -114,6 +121,7 @@ class CustomBoxContainer extends StatelessWidget {
   final DecorationImage? image;
   final ReturnVoid? onTap, onLongPress;
   final BorderRadiusGeometry? borderRadius;
+  final Gradient? gradient;
   const CustomBoxContainer({
     super.key,
     this.hasRoundEdge = true,
@@ -128,6 +136,7 @@ class CustomBoxContainer extends StatelessWidget {
     this.onLongPress,
     this.center = false,
     this.borderRadius,
+    this.gradient,
   });
 
   @override
@@ -140,6 +149,7 @@ class CustomBoxContainer extends StatelessWidget {
         height: height,
         alignment: center ? Alignment.center : null,
         decoration: BoxDecoration(
+          gradient: gradient,
           borderRadius:
               borderRadius ?? (hasRoundEdge ? BorderRadius.circular(10) : null),
           color: color,

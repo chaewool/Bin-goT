@@ -58,7 +58,6 @@ class _BingoFormState extends State<BingoForm> {
     size = widget.bingoSize;
     //* 생성, 수정 분기 처리
     if (getBingoId(context) == null || getBingoId(context) == 0) {
-      print('if sentence!!!!');
       initBingoFormData(context, false);
     } else {
       initBingoFormData(context, true);
