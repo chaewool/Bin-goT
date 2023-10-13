@@ -24,7 +24,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
-//* 그룹 생성/수정 페이지
+//? 그룹 생성/수정
 class GroupForm extends StatefulWidget {
   final int? groupId;
   final bool hasImg;
@@ -39,7 +39,7 @@ class GroupForm extends StatefulWidget {
 }
 
 class _GroupFormState extends State<GroupForm> {
-  //* select box
+  //* 선택 목록
   final printedValues = [
     ['2 ✕ 2', '3 ✕ 3', '4 ✕ 4', '5 ✕ 5'],
     ['그룹장의\n승인 필요', '자동 가입']
@@ -50,15 +50,18 @@ class _GroupFormState extends State<GroupForm> {
   ];
   final List<dynamic> selectedIndex = [0, 0];
 
+  //* 변수
   XFile? selectedImage;
   bool isChecked = true;
   bool isImageUpdated = false;
   late bool hasImg;
+  late final Map<String, dynamic> groupData;
 
   @override
   void initState() {
     super.initState();
     hasImg = widget.hasImg;
+    //* 그룹 생성
     if (widget.groupId == null) {
       groupData = {
         'groupname': '',
@@ -73,6 +76,7 @@ class _GroupFormState extends State<GroupForm> {
         'headcount': ''
       };
     } else {
+      //* 그룹 수정
       groupData = {};
       WidgetsBinding.instance.addPostFrameCallback((_) {
         selectedIndex[0] = getBingoSize(context)! - 1;
@@ -81,94 +85,126 @@ class _GroupFormState extends State<GroupForm> {
     }
   }
 
-  late final Map<String, dynamic> groupData;
-
+  //* 데이터 변경
   void Function(dynamic) setData(String key) {
     return (value) => groupData[key] = value;
   }
 
+  //* 그룹 생성/수정
   void createOrUpdate() async {
-    if (groupData.containsKey('headcount') &&
-        groupData['headcount'].runtimeType != int) {
-      groupData['headcount'] = int.parse(groupData['headcount']);
-    }
-    if (widget.groupId == null) {
-      if (groupData['size'].runtimeType != int) {
-        groupData['size'] = int.parse(groupData['size']);
+    try {
+      //* 인원수 확인
+      if (groupData.containsKey('headcount') &&
+          groupData['headcount'].runtimeType != int) {
+        groupData['headcount'] = int.parse(groupData['headcount']);
       }
-      if (groupData['groupname'].length < 3) {
-        showAlert(context, title: '그룹명 오류', content: '그룹명을 3자 이상으로 입력해주세요.')();
-      } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
-        showAlert(context,
-            title: '인원 수 오류', content: '인원 수는 1명 이상 30명 이하로 입력해주세요.')();
-      } else if (groupData['start'] == '' || groupData['end'] == '') {
-        showAlert(context, title: '기간 미선택', content: '달성 목표 기간을 설정해주세요.')();
-      } else if (!groupData['is_public'] && groupData['password'].length < 4) {
-        showAlert(context,
-            title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
-      } else {
-        final bingoId = getBingoId(context);
-        if (bingoId != null && bingoId != 0) {
-          setBingoId(context, 0);
+      //* 그룹 생성
+      if (widget.groupId == null) {
+        //* 빙고 크기
+        if (groupData['size'].runtimeType != int) {
+          groupData['size'] = int.parse(groupData['size']);
         }
-        toOtherPage(
-          context,
-          page: BingoForm(
-            beforeData: groupData,
-            bingoSize: groupData['size'],
-            needAuth: groupData['need_auth'],
-            groupImg: selectedImage,
-          ),
-        )();
-      }
-    } else {
-      if (groupData.containsKey('groupname') &&
-          groupData['groupname'].length < 3) {
-        showAlert(
-          context,
-          title: '그룹명 오류',
-          content: '그룹명을 3자 이상으로 입력해주세요.',
-        )();
-      } else if (groupData.containsKey('headcount') &&
-          (groupData['headcount'] < 1 || groupData['headcount'] > 30)) {
-        showAlert(
-          context,
-          title: '인원 수 오류',
-          content: '인원 수는 1명 이상 30명 이하로 입력해주세요.',
-        )();
-      } else if (groupData.containsKey('is_public') &&
-          !groupData['is_public'] &&
-          groupData['password'].length < 4) {
-        showAlert(
-          context,
-          title: '비밀번호 오류',
-          content: '그룹 비밀번호를 4자 이상으로 입력해주세요.',
-        )();
+        //* 그룹명 길이
+        if (groupData['groupname'].length < 3) {
+          showAlert(context,
+              title: '그룹명 오류', content: '그룹명을 3자 이상으로 입력해주세요.')();
+          //* 인원수 범위
+        } else if (groupData['headcount'] < 1 || groupData['headcount'] > 30) {
+          showAlert(context,
+              title: '인원 수 오류', content: '인원 수는 1명 이상 30명 이하로 입력해주세요.')();
+          //* 기간
+        } else if (groupData['start'] == '' || groupData['end'] == '') {
+          showAlert(context, title: '기간 미선택', content: '달성 목표 기간을 설정해주세요.')();
+          //* 비밀번호
+        } else if (!groupData['is_public'] &&
+            groupData['password'].length < 4) {
+          showAlert(context,
+              title: '비밀번호 오류', content: '그룹 비밀번호를 4자 이상으로 입력해주세요.')();
+        } else {
+          //* 빙고 id 초기화
+          final bingoId = getBingoId(context);
+          if (bingoId != null && bingoId != 0) {
+            setBingoId(context, 0);
+          }
+          //* 빙고 생성 페이지로 이동
+          toOtherPage(
+            context,
+            page: BingoForm(
+              beforeData: groupData,
+              bingoSize: groupData['size'],
+              needAuth: groupData['need_auth'],
+              groupImg: selectedImage,
+            ),
+          )();
+        }
       } else {
-        GroupProvider()
-            .editOwnGroup(
-                widget.groupId!,
-                FormData.fromMap({
-                  'data': jsonEncode(groupData),
-                  'img': isImageUpdated && selectedImage != null
-                      ? MultipartFile.fromFileSync(
-                          selectedImage!.path,
-                          contentType: MediaType('image', 'png'),
-                        )
-                      : null,
-                  'update_img': isImageUpdated,
-                }))
-            .then((_) {
-          GroupProvider().readGroupDetail(getGroupId(context)!).then((data) {
-            setGroupData(context, data);
-            setLoading(context, false);
-            toBack(context);
+        //* 그룹 수정
+        //* 그룹명
+        if (groupData.containsKey('groupname') &&
+            groupData['groupname'].length < 3) {
+          showAlert(
+            context,
+            title: '그룹명 오류',
+            content: '그룹명을 3자 이상으로 입력해주세요.',
+          )();
+          //* 인원 수
+        } else if (groupData.containsKey('headcount') &&
+            (groupData['headcount'] < 1 || groupData['headcount'] > 30)) {
+          showAlert(
+            context,
+            title: '인원 수 오류',
+            content: '인원 수는 1명 이상 30명 이하로 입력해주세요.',
+          )();
+          //* 비밀번호
+        } else if (groupData.containsKey('is_public') &&
+            !groupData['is_public'] &&
+            groupData['password'].length < 4) {
+          showAlert(
+            context,
+            title: '비밀번호 오류',
+            content: '그룹 비밀번호를 4자 이상으로 입력해주세요.',
+          )();
+          //* 그룹 수정 요청
+        } else {
+          GroupProvider()
+              .editOwnGroup(
+                  widget.groupId!,
+                  FormData.fromMap({
+                    'data': jsonEncode(groupData),
+                    'img': isImageUpdated && selectedImage != null
+                        ? MultipartFile.fromFileSync(
+                            selectedImage!.path,
+                            contentType: MediaType('image', 'png'),
+                          )
+                        : null,
+                    'update_img': isImageUpdated,
+                  }))
+              .then((_) {
+            //* 그룹 데이터 변경
+            GroupProvider().readGroupDetail(getGroupId(context)!).then((data) {
+              setGroupData(context, data);
+              setLoading(context, false);
+              toBack(context);
+            }).catchError((error) {
+              setLoading(context, false);
+              showAlert(
+                context,
+                title: '오류 발생',
+                content: '오류가 발생해 그룹 정보를 받아올 수 없습니다.',
+                hasCancel: false,
+                onPressed: () {
+                  toBack(context);
+                  toBack(context);
+                },
+              )();
+            });
           }).catchError((error) {
+            toBack(context);
             setLoading(context, false);
             showAlert(
               context,
               title: '오류 발생',
-              content: '오류가 발생해 그룹 정보를 받아올 수 없습니다.',
+              content: '그룹 수정 시 오류가 발생했습니다.',
               hasCancel: false,
               onPressed: () {
                 toBack(context);
@@ -176,24 +212,23 @@ class _GroupFormState extends State<GroupForm> {
               },
             )();
           });
-        }).catchError((error) {
-          toBack(context);
-          setLoading(context, false);
-          showAlert(
-            context,
-            title: '오류 발생',
-            content: '그룹 수정 시 오류가 발생했습니다.',
-            hasCancel: false,
-            onPressed: () {
-              toBack(context);
-              toBack(context);
-            },
-          )();
-        });
+        }
       }
+    } catch (_) {
+      showAlert(
+        context,
+        title: '오류 발생',
+        content: '그룹 생성/수정 시 오류가 발생했습니다.',
+        hasCancel: false,
+        onPressed: () {
+          toBack(context);
+          toBack(context);
+        },
+      )();
     }
   }
 
+  //* 이미지 선택
   void groupFormImagePicker() {
     return imagePicker(
       context,
@@ -208,6 +243,7 @@ class _GroupFormState extends State<GroupForm> {
     );
   }
 
+  //* 이미지 삭제
   void deleteImage() {
     setState(() {
       selectedImage = null;
@@ -220,6 +256,7 @@ class _GroupFormState extends State<GroupForm> {
     });
   }
 
+  //* 기간 선택 창 내부
   String selectedDate() {
     final start = groupData['start'];
     final end = groupData['end'];
@@ -229,6 +266,7 @@ class _GroupFormState extends State<GroupForm> {
     return '기간을 선택해주세요';
   }
 
+  //* 빙고 크기, 가입 승인 데이터 변경
   void changeGroupData(int i, int j) {
     setState(() {
       selectedIndex[i] = j;
@@ -236,6 +274,7 @@ class _GroupFormState extends State<GroupForm> {
     setData(i == 0 ? 'size' : 'need_auth')(convertedValues[i][j]);
   }
 
+  //* 기간 데이터 형식 변경
   void applyDay(List<DateTime?> dateList) {
     dateList =
         dateList.map((e) => e != null ? DateUtils.dateOnly(e) : null).toList();
@@ -255,6 +294,7 @@ class _GroupFormState extends State<GroupForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
+      //* 앱 바
       appBar: AppBarWithBack(
         title: widget.groupId == null ? '그룹 생성' : '그룹 수정',
       ),
@@ -266,6 +306,7 @@ class _GroupFormState extends State<GroupForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            //* 그룹명 입력창
             groupFormInput(
               title: '그룹명',
               explainTitleType: 0,
@@ -276,6 +317,7 @@ class _GroupFormState extends State<GroupForm> {
                   ? groupData['groupname']
                   : getGroupName(context),
             ),
+            //* 참여인원 입력창
             groupFormInput(
               title: '참여인원',
               explain: '2에서 30 사이의 숫자로 입력하세요.',
@@ -286,9 +328,11 @@ class _GroupFormState extends State<GroupForm> {
                   ? groupData['headcount'].toString()
                   : context.read<GlobalGroupProvider>().headCount?.toString(),
             ),
+            //* 그룹 생성 시에만 설정 가능한 항목
             if (widget.groupId == null)
               Column(
                 children: [
+                  //* 기간 선택
                   groupFormInput(
                     title: '기간',
                     explainTitleType: 1,
@@ -303,6 +347,7 @@ class _GroupFormState extends State<GroupForm> {
                       applyDay: applyDay,
                     ),
                   ),
+                  //* 빙고 크기 선택
                   groupFormInput(
                     title: '빙고 크기',
                     divider: true,
@@ -334,6 +379,7 @@ class _GroupFormState extends State<GroupForm> {
                       ],
                     ),
                   ),
+                  //* 자동 승인 여부 선택
                   groupFormInput(
                     title: '가입 시 자동 승인',
                     explainTitleType: 1,
@@ -379,6 +425,7 @@ class _GroupFormState extends State<GroupForm> {
                         ? '가입 신청 후, 그룹장의 허가가 있어야 가입됩니다.'
                         : '가입 신청 시, 자동으로 가입됩니다.',
                   ),
+                  //* 공개 여부 선택
                   groupFormInput(
                     divider: true,
                     inputWidget: Column(
@@ -419,6 +466,7 @@ class _GroupFormState extends State<GroupForm> {
                             )
                           ],
                         ),
+                        //* 비밀번호 입력창
                         if (!isChecked)
                           groupFormInput(
                             title: '비밀번호',
@@ -436,6 +484,7 @@ class _GroupFormState extends State<GroupForm> {
                   ),
                 ],
               ),
+            //* 그룹 설명 입력창
             groupFormInput(
               title: '그룹 설명',
               explainTitleType: 2,
@@ -446,6 +495,7 @@ class _GroupFormState extends State<GroupForm> {
                   ? groupData['description']
                   : context.read<GlobalGroupProvider>().description,
             ),
+            //* 그룹 규칙 입력창
             groupFormInput(
               title: '그룹 규칙',
               explainTitleType: 2,
@@ -456,6 +506,7 @@ class _GroupFormState extends State<GroupForm> {
                   ? groupData['rule']
                   : context.read<GlobalGroupProvider>().rule,
             ),
+            //* 그룹 배경 입력창
             groupFormInput(
               title: '그룹 배경',
               explainTitleType: 2,
@@ -468,7 +519,8 @@ class _GroupFormState extends State<GroupForm> {
     );
   }
 
-  ColWithPadding groupFormInput({
+  //* 그룹 입력창 형식
+  Column groupFormInput({
     String? title,
     Function(String)? setValue,
     int? explainTitleType,
@@ -486,8 +538,7 @@ class _GroupFormState extends State<GroupForm> {
       ['(필수)', '수정 불가'],
       ['(선택)', '시작일 전 수정 가능']
     ];
-    return ColWithPadding(
-      // vertical: 10,
+    return Column(
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
@@ -538,6 +589,7 @@ class _GroupFormState extends State<GroupForm> {
     );
   }
 
+  //* 그룹 이미지 선택 창 형식
   Widget groupImage() {
     if (selectedImage == null && !hasImg) {
       return CustomBoxContainer(

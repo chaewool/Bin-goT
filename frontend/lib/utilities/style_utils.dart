@@ -1,6 +1,8 @@
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
+//? 스타일 관련 변수
+
 //* 색
 const blackColor = Colors.black;
 const whiteColor = Colors.white;
@@ -47,7 +49,7 @@ double convertedFontSize(FontSize size) {
 }
 
 //* 글씨체
-StringList showedFont = ['리디 바탕', '교보', '코레일', '코레일', '한국기계연구원', '땅스부대찌개'];
+StringList showedFont = ['리디 바탕', '교보', '코레일', '코레일 둥근고딕', '한국기계연구원', '땅스부대찌개'];
 
 const StringList matchFont = [
   'RIDIBatang',
@@ -64,9 +66,6 @@ var defaultShadow = BoxShadow(
     blurRadius: 4,
     spreadRadius: 0,
     offset: const Offset(1, 2));
-
-const thickerShadow = BoxShadow(
-    color: greyColor, blurRadius: 3, spreadRadius: 1, offset: Offset(3, 3));
 
 var shadowWithOpacity = BoxShadow(
     color: Colors.black.withOpacity(0.15),

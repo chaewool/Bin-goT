@@ -11,11 +11,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 
+//? 전역 변수
+
 //* token, user data
 class AuthProvider with ChangeNotifier, DiagnosticableTreeMixin {
   static String? _token, _refresh;
   static int? _id;
 
+  //* getter
   String? get token => _token;
   String? get refresh => _refresh;
   int? get id => _id;
@@ -179,14 +182,15 @@ class GlobalScrollProvider extends ChangeNotifier {
 
 //* group data
 class GlobalGroupProvider extends ChangeNotifier {
-  static GroupDetailModel? _data;
   static int? _groupId;
   static int _lastId = 0;
-  static String? _start;
-  static final GroupChatList _chats = [];
   static int _selectedIndex = 1;
+  static String? _start;
   static bool _prev = false;
   static bool _enable = true;
+  static GroupDetailModel? _data;
+  static final GroupChatList _chats = [];
+  static final RankList _rankList = [];
 
   GroupChatList get chats => _chats;
   bool get prev => _prev;
@@ -206,6 +210,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   bool? get alreadyStarted => _data?.start != null
       ? DateTime.now().difference(DateTime.parse(_data!.start)) >= Duration.zero
       : null;
+  bool get enable => _enable;
   String get groupName => _data?.groupName ?? '';
   String? get start => _data?.start ?? _start;
   String? get end => _data?.end;
@@ -213,6 +218,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   String get rule => _data?.rule ?? '';
   String? get password => _data?.password;
   List get rank => _data?.rank ?? [];
+  RankList get rankList => _rankList;
 
   void _setData(GroupDetailModel detailModel) => _data = detailModel;
 
@@ -230,21 +236,21 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void _changeIndex(int index) {
     if (index != _selectedIndex) {
-      if (_enable) {
-        _selectedIndex = index;
-        notifyListeners();
-        _enable = false;
-        afterFewSec(() {
-          _enable = true;
-          notifyListeners();
-        });
-      }
+      _selectedIndex = index;
+      notifyListeners();
     }
   }
 
   void _toPrevPage(bool value) => _prev = value;
 
   void _initData() => _data = null;
+
+  void _setRank(RankList value) {
+    _rankList.clear();
+    _rankList.addAll(value);
+  }
+
+  void _setEnable(bool value) => _enable = value;
 
 //* public
   void setLastId(int value) => _setLastId(value);
@@ -287,6 +293,16 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void initData() {
     _initData();
+    notifyListeners();
+  }
+
+  void setRank(RankList value) {
+    _setRank(value);
+    notifyListeners();
+  }
+
+  void setEnable(bool value) {
+    _setEnable(value);
     notifyListeners();
   }
 }

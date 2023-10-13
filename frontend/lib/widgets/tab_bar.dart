@@ -19,6 +19,8 @@ import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+//? 탭 바
+
 //* 빙고 생성 탭
 class BingoTabBar extends StatefulWidget {
   const BingoTabBar({super.key});
@@ -450,7 +452,7 @@ class _MainTabBarState extends State<MainTabBar> {
       return true;
     }).catchError((error) {
       if (mounted) {
-        showErrorModal(context);
+        showErrorModal(context, '내 그룹 오류', '내 그룹 데이터를 불러오는 데 실패했습니다');
       }
       return false;
     });
@@ -475,7 +477,7 @@ class _MainTabBarState extends State<MainTabBar> {
       }
     }).catchError((_) {
       if (mounted) {
-        showErrorModal(context);
+        showErrorModal(context, '내 빙고 오류', '내 빙고 데이터를 불러오는 데 실패했습니다');
       }
     });
   }

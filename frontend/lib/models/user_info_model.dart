@@ -17,7 +17,6 @@ class MyGroupModel {
 }
 
 class MyBingoModel {
-  // final int id;
   final int id, size, groupId;
   final String groupName, status, start;
   MyBingoModel.fromJson(DynamicMap json)
