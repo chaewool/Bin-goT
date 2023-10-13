@@ -4,11 +4,10 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/list_item.dart';
 import 'package:bin_got/widgets/text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //? 아코디언
 
@@ -121,11 +120,8 @@ class _MemberListState extends State<MemberList> {
                     color: whiteColor,
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            '${dotenv.env['fileUrl']}/badges/${widget.badge}',
-                        placeholder: (context, url) =>
-                            const SizedBox(width: 50, height: 50),
+                      child: CustomCachedNetworkImage(
+                        path: '/badges/${widget.badge}',
                       ),
                     ),
                   ),
@@ -156,11 +152,8 @@ class _MemberListState extends State<MemberList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CircleContainer(
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            '${dotenv.env['fileUrl']}/badges/${widget.badge}',
-                        placeholder: (context, url) =>
-                            const SizedBox(width: 50, height: 50),
+                      child: CustomCachedNetworkImage(
+                        path: '/badges/${widget.badge}',
                       ),
                     ),
                     CustomText(content: widget.nickname),
@@ -172,9 +165,12 @@ class _MemberListState extends State<MemberList> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: CachedNetworkImage(
-                          imageUrl:
-                              '${dotenv.env['fileUrl']}/boards/${widget.bingoId}',
+                        child: CircleContainer(
+                          child: CustomCachedNetworkImage(
+                            path: '/boards/${widget.bingoId}',
+                            width: 270,
+                            height: 150,
+                          ),
                         ),
                       ),
                       Row(

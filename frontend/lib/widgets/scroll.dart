@@ -29,8 +29,6 @@ class GroupInfiniteScroll extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomBoxContainer(
       hasRoundEdge: false,
-      // hasRoundEdge: mode == 1,
-      // color: palePinkColor.withOpacity(0.5),
       color: whiteColor,
       child: !watchLoading(context)
           ? data.isNotEmpty

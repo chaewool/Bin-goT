@@ -202,6 +202,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   PageController? get pageController => _pageController;
 
   //* read group
+  GroupDetailModel? get data => _data;
   int? get bingoId => _data?.bingoId;
   int? get headCount => _data?.headCount;
   int? get bingoSize => _data?.bingoSize;
@@ -487,6 +488,7 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   void _initData() {
     _data.clear();
+    notifyListeners();
   }
 
   FutureBool _bingoToImage() async {

@@ -125,17 +125,9 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
       }
     }
 
-    void toBackAction() {
-      toBack(context);
-      if (getPrev(context)) {
-        changePrev(context, false);
-        toBack(context);
-      }
-    }
-
     return AppBarWithBack(
       transparent: true,
-      onPressedBack: toBackAction,
+      onPressedBack: () => onBackAction(context),
       actions: [
         if (watchMemberState(context) == 2)
           IconButtonInRow(
@@ -274,16 +266,8 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       ).then((value) => file.delete());
     }
 
-    void toBackAction() {
-      toBack(context);
-      if (getPrev(context)) {
-        changePrev(context, false);
-        toBack(context);
-      }
-    }
-
     return AppBarWithBack(
-      onPressedBack: toBackAction,
+      onPressedBack: () => onBackAction(context),
       transparent: true,
       actions: myBingoId(context) == null ||
               getBingoId(context) == myBingoId(context)

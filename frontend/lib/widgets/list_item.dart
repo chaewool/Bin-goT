@@ -9,11 +9,10 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //* 목록 아이템
 
@@ -51,7 +50,7 @@ class GroupListItem extends StatelessWidget {
     return CustomList(
       height: 70,
       boxShadow: [shadowWithOpacity],
-      onTap: toOtherPage(
+      onTap: toOtherPageWithAnimation(
         context,
         page: InputPassword(
           groupId: groupInfo.id,
@@ -243,13 +242,13 @@ class _ChatListItemState extends State<ChatListItem> {
             if (!isMine)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: CachedNetworkImage(
-                  imageUrl:
-                      '${dotenv.env['fileUrl']}/badges/${widget.data.badgeId}',
-                  width: 30,
-                  height: 30,
-                  placeholder: (context, url) =>
-                      const CustomBoxContainer(color: greyColor),
+                child: CustomCachedNetworkImage(
+                  path: '/badges/${widget.data.badgeId}',
+                  placeholder: const CustomBoxContainer(
+                    color: greyColor,
+                    width: 30,
+                    height: 30,
+                  ),
                 ),
               ),
             Column(
@@ -417,10 +416,10 @@ class ChatImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CachedNetworkImage networkImage = CachedNetworkImage(
-      fit: BoxFit.fitWidth,
-      imageUrl:
-          '${dotenv.env['fileUrl']}/chats/${getGroupId(context)}/${widget.data.id}',
+    final CustomCachedNetworkImage networkImage = CustomCachedNetworkImage(
+      path: '/chats/${getGroupId(context)}/${widget.data.id}',
+      width: width ?? 50,
+      height: height,
     );
     return CustomBoxContainer(
       color: transparent ? transparentColor : blackColor.withOpacity(0.8),
