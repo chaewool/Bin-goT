@@ -28,8 +28,9 @@ class CustomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double bottomBarHeight = 80;
     return CustomBoxContainer(
-      height: 80,
+      height: bottomBarHeight,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(10),
         topRight: Radius.circular(10),
@@ -41,12 +42,16 @@ class CustomNavigationBar extends StatelessWidget {
           for (int i = 0; i < 3; i += 1)
             GestureDetector(
               onTap: () => changeIndex(i),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-                child: CustomIcon(
-                  icon: items[i],
-                  color: selectedIndex == i ? whiteColor : greyColor,
+              child: CustomBoxContainer(
+                height: bottomBarHeight,
+                color: transparentColor,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: CustomIcon(
+                    icon: items[i],
+                    color: selectedIndex == i ? whiteColor : greyColor,
+                    size: 35,
+                  ),
                 ),
               ),
             )

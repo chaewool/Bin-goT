@@ -167,7 +167,10 @@ class _InputPasswordState extends State<InputPassword> {
         toBack(context);
         return Future.value(false);
       },
-      child: const CustomBoxContainer(),
+      child: CustomBoxContainer(
+        width: getWidth(context),
+        height: getHeight(context),
+      ),
     );
   }
 }

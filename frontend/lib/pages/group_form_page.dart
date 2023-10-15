@@ -12,16 +12,15 @@ import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
+import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 //? 그룹 생성/수정
@@ -127,7 +126,7 @@ class _GroupFormState extends State<GroupForm> {
             setBingoId(context, 0);
           }
           //* 빙고 생성 페이지로 이동
-          toOtherPage(
+          toOtherPageWithAnimation(
             context,
             page: BingoForm(
               beforeData: groupData,
@@ -622,12 +621,10 @@ class _GroupFormState extends State<GroupForm> {
                   )
                 : null,
             child: hasImg && selectedImage == null
-                ? CachedNetworkImage(
-                    fit: BoxFit.fitWidth,
-                    placeholder: (context, url) =>
-                        const SizedBox(width: 270, height: 150),
-                    imageUrl:
-                        '${dotenv.env['fileUrl']}/groups/${widget.groupId}',
+                ? CustomCachedNetworkImage(
+                    path: '/groups/${widget.groupId}',
+                    width: 270,
+                    height: 150,
                   )
                 : null,
           ),

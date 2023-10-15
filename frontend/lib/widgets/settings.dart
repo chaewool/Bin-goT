@@ -9,16 +9,15 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/icon.dart';
+import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:bin_got/widgets/toast.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -217,7 +216,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                   eachOption(
                     icon: bellIcon,
                     title: '알림 설정',
-                    onTap: toOtherPage(
+                    onTap: toOtherPageWithAnimation(
                       context,
                       page: const NotificationSettings(),
                     ),
@@ -230,7 +229,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                   eachOption(
                     icon: helpIcon,
                     title: '도움말',
-                    onTap: toOtherPage(
+                    onTap: toOtherPageWithAnimation(
                       context,
                       page: const Help(),
                     ),
@@ -368,11 +367,8 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                         child: badgeId != 0
                             ? Padding(
                                 padding: const EdgeInsets.all(10.0),
-                                child: CachedNetworkImage(
-                                  imageUrl:
-                                      '${dotenv.env['fileUrl']}/badges/$badgeId',
-                                  placeholder: (context, url) =>
-                                      const SizedBox(width: 50, height: 50),
+                                child: CustomCachedNetworkImage(
+                                  path: '/badges/$badgeId',
                                 ),
                               )
                             : const SizedBox(),

@@ -3,11 +3,10 @@ import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //? 컨테이너 응용
 
@@ -60,7 +59,7 @@ class BingoGallery extends StatelessWidget {
   Widget build(BuildContext context) {
     void toBingoDetail() {
       setPeriod(context, bingo.start, bingo.end);
-      toOtherPage(context,
+      toOtherPageWithAnimation(context,
           page: InputPassword(
             isPublic: true,
             groupId: bingo.groupId,
@@ -86,10 +85,9 @@ class BingoGallery extends StatelessWidget {
                 child: CustomBoxContainer(
                   width: (getWidth(context) - 60) / 2,
                   height: (getWidth(context) - 60) / 2,
-                  child: CachedNetworkImage(
-                    imageUrl: '${dotenv.env['fileUrl']}/boards/${bingo.id}',
-                    fit: BoxFit.fitWidth,
-                    placeholder: (context, url) => const CustomBoxContainer(
+                  child: CustomCachedNetworkImage(
+                    path: '/boards/${bingo.id}',
+                    placeholder: const CustomBoxContainer(
                       color: whiteColor,
                     ),
                   ),
