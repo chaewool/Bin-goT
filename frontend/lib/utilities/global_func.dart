@@ -162,6 +162,42 @@ ReturnVoid toOtherPage(BuildContext context, {required Widget page}) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => page));
 }
 
+//* 페이지 이동 (애니메이션)
+ReturnVoid toOtherPageWithAnimation(BuildContext context,
+    {required Widget page}) {
+  return () => Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            var begin = const Offset(1.0, 0);
+            var end = Offset.zero;
+            // Curves.ease: 애니메이션이 부드럽게 동작하도록 명령
+            var curve = Curves.ease;
+            // 애니메이션의 시작과 끝을 담당한다.
+            var tween = Tween(
+              begin: begin,
+              end: end,
+            ).chain(
+              CurveTween(
+                curve: curve,
+              ),
+            );
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+          // 함수를 통해 Widget을 pageBuilder에 맞는 형태로 반환하게 해야한다.
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              // (DetailScreen은 Stateless나 Stateful 위젯으로된 화면임)
+              page,
+          // 이것을 true로 하면 dialog로 취급한다.
+          // 기본값은 false
+          fullscreenDialog: false,
+        ),
+      );
+}
+
 //* 인트로 페이지 이동 (기록 X)
 Future<bool?> toOtherPageWithoutPath(BuildContext context, {Widget? page}) {
   return Navigator.pushAndRemoveUntil(
@@ -171,6 +207,7 @@ Future<bool?> toOtherPageWithoutPath(BuildContext context, {Widget? page}) {
   );
 }
 
+//* 현재 페이지 제외
 ReturnVoid jumpToOtherPage(BuildContext context, {required Widget page}) {
   return () => Navigator.pushReplacement(
         context,
@@ -436,6 +473,17 @@ void changeGroupIndex(BuildContext context, int index) =>
 
 void changePrev(BuildContext context, bool value) {
   context.read<GlobalGroupProvider>().toPrevPage(value);
+}
+
+FutureBool onBackAction(BuildContext context) {
+  context.read<GlobalBingoProvider>().initData();
+  context.read<GlobalGroupProvider>().initData();
+  toBack(context);
+  if (getPrev(context)) {
+    changePrev(context, false);
+    toBack(context);
+  }
+  return Future.value(false);
 }
 
 //* bingo data

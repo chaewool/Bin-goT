@@ -3,12 +3,11 @@ import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/widgets/container.dart';
+import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/list_item.dart';
 import 'package:bin_got/widgets/switch_indicator.dart';
 import 'package:bin_got/widgets/text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 //? 그룹 메인 (정보 출력)
@@ -69,16 +68,14 @@ class _GroupMainState extends State<GroupMain> {
             children: [
               context.watch<GlobalGroupProvider>().hasImage
                   ? CustomBoxContainer(
+                      hasRoundEdge: false,
                       width: getWidth(context),
                       height: 200,
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            '${dotenv.env['fileUrl']}/groups/${context.watch<GlobalGroupProvider>().groupId}',
-                        fit: BoxFit.fitWidth,
-                        placeholder: (context, url) => CustomBoxContainer(
-                          width: getWidth(context),
-                          height: 200,
-                        ),
+                      child: CustomCachedNetworkImage(
+                        path:
+                            '/groups/${context.watch<GlobalGroupProvider>().groupId}',
+                        width: getWidth(context),
+                        height: 200,
                       ),
                     )
                   : const SizedBox(height: 30),

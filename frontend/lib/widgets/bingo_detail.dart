@@ -81,7 +81,7 @@ class _BingoDetailState extends State<BingoDetail> {
                             (myBingoId(context) == null ||
                                 myBingoId(context) == getBingoId(context)))
                           IconButtonInRow(
-                            onPressed: toOtherPage(
+                            onPressed: toOtherPageWithAnimation(
                               context,
                               page: BingoForm(
                                 bingoSize: bingoSize,

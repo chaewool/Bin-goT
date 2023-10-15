@@ -101,18 +101,6 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
-  //* 뒤로 가기
-  FutureBool onBackAction() {
-    context.read<GlobalBingoProvider>().initData();
-    context.read<GlobalGroupProvider>().initData();
-    toBack(context);
-    if (getPrev(context)) {
-      changePrev(context, false);
-      toBack(context);
-    }
-    return Future.value(false);
-  }
-
   void onPageChanged(int index) {
     if (widget.isMember && index != readGroupIndex(context)) {
       changeGroupIndex(context, index);
@@ -154,9 +142,10 @@ class _GroupDetailState extends State<GroupDetail> {
 
       //* 다른 페이지로 이동해야할 경우
       if (widget.admin) {
-        toOtherPage(context, page: GroupAdmin(groupId: widget.groupId!))();
+        toOtherPageWithAnimation(context,
+            page: GroupAdmin(groupId: widget.groupId!))();
       } else if (widget.chat) {
-        toOtherPage(context, page: const GroupChat())();
+        toOtherPageWithAnimation(context, page: const GroupChat())();
       }
     });
   }
@@ -164,7 +153,7 @@ class _GroupDetailState extends State<GroupDetail> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: onBackAction,
+      onWillPop: () => onBackAction(context),
       child: Scaffold(
         backgroundColor: whiteColor,
         resizeToAvoidBottomInset: true,
@@ -214,7 +203,7 @@ class _GroupDetailState extends State<GroupDetail> {
               height: 80,
               child: widget.isMember
                   ? appbarList[watchGroupIndex(context)]
-                  : const AppBarWithBack(),
+                  : AppBarWithBack(onPressedBack: () => onBackAction(context)),
             ),
             //* 채팅창 이동 버튼
             if (watchMemberState(context) != 0)

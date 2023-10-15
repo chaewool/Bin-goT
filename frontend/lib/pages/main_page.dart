@@ -30,14 +30,21 @@ class _MainState extends State<Main> {
     homeIcon,
     settingsIcon,
   ];
+  // double opacity = 1;
 
   //* 페이지 변경
   void changeIndex(int index) {
     if (index != selectedIndex) {
       setState(() {
         selectedIndex = index;
+        // opacity = 0;
       });
       pageController.jumpToPage(index);
+      // afterFewSec(() {
+      //   setState(() {
+      //     // opacity = 1;
+      //   });
+      // });
     }
   }
 
