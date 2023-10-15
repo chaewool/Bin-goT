@@ -31,16 +31,20 @@ class ShowContentBox extends StatelessWidget {
           CustomText(
             content: contentTitle,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           CustomBoxContainer(
             width: 300,
-            height: 100,
+            height: content.length >= 63 ||
+                    content.length + content.split('\n').length * 21 >= 63
+                ? null
+                : 100,
             borderColor: greyColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
               child: CustomText(
                 content: content,
                 color: hasContent ? blackColor : greyColor.withOpacity(0.7),
+                height: 1.2,
               ),
             ),
           )
