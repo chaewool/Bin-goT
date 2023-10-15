@@ -55,7 +55,6 @@ class CustomCachedNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      // fit: fit,
       placeholder: (context, url) =>
           placeholder ?? SizedBox(width: width, height: height),
       imageUrl: '${dotenv.env['fileUrl']}$path',
