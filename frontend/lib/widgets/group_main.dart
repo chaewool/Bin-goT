@@ -100,6 +100,7 @@ class _GroupMainState extends State<GroupMain> {
                     hasContent: watchRule(context) != '',
                   ),
                   if (memberState != 0) groupRankTop3(context),
+                  const SizedBox(height: 20)
                 ],
               ),
             ],

@@ -5,7 +5,6 @@ import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
-import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/app_bar.dart';
 import 'package:bin_got/widgets/bottom_bar.dart';
 import 'package:bin_got/widgets/button.dart';
@@ -37,7 +36,6 @@ class _GroupChatState extends State<GroupChat> {
   XFile? selectedImage;
   final controller = ScrollController();
   GlobalKey bottomBarKey = GlobalKey();
-  StringMap chatText = {'content': ''};
 
   @override
   void initState() {
@@ -99,13 +97,9 @@ class _GroupChatState extends State<GroupChat> {
     });
   }
 
-  void changeChat(String value) {
-    chatText['content'] = value;
-  }
-
   //* 채팅 추가
   void addChat() {
-    final content = chatText['content'];
+    final content = context.read<GlobalGroupProvider>().chatContent;
     if (content != '' || selectedImage != null) {
       showSpinner(context, true);
       if (showImg) {
@@ -139,8 +133,8 @@ class _GroupChatState extends State<GroupChat> {
                 },
               ),
             );
+        setChat(context, '');
         setState(() {
-          chatText['content'] = '';
           selectedImage = null;
         });
       }).catchError((_) {
@@ -174,95 +168,107 @@ class _GroupChatState extends State<GroupChat> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Stack(
-          children: [
-            //* 채팅 목록
-            Padding(
-              padding: EdgeInsets.only(top: appBarHeight, bottom: 80),
-              child: ChatInfiniteScroll(
-                controller: controller,
-                data: watchChats(context),
-              ),
-            ),
-            //* 앱 바
-            const CustomBoxContainer(
-              color: transparentColor,
-              height: 70,
-              child: AppBarWithBack(transparent: true),
-            ),
-            //* 채팅 입력창
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GroupChatBottomBar(
-                  changeChat: changeChat,
-                  addChat: addChat,
-                  imagePicker: chatImagePicker,
+    return WillPopScope(
+      onWillPop: () {
+        setChat(context, '');
+        toBack(context);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        body: GestureDetector(
+          onTap: unfocus,
+          child: Stack(
+            children: [
+              //* 채팅 목록
+              Padding(
+                padding: EdgeInsets.only(top: appBarHeight, bottom: 80),
+                child: ChatInfiniteScroll(
+                  controller: controller,
+                  data: watchChats(context),
                 ),
-              ],
-            ),
-            //* 이미지 미리보기
-            if (showImg)
+              ),
+              //* 앱 바
               CustomBoxContainer(
-                hasRoundEdge: false,
-                width: getWidth(context),
-                height: getHeight(context),
-                color: blackColor.withOpacity(0.8),
-                child: Padding(
-                  padding: EdgeInsets.only(top: appBarHeight + 10),
-                  child: ColWithPadding(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    vertical: 10,
-                    children: [
-                      CustomBoxContainer(
-                        height: getHeight(context) * 0.8,
-                        hasRoundEdge: false,
-                        color: transparentColor,
-                        image: DecorationImage(
-                          image: FileImage(File(selectedImage!.path)),
+                color: transparentColor,
+                height: 70,
+                child: AppBarWithBack(
+                  transparent: true,
+                  onPressedBack: () {
+                    setChat(context, '');
+                    toBack(context);
+                  },
+                ),
+              ),
+              //* 채팅 입력창
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GroupChatBottomBar(
+                    addChat: addChat,
+                    imagePicker: chatImagePicker,
+                  ),
+                ],
+              ),
+              //* 이미지 미리보기
+              if (showImg)
+                CustomBoxContainer(
+                  hasRoundEdge: false,
+                  width: getWidth(context),
+                  height: getHeight(context),
+                  color: blackColor.withOpacity(0.8),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: appBarHeight + 10),
+                    child: ColWithPadding(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      vertical: 10,
+                      children: [
+                        CustomBoxContainer(
+                          height: getHeight(context) * 0.8,
+                          hasRoundEdge: false,
+                          color: transparentColor,
+                          image: DecorationImage(
+                            image: FileImage(File(selectedImage!.path)),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomButton(
-                              onPressed: addChat,
-                              content: '전송',
-                              color: paleRedColor,
-                              textColor: whiteColor,
-                            ),
-                            const SizedBox(width: 20),
-                            CustomButton(
-                              onPressed: deleteImg,
-                              content: '취소',
-                              color: whiteColor,
-                            ),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomButton(
+                                onPressed: addChat,
+                                content: '전송',
+                                color: paleRedColor,
+                                textColor: whiteColor,
+                              ),
+                              const SizedBox(width: 20),
+                              CustomButton(
+                                onPressed: deleteImg,
+                                content: '취소',
+                                color: whiteColor,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-            //* 스피너
-            if (watchSpinner(context))
-              CustomBoxContainer(
-                hasRoundEdge: false,
-                width: getWidth(context),
-                height: getHeight(context),
-                color: blackColor.withOpacity(0.8),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [CustomCirCularIndicator()],
-                ),
-              )
-          ],
+              //* 스피너
+              if (watchSpinner(context))
+                CustomBoxContainer(
+                  hasRoundEdge: false,
+                  width: getWidth(context),
+                  height: getHeight(context),
+                  color: blackColor.withOpacity(0.8),
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [CustomCirCularIndicator()],
+                  ),
+                )
+            ],
+          ),
         ),
       ),
     );

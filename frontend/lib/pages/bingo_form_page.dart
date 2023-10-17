@@ -57,11 +57,14 @@ class _BingoFormState extends State<BingoForm> {
     super.initState();
     size = widget.bingoSize;
     //* 생성, 수정 분기 처리
-    if (getBingoId(context) == null || getBingoId(context) == 0) {
-      initBingoFormData(context, false);
-    } else {
+    if (getBingoId(context) != null && getBingoId(context) != 0) {
       initBingoFormData(context, true);
     }
+    // if (getBingoId(context) == null || getBingoId(context) == 0) {
+    //   initBingoFormData(context, false);
+    // } else {
+    //   initBingoFormData(context, true);
+    // }
     //* items
     if (getItems(context, false).isEmpty) {
       context.read<GlobalBingoProvider>().initItems(size * size);
@@ -82,17 +85,18 @@ class _BingoFormState extends State<BingoForm> {
   }
 
   //* 빙고 생성/수정
-  void createOrEditBingo() async {
+  void createOrEditBingo() {
     try {
       //* 변경된 부분이 있는 경우
       if (changed) {
+        print('변경됨!!!!!');
         final data = getBingoData(context, false);
         //* 제목
         if (data['title'] == null) {
           return showAlert(
             context,
             title: '필수 항목 누락',
-            content: '빙고명을 입력해주세요',
+            content: '빙고판 제목을 입력해주세요',
             hasCancel: false,
           )();
         }
@@ -138,46 +142,55 @@ class _BingoFormState extends State<BingoForm> {
         }
 
         //* 썸네일 생성 후 작업 요청
-        bingoToThumb().then((_) {
-          final bingoId = getBingoId(context);
-          //* 빙고 생성
-          if (bingoId == null || bingoId == 0) {
-            widget.beforeJoin ? joinGroup(data) : createGroup(data);
-          } else {
-            //* 빙고 수정
-            final bingoData = FormData.fromMap({
-              'data': jsonEncode(data),
-              'thumbnail': MultipartFile.fromBytes(
-                thumbnail!,
-                filename: 'thumbnail.png',
-                contentType: MediaType('image', 'png'),
-              ),
-            });
-            showSpinner(context, true);
-
-            BingoProvider()
-                .editOwnBingo(getGroupId(context)!, bingoId, bingoData)
-                .then((value) {
-              afterWork('빙고 수정이 완료되었습니다.', 0, () {
-                setBingoData(context, data);
-                toBack(context);
+        setIsCheckTheme(context, false).then((_) {
+          print(
+              'is check theme => ${context.read<GlobalBingoProvider>().isCheckTheme}');
+          bingoToThumb().then((_) {
+            final bingoId = getBingoId(context);
+            //* 빙고 생성
+            if (bingoId == null || bingoId == 0) {
+              widget.beforeJoin ? joinGroup(data) : createGroup(data);
+            } else {
+              //* 빙고 수정
+              final bingoData = FormData.fromMap({
+                'data': jsonEncode(data),
+                'thumbnail': MultipartFile.fromBytes(
+                  thumbnail!,
+                  filename: 'thumbnail.png',
+                  contentType: MediaType('image', 'png'),
+                ),
               });
-            }).catchError((_) {
-              showSpinner(context, false);
-              showErrorModal(context, '빙고 수정 오류', '빙고 수정에 실패했습니다.');
-            });
-          }
+              showSpinner(context, true);
+
+              BingoProvider()
+                  .editOwnBingo(getGroupId(context)!, bingoId, bingoData)
+                  .then((value) {
+                afterWork('빙고 수정이 완료되었습니다.', 0, () {
+                  setBingoData(context, data);
+                  toBack(context);
+                });
+              }).catchError((_) {
+                showSpinner(context, false);
+                showErrorModal(context, '빙고 수정 오류', '빙고 수정에 실패했습니다.');
+              });
+            }
+          }).catchError((_) {
+            showSpinner(context, false);
+            showErrorModal(context, '빙고 생성/수정 오류', '빙고 생성/수정에 실패했습니다.');
+          });
         }).catchError((_) {
           showSpinner(context, false);
           showErrorModal(context, '빙고 생성/수정 오류', '빙고 생성/수정에 실패했습니다.');
         });
         //* 변경되지 않은 경우
       } else {
-        return showAlert(
-          context,
-          title: '필수 항목 누락',
-          content: '변경사항이 없습니다.',
-        )();
+        print('변경 안 됨!!!');
+        bingoToThumb();
+        // return showAlert(
+        //   context,
+        //   title: '필수 항목 누락',
+        //   content: '변경사항이 없습니다.',
+        // )();
       }
     } catch (_) {
       showErrorModal(context, '빙고 생성/수정 오류', '빙고 생성/수정에 실패했습니다.');
@@ -186,6 +199,7 @@ class _BingoFormState extends State<BingoForm> {
 
   //* 빙고 썸네일 생성
   FutureBool bingoToThumb() async {
+    print('썸네일입니다!');
     var renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject is RenderRepaintBoundary) {
       final image = await renderObject.toImage();
@@ -193,6 +207,7 @@ class _BingoFormState extends State<BingoForm> {
       setState(() {
         thumbnail = byteData?.buffer.asUint8List();
       });
+      print(thumbnail);
     }
     return true;
   }
@@ -216,6 +231,7 @@ class _BingoFormState extends State<BingoForm> {
             : null,
       });
       showSpinner(context, true);
+
       GroupProvider().createOwnGroup(formData).then((groupId) {
         afterWork('그룹 생성이 완료되었습니다.', 1, () {
           changePrev(context, true);
@@ -259,6 +275,7 @@ class _BingoFormState extends State<BingoForm> {
         ),
       });
       showSpinner(context, true);
+
       GroupProvider().joinGroup(groupId, formData).then((data) {
         showSpinner(context, false);
         //* 가입 승인 필요 시
@@ -298,6 +315,7 @@ class _BingoFormState extends State<BingoForm> {
       body: Stack(
         children: [
           CustomBoxContainer(
+            onTap: unfocus,
             hasRoundEdge: false,
             width: getWidth(context),
             height: getHeight(context),
@@ -315,7 +333,7 @@ class _BingoFormState extends State<BingoForm> {
                 horizontal: 10,
                 vertical: 5,
                 children: [
-                  //* 빙고명 라벨 & 입력창
+                  //* 빙고판 제목
                   Flexible(
                     flex: 5,
                     child: Padding(
@@ -324,7 +342,7 @@ class _BingoFormState extends State<BingoForm> {
                         children: [
                           const Row(
                             children: [
-                              CustomText(content: '빙고명'),
+                              CustomText(content: '빙고판 제목'),
                               SizedBox(width: 5),
                               Expanded(
                                 child: Row(
@@ -349,7 +367,7 @@ class _BingoFormState extends State<BingoForm> {
                           const SizedBox(height: 10),
                           CustomInput(
                             filled: true,
-                            explain: '빙고명을 입력해주세요',
+                            explain: '빙고판 제목을 입력해주세요',
                             setValue: (value) =>
                                 setOption(context, 'title', value),
                             initialValue: watchTitle(context),
@@ -391,7 +409,18 @@ class _BingoFormState extends State<BingoForm> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              children: [
+                                CustomText(
+                                  content: '- 빙고 칸을 눌러 내용을 작성/수정할 수 있습니다.',
+                                  fontSize: FontSize.tinySize,
+                                  color: greyColor,
+                                ),
+                              ],
+                            ),
+                          ),
                           Expanded(
                             child: RepaintBoundary(
                               key: globalKey,

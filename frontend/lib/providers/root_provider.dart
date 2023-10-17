@@ -192,6 +192,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   static final GroupChatList _chats = [];
   static final RankList _rankList = [];
   static PageController? _pageController;
+  static final StringMap _chatText = {'content': ''};
 
   GroupChatList get chats => _chats;
   bool get prev => _prev;
@@ -200,6 +201,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   int? get lastId => _lastId;
   int? get groupId => _groupId;
   PageController? get pageController => _pageController;
+  String get chatContent => _chatText['content']!;
 
   //* read group
   GroupDetailModel? get data => _data;
@@ -258,8 +260,8 @@ class GlobalGroupProvider extends ChangeNotifier {
     _pageController = PageController(initialPage: _selectedIndex);
   }
 
-  void _disposeController() {
-    _pageController!.dispose();
+  void _setChat(String value) {
+    _chatText['content'] = value;
   }
 
 //* public
@@ -304,7 +306,6 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void initData() {
     _initData();
-    notifyListeners();
   }
 
   void setRank(RankList value) {
@@ -319,7 +320,7 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void initPage() => _initPage();
 
-  void disposeController() => _disposeController();
+  void setChat(String value) => _setChat(value);
 }
 
 //* bingo data
@@ -488,7 +489,6 @@ class GlobalBingoProvider extends ChangeNotifier {
 
   void _initData() {
     _data.clear();
-    notifyListeners();
   }
 
   FutureBool _bingoToImage() async {

@@ -133,6 +133,18 @@ class RankListItem extends StatelessWidget {
             ),
           ),
           CustomText(content: rankListItem.nickname),
+          if (rankListItem.userId == getId(context))
+            const CustomBoxContainer(
+              color: palePinkColor,
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CustomText(
+                  content: '내 순위',
+                  color: whiteColor,
+                  fontSize: FontSize.tinySize,
+                ),
+              ),
+            ),
           CustomText(
             content: '${(rankListItem.achieve * 100).toInt()}%',
             fontSize: FontSize.smallSize,
@@ -366,7 +378,7 @@ class _ChatListItemState extends State<ChatListItem> {
                                 ),
                               ),
                               widget: widget,
-                              height: 250,
+                              // height: 250,
                             ),
                           ),
                     if (!isMine)
@@ -398,8 +410,8 @@ class _ChatListItemState extends State<ChatListItem> {
 //* 채팅 이미지
 class ChatImage extends StatelessWidget {
   final ChatListItem widget;
-  final double height;
-  final double? width;
+  // final double height;
+  final double? width, height;
   final ReturnVoid? onTap;
   final bool transparent;
   final bool hasRoundEdge;
@@ -407,7 +419,7 @@ class ChatImage extends StatelessWidget {
   const ChatImage({
     super.key,
     required this.widget,
-    required this.height,
+    this.height,
     this.hasRoundEdge = true,
     this.width,
     this.onTap,
@@ -416,11 +428,13 @@ class ChatImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // print('width => $width, height => $height');
     final CustomCachedNetworkImage networkImage = CustomCachedNetworkImage(
       path: '/chats/${getGroupId(context)}/${widget.data.id}',
-      width: width ?? 50,
-      height: height,
+      width: width ?? 120,
+      height: height ?? 120,
     );
+    // print('networkImage => $networkImage');
     return CustomBoxContainer(
       color: transparent ? transparentColor : blackColor.withOpacity(0.8),
       width: width,
@@ -428,9 +442,7 @@ class ChatImage extends StatelessWidget {
       onTap: onTap,
       child: hasRoundEdge
           ? ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: networkImage,
-            )
+              borderRadius: BorderRadius.circular(8), child: networkImage)
           : CustomBoxContainer(child: networkImage),
     );
   }

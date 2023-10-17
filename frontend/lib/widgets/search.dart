@@ -5,9 +5,7 @@ import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/input.dart';
-import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/text.dart';
@@ -76,14 +74,11 @@ class _SearchState extends State<Search> {
   //* 검색 버튼 터치 시
   void onSearchAction() {
     if (!publicPrivate[0] && !publicPrivate[1]) {
-      showModal(
+      showAlert(
         context,
-        page: const CustomModal(
-          title: '필수 항목 누락',
-          hasConfirm: false,
-          cancelText: '확인',
-          children: [Center(child: CustomText(content: '그룹 필터를 설정해 주세요.'))],
-        ),
+        title: '필수 항목 누락',
+        content: '그룹 필터를 설정해 주세요.',
+        hasCancel: false,
       )();
     }
     if (keyword['value'] != '' || index != 0) {
@@ -97,16 +92,11 @@ class _SearchState extends State<Search> {
       search(false);
       changeShowSearchBar(false);
     } else {
-      showModal(
+      showAlert(
         context,
-        page: const CustomModal(
-          title: '필수 항목 누락',
-          hasConfirm: false,
-          cancelText: '확인',
-          children: [
-            Center(child: CustomText(content: '검색어를 입력하거나\n 기간을 선택해주세요'))
-          ],
-        ),
+        title: '필수 항목 누락',
+        content: '검색어를 입력하거나\n 기간을 선택해주세요',
+        hasCancel: false,
       )();
     }
   }
@@ -195,9 +185,10 @@ class _SearchState extends State<Search> {
                   initialValue: keyword['value'],
                   needSearch: true,
                   onSubmitted: (_) => onSearchAction(),
-                  suffixIcon: const CustomIcon(
+                  suffixIcon: CustomIconButton(
                     icon: searchIcon,
                     color: greyColor,
+                    onPressed: onSearchAction,
                   ),
                 ),
               ),
