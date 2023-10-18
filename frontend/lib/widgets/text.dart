@@ -1,5 +1,6 @@
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:wrapped_korean_text/wrapped_korean_text.dart';
 
 //? 텍스트
 
@@ -39,6 +40,28 @@ class CustomText extends StatelessWidget {
       textAlign: center ? TextAlign.center : null,
       maxLines: maxLines,
       overflow: cutText ? TextOverflow.ellipsis : null,
+    );
+  }
+}
+
+//* long text
+class CustomLongText extends StatelessWidget {
+  final String content;
+  final bool hasContent;
+  const CustomLongText({
+    super.key,
+    required this.content,
+    required this.hasContent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return WrappedKoreanText(
+      content,
+      style: TextStyle(
+        color: hasContent ? blackColor : greyColor.withOpacity(0.7),
+        height: 1.4,
+      ),
     );
   }
 }

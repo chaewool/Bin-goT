@@ -46,8 +46,8 @@ class CustomCachedNetworkImage extends StatelessWidget {
   const CustomCachedNetworkImage({
     super.key,
     required this.path,
-    this.width = 50,
-    this.height = 50,
+    this.width = 33,
+    this.height = 33,
     this.fit = BoxFit.fitWidth,
     this.placeholder,
   });
@@ -59,6 +59,8 @@ class CustomCachedNetworkImage extends StatelessWidget {
           placeholder ?? SizedBox(width: width, height: height),
       imageUrl: '${dotenv.env['fileUrl']}$path',
       imageBuilder: (context, imageProvider) => CustomBoxContainer(
+        width: width,
+        height: height,
         color: transparentColor,
         hasRoundEdge: false,
         image: DecorationImage(
@@ -66,8 +68,10 @@ class CustomCachedNetworkImage extends StatelessWidget {
           fit: fit,
         ),
       ),
-      errorWidget: (context, url, error) => const CustomBoxContainer(
-        child: CustomIcon(icon: Icons.error_outline),
+      errorWidget: (context, url, error) => CustomBoxContainer(
+        width: width,
+        height: height,
+        child: const CustomIcon(icon: Icons.error_outline),
       ),
     );
   }

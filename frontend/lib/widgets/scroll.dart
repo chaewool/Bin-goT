@@ -55,7 +55,8 @@ class GroupInfiniteScroll extends StatelessWidget {
                                   padding:
                                       const EdgeInsets.fromLTRB(5, 0, 5, 5),
                                   child: GroupListItem(
-                                    isSearchMode: mode == 0,
+                                    isSearchMode:
+                                        mode == 0 || hasNotGroupWidget != null,
                                     groupInfo: data[i],
                                     public: data[i].isPublic,
                                   ),
@@ -182,6 +183,7 @@ class ChatInfiniteScroll extends StatelessWidget {
                   reverse: true,
                   itemCount: data.length,
                   itemBuilder: (context, i) {
+                    print('has image => $i ${data[i].hasImage}');
                     return Column(
                       children: [
                         if (getLastId(context, mode) > 0 &&

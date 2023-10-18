@@ -114,8 +114,7 @@ class EachBingo extends StatelessWidget {
                 hasRoundEdge: false,
                 child: Center(
                   child: CustomText(
-                    content:
-                        watchItemTitle(context, index, isDetail) ?? '빙고칸 제목',
+                    content: watchItemTitle(context, index, isDetail) ?? '',
                     font: getStringFont(context),
                   ),
                 ),
@@ -135,12 +134,15 @@ class EachBingo extends StatelessWidget {
   CustomBoxContainer draggableBox(
       BuildContext context, Color Function() convertedColor) {
     return CustomBoxContainer(
-      onTap: showModal(
-        context,
-        page: isDetail
-            ? BingoDetailModal(index: index, cnt: size * size)
-            : BingoFormModal(index: index, cnt: size * size),
-      ),
+      onTap: () {
+        unfocus();
+        showModal(
+          context,
+          page: isDetail
+              ? BingoDetailModal(index: index, cnt: size * size)
+              : BingoFormModal(index: index, cnt: size * size),
+        )();
+      },
       child: CustomBoxContainer(
         color: watchHasBlackBox(context, isDetail) ? blackColor : whiteColor,
         hasRoundEdge: watchHasRoundEdge(context, isDetail),
@@ -151,15 +153,15 @@ class EachBingo extends StatelessWidget {
             Center(
               child: CustomText(
                 color: convertedColor(),
-                content: watchItemTitle(context, index, isDetail) ?? '빙고칸 제목',
+                content: watchItemTitle(context, index, isDetail) ?? '',
                 font: getStringFont(context, isDetail),
                 center: true,
                 maxLines: 2,
                 cutText: true,
               ),
             ),
-            if (!isDetail &&
-                    context.watch<GlobalBingoProvider>().isCheckTheme ||
+            if ((!isDetail &&
+                    context.watch<GlobalBingoProvider>().isCheckTheme) ||
                 (isDetail && watchFinished(context)![index]))
               Center(
                 child: CustomIcon(

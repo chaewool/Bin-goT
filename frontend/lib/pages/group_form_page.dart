@@ -74,6 +74,7 @@ class _GroupFormState extends State<GroupForm> {
         'need_auth': true,
         'headcount': ''
       };
+      initBingoFormData(context, false);
     } else {
       //* 그룹 수정
       groupData = {};
@@ -198,7 +199,6 @@ class _GroupFormState extends State<GroupForm> {
               )();
             });
           }).catchError((error) {
-            toBack(context);
             setLoading(context, false);
             showAlert(
               context,
@@ -229,6 +229,7 @@ class _GroupFormState extends State<GroupForm> {
 
   //* 이미지 선택
   void groupFormImagePicker() {
+    unfocus();
     return imagePicker(
       context,
       thenFunc: (localImage) {
@@ -298,222 +299,229 @@ class _GroupFormState extends State<GroupForm> {
         title: widget.groupId == null ? '그룹 생성' : '그룹 수정',
       ),
       resizeToAvoidBottomInset: false,
-      body: SingleChildScrollView(
-        child: ColWithPadding(
-          horizontal: 50,
-          vertical: 20,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //* 그룹명 입력창
-            groupFormInput(
-              title: '그룹명',
-              explainTitleType: 0,
-              explain: '그룹명을 입력하세요.',
-              maxLength: 20,
-              setValue: setData('groupname'),
-              initialValue: groupData.containsKey('groupname')
-                  ? groupData['groupname']
-                  : getGroupName(context),
-            ),
-            //* 참여인원 입력창
-            groupFormInput(
-              title: '참여인원',
-              explain: '2에서 30 사이의 숫자로 입력하세요.',
-              explainTitleType: 0,
-              onlyNum: true,
-              setValue: setData('headcount'),
-              initialValue: groupData.containsKey('headcount')
-                  ? groupData['headcount'].toString()
-                  : context.read<GlobalGroupProvider>().headCount?.toString(),
-            ),
-            //* 그룹 생성 시에만 설정 가능한 항목
-            if (widget.groupId == null)
-              Column(
-                children: [
-                  //* 기간 선택
-                  groupFormInput(
-                    title: '기간',
-                    explainTitleType: 1,
-                    inputWidget: InputDate(
-                      explain: selectedDate(),
-                      start: groupData.containsKey('start')
-                          ? groupData['start']
-                          : getStart(context) ?? '',
-                      end: groupData.containsKey('end')
-                          ? groupData['end']
-                          : context.read<GlobalGroupProvider>().end ?? '',
-                      applyDay: applyDay,
+      body: GestureDetector(
+        onTap: unfocus,
+        child: SingleChildScrollView(
+          child: ColWithPadding(
+            horizontal: 50,
+            vertical: 20,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //* 그룹명 입력창
+              groupFormInput(
+                title: '그룹명',
+                explainTitleType: 0,
+                explain: '그룹명을 입력하세요.',
+                maxLength: 20,
+                setValue: setData('groupname'),
+                initialValue: groupData.containsKey('groupname')
+                    ? groupData['groupname']
+                    : getGroupName(context),
+              ),
+              //* 참여인원 입력창
+              groupFormInput(
+                title: '참여인원',
+                explain: '2에서 30 사이의 숫자로 입력하세요.',
+                explainTitleType: 0,
+                onlyNum: true,
+                setValue: setData('headcount'),
+                initialValue: groupData.containsKey('headcount')
+                    ? groupData['headcount'].toString()
+                    : context.read<GlobalGroupProvider>().headCount?.toString(),
+              ),
+              //* 그룹 생성 시에만 설정 가능한 항목
+              if (widget.groupId == null)
+                Column(
+                  children: [
+                    //* 기간 선택
+                    groupFormInput(
+                      title: '기간',
+                      explainTitleType: 1,
+                      inputWidget: InputDate(
+                        explain: selectedDate(),
+                        start: groupData.containsKey('start')
+                            ? groupData['start']
+                            : getStart(context) ?? '',
+                        end: groupData.containsKey('end')
+                            ? groupData['end']
+                            : context.read<GlobalGroupProvider>().end ?? '',
+                        applyDay: applyDay,
+                      ),
                     ),
-                  ),
-                  //* 빙고 크기 선택
-                  groupFormInput(
-                    title: '빙고 크기',
-                    divider: true,
-                    explainTitleType: 1,
-                    content:
-                        '총 ${(selectedIndex[0] + 2) * (selectedIndex[0] + 2)} 칸의 빙고판이 만들어집니다.',
-                    inputWidget: RowWithPadding(
-                      vertical: 10,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        for (int i = 0; i < 4; i += 1)
-                          CustomBoxContainer(
-                            borderColor:
-                                selectedIndex[0] == i ? whiteColor : greyColor,
-                            onTap: () => changeGroupData(0, i),
-                            color: selectedIndex[0] == i
-                                ? palePinkColor
-                                : whiteColor,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: CustomText(
-                                content: printedValues[0][i],
-                                color: selectedIndex[0] == i
-                                    ? whiteColor
-                                    : blackColor,
+                    //* 빙고 크기 선택
+                    groupFormInput(
+                      title: '빙고 크기',
+                      divider: true,
+                      explainTitleType: 1,
+                      content:
+                          '총 ${(selectedIndex[0] + 2) * (selectedIndex[0] + 2)} 칸의 빙고판이 만들어집니다.',
+                      inputWidget: RowWithPadding(
+                        vertical: 10,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          for (int i = 0; i < 4; i += 1)
+                            CustomBoxContainer(
+                              borderColor: selectedIndex[0] == i
+                                  ? whiteColor
+                                  : greyColor,
+                              onTap: () => changeGroupData(0, i),
+                              color: selectedIndex[0] == i
+                                  ? palePinkColor
+                                  : whiteColor,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: CustomText(
+                                  content: printedValues[0][i],
+                                  color: selectedIndex[0] == i
+                                      ? whiteColor
+                                      : blackColor,
+                                ),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  //* 자동 승인 여부 선택
-                  groupFormInput(
-                    title: '가입 시 자동 승인',
-                    explainTitleType: 1,
-                    divider: true,
-                    inputWidget: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            for (int j = 0; j < 2; j += 1)
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: CustomBoxContainer(
-                                  borderColor:
-                                      selectedIndex[1] == j ? null : greyColor,
-                                  onTap: () => changeGroupData(1, j),
-                                  width: 120,
-                                  height: 60,
-                                  color: selectedIndex[1] == j
-                                      ? palePinkColor
-                                      : whiteColor,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: Center(
-                                      child: CustomText(
-                                        content: printedValues[1][j],
-                                        color: selectedIndex[1] == j
-                                            ? whiteColor
-                                            : blackColor,
-                                        height: 1.2,
+                    //* 자동 승인 여부 선택
+                    groupFormInput(
+                      title: '가입 시 자동 승인',
+                      explainTitleType: 1,
+                      divider: true,
+                      inputWidget: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              for (int j = 0; j < 2; j += 1)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: CustomBoxContainer(
+                                    borderColor: selectedIndex[1] == j
+                                        ? null
+                                        : greyColor,
+                                    onTap: () => changeGroupData(1, j),
+                                    width: 120,
+                                    height: 60,
+                                    color: selectedIndex[1] == j
+                                        ? palePinkColor
+                                        : whiteColor,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Center(
+                                        child: CustomText(
+                                          content: printedValues[1][j],
+                                          color: selectedIndex[1] == j
+                                              ? whiteColor
+                                              : blackColor,
+                                          height: 1.2,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    content: selectedIndex[1] == 0
-                        ? '가입 신청 후, 그룹장의 허가가 있어야 가입됩니다.'
-                        : '가입 신청 시, 자동으로 가입됩니다.',
-                  ),
-                  //* 공개 여부 선택
-                  groupFormInput(
-                    divider: true,
-                    inputWidget: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.ideographic,
-                          children: [
-                            const Row(
-                              children: [
-                                CustomText(content: '그룹 공개'),
-                                SizedBox(width: 5),
-                                CustomText(
-                                  content: '(필수)',
-                                  fontSize: FontSize.tinySize,
-                                  color: greyColor,
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                const CustomText(
-                                  content: '수정 불가',
-                                  fontSize: FontSize.tinySize,
-                                  color: greyColor,
-                                ),
-                                CustomSwitch(
-                                  value: isChecked,
-                                  onChanged: (_) {
-                                    setState(() {
-                                      isChecked = !isChecked;
-                                    });
-                                    setData('is_public')(isChecked);
-                                  },
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        //* 비밀번호 입력창
-                        if (!isChecked)
-                          groupFormInput(
-                            title: '비밀번호',
-                            explain: '비밀번호',
-                            maxLength: 20,
-                            setValue: setData('password'),
-                            initialValue: groupData.containsKey('password')
-                                ? groupData['password']
-                                : context.read<GlobalGroupProvider>().password,
+                            ],
                           ),
-                      ],
+                        ],
+                      ),
+                      content: selectedIndex[1] == 0
+                          ? '가입 신청 후, 그룹장의 허가가 있어야 가입됩니다.'
+                          : '가입 신청 시, 자동으로 가입됩니다.',
                     ),
-                    content:
-                        isChecked ? '추천 그룹, 검색 화면에 노출됩니다' : '초대로만 가입이 가능합니다',
-                  ),
-                ],
+                    //* 공개 여부 선택
+                    groupFormInput(
+                      divider: true,
+                      inputWidget: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.ideographic,
+                            children: [
+                              const Row(
+                                children: [
+                                  CustomText(content: '그룹 공개'),
+                                  SizedBox(width: 5),
+                                  CustomText(
+                                    content: '(필수)',
+                                    fontSize: FontSize.tinySize,
+                                    color: greyColor,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const CustomText(
+                                    content: '수정 불가',
+                                    fontSize: FontSize.tinySize,
+                                    color: greyColor,
+                                  ),
+                                  CustomSwitch(
+                                    value: isChecked,
+                                    onChanged: (_) {
+                                      setState(() {
+                                        isChecked = !isChecked;
+                                      });
+                                      setData('is_public')(isChecked);
+                                    },
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                          //* 비밀번호 입력창
+                          if (!isChecked)
+                            groupFormInput(
+                              title: '비밀번호',
+                              explain: '비밀번호',
+                              maxLength: 20,
+                              setValue: setData('password'),
+                              initialValue: groupData.containsKey('password')
+                                  ? groupData['password']
+                                  : context
+                                      .read<GlobalGroupProvider>()
+                                      .password,
+                            ),
+                        ],
+                      ),
+                      content:
+                          isChecked ? '추천 그룹, 검색 화면에 노출됩니다' : '초대로만 가입이 가능합니다',
+                    ),
+                  ],
+                ),
+              //* 그룹 설명 입력창
+              groupFormInput(
+                title: '그룹 설명',
+                explain: '그룹을 설명하는 내용을 입력하세요.',
+                explainTitleType: 2,
+                needMore: true,
+                maxLength: 1000,
+                setValue: setData('description'),
+                initialValue: groupData.containsKey('description')
+                    ? groupData['description']
+                    : context.read<GlobalGroupProvider>().description,
               ),
-            //* 그룹 설명 입력창
-            groupFormInput(
-              title: '그룹 설명',
-              explain: '그룹을 설명하는 내용을 입력하세요.',
-              explainTitleType: 2,
-              needMore: true,
-              maxLength: 1000,
-              setValue: setData('description'),
-              initialValue: groupData.containsKey('description')
-                  ? groupData['description']
-                  : context.read<GlobalGroupProvider>().description,
-            ),
-            //* 그룹 규칙 입력창
-            groupFormInput(
-              title: '그룹 규칙',
-              explain: '그룹의 규칙을 입력하세요.',
-              explainTitleType: 2,
-              needMore: true,
-              maxLength: 1000,
-              setValue: setData('rule'),
-              initialValue: groupData.containsKey('rule')
-                  ? groupData['rule']
-                  : context.read<GlobalGroupProvider>().rule,
-            ),
-            //* 그룹 배경 입력창
-            groupFormInput(
-              title: '그룹 배경',
-              explainTitleType: 2,
-              inputWidget: groupImage(),
-            )
-          ],
+              //* 그룹 규칙 입력창
+              groupFormInput(
+                title: '그룹 규칙',
+                explain: '그룹의 규칙을 입력하세요.',
+                explainTitleType: 2,
+                needMore: true,
+                maxLength: 1000,
+                setValue: setData('rule'),
+                initialValue: groupData.containsKey('rule')
+                    ? groupData['rule']
+                    : context.read<GlobalGroupProvider>().rule,
+              ),
+              //* 그룹 배경 입력창
+              groupFormInput(
+                title: '그룹 배경',
+                explainTitleType: 2,
+                inputWidget: groupImage(),
+              )
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: FormBottomBar(createOrUpdate: createOrUpdate),

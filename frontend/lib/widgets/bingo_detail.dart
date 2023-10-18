@@ -36,6 +36,7 @@ class _BingoDetailState extends State<BingoDetail> {
 
   @override
   Widget build(BuildContext context) {
+    print('bingo detail!!!!!');
     return !watchLoading(context)
         ? RepaintBoundary(
             key: context.watch<GlobalBingoProvider>().globalKey,

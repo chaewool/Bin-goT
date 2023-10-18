@@ -1,4 +1,5 @@
 import 'package:bin_got/pages/bingo_form_page.dart';
+import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
@@ -10,6 +11,7 @@ import 'package:bin_got/widgets/input.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //? 하단 바
 
@@ -31,6 +33,7 @@ class CustomNavigationBar extends StatelessWidget {
     const double bottomBarHeight = 80;
     return CustomBoxContainer(
       height: bottomBarHeight,
+      width: getWidth(context),
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(10),
         topRight: Radius.circular(10),
@@ -101,6 +104,7 @@ class GroupMainBottomBar extends StatelessWidget {
               child: CustomBoxContainer(
                 hasRoundEdge: false,
                 height: 80,
+                width: getWidth(context),
                 color: paleRedColor,
                 child: Center(
                   child: CustomText(
@@ -149,13 +153,11 @@ class FormBottomBar extends StatelessWidget {
 //* 그룹 채팅 입력 하단 바
 class GroupChatBottomBar extends StatefulWidget {
   final ReturnVoid addChat;
-  final void Function(String) changeChat;
   final ReturnVoid imagePicker;
   const GroupChatBottomBar({
     super.key,
     required this.addChat,
     required this.imagePicker,
-    required this.changeChat,
   });
 
   @override
@@ -184,9 +186,11 @@ class _GroupChatBottomBarState extends State<GroupChatBottomBar> {
           Flexible(
             flex: 5,
             child: CustomInput(
-                filled: true,
-                explain: '내용을 입력하세요',
-                setValue: widget.changeChat),
+              filled: true,
+              explain: '내용을 입력하세요',
+              setValue: (value) => setChat(context, value),
+              initialValue: context.watch<GlobalGroupProvider>().chatContent,
+            ),
           ),
           Flexible(
             child: Padding(

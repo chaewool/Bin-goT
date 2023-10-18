@@ -1178,6 +1178,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  wrapped_korean_text:
+    dependency: "direct main"
+    description:
+      name: wrapped_korean_text
+      sha256: "050ec8462df883c0217009ed729b924ff3de56fd5fc9f06213af173c589e7ea8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   xdg_directories:
     dependency: transitive
     description:
