@@ -48,10 +48,12 @@ class CustomText extends StatelessWidget {
 class CustomLongText extends StatelessWidget {
   final String content;
   final bool hasContent;
+  final Color? color;
   const CustomLongText({
     super.key,
     required this.content,
     required this.hasContent,
+    this.color,
   });
 
   @override
@@ -59,7 +61,7 @@ class CustomLongText extends StatelessWidget {
     return WrappedKoreanText(
       content,
       style: TextStyle(
-        color: hasContent ? blackColor : greyColor.withOpacity(0.7),
+        color: hasContent ? color ?? blackColor : greyColor.withOpacity(0.7),
         height: 1.4,
       ),
     );
