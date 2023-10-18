@@ -56,6 +56,7 @@ class CustomInput extends StatelessWidget {
         horizontal: horizontal!,
       ),
       child: CustomBoxContainer(
+        borderRadius: BorderRadius.circular(4),
         width: width,
         height: height,
         child: TextField(

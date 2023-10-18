@@ -1,5 +1,4 @@
 import 'package:bin_got/models/group_model.dart';
-import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/providers/user_info_provider.dart';
@@ -567,7 +566,7 @@ class _MainTabBarState extends State<MainTabBar> {
                 child: Column(
                   children: [
                     RowWithPadding(
-                      vertical: 25,
+                      vertical: 20,
                       min: true,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -590,7 +589,7 @@ class _MainTabBarState extends State<MainTabBar> {
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
+                      padding: const EdgeInsets.fromLTRB(20, 5, 20, 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -623,7 +622,6 @@ class _MainTabBarState extends State<MainTabBar> {
             ],
           ),
         ),
-        const CustomFloatingButton(page: GroupForm(), icon: addIcon),
         if (watchPressed(context))
           const CustomToast(content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다')
       ],

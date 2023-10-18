@@ -42,6 +42,7 @@ class _GroupDetailState extends State<GroupDetail> {
   int bingoSize = 0;
   int bingoId = 0;
   double paddingTop = 0;
+  double bottomBarHeight = 70;
   WidgetList nextPages = [
     const BingoDetail(),
     const GroupMain(),
@@ -50,7 +51,7 @@ class _GroupDetailState extends State<GroupDetail> {
   final WidgetList appbarList = [
     const BingoDetailAppBar(),
     const GroupAppBar(),
-    const GroupAppBar(),
+    const GroupAppBar(enableAdmin: false),
   ];
   // late final PageController pageController;
 
@@ -161,39 +162,38 @@ class _GroupDetailState extends State<GroupDetail> {
           children: [
             SizedBox(
               width: getWidth(context),
-              height: getHeight(context) - 80,
+              height: getHeight(context),
               //* 화면
-              child: PageView(
-                physics: const NeverScrollableScrollPhysics(),
-                controller: getPageController(context),
-                children: [
-                  if (widget.isMember)
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: paddingTop,
-                      ),
-                      child: nextPages[0],
-                    ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
+              child: Padding(
+                padding: EdgeInsets.only(bottom: bottomBarHeight),
+                child: PageView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: getPageController(context),
+                  children: [
+                    if (widget.isMember)
                       Padding(
-                        padding: EdgeInsets.only(
-                          top: paddingTop,
-                        ),
-                        child: SingleChildScrollView(
-                          child: nextPages[1],
-                        ),
+                        padding: EdgeInsets.only(top: paddingTop),
+                        child: nextPages[0],
                       ),
-                    ],
-                  ),
-                  if (widget.isMember)
-                    Padding(
-                      padding: EdgeInsets.only(top: paddingTop),
-                      child: nextPages[2],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: paddingTop),
+                          child: SingleChildScrollView(
+                            child: nextPages[1],
+                          ),
+                        ),
+                      ],
                     ),
-                ],
+                    if (widget.isMember)
+                      Padding(
+                        padding: EdgeInsets.only(top: paddingTop),
+                        child: nextPages[2],
+                      ),
+                  ],
+                ),
               ),
             ),
             //* 앱 바
@@ -205,6 +205,17 @@ class _GroupDetailState extends State<GroupDetail> {
                   ? appbarList[watchGroupIndex(context)]
                   : AppBarWithBack(onPressedBack: () => onBackAction(context)),
             ),
+            //* 하단 바
+            Positioned(
+              top: getHeight(context) - bottomBarHeight,
+              child: GroupMainBottomBar(
+                bottomBarHeight: bottomBarHeight,
+                isMember: widget.isMember,
+                size: context.watch<GlobalGroupProvider>().bingoSize ??
+                    context.watch<GlobalBingoProvider>().bingoSize,
+                changeIndex: onPageChanged,
+              ),
+            ),
             //* 채팅창 이동 버튼
             if (watchMemberState(context) != 0)
               const CustomFloatingButton(page: GroupChat(), icon: chatIcon),
@@ -213,13 +224,12 @@ class _GroupDetailState extends State<GroupDetail> {
               CustomToast(content: watchToastString(context))
           ],
         ),
-        //* 하단 바
-        bottomNavigationBar: GroupMainBottomBar(
-          isMember: widget.isMember,
-          size: context.watch<GlobalGroupProvider>().bingoSize ??
-              context.watch<GlobalBingoProvider>().bingoSize,
-          changeIndex: onPageChanged,
-        ),
+        // bottomNavigationBar: GroupMainBottomBar(
+        //   isMember: widget.isMember,
+        //   size: context.watch<GlobalGroupProvider>().bingoSize ??
+        //       context.watch<GlobalBingoProvider>().bingoSize,
+        //   changeIndex: onPageChanged,
+        // ),
       ),
     );
   }

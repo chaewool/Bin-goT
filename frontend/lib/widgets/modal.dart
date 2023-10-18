@@ -465,98 +465,104 @@ class _RequestBingoModalState extends State<RequestBingoModal> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomModal(
-      backgroundColor: palePinkColor.withOpacity(0.65),
-      buttonText: '인증',
-      onPressed: sendCompleteMessage,
-      hasConfirm: true,
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const CustomText(
-          content: '인증하기',
-          fontSize: FontSize.largeSize,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: CustomText(
-            content: '총 달성 횟수 : ${widget.checkGoal}',
-            fontSize: FontSize.tinySize,
-            color: greyColor,
-          ),
-        ),
-        ColWithPadding(
-          vertical: 10,
-          horizontal: 30,
+        CustomModal(
+          backgroundColor: palePinkColor,
+          buttonText: '인증',
+          onPressed: sendCompleteMessage,
+          hasConfirm: true,
           children: [
-            const RowWithPadding(
-              vertical: 12,
-              children: [
-                CustomText(
-                  content: '인증 내용',
-                  fontSize: FontSize.smallSize,
-                ),
-                SizedBox(width: 5),
-                CustomText(
-                  content: '(필수)',
-                  fontSize: FontSize.tinySize,
-                  color: greyColor,
-                ),
-              ],
-            ),
-            CustomInput(
-              explain: '내용을 입력해주세요',
-              filled: true,
-              needMore: true,
-              height: 100,
-              fontSize: FontSize.textSize,
-              initialValue: data['content'],
-              setValue: (value) => data['content'] = value.trim(),
-            ),
-            const SizedBox(height: 10),
-            const RowWithPadding(
-              vertical: 12,
-              children: [
-                CustomText(
-                  content: '인증 사진',
-                  fontSize: FontSize.smallSize,
-                ),
-                SizedBox(width: 5),
-                CustomText(
-                  content: '(선택)',
-                  fontSize: FontSize.tinySize,
-                  color: greyColor,
-                ),
-              ],
+            const CustomText(
+              content: '인증하기',
+              fontSize: FontSize.largeSize,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: selectedImage == null
-                  ? CustomBoxContainer(
-                      borderRadius: BorderRadius.circular(4),
-                      onTap: requestImagePicker,
-                      borderColor: greyColor,
-                      hasRoundEdge: false,
-                      width: 270,
-                      height: 150,
-                      child: CustomIconButton(
-                        icon: addIcon,
-                        onPressed: requestImagePicker,
-                        color: greyColor,
-                      ),
-                    )
-                  : CustomBoxContainer(
-                      borderRadius: BorderRadius.circular(4),
-                      width: 270,
-                      height: 150,
-                      onTap: requestImagePicker,
-                      image: DecorationImage(
-                        fit: BoxFit.fitHeight,
-                        image: FileImage(File(selectedImage!.path)),
-                      ),
-                      child: CustomIconButton(
-                        onPressed: deleteImage,
-                        icon: closeIcon,
-                      ),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: CustomText(
+                content: '총 달성 횟수 : ${widget.checkGoal}',
+                fontSize: FontSize.tinySize,
+                color: greyColor,
+              ),
+            ),
+            ColWithPadding(
+              vertical: 10,
+              horizontal: 30,
+              children: [
+                const RowWithPadding(
+                  vertical: 12,
+                  children: [
+                    CustomText(
+                      content: '인증 내용',
+                      fontSize: FontSize.smallSize,
                     ),
+                    SizedBox(width: 5),
+                    CustomText(
+                      content: '(필수)',
+                      fontSize: FontSize.tinySize,
+                      color: greyColor,
+                    ),
+                  ],
+                ),
+                CustomInput(
+                  explain: '내용을 입력해주세요',
+                  filled: true,
+                  needMore: true,
+                  height: 100,
+                  fontSize: FontSize.textSize,
+                  initialValue: data['content'],
+                  setValue: (value) => data['content'] = value.trim(),
+                ),
+                const SizedBox(height: 10),
+                const RowWithPadding(
+                  vertical: 12,
+                  children: [
+                    CustomText(
+                      content: '인증 사진',
+                      fontSize: FontSize.smallSize,
+                    ),
+                    SizedBox(width: 5),
+                    CustomText(
+                      content: '(선택)',
+                      fontSize: FontSize.tinySize,
+                      color: greyColor,
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: selectedImage == null
+                      ? CustomBoxContainer(
+                          borderRadius: BorderRadius.circular(4),
+                          onTap: requestImagePicker,
+                          borderColor: greyColor,
+                          hasRoundEdge: false,
+                          width: 270,
+                          height: 150,
+                          child: CustomIconButton(
+                            icon: addIcon,
+                            onPressed: requestImagePicker,
+                            color: greyColor,
+                          ),
+                        )
+                      : CustomBoxContainer(
+                          borderRadius: BorderRadius.circular(4),
+                          width: 270,
+                          height: 150,
+                          onTap: requestImagePicker,
+                          image: DecorationImage(
+                            fit: BoxFit.fitHeight,
+                            image: FileImage(File(selectedImage!.path)),
+                          ),
+                          child: CustomIconButton(
+                            onPressed: deleteImage,
+                            icon: closeIcon,
+                          ),
+                        ),
+                ),
+              ],
             ),
           ],
         ),

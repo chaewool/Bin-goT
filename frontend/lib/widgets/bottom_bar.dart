@@ -21,16 +21,17 @@ class CustomNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final List<IconData> items;
   final void Function(int) changeIndex;
+  final double bottomBarHeight;
   const CustomNavigationBar({
     super.key,
     required this.selectedIndex,
     required this.items,
     required this.changeIndex,
+    required this.bottomBarHeight,
   });
 
   @override
   Widget build(BuildContext context) {
-    const double bottomBarHeight = 80;
     return CustomBoxContainer(
       height: bottomBarHeight,
       width: getWidth(context),
@@ -69,12 +70,14 @@ class GroupMainBottomBar extends StatelessWidget {
   final int? size, bingoId;
   final bool isMember;
   final void Function(int)? changeIndex;
+  final double bottomBarHeight;
   const GroupMainBottomBar({
     super.key,
     this.isMember = true,
     this.size,
     this.bingoId,
     this.changeIndex,
+    required this.bottomBarHeight,
   });
 
   @override
@@ -84,34 +87,33 @@ class GroupMainBottomBar extends StatelessWidget {
             changeIndex: changeIndex!,
             items: const [boardIcon, homeIcon, rankIcon],
             selectedIndex: watchGroupIndex(context),
+            bottomBarHeight: bottomBarHeight,
           )
-        : BottomAppBar(
-            child: GestureDetector(
-              onTap: () {
-                final bingoId = getBingoId(context);
-                if (bingoId != null && bingoId != 0) {
-                  setBingoId(context, 0);
-                }
-                jumpToOtherPage(
-                  context,
-                  page: BingoForm(
-                    bingoSize: size ?? 0,
-                    beforeJoin: true,
-                    needAuth: getNeedAuth(context) ?? true,
-                  ),
-                )();
-              },
-              child: CustomBoxContainer(
-                hasRoundEdge: false,
-                height: 80,
-                width: getWidth(context),
-                color: paleRedColor,
-                child: Center(
-                  child: CustomText(
-                    content:
-                        '빙고 만들고 가입${getNeedAuth(context) == true ? ' 신청' : ''}하기',
-                    color: whiteColor,
-                  ),
+        : GestureDetector(
+            onTap: () {
+              final bingoId = getBingoId(context);
+              if (bingoId != null && bingoId != 0) {
+                setBingoId(context, 0);
+              }
+              jumpToOtherPage(
+                context,
+                page: BingoForm(
+                  bingoSize: size ?? 0,
+                  beforeJoin: true,
+                  needAuth: getNeedAuth(context) ?? true,
+                ),
+              )();
+            },
+            child: CustomBoxContainer(
+              hasRoundEdge: false,
+              height: bottomBarHeight,
+              width: getWidth(context),
+              color: paleRedColor,
+              child: Center(
+                child: CustomText(
+                  content:
+                      '빙고 만들고 가입${getNeedAuth(context) == true ? ' 신청' : ''}하기',
+                  color: whiteColor,
                 ),
               ),
             ),

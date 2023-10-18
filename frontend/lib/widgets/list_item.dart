@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/input_password_page.dart';
@@ -112,7 +114,22 @@ class RankListItem extends StatelessWidget {
       );
     }
 
+    late Color backgroundColor;
+    late Color foregroundColor;
+    late Color textColor;
+
+    if (rankListItem.userId == getId(context)) {
+      backgroundColor = palePinkColor;
+      foregroundColor = whiteColor;
+      textColor = whiteColor;
+    } else {
+      backgroundColor = whiteColor;
+      foregroundColor = palePinkColor;
+      textColor = blackColor;
+    }
+
     return CustomList(
+      color: backgroundColor,
       innerHorizontal: 15,
       height: 70,
       border: true,
@@ -122,32 +139,36 @@ class RankListItem extends StatelessWidget {
         children: [
           CircleContainer(
             boxShadow: null,
-            color: palePinkColor,
+            color: foregroundColor,
             radius: 20,
             border: false,
             child: CustomText(
               content: '${rankListItem.rank != -1 ? rankListItem.rank : '-'}',
               fontSize: FontSize.largeSize,
-              color: whiteColor,
+              color: backgroundColor,
               bold: true,
             ),
           ),
-          CustomText(content: rankListItem.nickname),
-          if (rankListItem.userId == getId(context))
-            const CustomBoxContainer(
-              color: palePinkColor,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: CustomText(
-                  content: '내 순위',
-                  color: whiteColor,
-                  fontSize: FontSize.tinySize,
-                ),
-              ),
-            ),
+          CustomText(
+            content: rankListItem.nickname,
+            color: textColor,
+          ),
+          // if (rankListItem.userId == getId(context))
+          //   const CustomBoxContainer(
+          //     color: palePinkColor,
+          //     child: Padding(
+          //       padding: EdgeInsets.all(8.0),
+          //       child: CustomText(
+          //         content: '내 순위',
+          //         color: whiteColor,
+          //         fontSize: FontSize.tinySize,
+          //       ),
+          //     ),
+          //   ),
           CustomText(
             content: '${(rankListItem.achieve * 100).toInt()}%',
             fontSize: FontSize.smallSize,
+            color: textColor,
           )
         ],
       ),
@@ -283,6 +304,13 @@ class _ChatListItemState extends State<ChatListItem> {
                         ? Stack(
                             children: [
                               CustomList(
+                                width: widget.data.hasImage == true
+                                    ? getWidth(context) * 3 / 5
+                                    : min(
+                                        getWidth(context) * 3 / 5,
+                                        widget.data.content!.length.toDouble() *
+                                            20,
+                                      ),
                                 vertical: 0,
                                 innerHorizontal: 20,
                                 color: isMine
@@ -297,9 +325,9 @@ class _ChatListItemState extends State<ChatListItem> {
                                       Padding(
                                         padding:
                                             const EdgeInsets.only(bottom: 10),
-                                        child: CustomText(
+                                        child: CustomLongText(
                                           content: widget.data.title,
-                                          color: blackColor,
+                                          hasContent: true,
                                         ),
                                       ),
                                     if (widget.data.hasImage == true)
@@ -325,15 +353,10 @@ class _ChatListItemState extends State<ChatListItem> {
                                         ),
                                       ),
                                     if (widget.data.content != null)
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 5,
-                                        ),
-                                        child: CustomText(
-                                          content: widget.data.content!,
-                                          fontSize: FontSize.textSize,
-                                          color: whiteColor,
-                                        ),
+                                      CustomLongText(
+                                        content: widget.data.content!,
+                                        color: whiteColor,
+                                        hasContent: true,
                                       ),
                                     if (widget.data.itemId != -1 && !reviewed)
                                       Center(
