@@ -114,7 +114,7 @@ class _SearchState extends State<Search> {
         initial = false;
       });
     }
-    setLastId(context, 0, 0);
+    // setLastId(context, 0, 0);
     GroupProvider()
         .searchGroupList(
       keyword: keyword['value'],
@@ -258,38 +258,52 @@ class _SearchState extends State<Search> {
                         vertical: 20,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const CustomText(
-                            content: '시작일 기준',
-                            fontSize: FontSize.smallSize,
-                            bold: true,
-                          ),
-                          CustomBoxContainer(
-                            color: transparentColor,
-                            onTap: () => changeSort(1 - sortIdx),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: CustomText(
-                                content: sortIdx == 0 ? '오름차순' : '내림차순',
-                                fontSize: FontSize.smallSize,
-                              ),
+                          Flexible(
+                            flex: 4,
+                            child: Row(
+                              children: [
+                                const CustomText(
+                                  content: '시작일 기준',
+                                  fontSize: FontSize.smallSize,
+                                  bold: true,
+                                ),
+                                Expanded(
+                                  child: CustomBoxContainer(
+                                    color: transparentColor,
+                                    onTap: () => changeSort(1 - sortIdx),
+                                    child: Center(
+                                      child: CustomText(
+                                        content: sortIdx == 0 ? '오름차순' : '내림차순',
+                                        fontSize: FontSize.smallSize,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const CustomText(
-                            content: '공개 여부',
-                            fontSize: FontSize.smallSize,
-                            bold: true,
-                          ),
-                          CustomBoxContainer(
-                            color: transparentColor,
-                            onTap: () => changePublicPrivate(),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: CustomText(
-                                content: publicFilter[publicIndex],
-                                fontSize: FontSize.smallSize,
-                              ),
+                          Flexible(
+                            flex: 3,
+                            child: Row(
+                              children: [
+                                const CustomText(
+                                  content: '공개 여부',
+                                  fontSize: FontSize.smallSize,
+                                  bold: true,
+                                ),
+                                Expanded(
+                                  child: CustomBoxContainer(
+                                    color: transparentColor,
+                                    onTap: () => changePublicPrivate(),
+                                    child: Center(
+                                      child: CustomText(
+                                        content: publicFilter[publicIndex],
+                                        fontSize: FontSize.smallSize,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

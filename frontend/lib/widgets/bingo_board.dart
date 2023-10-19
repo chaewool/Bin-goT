@@ -87,8 +87,7 @@ class _BingoBoardState extends State<BingoBoard> {
 //* 빙고칸
 class EachBingo extends StatelessWidget {
   final bool isDetail;
-  final int index;
-  final int size;
+  final int index, size;
 
   const EachBingo({
     super.key,
