@@ -383,7 +383,7 @@ class BoardUpdateView(APIView):
         board = Board.objects.get(id=board_id)
         group = board.group
         thumbnail = request.FILES.get('thumbnail')
-        data = request.data.dict()
+        data = json.loads(request.data.get('data'))
         
         if not Board.objects.filter(user=user, group=group).exists():
             return Response(data={'message': '참여하지 않은 그룹입니다.'}, status=status.HTTP_400_BAD_REQUEST)
