@@ -208,7 +208,7 @@ class UrlClass extends DioClass {
       '${_groupDetailUrl(groupId)}review/check/';
 
   //! bingo
-  static const _bingoUrl = '/boards';
+  static const _bingoUrl = 'boards';
   //* CRUD
   String _bingoDetailUrl(int groupId, int bingoId) =>
       '${_groupDetailUrl(groupId)}$_bingoUrl/$bingoId/';

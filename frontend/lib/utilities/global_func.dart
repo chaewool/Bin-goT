@@ -174,7 +174,7 @@ ReturnVoid toOtherPageWithAnimation(BuildContext context,
             return SlideTransition(
               position: animation.drive(
                 Tween(
-                  begin: const Offset(1.0, 0),
+                  begin: const Offset(1, 0),
                   end: Offset.zero,
                 ).chain(
                   CurveTween(curve: Curves.ease),
@@ -183,12 +183,7 @@ ReturnVoid toOtherPageWithAnimation(BuildContext context,
               child: child,
             );
           },
-          // 함수를 통해 Widget을 pageBuilder에 맞는 형태로 반환하게 해야한다.
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              // (DetailScreen은 Stateless나 Stateful 위젯으로된 화면임)
-              page,
-          // 이것을 true로 하면 dialog로 취급한다.
-          // 기본값은 false
+          pageBuilder: (context, animation, secondaryAnimation) => page,
           fullscreenDialog: false,
         ),
       );
@@ -455,8 +450,8 @@ void setChat(BuildContext context, String value) =>
 
 List getRank(BuildContext context) => context.read<GlobalGroupProvider>().rank;
 
-PageController getPageController(BuildContext context) =>
-    context.read<GlobalGroupProvider>().pageController!;
+// PageController getPageController(BuildContext context) =>
+//     context.read<GlobalGroupProvider>().pageController!;
 
 void setPeriod(BuildContext context, String newStart, String newEnd) =>
     context.read<GlobalGroupProvider>().setPeriod(newStart, newEnd);

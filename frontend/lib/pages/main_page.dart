@@ -69,18 +69,21 @@ class _MainState extends State<Main> {
         //* 화면
         body: Stack(
           children: [
-            PageView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: pageController,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.only(
-                    top: getStatusBarHeight(context),
-                  ),
-                  child: nextPages[index],
-                );
-              },
+            Padding(
+              padding: EdgeInsets.only(bottom: bottomBarHeight),
+              child: PageView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                controller: pageController,
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      top: getStatusBarHeight(context),
+                    ),
+                    child: nextPages[index],
+                  );
+                },
+              ),
             ),
             if (selectedIndex == 1)
               const CustomFloatingButton(page: GroupForm(), icon: addIcon),

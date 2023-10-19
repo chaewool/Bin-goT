@@ -153,200 +153,201 @@ class _SearchState extends State<Search> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: unfocus,
-      child: CustomBoxContainer(
-        gradient: const LinearGradient(colors: [palePinkColor, paleRedColor]),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(10),
-          bottomRight: Radius.circular(10),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: CustomIconButton(
-                      onPressed: () => changeShowSearchBar(!showSearchBar),
-                      icon: showSearchBar
-                          ? Icons.keyboard_arrow_up_outlined
-                          : Icons.keyboard_arrow_down_outlined,
-                    ),
-                  ),
-                  Expanded(
-                    child: CustomInput(
-                      explain: '그룹명을 입력하세요',
-                      setValue: (value) {
-                        keyword['value'] = value;
-                      },
-                      fontSize: FontSize.textSize,
-                      initialValue: keyword['value'],
-                      needSearch: true,
-                      onSubmitted: (_) => onSearchAction(),
-                      suffixIcon: CustomIconButton(
-                        icon: searchIcon,
-                        color: greyColor,
-                        onPressed: onSearchAction,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+      child: Column(
+        children: [
+          CustomBoxContainer(
+            gradient:
+                const LinearGradient(colors: [palePinkColor, paleRedColor]),
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10),
             ),
-            if (showSearchBar)
-              ColWithPadding(
-                horizontal: 20,
-                children: [
-                  searchOptions(
-                    '기간 선택',
-                    Column(
-                      children: [
-                        SliderTheme(
-                          data: SliderThemeData(
-                            overlayShape: SliderComponentShape.noOverlay,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: CustomBoxContainer(
-                              color: transparentColor,
-                              width: getWidth(context) - 150,
-                              child: Slider(
-                                activeColor: whiteColor,
-                                thumbColor: whiteColor,
-                                inactiveColor: whiteColor.withOpacity(0.5),
-                                min: 0,
-                                max: 5,
-                                divisions: 5,
-                                value: index,
-                                onChanged: (value) {
-                                  setState(() {
-                                    index = value;
-                                  });
-                                },
-                              ),
-                            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: CustomIconButton(
+                          onPressed: () => changeShowSearchBar(!showSearchBar),
+                          icon: showSearchBar
+                              ? Icons.keyboard_arrow_up_outlined
+                              : Icons.keyboard_arrow_down_outlined,
+                        ),
+                      ),
+                      Expanded(
+                        child: CustomInput(
+                          explain: '그룹명을 입력하세요',
+                          setValue: (value) {
+                            keyword['value'] = value;
+                          },
+                          fontSize: FontSize.textSize,
+                          initialValue: keyword['value'],
+                          needSearch: true,
+                          onSubmitted: (_) => onSearchAction(),
+                          suffixIcon: CustomIconButton(
+                            icon: searchIcon,
+                            color: greyColor,
+                            onPressed: onSearchAction,
                           ),
                         ),
-                        if (index != 0)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: CustomText(
-                              content: index.toInt() != 0
-                                  ? period[index.toInt()]
-                                  : '',
-                              fontSize: FontSize.smallSize,
-                            ),
-                          ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                if (showSearchBar)
+                  ColWithPadding(
+                    horizontal: 20,
                     children: [
-                      Flexible(
-                        flex: 4,
-                        child: searchOptions(
-                          '시작일 기준',
+                      RowWithPadding(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        vertical: 12,
+                        children: [
+                          const CustomText(
+                            content: '기간 선택',
+                            fontSize: FontSize.smallSize,
+                            bold: true,
+                          ),
+                          Column(
+                            children: [
+                              SliderTheme(
+                                data: SliderThemeData(
+                                  overlayShape: SliderComponentShape.noOverlay,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: CustomBoxContainer(
+                                    color: transparentColor,
+                                    width: getWidth(context) - 150,
+                                    child: Slider(
+                                      activeColor: whiteColor,
+                                      thumbColor: whiteColor,
+                                      inactiveColor:
+                                          whiteColor.withOpacity(0.5),
+                                      min: 0,
+                                      max: 5,
+                                      divisions: 5,
+                                      value: index,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          index = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              if (index != 0)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: CustomText(
+                                    content: index.toInt() != 0
+                                        ? period[index.toInt()]
+                                        : '',
+                                    fontSize: FontSize.smallSize,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      RowWithPadding(
+                        vertical: 20,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const CustomText(
+                            content: '시작일 기준',
+                            fontSize: FontSize.smallSize,
+                            bold: true,
+                          ),
                           CustomBoxContainer(
                             color: transparentColor,
                             onTap: () => changeSort(1 - sortIdx),
                             child: Padding(
-                              padding: const EdgeInsets.only(right: 20),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               child: CustomText(
                                 content: sortIdx == 0 ? '오름차순' : '내림차순',
                                 fontSize: FontSize.smallSize,
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 3,
-                        child: searchOptions(
-                          '공개 여부',
+                          const CustomText(
+                            content: '공개 여부',
+                            fontSize: FontSize.smallSize,
+                            bold: true,
+                          ),
                           CustomBoxContainer(
                             color: transparentColor,
                             onTap: () => changePublicPrivate(),
                             child: Padding(
-                              padding: const EdgeInsets.only(right: 20),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               child: CustomText(
                                 content: publicFilter[publicIndex],
                                 fontSize: FontSize.smallSize,
                               ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                      RowWithPadding(
+                        vertical: 10,
+                        horizontal: 20,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          index != 0 || keyword['value'] != ''
+                              ? Expanded(
+                                  child: CustomButton(
+                                    color: whiteColor,
+                                    onPressed: onSearchAction,
+                                    content: '검색',
+                                  ),
+                                )
+                              : const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: CustomText(
+                                    content: '그룹명을 입력하거나, 기간을 선택해주세요',
+                                    fontSize: FontSize.smallSize,
+                                    color: whiteColor,
+                                  ),
+                                ),
+                        ],
                       ),
                     ],
                   ),
-                  RowWithPadding(
-                    vertical: 10,
-                    horizontal: 20,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      index != 0 || keyword['value'] != ''
-                          ? Expanded(
-                              child: CustomButton(
-                                color: whiteColor,
-                                onPressed: onSearchAction,
-                                content: '검색',
-                              ),
-                            )
-                          : const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10),
-                              child: CustomText(
-                                content: '그룹명을 입력하거나, 기간을 선택해주세요',
-                                fontSize: FontSize.smallSize,
-                                color: whiteColor,
-                              ),
-                            ),
-                    ],
-                  ),
-                ],
-              ),
-            Expanded(
-              child: GroupInfiniteScroll(
-                controller: controller,
-                data: groups,
-                mode: 0,
-                emptyWidget: Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      initial
-                          ? const SizedBox()
-                          : const CustomText(
-                              center: true,
-                              content:
-                                  '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
-                              height: 1.5,
-                            ),
-                    ],
-                  ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GroupInfiniteScroll(
+              controller: controller,
+              data: groups,
+              mode: 0,
+              emptyWidget: Padding(
+                padding: const EdgeInsets.only(top: 40),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    initial
+                        ? const SizedBox()
+                        : const CustomText(
+                            center: true,
+                            content:
+                                '조건에 맞는 그룹이 없어요.\n다른 그룹을 검색하거나\n그룹을 생성해보세요.',
+                            height: 1.5,
+                          ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
-
-  RowWithPadding searchOptions(String optionTitle, Widget child) {
-    return RowWithPadding(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      vertical: 12,
-      children: [
-        CustomText(
-          content: optionTitle,
-          fontSize: FontSize.smallSize,
-          bold: true,
-        ),
-        child
-      ],
     );
   }
 }

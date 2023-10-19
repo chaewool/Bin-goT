@@ -77,7 +77,8 @@ class BingoGallery extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: CustomBoxContainer(
-          color: greyColor.withOpacity(0.5),
+          // color: greyColor.withOpacity(0.3),
+          borderColor: greyColor,
           child: ColWithPadding(
             vertical: 8,
             horizontal: 10,

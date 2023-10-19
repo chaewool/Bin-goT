@@ -10,8 +10,10 @@ import 'package:provider/provider.dart';
 //? 그룹 내 달성률 순위
 
 class GroupRank extends StatelessWidget {
+  final void Function(int) changeIndex;
   const GroupRank({
     super.key,
+    required this.changeIndex,
   });
 
   @override
@@ -27,6 +29,7 @@ class GroupRank extends StatelessWidget {
                 itemBuilder: (context, index) => RankListItem(
                   rankListItem:
                       context.watch<GlobalGroupProvider>().rankList[index],
+                  changeIndex: changeIndex,
                 ),
               )
             : const CustomCirCularIndicator(),
