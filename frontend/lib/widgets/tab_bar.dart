@@ -458,9 +458,13 @@ class _MainTabBarState extends State<MainTabBar> {
     }).then((groupData) {
       setState(() {
         if (groupData.groups.isNotEmpty) {
-          groupTabData.addAll(groupData.groups);
+          setState(() {
+            groupTabData.addAll(groupData.groups);
+          });
         }
-        hasNotGroup = groupData.hasNotGroup;
+        setState(() {
+          hasNotGroup = groupData.hasNotGroup;
+        });
       });
       setLoading(context, false);
       if (more) {

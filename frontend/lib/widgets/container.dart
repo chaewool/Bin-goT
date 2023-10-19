@@ -3,10 +3,10 @@ import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
-import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //? 컨테이너 응용
 
@@ -89,12 +89,8 @@ class BingoGallery extends StatelessWidget {
                 child: CustomBoxContainer(
                   width: (getWidth(context) - 60) / 2,
                   height: (getWidth(context) - 60) / 2,
-                  child: CustomCachedNetworkImage(
-                    path: '/boards/${bingo.id}',
-                    placeholder: const CustomBoxContainer(
-                      color: whiteColor,
-                    ),
-                  ),
+                  child: Image.network(
+                      '${dotenv.env['fileUrl']}/boards/${bingo.id}'),
                 ),
               ),
               Padding(

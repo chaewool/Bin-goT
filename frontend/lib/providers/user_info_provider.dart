@@ -68,7 +68,8 @@ class UserInfoProvider extends ApiProvider {
   }
 
   Future<MainGroupListModel> _getMainGroupData(
-      DynamicMap queryParameters) async {
+    DynamicMap queryParameters,
+  ) async {
     try {
       final response = await dioWithToken()
           .get(mainGroupTabUrl, queryParameters: queryParameters);

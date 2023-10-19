@@ -30,7 +30,7 @@ class GroupProvider extends ApiProvider {
       List groups = response.data['groups'];
       MyGroupList groupList;
       if (groups.isNotEmpty) {
-        groupList = response.data['groups']
+        groupList = groups
             .map<MyGroupModel>((json) => MyGroupModel.fromJson(json))
             .toList();
 
