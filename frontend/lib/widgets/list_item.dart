@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bin_got/models/group_model.dart';
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/input_password_page.dart';
@@ -95,24 +97,42 @@ class GroupListItem extends StatelessWidget {
 //* 순위 목록
 class RankListItem extends StatelessWidget {
   final GroupRankModel rankListItem;
+  final void Function(int) changeIndex;
   const RankListItem({
     super.key,
     required this.rankListItem,
+    required this.changeIndex,
   });
 
   @override
   Widget build(BuildContext context) {
     void toBingoDetail() {
       setBingoId(context, rankListItem.bingoId);
-      changeGroupIndex(context, 0);
-      getPageController(context).animateToPage(
-        0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.ease,
-      );
+      changeIndex(0);
+      // changeGroupIndex(context, 0);
+      // getPageController(context).animateToPage(
+      //   0,
+      //   duration: const Duration(milliseconds: 500),
+      //   curve: Curves.ease,
+      // );
+    }
+
+    late Color backgroundColor;
+    late Color foregroundColor;
+    late Color textColor;
+
+    if (rankListItem.userId == getId(context)) {
+      backgroundColor = palePinkColor;
+      foregroundColor = whiteColor;
+      textColor = whiteColor;
+    } else {
+      backgroundColor = whiteColor;
+      foregroundColor = palePinkColor;
+      textColor = blackColor;
     }
 
     return CustomList(
+      color: backgroundColor,
       innerHorizontal: 15,
       height: 70,
       border: true,
@@ -122,20 +142,36 @@ class RankListItem extends StatelessWidget {
         children: [
           CircleContainer(
             boxShadow: null,
-            color: palePinkColor,
+            color: foregroundColor,
             radius: 20,
             border: false,
             child: CustomText(
               content: '${rankListItem.rank != -1 ? rankListItem.rank : '-'}',
               fontSize: FontSize.largeSize,
-              color: whiteColor,
+              color: backgroundColor,
               bold: true,
             ),
           ),
-          CustomText(content: rankListItem.nickname),
+          CustomText(
+            content: rankListItem.nickname,
+            color: textColor,
+          ),
+          // if (rankListItem.userId == getId(context))
+          //   const CustomBoxContainer(
+          //     color: palePinkColor,
+          //     child: Padding(
+          //       padding: EdgeInsets.all(8.0),
+          //       child: CustomText(
+          //         content: '내 순위',
+          //         color: whiteColor,
+          //         fontSize: FontSize.tinySize,
+          //       ),
+          //     ),
+          //   ),
           CustomText(
             content: '${(rankListItem.achieve * 100).toInt()}%',
             fontSize: FontSize.smallSize,
+            color: textColor,
           )
         ],
       ),
@@ -201,7 +237,45 @@ class ChatListItem extends StatefulWidget {
 }
 
 class _ChatListItemState extends State<ChatListItem> {
-  late bool isMine = widget.data.userId == getId(context);
+  late bool isMine;
+  double textWidth = 100;
+  late bool reviewed;
+  final textKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    reviewed = widget.data.reviewed;
+    isMine = widget.data.userId == getId(context);
+    TextPainter textPainter = TextPainter()
+      ..text = TextSpan(
+        text: widget.data.content,
+        style: const TextStyle(fontSize: smallSize),
+      )
+      ..textDirection = TextDirection.ltr
+      ..layout(minWidth: 0, maxWidth: double.infinity);
+    print(
+        'content => ${widget.data.content} width => ${textPainter.size.width}');
+    setState(() {
+      textWidth = textPainter.size.width;
+    });
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   // print(getWidth(context)); 360
+
+    //   if (textKey.currentContext != null) {
+    //     print('not null');
+    //     final renderBox =
+    //         textKey.currentContext!.findRenderObject() as RenderBox;
+    //     print(
+    //         'content => ${widget.data.content} width => ${renderBox.size.width}');
+    //     setState(() {
+    //       textWidth = renderBox.size.width;
+    //     });
+    //   }
+    // });
+  }
+
   void confirmMessage() async {
     if (isMine) {
       showAlert(context, title: '인증 불가', content: '자신의 채팅에 인증 확인할 수 없습니다')();
@@ -211,7 +285,6 @@ class _ChatListItemState extends State<ChatListItem> {
     }
   }
 
-  late bool reviewed = widget.data.reviewed;
   void changeReviewed() {
     if (!reviewed) {
       setState(() {
@@ -271,6 +344,12 @@ class _ChatListItemState extends State<ChatListItem> {
                         ? Stack(
                             children: [
                               CustomList(
+                                width: widget.data.hasImage == true
+                                    ? getWidth(context) / 2
+                                    : min(
+                                        getWidth(context) / 2,
+                                        textWidth * 1.4 + 40,
+                                      ),
                                 vertical: 0,
                                 innerHorizontal: 20,
                                 color: isMine
@@ -287,7 +366,6 @@ class _ChatListItemState extends State<ChatListItem> {
                                             const EdgeInsets.only(bottom: 10),
                                         child: CustomText(
                                           content: widget.data.title,
-                                          color: blackColor,
                                         ),
                                       ),
                                     if (widget.data.hasImage == true)
@@ -313,15 +391,12 @@ class _ChatListItemState extends State<ChatListItem> {
                                         ),
                                       ),
                                     if (widget.data.content != null)
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 5,
-                                        ),
-                                        child: CustomText(
-                                          content: widget.data.content!,
-                                          fontSize: FontSize.textSize,
-                                          color: whiteColor,
-                                        ),
+                                      CustomText(
+                                        key: textKey,
+                                        content: widget.data.content!,
+                                        color: whiteColor,
+                                        fontSize: FontSize.smallSize,
+                                        height: 1.4,
                                       ),
                                     if (widget.data.itemId != -1 && !reviewed)
                                       Center(
@@ -366,7 +441,7 @@ class _ChatListItemState extends State<ChatListItem> {
                                 ),
                               ),
                               widget: widget,
-                              height: 250,
+                              // height: 250,
                             ),
                           ),
                     if (!isMine)
@@ -398,8 +473,7 @@ class _ChatListItemState extends State<ChatListItem> {
 //* 채팅 이미지
 class ChatImage extends StatelessWidget {
   final ChatListItem widget;
-  final double height;
-  final double? width;
+  final double? width, height;
   final ReturnVoid? onTap;
   final bool transparent;
   final bool hasRoundEdge;
@@ -407,7 +481,7 @@ class ChatImage extends StatelessWidget {
   const ChatImage({
     super.key,
     required this.widget,
-    required this.height,
+    this.height,
     this.hasRoundEdge = true,
     this.width,
     this.onTap,
@@ -418,9 +492,10 @@ class ChatImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final CustomCachedNetworkImage networkImage = CustomCachedNetworkImage(
       path: '/chats/${getGroupId(context)}/${widget.data.id}',
-      width: width ?? 50,
-      height: height,
+      width: width ?? 120,
+      height: height ?? 120,
     );
+    // print('networkImage => $networkImage');
     return CustomBoxContainer(
       color: transparent ? transparentColor : blackColor.withOpacity(0.8),
       width: width,
@@ -428,9 +503,7 @@ class ChatImage extends StatelessWidget {
       onTap: onTap,
       child: hasRoundEdge
           ? ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: networkImage,
-            )
+              borderRadius: BorderRadius.circular(8), child: networkImage)
           : CustomBoxContainer(child: networkImage),
     );
   }

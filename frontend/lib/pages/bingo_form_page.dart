@@ -57,10 +57,10 @@ class _BingoFormState extends State<BingoForm> {
     super.initState();
     size = widget.bingoSize;
     //* 생성, 수정 분기 처리
-    if (getBingoId(context) == null || getBingoId(context) == 0) {
-      initBingoFormData(context, false);
-    } else {
+    if (getBingoId(context) != null && getBingoId(context) != 0) {
       initBingoFormData(context, true);
+    } else if (widget.beforeJoin) {
+      initBingoFormData(context, false);
     }
     //* items
     if (getItems(context, false).isEmpty) {
@@ -82,17 +82,18 @@ class _BingoFormState extends State<BingoForm> {
   }
 
   //* 빙고 생성/수정
-  void createOrEditBingo() async {
+  void createOrEditBingo() {
     try {
       //* 변경된 부분이 있는 경우
       if (changed) {
+        print('변경됨!!!!!');
         final data = getBingoData(context, false);
         //* 제목
         if (data['title'] == null) {
           return showAlert(
             context,
             title: '필수 항목 누락',
-            content: '빙고명을 입력해주세요',
+            content: '빙고판 제목을 입력해주세요',
             hasCancel: false,
           )();
         }
@@ -138,6 +139,7 @@ class _BingoFormState extends State<BingoForm> {
         }
 
         //* 썸네일 생성 후 작업 요청
+        // setIsCheckTheme(context, false).then((_) {
         bingoToThumb().then((_) {
           final bingoId = getBingoId(context);
           //* 빙고 생성
@@ -145,6 +147,7 @@ class _BingoFormState extends State<BingoForm> {
             widget.beforeJoin ? joinGroup(data) : createGroup(data);
           } else {
             //* 빙고 수정
+            print(data);
             final bingoData = FormData.fromMap({
               'data': jsonEncode(data),
               'thumbnail': MultipartFile.fromBytes(
@@ -171,6 +174,10 @@ class _BingoFormState extends State<BingoForm> {
           showSpinner(context, false);
           showErrorModal(context, '빙고 생성/수정 오류', '빙고 생성/수정에 실패했습니다.');
         });
+        // }).catchError((_) {
+        //   showSpinner(context, false);
+        //   showErrorModal(context, '빙고 생성/수정 오류', '빙고 생성/수정에 실패했습니다.');
+        // });
         //* 변경되지 않은 경우
       } else {
         return showAlert(
@@ -186,7 +193,7 @@ class _BingoFormState extends State<BingoForm> {
 
   //* 빙고 썸네일 생성
   FutureBool bingoToThumb() async {
-    var renderObject = globalKey.currentContext?.findRenderObject();
+    final renderObject = globalKey.currentContext?.findRenderObject();
     if (renderObject is RenderRepaintBoundary) {
       final image = await renderObject.toImage();
       final byteData = await image.toByteData(format: ImageByteFormat.png);
@@ -216,6 +223,7 @@ class _BingoFormState extends State<BingoForm> {
             : null,
       });
       showSpinner(context, true);
+
       GroupProvider().createOwnGroup(formData).then((groupId) {
         afterWork('그룹 생성이 완료되었습니다.', 1, () {
           changePrev(context, true);
@@ -259,8 +267,8 @@ class _BingoFormState extends State<BingoForm> {
         ),
       });
       showSpinner(context, true);
+
       GroupProvider().joinGroup(groupId, formData).then((data) {
-        showSpinner(context, false);
         //* 가입 승인 필요 시
         if (getNeedAuth(context) == true) {
           afterWork('가입 신청되었습니다.\n그룹장의 승인 후 가입됩니다.', 1, () {
@@ -293,160 +301,184 @@ class _BingoFormState extends State<BingoForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          CustomBoxContainer(
-            hasRoundEdge: false,
-            width: getWidth(context),
-            height: getHeight(context),
-            color: whiteColor,
-            image: watchBackground(context, false) != null
-                ? DecorationImage(
-                    image: AssetImage(
-                        backgroundList[watchBackground(context, false)!]),
-                    fit: BoxFit.fitHeight,
-                  )
-                : null,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 75),
-              child: ColWithPadding(
-                horizontal: 10,
-                vertical: 5,
-                children: [
-                  //* 빙고명 라벨 & 입력창
-                  Flexible(
-                    flex: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
-                      child: Column(
-                        children: [
-                          const Row(
-                            children: [
-                              CustomText(content: '빙고명'),
-                              SizedBox(width: 5),
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    CustomText(
-                                      content: '(필수)',
-                                      fontSize: FontSize.tinySize,
-                                      color: greyColor,
-                                    ),
-                                    CustomText(
-                                      content: '시작일 전 수정 가능',
-                                      fontSize: FontSize.tinySize,
-                                      color: greyColor,
-                                    ),
-                                  ],
+    return WillPopScope(
+      onWillPop: widget.beforeJoin
+          ? () => onBackAction(context)
+          : () {
+              toBack(context);
+              return Future.value(true);
+            },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            CustomBoxContainer(
+              onTap: unfocus,
+              hasRoundEdge: false,
+              width: getWidth(context),
+              height: getHeight(context),
+              color: whiteColor,
+              image: watchBackground(context, false) != null
+                  ? DecorationImage(
+                      image: AssetImage(
+                          backgroundList[watchBackground(context, false)!]),
+                      fit: BoxFit.fitHeight,
+                    )
+                  : null,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 75),
+                child: ColWithPadding(
+                  horizontal: 10,
+                  vertical: 5,
+                  children: [
+                    //* 빙고판 제목
+                    Flexible(
+                      flex: 5,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                        child: Column(
+                          children: [
+                            const Row(
+                              children: [
+                                CustomText(content: '빙고판 제목'),
+                                SizedBox(width: 5),
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      CustomText(
+                                        content: '(필수)',
+                                        fontSize: FontSize.tinySize,
+                                        color: greyColor,
+                                      ),
+                                      CustomText(
+                                        content: '시작일 전 수정 가능',
+                                        fontSize: FontSize.tinySize,
+                                        color: greyColor,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          CustomInput(
-                            filled: true,
-                            explain: '빙고명을 입력해주세요',
-                            setValue: (value) =>
-                                setOption(context, 'title', value),
-                            initialValue: watchTitle(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  //* 빙고판 라벨 & 빙고판
-                  Flexible(
-                    flex: 12,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 5),
-                      child: Column(
-                        children: [
-                          const Row(
-                            children: [
-                              CustomText(content: '빙고판'),
-                              SizedBox(width: 5),
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    CustomText(
-                                      content: '(필수)',
-                                      fontSize: FontSize.tinySize,
-                                      color: greyColor,
-                                    ),
-                                    CustomText(
-                                      content: '시작일 전 수정 가능',
-                                      fontSize: FontSize.tinySize,
-                                      color: greyColor,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Expanded(
-                            child: RepaintBoundary(
-                              key: globalKey,
-                              child: BingoBoard(
-                                isDetail: false,
-                                bingoSize: size,
-                              ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  //* 빙고 설정 변경 탭 바
-                  const Flexible(flex: 9, child: BingoTabBar()),
-
-                  Flexible(
-                    flex: 2,
-                    child: Row(children: [
-                      Expanded(
-                        child: CustomButton(
-                          onPressed: createOrEditBingo,
-                          content: widget.beforeJoin ? '가입 신청' : '완료',
-                          fontSize: FontSize.textSize,
-                          textColor: whiteColor,
-                          color: paleRedColor,
+                            const SizedBox(height: 10),
+                            CustomInput(
+                              filled: true,
+                              explain: '빙고판 제목을 입력해주세요',
+                              setValue: (value) =>
+                                  setOption(context, 'title', value),
+                              initialValue: watchTitle(context),
+                            ),
+                          ],
                         ),
                       ),
-                    ]),
-                  )
-                ],
-              ),
-            ),
-          ),
-          //* 앱바
-          const CustomBoxContainer(
-            color: transparentColor,
-            height: 70,
-            child: AppBarWithBack(transparent: true),
-          ),
+                    ),
 
-          //* 스피너
-          if (watchSpinner(context))
-            CustomBoxContainer(
-              color: blackColor.withOpacity(0.4),
-              child: const Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [CustomCirCularIndicator()],
+                    //* 빙고판 라벨 & 빙고판
+                    Flexible(
+                      flex: 12,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 5),
+                        child: Column(
+                          children: [
+                            const Row(
+                              children: [
+                                CustomText(content: '빙고판'),
+                                SizedBox(width: 5),
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      CustomText(
+                                        content: '(필수)',
+                                        fontSize: FontSize.tinySize,
+                                        color: greyColor,
+                                      ),
+                                      CustomText(
+                                        content: '시작일 전 수정 가능',
+                                        fontSize: FontSize.tinySize,
+                                        color: greyColor,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Row(
+                                children: [
+                                  CustomText(
+                                    content: '- 빙고 칸을 눌러 내용을 작성/수정할 수 있습니다.',
+                                    fontSize: FontSize.tinySize,
+                                    color: greyColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: RepaintBoundary(
+                                key: globalKey,
+                                child: BingoBoard(
+                                  isDetail: false,
+                                  bingoSize: size,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    //* 빙고 설정 변경 탭 바
+                    const Flexible(flex: 9, child: BingoTabBar()),
+
+                    Flexible(
+                      flex: 2,
+                      child: Row(children: [
+                        Expanded(
+                          child: CustomButton(
+                            onPressed: createOrEditBingo,
+                            content: widget.beforeJoin ? '가입 신청' : '완료',
+                            fontSize: FontSize.textSize,
+                            textColor: whiteColor,
+                            color: paleRedColor,
+                          ),
+                        ),
+                      ]),
+                    )
+                  ],
+                ),
               ),
             ),
-          //* 토스트
-          if (watchAfterWork(context))
-            CustomToast(content: watchToastString(context))
-        ],
+            //* 앱바
+            CustomBoxContainer(
+              color: transparentColor,
+              height: 70,
+              child: AppBarWithBack(
+                transparent: true,
+                onPressedBack: () =>
+                    widget.beforeJoin ? onBackAction(context) : toBack(context),
+              ),
+            ),
+
+            //* 스피너
+            if (watchSpinner(context))
+              CustomBoxContainer(
+                color: blackColor.withOpacity(0.4),
+                child: const Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [CustomCirCularIndicator()],
+                ),
+              ),
+            //* 토스트
+            if (watchAfterWork(context))
+              CustomToast(content: watchToastString(context))
+          ],
+        ),
       ),
     );
   }

@@ -180,8 +180,7 @@ class FCM {
               AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(channelHigh);
 
-      const android =
-          AndroidInitializationSettings('@drawable/ic_notifications_icon');
+      const android = AndroidInitializationSettings('@mipmap/ic_launcher');
       const iOS = DarwinInitializationSettings();
       const initSettings = InitializationSettings(android: android, iOS: iOS);
 

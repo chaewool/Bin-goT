@@ -96,8 +96,10 @@ class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
 
 //* group main
 class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final bool enableAdmin;
   const GroupAppBar({
     super.key,
+    this.enableAdmin = true,
   });
 
   @override
@@ -128,34 +130,39 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBarWithBack(
       transparent: true,
       onPressedBack: () => onBackAction(context),
-      actions: [
-        if (watchMemberState(context) == 2)
-          IconButtonInRow(
-            icon: settingsIcon,
-            onPressed: toOtherPageWithAnimation(
-              context,
-              page: GroupAdmin(groupId: groupId),
-            ),
-          ),
-        if ((watchMemberState(context) != 0) && onGoing(context) == false)
-          IconButtonInRow(
-            icon: shareIcon,
-            onPressed: () => shareGroup(
-              groupId: groupId,
-              groupName: getGroupName(context),
-            ),
-          ),
-        if (watchMemberState(context) == 1)
-          IconButtonInRow(
-            icon: tempExitIcon,
-            onPressed: showAlert(
-              context,
-              title: '그룹 탈퇴 확인',
-              content: '정말 그룹을 탈퇴하시겠습니까?',
-              onPressed: exitThisGroup,
-            ),
-          ),
-      ],
+      actions: enableAdmin
+          ? [
+              if (watchMemberState(context) == 2)
+                IconButtonInRow(
+                  icon: settingsIcon,
+                  onPressed: toOtherPageWithAnimation(
+                    context,
+                    page: GroupAdmin(groupId: groupId),
+                  ),
+                ),
+              if ((watchMemberState(context) != 0) &&
+                  alreadyStarted(context) == false)
+                IconButtonInRow(
+                  icon: shareIcon,
+                  onPressed: () => shareGroup(
+                    groupId: groupId,
+                    groupName: getGroupName(context),
+                  ),
+                ),
+              if (watchMemberState(context) == 1 &&
+                  alreadyStarted(context) == false)
+                IconButtonInRow(
+                  icon: tempExitIcon,
+                  onPressed: showAlert(
+                    context,
+                    title: '그룹 탈퇴 확인',
+                    content: '정말 그룹을 탈퇴하시겠습니까?',
+                    onPressed: exitThisGroup,
+                  ),
+                ),
+              const SizedBox(width: 10),
+            ]
+          : null,
     );
   }
 
@@ -280,9 +287,7 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: saveBingo,
                 icon: saveIcon,
               ),
-              const SizedBox(
-                width: 20,
-              )
+              const SizedBox(width: 10)
             ]
           : null,
     );

@@ -107,8 +107,21 @@ class _MemberListState extends State<MemberList> {
       }
     }
 
+    late Color backgroundColor;
+    late Color textColor;
+
+    if (getId(context) == widget.id) {
+      backgroundColor = palePinkColor;
+      textColor = whiteColor;
+    } else {
+      backgroundColor = whiteColor;
+      textColor = blackColor;
+    }
+
     return widget.isMember
         ? CustomList(
+            color: backgroundColor,
+            innerHorizontal: 15,
             height: 70,
             border: true,
             child: Padding(
@@ -125,23 +138,14 @@ class _MemberListState extends State<MemberList> {
                       ),
                     ),
                   ),
-                  CustomText(content: widget.nickname),
+                  CustomText(content: widget.nickname, color: textColor),
                   getId(context) != widget.id
                       ? IconButtonInRow(
                           icon: closeIcon,
                           onPressed: () => manageMember(false),
                           color: blackColor,
                         )
-                      : const CustomBoxContainer(
-                          color: paleRedColor,
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: CustomText(
-                              content: '그룹장',
-                              color: whiteColor,
-                            ),
-                          ),
-                        ),
+                      : const SizedBox()
                 ],
               ),
             ),

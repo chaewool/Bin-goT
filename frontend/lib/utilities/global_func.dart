@@ -25,6 +25,8 @@ import 'package:provider/provider.dart';
 void afterFewSec(ReturnVoid afterFunc, [int millisec = 1000]) =>
     Future.delayed(Duration(milliseconds: millisec), afterFunc);
 
+void unfocus() => FocusManager.instance.primaryFocus?.unfocus();
+
 //* 이미지
 void imagePicker(
   BuildContext context, {
@@ -169,30 +171,19 @@ ReturnVoid toOtherPageWithAnimation(BuildContext context,
         context,
         PageRouteBuilder(
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var begin = const Offset(1.0, 0);
-            var end = Offset.zero;
-            // Curves.ease: 애니메이션이 부드럽게 동작하도록 명령
-            var curve = Curves.ease;
-            // 애니메이션의 시작과 끝을 담당한다.
-            var tween = Tween(
-              begin: begin,
-              end: end,
-            ).chain(
-              CurveTween(
-                curve: curve,
-              ),
-            );
             return SlideTransition(
-              position: animation.drive(tween),
+              position: animation.drive(
+                Tween(
+                  begin: const Offset(1, 0),
+                  end: Offset.zero,
+                ).chain(
+                  CurveTween(curve: Curves.ease),
+                ),
+              ),
               child: child,
             );
           },
-          // 함수를 통해 Widget을 pageBuilder에 맞는 형태로 반환하게 해야한다.
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              // (DetailScreen은 Stateless나 Stateful 위젯으로된 화면임)
-              page,
-          // 이것을 true로 하면 dialog로 취급한다.
-          // 기본값은 false
+          pageBuilder: (context, animation, secondaryAnimation) => page,
           fullscreenDialog: false,
         ),
       );
@@ -454,10 +445,13 @@ GroupChatList getChats(BuildContext context) =>
 GroupChatList watchChats(BuildContext context) =>
     context.watch<GlobalGroupProvider>().chats;
 
+void setChat(BuildContext context, String value) =>
+    context.read<GlobalGroupProvider>().setChat(value);
+
 List getRank(BuildContext context) => context.read<GlobalGroupProvider>().rank;
 
-PageController getPageController(BuildContext context) =>
-    context.read<GlobalGroupProvider>().pageController!;
+// PageController getPageController(BuildContext context) =>
+//     context.read<GlobalGroupProvider>().pageController!;
 
 void setPeriod(BuildContext context, String newStart, String newEnd) =>
     context.read<GlobalGroupProvider>().setPeriod(newStart, newEnd);
@@ -476,8 +470,8 @@ void changePrev(BuildContext context, bool value) {
 }
 
 FutureBool onBackAction(BuildContext context) {
-  context.read<GlobalBingoProvider>().initData();
   context.read<GlobalGroupProvider>().initData();
+  context.read<GlobalBingoProvider>().initData();
   toBack(context);
   if (getPrev(context)) {
     changePrev(context, false);
@@ -513,8 +507,10 @@ void setBingoId(BuildContext context, int id) =>
 void setBingoSize(BuildContext context, int size) =>
     context.read<GlobalBingoProvider>().setBingoSize(size);
 
-void setIsCheckTheme(BuildContext context, bool checkState) =>
-    context.read<GlobalBingoProvider>().setIsCheckTheme(checkState);
+FutureBool setIsCheckTheme(BuildContext context, bool checkState) {
+  context.read<GlobalBingoProvider>().setIsCheckTheme(checkState);
+  return Future.value(true);
+}
 
 void initBingoFormData(BuildContext context, [bool editMode = true]) =>
     context.read<GlobalBingoProvider>().initFormData(editMode);

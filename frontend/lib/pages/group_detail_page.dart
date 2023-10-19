@@ -22,6 +22,7 @@ import 'package:provider/provider.dart';
 class GroupDetail extends StatefulWidget {
   final bool admin, isMember, chat, needBack;
   final int? bingoId, size, groupId;
+  final int initialIndex;
   const GroupDetail({
     super.key,
     this.groupId,
@@ -31,6 +32,7 @@ class GroupDetail extends StatefulWidget {
     required this.admin,
     required this.isMember,
     required this.chat,
+    required this.initialIndex,
   });
 
   @override
@@ -42,15 +44,17 @@ class _GroupDetailState extends State<GroupDetail> {
   int bingoSize = 0;
   int bingoId = 0;
   double paddingTop = 0;
-  WidgetList nextPages = [
-    const BingoDetail(),
-    const GroupMain(),
-    const GroupRank(),
-  ];
+  double bottomBarHeight = 70;
+  late PageController pageController;
+  // WidgetList nextPages = [
+  //   const BingoDetail(),
+  //   const GroupMain(),
+  //   const GroupRank(),
+  // ];
   final WidgetList appbarList = [
     const BingoDetailAppBar(),
     const GroupAppBar(),
-    const GroupAppBar(),
+    const GroupAppBar(enableAdmin: false),
   ];
   // late final PageController pageController;
 
@@ -104,7 +108,8 @@ class _GroupDetailState extends State<GroupDetail> {
   void onPageChanged(int index) {
     if (widget.isMember && index != readGroupIndex(context)) {
       changeGroupIndex(context, index);
-      getPageController(context).jumpToPage(index);
+      // getPageController(context).jumpToPage(index);
+      pageController.jumpToPage(index);
 
       switch (index) {
         case 0:
@@ -123,31 +128,39 @@ class _GroupDetailState extends State<GroupDetail> {
   void initState() {
     super.initState();
     //* 페이지 이동 시
-    context.read<GlobalGroupProvider>().initPage();
+    // context.read<GlobalGroupProvider>().initPage();
+    pageController = PageController(initialPage: widget.initialIndex);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        paddingTop = getStatusBarHeight(context);
-      });
-      final index = readGroupIndex(context);
-      switch (index) {
-        case 0:
-          applyBingoDetail();
-          break;
-        case 2:
-          applyGroupRank();
-          break;
-        default:
-          break;
-      }
-
-      //* 다른 페이지로 이동해야할 경우
-      if (widget.admin) {
-        toOtherPageWithAnimation(context,
-            page: GroupAdmin(groupId: widget.groupId!))();
-      } else if (widget.chat) {
-        toOtherPageWithAnimation(context, page: const GroupChat())();
+      if (widget.isMember) {
+        setState(() {
+          paddingTop = getStatusBarHeight(context);
+        });
+        final index = readGroupIndex(context);
+        switch (index) {
+          case 0:
+            applyBingoDetail();
+            break;
+          case 2:
+            applyGroupRank();
+            break;
+          default:
+            break;
+        }
+        //* 다른 페이지로 이동해야할 경우
+        if (widget.admin) {
+          toOtherPageWithAnimation(context,
+              page: GroupAdmin(groupId: widget.groupId!))();
+        } else if (widget.chat) {
+          toOtherPageWithAnimation(context, page: const GroupChat())();
+        }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    pageController.dispose();
   }
 
   @override
@@ -161,39 +174,39 @@ class _GroupDetailState extends State<GroupDetail> {
           children: [
             SizedBox(
               width: getWidth(context),
-              height: getHeight(context) - 80,
+              height: getHeight(context),
               //* 화면
-              child: PageView(
-                physics: const NeverScrollableScrollPhysics(),
-                controller: getPageController(context),
-                children: [
-                  if (widget.isMember)
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: paddingTop,
-                      ),
-                      child: nextPages[0],
-                    ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
+              child: Padding(
+                padding: EdgeInsets.only(bottom: bottomBarHeight),
+                child: PageView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  // controller: getPageController(context),
+                  controller: pageController,
+                  children: [
+                    if (widget.isMember)
                       Padding(
-                        padding: EdgeInsets.only(
-                          top: paddingTop,
-                        ),
-                        child: SingleChildScrollView(
-                          child: nextPages[1],
-                        ),
+                        padding: EdgeInsets.only(top: paddingTop),
+                        child: const BingoDetail(),
                       ),
-                    ],
-                  ),
-                  if (widget.isMember)
-                    Padding(
-                      padding: EdgeInsets.only(top: paddingTop),
-                      child: nextPages[2],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: paddingTop),
+                          child: SingleChildScrollView(
+                            child: GroupMain(changeIndex: onPageChanged),
+                          ),
+                        ),
+                      ],
                     ),
-                ],
+                    if (widget.isMember)
+                      Padding(
+                        padding: EdgeInsets.only(top: paddingTop),
+                        child: GroupRank(changeIndex: onPageChanged),
+                      ),
+                  ],
+                ),
               ),
             ),
             //* 앱 바
@@ -203,7 +216,21 @@ class _GroupDetailState extends State<GroupDetail> {
               height: 80,
               child: widget.isMember
                   ? appbarList[watchGroupIndex(context)]
-                  : AppBarWithBack(onPressedBack: () => onBackAction(context)),
+                  : AppBarWithBack(
+                      onPressedBack: () => onBackAction(context),
+                      transparent: true,
+                    ),
+            ),
+            //* 하단 바
+            Positioned(
+              top: getHeight(context) - bottomBarHeight,
+              child: GroupMainBottomBar(
+                bottomBarHeight: bottomBarHeight,
+                isMember: widget.isMember,
+                size: context.watch<GlobalGroupProvider>().bingoSize ??
+                    context.watch<GlobalBingoProvider>().bingoSize,
+                changeIndex: onPageChanged,
+              ),
             ),
             //* 채팅창 이동 버튼
             if (watchMemberState(context) != 0)
@@ -213,13 +240,12 @@ class _GroupDetailState extends State<GroupDetail> {
               CustomToast(content: watchToastString(context))
           ],
         ),
-        //* 하단 바
-        bottomNavigationBar: GroupMainBottomBar(
-          isMember: widget.isMember,
-          size: context.watch<GlobalGroupProvider>().bingoSize ??
-              context.watch<GlobalBingoProvider>().bingoSize,
-          changeIndex: onPageChanged,
-        ),
+        // bottomNavigationBar: GroupMainBottomBar(
+        //   isMember: widget.isMember,
+        //   size: context.watch<GlobalGroupProvider>().bingoSize ??
+        //       context.watch<GlobalBingoProvider>().bingoSize,
+        //   changeIndex: onPageChanged,
+        // ),
       ),
     );
   }

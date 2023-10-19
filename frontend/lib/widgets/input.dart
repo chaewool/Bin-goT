@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/global_func.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -55,6 +56,7 @@ class CustomInput extends StatelessWidget {
         horizontal: horizontal!,
       ),
       child: CustomBoxContainer(
+        borderRadius: BorderRadius.circular(4),
         width: width,
         height: height,
         child: TextField(
@@ -205,6 +207,7 @@ class _InputDateState extends State<InputDate> {
     );
     return GestureDetector(
       onTap: () async {
+        unfocus();
         final values = await showCalendarDatePicker2Dialog(
           context: context,
           config: config,

@@ -28,9 +28,7 @@ class ShowContentBox extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(
-            content: contentTitle,
-          ),
+          CustomText(content: contentTitle),
           const SizedBox(height: 15),
           CustomBoxContainer(
             width: 300,
@@ -41,11 +39,12 @@ class ShowContentBox extends StatelessWidget {
             borderColor: greyColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              child: CustomText(
-                content: content,
-                color: hasContent ? blackColor : greyColor.withOpacity(0.7),
-                height: 1.2,
-              ),
+              child: CustomLongText(content: content, hasContent: hasContent),
+              // CustomText(
+              //   content: content,
+              //   color: hasContent ? blackColor : greyColor.withOpacity(0.7),
+              //   height: 1.2,
+              // ),
             ),
           )
         ],
@@ -78,7 +77,8 @@ class BingoGallery extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: CustomBoxContainer(
-          color: greyColor.withOpacity(0.5),
+          // color: greyColor.withOpacity(0.3),
+          borderColor: greyColor,
           child: ColWithPadding(
             vertical: 8,
             horizontal: 10,

@@ -206,7 +206,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
         SingleChildScrollView(
           child: ColWithPadding(
             horizontal: 15,
-            vertical: 10,
+            vertical: 15,
             mainAxisSize: MainAxisSize.max,
             children: [
               profile(context),
