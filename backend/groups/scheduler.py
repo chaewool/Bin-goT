@@ -5,7 +5,7 @@ from django.conf import settings
 from datetime import date, timedelta
 import logging
 
-from commons import RedisRanker, send_to_fcm, send_badge_notification
+from commons import RedisRanker, send_to_fcm, send_badge_notification, delete_image
 from groups.models import Group, Board
 
 
@@ -68,9 +68,16 @@ def every_day():
         
         # 시작일, 시작 알림
         elif today == group.start:
-            title = f'{group.groupname} 그룹이 시작했습니다!'
-            content = f'빙고를 함께 채워볼까요?'
-            send_due(group, title, content, False)
+            if group.count == 1:
+                send_to_fcm(group.leader, '', '그룹 삭제', f'{group.groupname} 그룹에 참여자가 없어 삭제되었습니다.', '')
+
+                url = 'groups' + '/' + str(group.id)
+                delete_image(url)
+                group.delete()
+            else:
+                title = f'{group.groupname} 그룹이 시작했습니다!'
+                content = f'빙고를 함께 채워볼까요?'
+                send_due(group, title, content, False)
         
         # 종료일 7일 전, 남은 기간 알림
         elif today == group.end - timedelta(days=7):
