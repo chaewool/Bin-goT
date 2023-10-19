@@ -297,20 +297,25 @@ class _GroupAdminTabBarState extends State<GroupAdminTabBar> {
                 if (snapshot.hasData) {
                   final members = snapshot.data!.members;
                   return Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: members.length,
-                        itemBuilder: (context, index) {
-                          var member = members[index];
-                          return MemberList(
-                            id: member.id,
-                            bingoId: member.bingoId,
-                            nickname: member.username,
-                            badge: member.badgeId,
-                            isMember: true,
-                          );
-                        },
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: members.length,
+                          itemBuilder: (context, index) {
+                            final member = members[index];
+                            return MemberList(
+                              id: member.id,
+                              bingoId: member.bingoId,
+                              nickname: member.username,
+                              badge: member.badgeId,
+                              isMember: true,
+                            );
+                          },
+                        ),
                       )
                     ],
                   );

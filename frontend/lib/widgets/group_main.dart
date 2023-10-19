@@ -13,8 +13,10 @@ import 'package:provider/provider.dart';
 //? 그룹 메인 (정보 출력)
 
 class GroupMain extends StatefulWidget {
+  final void Function(int) changeIndex;
   const GroupMain({
     super.key,
+    required this.changeIndex,
   });
 
   @override
@@ -123,12 +125,13 @@ class _GroupMainState extends State<GroupMain> {
                 const CustomText(content: '순위'),
                 TextButton(
                   onPressed: () {
-                    changeGroupIndex(context, 2);
-                    getPageController(context).animateToPage(
-                      2,
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.ease,
-                    );
+                    widget.changeIndex(2);
+                    // changeGroupIndex(context, 2);
+                    // getPageController(context).animateToPage(
+                    //   2,
+                    //   duration: const Duration(milliseconds: 500),
+                    //   curve: Curves.ease,
+                    // );
                   },
                   child: const CustomText(
                     content: '전체보기',
@@ -139,7 +142,10 @@ class _GroupMainState extends State<GroupMain> {
             ),
             if (getRank(context).isNotEmpty)
               for (int i = 0; i < getRank(context).length; i += 1)
-                RankListItem(rankListItem: getRank(context)[i]),
+                RankListItem(
+                  rankListItem: getRank(context)[i],
+                  changeIndex: widget.changeIndex,
+                ),
             if (getRank(context).isEmpty)
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,

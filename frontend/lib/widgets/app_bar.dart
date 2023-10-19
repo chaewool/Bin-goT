@@ -160,6 +160,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                     onPressed: exitThisGroup,
                   ),
                 ),
+              const SizedBox(width: 10),
             ]
           : null,
     );
@@ -286,9 +287,7 @@ class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: saveBingo,
                 icon: saveIcon,
               ),
-              const SizedBox(
-                width: 20,
-              )
+              const SizedBox(width: 10)
             ]
           : null,
     );

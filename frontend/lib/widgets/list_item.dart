@@ -97,21 +97,24 @@ class GroupListItem extends StatelessWidget {
 //* 순위 목록
 class RankListItem extends StatelessWidget {
   final GroupRankModel rankListItem;
+  final void Function(int) changeIndex;
   const RankListItem({
     super.key,
     required this.rankListItem,
+    required this.changeIndex,
   });
 
   @override
   Widget build(BuildContext context) {
     void toBingoDetail() {
       setBingoId(context, rankListItem.bingoId);
-      changeGroupIndex(context, 0);
-      getPageController(context).animateToPage(
-        0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.ease,
-      );
+      changeIndex(0);
+      // changeGroupIndex(context, 0);
+      // getPageController(context).animateToPage(
+      //   0,
+      //   duration: const Duration(milliseconds: 500),
+      //   curve: Curves.ease,
+      // );
     }
 
     late Color backgroundColor;
@@ -234,7 +237,45 @@ class ChatListItem extends StatefulWidget {
 }
 
 class _ChatListItemState extends State<ChatListItem> {
-  late bool isMine = widget.data.userId == getId(context);
+  late bool isMine;
+  double textWidth = 100;
+  late bool reviewed;
+  final textKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    reviewed = widget.data.reviewed;
+    isMine = widget.data.userId == getId(context);
+    TextPainter textPainter = TextPainter()
+      ..text = TextSpan(
+        text: widget.data.content,
+        style: const TextStyle(fontSize: smallSize),
+      )
+      ..textDirection = TextDirection.ltr
+      ..layout(minWidth: 0, maxWidth: double.infinity);
+    print(
+        'content => ${widget.data.content} width => ${textPainter.size.width}');
+    setState(() {
+      textWidth = textPainter.size.width;
+    });
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   // print(getWidth(context)); 360
+
+    //   if (textKey.currentContext != null) {
+    //     print('not null');
+    //     final renderBox =
+    //         textKey.currentContext!.findRenderObject() as RenderBox;
+    //     print(
+    //         'content => ${widget.data.content} width => ${renderBox.size.width}');
+    //     setState(() {
+    //       textWidth = renderBox.size.width;
+    //     });
+    //   }
+    // });
+  }
+
   void confirmMessage() async {
     if (isMine) {
       showAlert(context, title: '인증 불가', content: '자신의 채팅에 인증 확인할 수 없습니다')();
@@ -244,7 +285,6 @@ class _ChatListItemState extends State<ChatListItem> {
     }
   }
 
-  late bool reviewed = widget.data.reviewed;
   void changeReviewed() {
     if (!reviewed) {
       setState(() {
@@ -305,11 +345,10 @@ class _ChatListItemState extends State<ChatListItem> {
                             children: [
                               CustomList(
                                 width: widget.data.hasImage == true
-                                    ? getWidth(context) * 3 / 5
+                                    ? getWidth(context) / 2
                                     : min(
-                                        getWidth(context) * 3 / 5,
-                                        widget.data.content!.length.toDouble() *
-                                            20,
+                                        getWidth(context) / 2,
+                                        textWidth * 1.4 + 40,
                                       ),
                                 vertical: 0,
                                 innerHorizontal: 20,
@@ -325,9 +364,8 @@ class _ChatListItemState extends State<ChatListItem> {
                                       Padding(
                                         padding:
                                             const EdgeInsets.only(bottom: 10),
-                                        child: CustomLongText(
+                                        child: CustomText(
                                           content: widget.data.title,
-                                          hasContent: true,
                                         ),
                                       ),
                                     if (widget.data.hasImage == true)
@@ -353,10 +391,12 @@ class _ChatListItemState extends State<ChatListItem> {
                                         ),
                                       ),
                                     if (widget.data.content != null)
-                                      CustomLongText(
+                                      CustomText(
+                                        key: textKey,
                                         content: widget.data.content!,
                                         color: whiteColor,
-                                        hasContent: true,
+                                        fontSize: FontSize.smallSize,
+                                        height: 1.4,
                                       ),
                                     if (widget.data.itemId != -1 && !reviewed)
                                       Center(
@@ -433,7 +473,6 @@ class _ChatListItemState extends State<ChatListItem> {
 //* 채팅 이미지
 class ChatImage extends StatelessWidget {
   final ChatListItem widget;
-  // final double height;
   final double? width, height;
   final ReturnVoid? onTap;
   final bool transparent;
@@ -451,7 +490,6 @@ class ChatImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // print('width => $width, height => $height');
     final CustomCachedNetworkImage networkImage = CustomCachedNetworkImage(
       path: '/chats/${getGroupId(context)}/${widget.data.id}',
       width: width ?? 120,

@@ -54,7 +54,7 @@ class _InputPasswordState extends State<InputPassword> {
     if (widget.size != null) {
       setBingoSize(context, widget.size!);
     }
-    changeGroupIndex(context, widget.initialIndex);
+    // changeGroupIndex(context, widget.isSearchMode ? 0 : widget.initialIndex);
     jumpToOtherPage(
       context,
       page: GroupDetail(
@@ -64,6 +64,7 @@ class _InputPasswordState extends State<InputPassword> {
         bingoId: widget.bingoId,
         size: widget.size,
         isMember: member ? !widget.isSearchMode : false,
+        initialIndex: widget.isSearchMode ? 0 : widget.initialIndex,
       ),
     )();
   }
@@ -84,6 +85,7 @@ class _InputPasswordState extends State<InputPassword> {
   @override
   void initState() {
     super.initState();
+    print('input password');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       //* 알림을 통해 들어왔을 경우, 로그인 확인 (알림으로 들어왔을 경우, 가입된 경우 => 확인 X)
       if (widget.needCheck) {
@@ -138,6 +140,7 @@ class _InputPasswordState extends State<InputPassword> {
           ),
         )();
       } else {
+        print('to next page');
         toNextPage();
       }
     });

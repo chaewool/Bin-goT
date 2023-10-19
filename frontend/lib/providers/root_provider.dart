@@ -131,7 +131,11 @@ class NotiProvider extends ChangeNotifier {
   //* public
 
   FutureBool changePressed() => _changePressed();
-  void showToast() => _showToast();
+  void showToast() {
+    _showToast();
+    notifyListeners();
+  }
+
   void showSpinner(bool showState) => _showSpinner(showState);
   void applyRefresh(bool state) {
     _applyRefresh(state);
@@ -191,7 +195,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   static GroupDetailModel? _data;
   static final GroupChatList _chats = [];
   static final RankList _rankList = [];
-  static PageController? _pageController;
+  // static PageController? _pageController;
   static final StringMap _chatText = {'content': ''};
 
   GroupChatList get chats => _chats;
@@ -200,7 +204,7 @@ class GlobalGroupProvider extends ChangeNotifier {
   int get selectedIndex => _selectedIndex;
   int? get lastId => _lastId;
   int? get groupId => _groupId;
-  PageController? get pageController => _pageController;
+  // PageController? get pageController => _pageController;
   String get chatContent => _chatText['content']!;
 
   //* read group
@@ -256,9 +260,9 @@ class GlobalGroupProvider extends ChangeNotifier {
 
   void _setEnable(bool value) => _enable = value;
 
-  void _initPage() {
-    _pageController = PageController(initialPage: _selectedIndex);
-  }
+  // void _initPage() {
+  //   _pageController = PageController(initialPage: _selectedIndex);
+  // }
 
   void _setChat(String value) {
     _chatText['content'] = value;
@@ -318,7 +322,7 @@ class GlobalGroupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initPage() => _initPage();
+  // void initPage() => _initPage();
 
   void setChat(String value) => _setChat(value);
 }

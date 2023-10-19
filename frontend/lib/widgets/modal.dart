@@ -295,7 +295,7 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
         context,
         page: RequestBingoModal(
           itemId: newIdx,
-          checkGoal: item['check_goal'],
+          checkGoal: item['check'] ? item['check_goal'] : 0,
           afterClose: () => toBack(context),
         ),
       ),
@@ -345,19 +345,8 @@ class _BingoDetailModalState extends State<BingoDetailModal> {
                                     content: item['content'] ?? '작성된 내용이 없습니다',
                                     hasContent: item['content'] != null &&
                                         item['content'] != '',
-                                  )
-                                  // CustomText(
-                                  //   content: item['content'] ?? '작성된 내용이 없습니다',
-                                  //   color: item['content'] != null &&
-                                  //           item['content'] != ''
-                                  //       ? blackColor
-                                  //       : greyColor.withOpacity(0.7),
-                                  //   height: 1.2,
-                                  // ),
-                                  ),
+                                  )),
                             ),
-                            // ),
-                            // ),
                           ),
                         ),
                       ),

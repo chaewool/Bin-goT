@@ -28,10 +28,12 @@ class BingoProvider extends ApiProvider {
   FutureDynamicMap _editOwnBingo(
       int groupId, int bingoId, FormData bingoData) async {
     try {
+      print(editBingoUrl(groupId, bingoId));
       await dioWithTokenForm()
           .put(editBingoUrl(groupId, bingoId), data: bingoData);
       return {};
     } catch (error) {
+      print(error);
       throw Error();
     }
   }
