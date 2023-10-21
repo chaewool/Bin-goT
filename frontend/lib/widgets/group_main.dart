@@ -38,6 +38,7 @@ class _GroupMainState extends State<GroupMain> {
   }
 
   void readGroupDetail() {
+    print('read detail');
     GroupProvider().readGroupDetail(groupId!).then((data) {
       setState(() {
         memberState = data.memberState;
@@ -124,15 +125,7 @@ class _GroupMainState extends State<GroupMain> {
               children: [
                 const CustomText(content: '순위'),
                 TextButton(
-                  onPressed: () {
-                    widget.changeIndex(2);
-                    // changeGroupIndex(context, 2);
-                    // getPageController(context).animateToPage(
-                    //   2,
-                    //   duration: const Duration(milliseconds: 500),
-                    //   curve: Curves.ease,
-                    // );
-                  },
+                  onPressed: () => widget.changeIndex(2),
                   child: const CustomText(
                     content: '전체보기',
                     fontSize: FontSize.smallSize,

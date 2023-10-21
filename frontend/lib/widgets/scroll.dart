@@ -175,53 +175,53 @@ class ChatInfiniteScroll extends StatelessWidget {
   Widget build(BuildContext context) {
     const mode = 0;
     return CustomBoxContainer(
-      color: whiteColor,
-      child: !watchLoading(context)
-          ? data.isNotEmpty
-              ? ListView.builder(
-                  controller: controller,
-                  reverse: true,
-                  itemCount: data.length,
-                  itemBuilder: (context, i) {
-                    print('has image => $i ${data[i].hasImage}');
-                    return Column(
-                      children: [
-                        if (getLastId(context, mode) > 0 &&
-                            (data[i].id == getLastId(context, mode)))
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 40),
-                            child: CustomCirCularIndicator(),
+        color: whiteColor,
+        child:
+            // !watchLoading(context) ?
+            data.isNotEmpty
+                ? ListView.builder(
+                    controller: controller,
+                    reverse: true,
+                    itemCount: data.length,
+                    itemBuilder: (context, i) {
+                      return Column(
+                        children: [
+                          if (getLastId(context, mode) > 0 &&
+                              (data[i].id == getLastId(context, mode)))
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 40),
+                              child: CustomCirCularIndicator(),
+                            ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                            child: ChatListItem(
+                              data: data[i],
+                              date: i == data.length - 1 ||
+                                      returnDate(data[i]) !=
+                                          returnDate(data[i + 1])
+                                  ? returnDate(data[i])
+                                  : null,
+                            ),
                           ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-                          child: ChatListItem(
-                            data: data[i],
-                            date: i == data.length - 1 ||
-                                    returnDate(data[i]) !=
-                                        returnDate(data[i + 1])
-                                ? returnDate(data[i])
-                                : null,
-                          ),
+                        ],
+                      );
+                    },
+                  )
+                : const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Center(
+                        child: CustomText(
+                          center: true,
+                          fontSize: FontSize.titleSize,
+                          content: '채팅 기록이 없습니다.',
+                          height: 1.5,
                         ),
-                      ],
-                    );
-                  },
-                )
-              : const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Center(
-                      child: CustomText(
-                        center: true,
-                        fontSize: FontSize.titleSize,
-                        content: '채팅 기록이 없습니다.',
-                        height: 1.5,
                       ),
-                    ),
-                  ],
-                )
-          : const CustomCirCularIndicator(),
-    );
+                    ],
+                  )
+        // : const CustomCirCularIndicator(),
+        );
   }
 }

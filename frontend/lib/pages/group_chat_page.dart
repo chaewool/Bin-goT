@@ -33,6 +33,7 @@ class _GroupChatState extends State<GroupChat> {
   int groupId = 0;
   double appBarHeight = 50;
   bool showImg = false;
+  bool showChats = false;
   XFile? selectedImage;
   final controller = ScrollController();
   GlobalKey bottomBarKey = GlobalKey();
@@ -51,8 +52,8 @@ class _GroupChatState extends State<GroupChat> {
         appBarHeight = getStatusBarHeight(context);
       });
 
-      //* 채팅 불러오기
       initLoadingData(context, 0);
+      //* 채팅 불러오기
       if (getLoading(context)) {
         readChats(false);
       }
@@ -92,7 +93,11 @@ class _GroupChatState extends State<GroupChat> {
         setWorking(context, false);
         setAdditional(context, false);
       }
+      setState(() {
+        showChats = true;
+      });
     }).catchError((error) {
+      setLoading(context, false);
       showErrorModal(context, '채팅 불러오기 오류', '오류가 발생해 채팅 목록을 불러올 수 없습니다');
     });
   }
@@ -170,8 +175,12 @@ class _GroupChatState extends State<GroupChat> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
+        if (getLoading(context)) {
+          setLoading(context, false);
+        }
         setChat(context, '');
         toBack(context);
+
         return Future.value(true);
       },
       child: Scaffold(
@@ -182,10 +191,17 @@ class _GroupChatState extends State<GroupChat> {
               //* 채팅 목록
               Padding(
                 padding: EdgeInsets.only(top: appBarHeight, bottom: 80),
-                child: ChatInfiniteScroll(
-                  controller: controller,
-                  data: watchChats(context),
-                ),
+                child: showChats
+                    ? ChatInfiniteScroll(
+                        controller: controller,
+                        data: watchChats(context),
+                      )
+                    : const CustomBoxContainer(
+                        color: whiteColor,
+                        child: Center(
+                          child: CustomCirCularIndicator(),
+                        ),
+                      ),
               ),
               //* 앱 바
               CustomBoxContainer(
@@ -194,6 +210,9 @@ class _GroupChatState extends State<GroupChat> {
                 child: AppBarWithBack(
                   transparent: true,
                   onPressedBack: () {
+                    if (getLoading(context)) {
+                      setLoading(context, false);
+                    }
                     setChat(context, '');
                     toBack(context);
                   },

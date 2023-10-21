@@ -109,12 +109,6 @@ class RankListItem extends StatelessWidget {
     void toBingoDetail() {
       setBingoId(context, rankListItem.bingoId);
       changeIndex(0);
-      // changeGroupIndex(context, 0);
-      // getPageController(context).animateToPage(
-      //   0,
-      //   duration: const Duration(milliseconds: 500),
-      //   curve: Curves.ease,
-      // );
     }
 
     late Color backgroundColor;

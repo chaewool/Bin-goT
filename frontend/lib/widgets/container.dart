@@ -1,8 +1,10 @@
 import 'package:bin_got/models/user_info_model.dart';
 import 'package:bin_got/pages/input_password_page.dart';
 import 'package:bin_got/utilities/global_func.dart';
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
+import 'package:bin_got/widgets/icon.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
@@ -89,8 +91,7 @@ class BingoGallery extends StatelessWidget {
                 child: CustomBoxContainer(
                   width: (getWidth(context) - 60) / 2,
                   height: (getWidth(context) - 60) / 2,
-                  child: Image.network(
-                      '${dotenv.env['fileUrl']}/boards/${bingo.id}'),
+                  child: networkImage(),
                 ),
               ),
               Padding(
@@ -105,6 +106,14 @@ class BingoGallery extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget networkImage() {
+    try {
+      return Image.network('${dotenv.env['fileUrl']}/boards/${bingo.id}');
+    } catch (_) {
+      return const CustomIcon(icon: errorIcon);
+    }
   }
 }
 
