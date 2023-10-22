@@ -46,6 +46,7 @@ class _GroupDetailState extends State<GroupDetail> {
   double paddingTop = 0;
   double bottomBarHeight = 70;
   late PageController pageController;
+  // late int selectedIndex;
   // WidgetList nextPages = [
   //   const BingoDetail(),
   //   const GroupMain(),
@@ -107,6 +108,9 @@ class _GroupDetailState extends State<GroupDetail> {
 
   void onPageChanged(int index) {
     if (widget.isMember && index != readGroupIndex(context)) {
+      // setState(() {
+      //   selectedIndex = index;
+      // });
       changeGroupIndex(context, index);
       // getPageController(context).jumpToPage(index);
       pageController.jumpToPage(index);
@@ -128,14 +132,16 @@ class _GroupDetailState extends State<GroupDetail> {
   void initState() {
     super.initState();
     //* 페이지 이동 시
+    // selectedIndex = widget.initialIndex;
     // context.read<GlobalGroupProvider>().initPage();
+    // print(widget.initialIndex);
     pageController = PageController(initialPage: widget.initialIndex);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.isMember) {
         setState(() {
           paddingTop = getStatusBarHeight(context);
         });
-        final index = readGroupIndex(context);
+        int index = readGroupIndex(context);
         switch (index) {
           case 0:
             applyBingoDetail();
@@ -234,7 +240,10 @@ class _GroupDetailState extends State<GroupDetail> {
             ),
             //* 채팅창 이동 버튼
             if (watchMemberState(context) != 0)
-              const CustomFloatingButton(page: GroupChat(), icon: chatIcon),
+              const CustomFloatingButton(
+                page: GroupChat(),
+                icon: chatIcon,
+              ),
             //* 토스트
             if (watchAfterWork(context))
               CustomToast(content: watchToastString(context))

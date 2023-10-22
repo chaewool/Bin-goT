@@ -1,3 +1,4 @@
+import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/container.dart';
@@ -54,25 +55,33 @@ class CustomCachedNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      placeholder: (context, url) =>
-          placeholder ?? SizedBox(width: width, height: height),
-      imageUrl: '${dotenv.env['fileUrl']}$path',
-      imageBuilder: (context, imageProvider) => CustomBoxContainer(
-        width: width,
-        height: height,
-        color: transparentColor,
-        hasRoundEdge: false,
-        image: DecorationImage(
-          image: imageProvider,
-          fit: fit,
+    try {
+      return CachedNetworkImage(
+        placeholder: (context, url) =>
+            placeholder ?? SizedBox(width: width, height: height),
+        imageUrl: '${dotenv.env['fileUrl']}$path',
+        imageBuilder: (context, imageProvider) => CustomBoxContainer(
+          width: width,
+          height: height,
+          color: transparentColor,
+          hasRoundEdge: false,
+          image: DecorationImage(
+            image: imageProvider,
+            fit: fit,
+          ),
         ),
-      ),
-      errorWidget: (context, url, error) => CustomBoxContainer(
+        errorWidget: (context, url, error) => CustomBoxContainer(
+          width: width,
+          height: height,
+          child: const CustomIcon(icon: errorIcon),
+        ),
+      );
+    } catch (_) {
+      return CustomBoxContainer(
         width: width,
         height: height,
-        child: const CustomIcon(icon: Icons.error_outline),
-      ),
-    );
+        child: const CustomIcon(icon: errorIcon),
+      );
+    }
   }
 }

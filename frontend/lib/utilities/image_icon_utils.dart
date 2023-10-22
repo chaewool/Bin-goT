@@ -37,6 +37,7 @@ const saveIcon = Icons.save;
 const sendIcon = Icons.send;
 const circleIcon = Icons.circle_outlined;
 const exitIcon = Icons.warning_amber_outlined;
+const errorIcon = Icons.error_outline;
 
 const leftIcon = Icons.chevron_left_rounded;
 const rightIcon = Icons.chevron_right_rounded;

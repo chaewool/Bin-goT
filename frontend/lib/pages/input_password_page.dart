@@ -54,7 +54,7 @@ class _InputPasswordState extends State<InputPassword> {
     if (widget.size != null) {
       setBingoSize(context, widget.size!);
     }
-    // changeGroupIndex(context, widget.isSearchMode ? 0 : widget.initialIndex);
+    changeGroupIndex(context, widget.isSearchMode ? 0 : widget.initialIndex);
     jumpToOtherPage(
       context,
       page: GroupDetail(
