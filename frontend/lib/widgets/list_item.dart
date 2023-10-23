@@ -248,8 +248,6 @@ class _ChatListItemState extends State<ChatListItem> {
       )
       ..textDirection = TextDirection.ltr
       ..layout(minWidth: 0, maxWidth: double.infinity);
-    print(
-        'content => ${widget.data.content} width => ${textPainter.size.width}');
     setState(() {
       textWidth = textPainter.size.width;
     });

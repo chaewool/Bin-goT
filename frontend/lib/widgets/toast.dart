@@ -8,26 +8,23 @@ import 'package:flutter/material.dart';
 
 //* toast
 class CustomToast extends StatelessWidget {
-  final double height, width;
-  final Color color;
   final String content;
   const CustomToast({
     super.key,
-    this.height = 80,
-    this.width = 300,
-    this.color = const Color.fromRGBO(0, 0, 0, 0.8),
     required this.content,
   });
 
   @override
   Widget build(BuildContext context) {
+    double width = 80;
+    double height = 300;
     return Positioned(
       top: getHeight(context) - 200,
       left: (getWidth(context) - width) / 2,
       child: CustomBoxContainer(
         height: height,
         width: width,
-        color: color,
+        color: const Color.fromRGBO(0, 0, 0, 0.8),
         child: Center(
           child: CustomText(
             content: content,

@@ -86,7 +86,6 @@ class _BingoFormState extends State<BingoForm> {
     try {
       //* 변경된 부분이 있는 경우
       if (changed) {
-        print('변경됨!!!!!');
         final data = getBingoData(context, false);
         //* 제목
         if (data['title'] == null) {
@@ -139,7 +138,6 @@ class _BingoFormState extends State<BingoForm> {
         }
 
         //* 썸네일 생성 후 작업 요청
-        // setIsCheckTheme(context, false).then((_) {
         bingoToThumb().then((_) {
           final bingoId = getBingoId(context);
           //* 빙고 생성
@@ -147,7 +145,6 @@ class _BingoFormState extends State<BingoForm> {
             widget.beforeJoin ? joinGroup(data) : createGroup(data);
           } else {
             //* 빙고 수정
-            print(data);
             final bingoData = FormData.fromMap({
               'data': jsonEncode(data),
               'thumbnail': MultipartFile.fromBytes(
@@ -174,10 +171,6 @@ class _BingoFormState extends State<BingoForm> {
           showSpinner(context, false);
           showErrorModal(context, '빙고 생성/수정 오류', '빙고 생성/수정에 실패했습니다.');
         });
-        // }).catchError((_) {
-        //   showSpinner(context, false);
-        //   showErrorModal(context, '빙고 생성/수정 오류', '빙고 생성/수정에 실패했습니다.');
-        // });
         //* 변경되지 않은 경우
       } else {
         return showAlert(

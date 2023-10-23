@@ -42,11 +42,6 @@ class ShowContentBox extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
               child: CustomLongText(content: content, hasContent: hasContent),
-              // CustomText(
-              //   content: content,
-              //   color: hasContent ? blackColor : greyColor.withOpacity(0.7),
-              //   height: 1.2,
-              // ),
             ),
           )
         ],
@@ -79,7 +74,6 @@ class BingoGallery extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: CustomBoxContainer(
-          // color: greyColor.withOpacity(0.3),
           borderColor: greyColor,
           child: ColWithPadding(
             vertical: 8,

@@ -249,10 +249,10 @@ void login(BuildContext context) async {
       context.read<AuthProvider>().setStoreId(data['id']);
       FCM().saveFCMToken();
       if (data['is_login']) {
-        toOtherPage(context, page: const Main())();
+        toOtherPageWithoutPath(context, page: const Main());
       } else {
         showModal(context, page: const ChangeNameModal())().then((value) {
-          toOtherPage(context, page: const Main())();
+          toOtherPageWithoutPath(context, page: const Main());
         });
       }
     }).catchError((error) {

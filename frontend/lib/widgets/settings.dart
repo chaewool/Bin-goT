@@ -183,18 +183,22 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
 
   void exitService() {
     UserProvider().exitService().then((_) {
+      toBack(context);
       deleteVar(context);
       showAlert(
         context,
         title: '탈퇴 완료',
         content: '성공적으로 탈퇴되었습니다',
         onPressed: () => toOtherPageWithoutPath(context),
+        hasCancel: false,
       )();
     }).catchError((_) {
+      toBack(context);
       showAlert(
         context,
         title: '탈퇴 실패',
         content: '오류가 발생해 탈퇴에 실패했습니다',
+        hasCancel: false,
       )();
     });
   }

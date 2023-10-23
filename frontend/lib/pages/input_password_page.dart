@@ -85,7 +85,6 @@ class _InputPasswordState extends State<InputPassword> {
   @override
   void initState() {
     super.initState();
-    print('input password');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       //* 알림을 통해 들어왔을 경우, 로그인 확인 (알림으로 들어왔을 경우, 가입된 경우 => 확인 X)
       if (widget.needCheck) {
@@ -140,7 +139,6 @@ class _InputPasswordState extends State<InputPassword> {
           ),
         )();
       } else {
-        print('to next page');
         toNextPage();
       }
     });
