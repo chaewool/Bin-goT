@@ -2,9 +2,11 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+def set_no_leader():
+    return -1
 
 class Group(models.Model):
-    leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(-1))
+    leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(set_no_leader))
     groupname = models.CharField(max_length=20, unique=True)
     count = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(30)])
     headcount = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(30)])
