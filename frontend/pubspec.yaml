@@ -102,6 +102,14 @@ flutter:
     - assets/images/squeeze.jpg
     - assets/images/strawberry.png
     - assets/images/weather.jpg
+    - assets/images/001.png
+    - assets/images/002.png
+    - assets/images/003.png
+    - assets/images/004.png
+    - assets/images/005.png
+    - assets/images/006.png
+    - assets/images/007.png
+    - assets/images/008.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

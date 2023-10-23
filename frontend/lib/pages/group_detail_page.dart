@@ -46,18 +46,11 @@ class _GroupDetailState extends State<GroupDetail> {
   double paddingTop = 0;
   double bottomBarHeight = 70;
   late PageController pageController;
-  // late int selectedIndex;
-  // WidgetList nextPages = [
-  //   const BingoDetail(),
-  //   const GroupMain(),
-  //   const GroupRank(),
-  // ];
   final WidgetList appbarList = [
     const BingoDetailAppBar(),
     const GroupAppBar(),
     const GroupAppBar(enableAdmin: false),
   ];
-  // late final PageController pageController;
 
   //* 빙고 정보 불러오기
   void readBingoDetail() {
@@ -108,11 +101,7 @@ class _GroupDetailState extends State<GroupDetail> {
 
   void onPageChanged(int index) {
     if (widget.isMember && index != readGroupIndex(context)) {
-      // setState(() {
-      //   selectedIndex = index;
-      // });
       changeGroupIndex(context, index);
-      // getPageController(context).jumpToPage(index);
       pageController.jumpToPage(index);
 
       switch (index) {
@@ -132,9 +121,6 @@ class _GroupDetailState extends State<GroupDetail> {
   void initState() {
     super.initState();
     //* 페이지 이동 시
-    // selectedIndex = widget.initialIndex;
-    // context.read<GlobalGroupProvider>().initPage();
-    // print(widget.initialIndex);
     pageController = PageController(initialPage: widget.initialIndex);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.isMember) {
@@ -249,12 +235,6 @@ class _GroupDetailState extends State<GroupDetail> {
               CustomToast(content: watchToastString(context))
           ],
         ),
-        // bottomNavigationBar: GroupMainBottomBar(
-        //   isMember: widget.isMember,
-        //   size: context.watch<GlobalGroupProvider>().bingoSize ??
-        //       context.watch<GlobalBingoProvider>().bingoSize,
-        //   changeIndex: onPageChanged,
-        // ),
       ),
     );
   }

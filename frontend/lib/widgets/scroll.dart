@@ -61,7 +61,8 @@ class GroupInfiniteScroll extends StatelessWidget {
                                     public: data[i].isPublic,
                                   ),
                                 ),
-                                if (getLastId(context, mode) > 0 &&
+                                if (hasNotGroupWidget == null &&
+                                    getLastId(context, mode) > 0 &&
                                     (data[i].id == getLastId(context, mode)))
                                   const Padding(
                                     padding: EdgeInsets.symmetric(
@@ -98,7 +99,6 @@ class BingoInfiniteScroll extends StatelessWidget {
     const mode = 2;
     return CustomBoxContainer(
       hasRoundEdge: false,
-      // color: palePinkColor.withOpacity(0.5),
       color: whiteColor,
       child: !watchLoading(context)
           ? data.isNotEmpty
@@ -138,7 +138,6 @@ class BingoInfiniteScroll extends StatelessWidget {
                             ),
                             child: CustomCirCularIndicator(),
                           )
-                        // : const SizedBox(),
                       ],
                     );
                   },

@@ -8,6 +8,7 @@ import 'package:bin_got/widgets/button.dart';
 import 'package:bin_got/widgets/search.dart';
 import 'package:bin_got/widgets/settings.dart';
 import 'package:bin_got/widgets/tab_bar.dart';
+import 'package:bin_got/widgets/toast.dart';
 import 'package:flutter/material.dart';
 
 //? 메인 (검색, 내 그룹/내 빙고, 설정)
@@ -97,10 +98,10 @@ class _MainState extends State<Main> {
                 changeIndex: (index) => changeIndex(index),
               ),
             ),
+            if (watchPressed(context))
+              const CustomToast(content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다')
           ],
         ),
-        //* 하단 바
-        // bottomNavigationBar:
       ),
     );
   }

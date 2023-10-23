@@ -38,7 +38,6 @@ class _GroupMainState extends State<GroupMain> {
   }
 
   void readGroupDetail() {
-    print('read detail');
     GroupProvider().readGroupDetail(groupId!).then((data) {
       setState(() {
         memberState = data.memberState;

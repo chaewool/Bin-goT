@@ -17,7 +17,8 @@ class Help extends StatefulWidget {
 
 class _HelpState extends State<Help> {
   //* 변수
-  StringList imagePathList = List.from(backgroundList);
+  StringList imagePathList =
+      List.generate(8, (index) => 'assets/images/00${index + 1}.png');
   int index = 0;
   late int length;
 
@@ -74,7 +75,7 @@ class _HelpState extends State<Help> {
             child: CustomIconButton(
               onPressed: () => moveTo(false),
               icon: leftIcon,
-              color: index > 0 ? greyColor : greyColor.withOpacity(0.3),
+              color: index > 0 ? whiteColor : greyColor.withOpacity(0.3),
               size: 70,
             ),
           ),
@@ -85,7 +86,7 @@ class _HelpState extends State<Help> {
               onPressed: () => moveTo(true),
               icon: rightIcon,
               color:
-                  index < length - 1 ? greyColor : greyColor.withOpacity(0.3),
+                  index < length - 1 ? whiteColor : greyColor.withOpacity(0.3),
               size: 70,
             ),
           ),
