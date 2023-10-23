@@ -308,9 +308,7 @@ class GlobalGroupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initData() {
-    _initData();
-  }
+  void initData() => _initData();
 
   void setRank(RankList value) {
     _setRank(value);
@@ -491,9 +489,7 @@ class GlobalBingoProvider extends ChangeNotifier {
     }
   }
 
-  void _initData() {
-    _data.clear();
-  }
+  void _initData() => _data.clear();
 
   FutureBool _bingoToImage() async {
     var renderObject = _globalKey.currentContext?.findRenderObject();

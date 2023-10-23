@@ -14,7 +14,6 @@ import 'package:bin_got/widgets/image.dart';
 import 'package:bin_got/widgets/row_col.dart';
 import 'package:bin_got/widgets/scroll.dart';
 import 'package:bin_got/widgets/text.dart';
-import 'package:bin_got/widgets/toast.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -560,80 +559,73 @@ class _MainTabBarState extends State<MainTabBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        CustomBoxContainer(
-          child: Column(
-            children: [
-              CustomBoxContainer(
-                gradient:
-                    const LinearGradient(colors: [palePinkColor, paleRedColor]),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10),
-                ),
-                child: Column(
+    return CustomBoxContainer(
+      child: Column(
+        children: [
+          CustomBoxContainer(
+            gradient:
+                const LinearGradient(colors: [palePinkColor, paleRedColor]),
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10),
+            ),
+            child: Column(
+              children: [
+                RowWithPadding(
+                  vertical: 20,
+                  min: true,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    RowWithPadding(
-                      vertical: 20,
-                      min: true,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        for (int i = 0; i < 2; i += 1)
-                          Flexible(
-                            child: GestureDetector(
-                              onTap: () => changeTab(i),
-                              child: Center(
-                                child: CustomText(
-                                  content: titleList[i],
-                                  bold: true,
-                                  color: i == tabBarIndex
-                                      ? blackColor
-                                      : greyColor.withOpacity(0.5),
-                                  fontSize: FontSize.titleSize,
-                                ),
-                              ),
+                    for (int i = 0; i < 2; i += 1)
+                      Flexible(
+                        child: GestureDetector(
+                          onTap: () => changeTab(i),
+                          child: Center(
+                            child: CustomText(
+                              content: titleList[i],
+                              bold: true,
+                              color: i == tabBarIndex
+                                  ? blackColor
+                                  : greyColor.withOpacity(0.5),
+                              fontSize: FontSize.titleSize,
                             ),
                           ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 5, 20, 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          for (int i = 0; i < 2; i += 1)
-                            Center(
-                              child: CustomTextButton(
-                                transparent: true,
-                                content: buttonOptions[i]
-                                    [idxList[tabBarIndex][i]],
-                                fontSize: FontSize.smallSize,
-                                onTap: () => changeIdx(i),
-                              ),
-                            ),
-                        ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
-              ),
-              Expanded(
-                child: PageView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  controller: pageController,
-                  children: [
-                    myGroupTabBar(),
-                    myBingoTabBar(),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 5, 20, 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      for (int i = 0; i < 2; i += 1)
+                        Center(
+                          child: CustomTextButton(
+                            transparent: true,
+                            content: buttonOptions[i][idxList[tabBarIndex][i]],
+                            fontSize: FontSize.smallSize,
+                            onTap: () => changeIdx(i),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        if (watchPressed(context))
-          const CustomToast(content: '뒤로 가기 버튼을 한 번 더\n누르시면 앱이 종료됩니다')
-      ],
+          Expanded(
+            child: PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: pageController,
+              children: [
+                myGroupTabBar(),
+                myBingoTabBar(),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
