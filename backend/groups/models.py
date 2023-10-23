@@ -1,9 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
+from accounts.models import User
 
 def set_no_leader():
-    return -1
+    return User.objects.get(pk=-1)
 
 class Group(models.Model):
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(set_no_leader))
