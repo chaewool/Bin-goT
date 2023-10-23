@@ -73,11 +73,13 @@ def every_day():
 
                 url = 'groups' + '/' + str(group.id)
                 delete_image(url)
-                group.delete()
+                group.status = -1
             else:
                 title = f'{group.groupname} 그룹이 시작했습니다!'
                 content = f'빙고를 함께 채워볼까요?'
                 send_due(group, title, content, False)
+                group.status = 1
+            group.save()
         
         # 종료일 7일 전, 남은 기간 알림
         elif today == group.end - timedelta(days=7):
@@ -90,6 +92,8 @@ def every_day():
             ranker = RedisRanker(str(group.id))
             title = f'{group.groupname} 그룹의 빙고가 종료되었습니다.'
             send_rank(group, ranker, title, False)
+            group.status = 2
+            group.save()
 
 
 # 매주 월요일, 현재 순위 알림

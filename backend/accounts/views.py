@@ -7,7 +7,6 @@ from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import requests
 import logging
-from datetime import date
 import jwt
 
 from bingot.settings import SIMPLE_JWT
@@ -15,7 +14,7 @@ from bingot_settings import KAKAO_REST_API_KEY
 from .serializers import ProfileSerializer, NotificationSerializer, BadgeSerializer, GroupSerializer, BoardSerializer
 from .models import Achieve, Badge
 from groups.models import Group, Board
-from commons import get_boolean, RedisToken
+from commons import get_boolean, RedisToken, send_to_fcm
 
 
 User = get_user_model()
@@ -109,7 +108,26 @@ class KaKaoNativeView(APIView):
 class KaKaoUnlinkView(APIView):
     def delete(self, request):
         user = request.user
-        user.delete()
+        user.kakao_id = ''
+        user.username = '탈퇴한 회원'
+        user.save()
+
+        groups = user.groups.all()
+        
+        for group in groups:
+            if group.leader == user:
+                if group.count == 1 and group.status == 0:
+                    group.status = -1
+                elif group.count > 1 and group.status < 2:
+                    for board in group.boards.all().order_by('pk'):
+                        if board.user.kakao_id != '':
+                            group.leader = board.user
+                            send_to_fcm(group.leader, '', '그룹장 변경', f'{group.groupname} 그룹의 그룹장이 되었습니다.', f'groups/{group.id}/myboard')
+                            break
+            
+            group.count -= 1
+            group.save()
+
         return Response(status=status.HTTP_200_OK)
 
 
@@ -148,9 +166,12 @@ class TokenFCMView(APIView):
 class UsernameCheckView(APIView):
     def post(self, request):
         username = request.data.get('username')
+        check = User.objects.filter(username=username)
         
-        if User.objects.filter(username=username).exists():
-            return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        if check.exists():
+            for c in check:
+                if c.kakao_id != '':
+                    return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data={}, status=status.HTTP_200_OK)
     
     
@@ -158,9 +179,12 @@ class UsernameUpdateView(APIView):
     def post(self, request):
         user = request.user
         username = request.data.get('username')
+        check = User.objects.filter(username=username)
         
-        if User.objects.filter(username=username).exists():
-            return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        if check.exists():
+            for c in check:
+                if c.kakao_id != '':
+                    return Response(data={'message': '존재하는 닉네임입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         user.username = username
         user.save()
@@ -237,10 +261,10 @@ class MainGroupsView(APIView):
         if not boards:
             is_recommend = True
 
-            recommends = Group.objects.filter(is_public=True, start__gt=date.today()).order_by('-start')
+            recommends = Group.objects.filter(is_public=True, status__gte=0).order_by('-start')
             groups = GroupSerializer(recommends, many=True).data
         else:            
-            groups = GroupSerializer(user.groups, many=True).data
+            groups = GroupSerializer(user.groups.filter(status__gte=0), many=True).data
 
             temp = []
             for group in groups:
@@ -287,7 +311,7 @@ class MainBoardsView(APIView):
         filter = request.GET.get('filter')
         idx = int(request.GET.get('idx'))
 
-        boards = BoardSerializer(user.boards.all(), many=True).data
+        boards = BoardSerializer(user.boards.filter(status__gte=0), many=True).data
 
         temp = []
         for board in boards:

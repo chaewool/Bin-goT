@@ -1,14 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from accounts.models import User
-
-def set_no_leader():
-    return User.objects.get(pk=-1)
 
 class Group(models.Model):
-    leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(set_no_leader))
-    groupname = models.CharField(max_length=20, unique=True)
+    leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
+    groupname = models.CharField(max_length=20)
     count = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(30)])
     headcount = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(30)])
     start = models.DateField()
@@ -22,6 +18,7 @@ class Group(models.Model):
     password = models.CharField(max_length=20, null=True)
     need_auth = models.BooleanField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through="Board", related_name="users")
+    status = models.IntegerField(default=0, validators=[MinValueValidator(-1), MaxValueValidator(2)]) # -1은 시작 전 폐기, 0은 시작 전, 1은 진행 중, 2는 완료
 
     def __str__(self) -> str:
         return self.groupname
@@ -29,7 +26,7 @@ class Group(models.Model):
 
 class Board(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='boards')
-    group = models.ForeignKey('groups.Group', on_delete=models.CASCADE)
+    group = models.ForeignKey('groups.Group', on_delete=models.CASCADE, related_name='boards')
     is_banned = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(2)]) # 0은 승인 완료, 1은 승인 대기, 2는 승인 거절/강퇴
     rand_name = models.CharField(max_length=20, null=True)
     title = models.CharField(max_length=20)
