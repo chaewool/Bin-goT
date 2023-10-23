@@ -16,8 +16,8 @@ class CustomToast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = 80;
-    double height = 300;
+    double width = 300;
+    double height = 80;
     return Positioned(
       top: getHeight(context) - 200,
       left: (getWidth(context) - width) / 2,
