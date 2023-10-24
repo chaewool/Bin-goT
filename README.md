@@ -1,5 +1,6 @@
 # Bin-goT
-<img src="README.assets/graphic-image.png" alt="graphic image" width="80%" />
+
+![graphic image](README.assets/graphic-image.png)
 
 <br/> <br/> <br/>
 
@@ -31,7 +32,7 @@
 - 인원
   | [나원경](https://github.com/hitriee) | [조예지](https://github.com/celpegor216) |
   | :----------------------------------: | :--------------------------------------: |
-  | FE, QA | FE(Notification), BE, Infra |
+  |                FE, QA                |       FE(Notification), BE, Infra        |
 
 <br/> <br/> <br/>
 
@@ -41,19 +42,19 @@
 
 - 그룹 생성
 
-  <img src="README.assets/001.png" alt="group image 1" style="zoom:40%;" />
+  <img src="README.assets/001.png" alt="group image 1" width="40%"/>
 
 - 그룹 조회, 랭킹 조회
 
-  <img src="README.assets/005.png" alt="group image 2" style="zoom:40%;" />
+  <img src="README.assets/005.png" alt="group image 2" width="40%" />
 
 - 그룹 채팅
 
-  <img src="README.assets/007.png" alt="group image 3" style="zoom:40%;" />
+  <img src="README.assets/007.png" alt="group image 3" width="40%" />
 
 - 그룹 검색
 
-  <img src="README.assets/004.png" alt="group image 4" style="zoom:40%;" />
+  <img src="README.assets/004.png" alt="group image 4" width="40%" />
 
 <br/>
 
@@ -61,11 +62,11 @@
 
 - 빙고 생성
 
-  <img src="README.assets/002.png" alt="bingo image 1" style="zoom:40%;" />
+  <img src="README.assets/002.png" alt="bingo image 1" width="40%" />
 
 - 빙고 조회, 달성 인증
 
-  <img src="README.assets/006.png" alt="bingo image 2" style="zoom:40%;" />
+  <img src="README.assets/006.png" alt="bingo image 2" width="40%" />
 
 <br/>
 
@@ -75,11 +76,11 @@
 
 - 참여 목록 확인
 
-  <img src="README.assets/003.png" alt="user image 1" style="zoom:40%;" />
+  <img src="README.assets/003.png" alt="user image 1" width="40%" />
 
 - 설정
 
-  <img src="README.assets/008.png" alt="user image 2" style="zoom:40%;" />
+  <img src="README.assets/008.png" alt="user image 2" width="40%" />
 
 <br/> <br/> <br/>
 
@@ -138,15 +139,15 @@
   #git이슈번호 종류 : 내용(영어)
   ```
 - 커밋 메시지 종류
-  | 이모티콘 | 종류 | 내용 |
-  | - | - | - |
-  | ✨ | feat | 기능 추가 |
-  | 🐛 | fix | 코드 관련 버그 수정 |
-  | 📝 | docs | 문서 수정 |
-  | 🎨 | style | 코드 작성 스타일 수정 |
-  | 🙈 | chore | 패키지 매니저, 빌드 등 기타 코드 수정 |
-  | ♻️ | refactor | 코드 리팩토링 |
-  | ✅ | test | 테스트 코드 추가 |
+  | 이모티콘 | 종류     | 내용                                  |
+  | -------- | -------- | ------------------------------------- |
+  | ✨        | feat     | 기능 추가                             |
+  | 🐛        | fix      | 코드 관련 버그 수정                   |
+  | 📝        | docs     | 문서 수정                             |
+  | 🎨        | style    | 코드 작성 스타일 수정                 |
+  | 🙈        | chore    | 패키지 매니저, 빌드 등 기타 코드 수정 |
+  | ♻️        | refactor | 코드 리팩토링                         |
+  | ✅        | test     | 테스트 코드 추가                      |
 
 <br/>
 
