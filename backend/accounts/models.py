@@ -3,18 +3,21 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    kakao_id = models.CharField(max_length=255, unique=True)
-    username = models.CharField(max_length=20, unique=True)
-    badge = models.IntegerField(default=0)
+    USERNAME_FIELD = 'id'
+    kakao_id = models.CharField(max_length=255)
+    username = models.CharField(max_length=20)
+    badge = models.IntegerField(default=1)
     noti_rank = models.BooleanField(default=True)
     noti_due = models.BooleanField(default=True)
     noti_chat = models.BooleanField(default=True)
+    noti_check = models.BooleanField(default=True)
     cnt_groups = models.IntegerField(default=0)
     cnt_boards = models.IntegerField(default=0)
     cnt_boarditems_complete = models.IntegerField(default=0)
     cnt_boards_complete = models.IntegerField(default=0)
     cnt_rank1 = models.IntegerField(default=0)
-    groups = models.ManyToManyField('groups.Group', through='groups.Participate', related_name="groups")
+    cnt_badge = models.IntegerField(default=0)
+    groups = models.ManyToManyField('groups.Group', through='groups.Board', related_name="groups")
 
     def __str__(self) -> str:
         return self.username

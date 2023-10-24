@@ -42,14 +42,13 @@ INSTALLED_APPS = [
     # local apps
     'accounts',
     'groups',
-    'boards',
 
     # third party apps
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'django_crontab',
+    'django_apscheduler',
 
     # django apps
     'django.contrib.admin',
@@ -228,8 +227,20 @@ LOGGING = {
 }
 
 
-# crontab
+# fcm
 
-CRONJOBS = [
-    ('0 0 * * *', 'groups.cron.every_day', '>> ./files/log/cron.log'),
-]
+import firebase_admin
+from firebase_admin import credentials
+
+cred_path = os.path.join(BASE_DIR, "serviceAccountKey.json")
+cred = credentials.Certificate(cred_path)
+firebase_admin.initialize_app(cred)
+
+
+# apscheduler
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+
+APSCHEDULER_RUN_NOW_TIMEOUT = 25 # Seconds
+
+SCHEDULER_DEFAULT = True

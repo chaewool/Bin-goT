@@ -1,72 +1,24 @@
 import 'package:bin_got/providers/base_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 
-//* provider
+//* CRD 기본 형식
 class ApiProvider extends UrlClass {
   //* public
   FutureDynamicMap createApi(String url, {required DynamicMap data}) async =>
       _createApi(url, data: data);
 
-  FutureDynamicMap deliverApi(String url) async => _deliverApi(url);
-
-  FutureVoid updateApi(String url, {required DynamicMap data}) async =>
+  FutureDynamicMap updateApi(String url, {required DynamicMap data}) async =>
       _updateApi(url, data: data);
 
-  FutureVoid deleteApi(String url) async => _deleteApi(url);
-
-  FutureDynamicMap tokenRefresh() async => _tokenRefresh();
+  FutureDynamicMap deleteApi(String url) async => _deleteApi(url);
 
   //* private
-  //* refresh token
-
-  FutureDynamicMap _tokenRefresh() async {
-    try {
-      print('토큰 리프레시');
-      final tokenData = await createApi(
-        refreshTokenUrl,
-        data: {'refresh': refresh},
-      );
-      return tokenData;
-    } catch (error) {
-      print(error);
-      throw Error();
-    }
-  }
 
   //* create
   FutureDynamicMap _createApi(String url, {required DynamicMap data}) async {
     try {
       final response = await dioWithToken().post(url, data: data);
-      print('create: $response');
-      // print('create response: $response');
-      switch (response.statusCode) {
-        case 200:
-          return response.data;
-        case 401:
-          print('들어옴');
-          tokenRefresh();
-          return {};
-        default:
-          throw Error();
-      }
-    } catch (error) {
-      print('createError: $error');
-      throw Error();
-    }
-  }
-
-  //* data unnecessary
-  FutureDynamicMap _deliverApi(String url) async {
-    try {
-      final response = await dioWithToken().post(url);
-      switch (response.statusCode) {
-        case 200:
-          return {};
-        case 401:
-          return tokenRefresh();
-        default:
-          throw Error();
-      }
+      return response.data;
     } catch (error) {
       throw Error();
     }
@@ -75,15 +27,8 @@ class ApiProvider extends UrlClass {
   //* update
   FutureDynamicMap _updateApi(String url, {required DynamicMap data}) async {
     try {
-      final response = await dioWithToken().put(url, data: data);
-      switch (response.statusCode) {
-        case 200:
-          return {};
-        case 401:
-          return tokenRefresh();
-        default:
-          throw Error();
-      }
+      await dioWithToken().put(url, data: data);
+      return {};
     } catch (error) {
       throw Error();
     }
@@ -92,15 +37,8 @@ class ApiProvider extends UrlClass {
   //* delete
   FutureDynamicMap _deleteApi(String url) async {
     try {
-      final response = await dioWithToken().delete(url);
-      switch (response.statusCode) {
-        case 200:
-          return {};
-        case 401:
-          return tokenRefresh();
-        default:
-          throw Error();
-      }
+      await dioWithToken().delete(url);
+      return {};
     } catch (error) {
       throw Error();
     }

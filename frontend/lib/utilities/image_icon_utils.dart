@@ -1,9 +1,11 @@
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/material.dart';
 
+//? 이미지, 아이콘 목록
+
 //* logo
 var halfLogo = Image.asset(
-  'assets/logos/bin_got_logo_1x.png',
+  'assets/logos/logo.png',
   scale: 4,
 );
 //* login
@@ -14,13 +16,10 @@ var kakaoLogin = Image.asset(
 
 //* icon
 const searchIcon = Icons.search_rounded;
-const myPageIcon = Icons.person;
-const createGroupIcon = Icons.add_circle_outline_outlined;
 const shareIcon = Icons.share;
-const copyIcon = Icons.copy;
 const addIcon = Icons.add;
 const backIcon = Icons.arrow_back_rounded;
-const exitIcon = Icons.output_rounded;
+const tempExitIcon = Icons.output_rounded;
 const settingsIcon = Icons.settings;
 const editIcon = Icons.edit;
 const deleteIcon = Icons.delete_outline_rounded;
@@ -37,27 +36,45 @@ const helpIcon = Icons.help_outline;
 const saveIcon = Icons.save;
 const sendIcon = Icons.send;
 const circleIcon = Icons.circle_outlined;
-const alertIcon = Icons.add_circle_outline;
+const exitIcon = Icons.warning_amber_outlined;
+const errorIcon = Icons.error_outline;
 
 const leftIcon = Icons.chevron_left_rounded;
 const rightIcon = Icons.chevron_right_rounded;
 const downIcon = Icons.arrow_drop_down;
 
-final iconList = [confirmIcon, closeIcon, circleIcon];
+const checkIcon = Icons.check_circle;
+const boardIcon = Icons.apps_outlined;
+
+const rankIcon = Icons.align_vertical_bottom_rounded;
+
+const iconList = [confirmIcon, closeIcon, circleIcon];
+
+const talkIcon = Icons.question_answer_outlined;
+const policyIcon = Icons.description_outlined;
+const licenseIcon = Icons.workspace_premium_outlined;
 
 //* background image
-var iceBall = 'assets/images/aaron-burden.jpg';
-var plant = 'assets/images/annie-spratt.jpg';
-var milkyway = 'assets/images/greg-rakozy.jpg';
-var wall = 'assets/images/joe-woods.jpg';
-var gradation = 'assets/images/luke-chesser.jpg';
-var daySky = 'assets/images/resul-mentes.jpg';
+var circle = 'assets/images/circle.jpg';
+var flowers = 'assets/images/flowers.png';
+var frameWithLeaves = 'assets/images/frame_with_leaves.png';
+var grid = 'assets/images/grid.jpg';
+var homes = 'assets/images/homes.png';
+var leaves = 'assets/images/leaves.png';
+var lemon = 'assets/images/lemon.png';
+var squeeze = 'assets/images/squeeze.jpg';
+var strawberry = 'assets/images/strawberry.png';
+var weather = 'assets/images/weather.jpg';
 
 StringList backgroundList = [
-  iceBall,
-  plant,
-  milkyway,
-  wall,
-  gradation,
-  daySky,
+  circle,
+  flowers,
+  frameWithLeaves,
+  grid,
+  homes,
+  leaves,
+  lemon,
+  squeeze,
+  strawberry,
+  weather
 ];

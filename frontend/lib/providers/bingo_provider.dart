@@ -1,41 +1,49 @@
-import 'package:bin_got/models/bingo_model.dart';
 import 'package:bin_got/providers/api_provider.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:dio/dio.dart';
 
+//? 빙고 api
 class BingoProvider extends ApiProvider {
+  //* public
+  FutureDynamicMap readBingoDetail(int groupId, int bingoId) =>
+      _readBingoDetail(groupId, bingoId);
+  FutureDynamicMap editOwnBingo(int groupId, int bingoId, FormData bingoData) =>
+      _editOwnBingo(groupId, bingoId, bingoData);
+
+  FutureDynamicMap makeCompleteMessage(int groupId, FormData completeData) =>
+      _makeCompleteMessage(groupId, completeData);
+
   //* detail
-  Future<BingoDetailModel> readBingoDetail(int bingoId) async {
+  FutureDynamicMap _readBingoDetail(int groupId, int bingoId) async {
     try {
-      final response = await dioWithToken().get(
-        bingoDetailUrl(bingoId),
-      );
-      print('response: $response');
-      switch (response.statusCode) {
-        case 200:
-          return BingoDetailModel.fromJson(response.data);
-        default:
-          throw Error();
-      }
+      final response =
+          await dioWithToken().get(bingoDetailUrl(groupId, bingoId));
+      return response.data;
     } catch (error) {
-      print(error);
       throw Error();
     }
   }
 
-  //* create
-  FutureInt createOwnBingo(FormData bingoData) async {
+  //* update
+  FutureDynamicMap _editOwnBingo(
+      int groupId, int bingoId, FormData bingoData) async {
     try {
-      final dioWithForm = dioWithToken();
-      dioWithForm.options.contentType = 'multipart/form-data';
-      final response = await dioWithForm.post(createBingoUrl, data: bingoData);
-      print(response);
-      if (response.statusCode == 200) {
-        return response.data['board_id'];
-      }
-      throw Error();
+      await dioWithTokenForm()
+          .put(editBingoUrl(groupId, bingoId), data: bingoData);
+      return {};
     } catch (error) {
-      print(error);
+      throw Error();
+    }
+  }
+
+  //* create chat
+  FutureDynamicMap _makeCompleteMessage(
+      int groupId, FormData completeData) async {
+    try {
+      final response = await dioWithTokenForm()
+          .post(groupReviewCreateUrl(groupId), data: completeData);
+      return response.data;
+    } catch (error) {
       throw Error();
     }
   }

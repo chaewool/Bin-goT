@@ -4,6 +4,8 @@ import 'package:bin_got/models/user_info_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+//? 타입 정의
+
 //* 기본
 typedef ReturnVoid = void Function();
 typedef StringList = List<String>;
@@ -31,7 +33,12 @@ typedef FutureStringNull = Future<String?>;
 //* group api
 typedef MyGroupList = List<MyGroupModel>;
 typedef MyBingoList = List<MyBingoModel>;
-// typedef GroupList = List<GroupModel>;
 typedef RankList = List<GroupRankModel>;
 typedef GroupMemberList = List<GroupMemberModel>;
+typedef GroupChatList = List<GroupChatModel>;
+
+//* bingo api
 typedef BingoItemList = List<BingoItemModel>;
+
+//* user api
+typedef BadgeList = List<BadgeModel>;

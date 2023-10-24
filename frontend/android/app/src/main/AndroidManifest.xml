@@ -1,7 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.bin_got">
+    package="xyz.bingot.android">
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="mailto" />
+        </intent>
+    </queries>
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+
    <application
-        android:label="bin_got"
+        android:label="Bin:goT"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
@@ -17,6 +29,7 @@
 
                 <!-- 카카오 로그인 Redirect URI -->
                 <data android:scheme="kakaoea92a1dc805d50e7c75555e658fa925e" android:host="oauth"/>
+                <data android:scheme="https" android:host="bingot.page.link"/>
             </intent-filter>
         </activity>
 
@@ -49,32 +62,20 @@
                 <data android:host="kakaolink"
                     android:scheme="kakaoea92a1dc805d50e7c75555e658fa925e" />
             </intent-filter>
+
+            <!-- dynamic links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:host="bingot.page.link"
+                    android:path="/groups"
+                    android:scheme="https"/>
+            </intent-filter>
+            
         </activity>
 
-
-        
-        <!-- kakao share -->
-        <!-- <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleTop"
-            android:theme="@style/LaunchTheme"
-            android:windowSoftInputMode="adjustResize">
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="kakaolink"
-                    android:scheme="kakaoea92a1dc805d50e7c75555e658fa925e" />
-            </intent-filter>
-        </activity> -->
-
-        <!-- Don't delete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />

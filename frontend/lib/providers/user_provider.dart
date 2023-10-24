@@ -3,20 +3,18 @@ import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-//* user
+//? 회원 api
 class UserProvider extends ApiProvider {
   //* public function
   FutureDynamicMap login() async => _login();
   FutureDynamicMap confirmToken() => _confirmToken();
-  FutureVoid exitService() => _exitService();
+  FutureDynamicMap exitService() => deleteApi(exitServiceUrl);
 
   //* private function
   //* login
   FutureDynamicMap _login() async {
     //* 카카오톡 설치 여부 확인
-    print('in');
     if (await isKakaoTalkInstalled()) {
-      print('installed');
       try {
         return _kakaoLogin(true);
       } catch (error) {
@@ -38,25 +36,9 @@ class UserProvider extends ApiProvider {
   //* verify token
   FutureDynamicMap _confirmToken() async {
     try {
-      print('confirm token function $token, $refresh');
-      if (token == null || token == '') return {};
-      print('토큰 유효성 검사');
-      final data = await createApi(verifyTokenUrl, data: {'token': token});
-      print('tokenData: $data');
-      if (data.isNotEmpty) {
-        final result = await tokenRefresh();
-        return {'token': result['access']};
-      }
-      return {'token': token};
-    } catch (error) {
-      throw Error();
-    }
-  }
-
-  //* exit
-  FutureVoid _exitService() {
-    try {
-      return deleteApi(exitServiceUrl);
+      if (token == null || token == '') return {'token': null};
+      await dioForVerify().post(verifyTokenUrl, data: {'token': token});
+      return {};
     } catch (error) {
       throw Error();
     }
@@ -75,7 +57,6 @@ class UserProvider extends ApiProvider {
         serviceTokenUrl,
         data: {'kakao_id': user.id},
       );
-      // final data = ServiceTokenModel.fromJson(json);
       return json.data;
     } catch (error) {
       // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
@@ -83,7 +64,6 @@ class UserProvider extends ApiProvider {
       if (error is PlatformException && error.code == 'CANCELED') {
         return {};
       }
-      print('kakao login: $error');
       throw Error();
     }
   }

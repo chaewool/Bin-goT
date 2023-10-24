@@ -1,27 +1,12 @@
-// 빙고 생성, 수정
 import 'dart:io';
 
 import 'package:bin_got/utilities/type_def_utils.dart';
 
-// class MyBingoModel {
-//   final String groupName, bingoName, start, end;
-//   final int groupId, bingoId, status;
-
-//   MyBingoModel.fromJson(Map<dynamic, dynamic> json)
-//       : groupName = json['group_name'],
-//         bingoName = json['bingo_name'],
-//         start = json['start'],
-//         end = json['end'],
-//         groupId = json['group_id'],
-//         bingoId = json['bingo_id'],
-//         status = json['status'];
-// }
-
+//? 빙고 생성, 수정
 // 빙고 생성, 수정 시  정보
 class BingoFormModel {
   final int background, lineStyle, font, userId, groupId;
   final String colorText, colorLine;
-  final bool isMine;
   final List items;
   final File thumbnail;
 
@@ -29,10 +14,8 @@ class BingoFormModel {
       : background = json['background'],
         colorText = json['color_text'],
         colorLine = json['color_line'],
-        // stickers = json['stickers'],
         lineStyle = json['line_style'],
         font = json['font'],
-        isMine = json['is_mine'],
         items = json['items'],
         thumbnail = json['thumbnail'],
         userId = json['userId'],

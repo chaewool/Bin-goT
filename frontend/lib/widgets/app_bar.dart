@@ -1,7 +1,8 @@
+import 'dart:io';
+
 import 'package:bin_got/pages/group_admin_page.dart';
 import 'package:bin_got/pages/group_form_page.dart';
 import 'package:bin_got/pages/main_page.dart';
-import 'package:bin_got/pages/user_page.dart';
 import 'package:bin_got/providers/group_provider.dart';
 import 'package:bin_got/providers/root_provider.dart';
 import 'package:bin_got/utilities/global_func.dart';
@@ -9,37 +10,45 @@ import 'package:bin_got/utilities/image_icon_utils.dart';
 import 'package:bin_got/utilities/style_utils.dart';
 import 'package:bin_got/utilities/type_def_utils.dart';
 import 'package:bin_got/widgets/button.dart';
-import 'package:bin_got/widgets/modal.dart';
 import 'package:bin_got/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+
+//? 상단 바 (앱 바)
 
 const double appBarHeight = 50;
 
 //* appBar 기본 틀
-class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leadingChild;
   final WidgetList? actions;
   final String? title;
+  final double elevation;
+  final bool transparent;
   const CustomAppBar({
     super.key,
     this.leadingChild,
     this.actions,
     this.title,
+    this.elevation = 0.0,
+    this.transparent = false,
   });
 
   @override
-  PreferredSizeWidget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return AppBar(
-      elevation: 0,
-      backgroundColor: whiteColor,
+      elevation: elevation,
+      backgroundColor: transparent ? transparentColor : whiteColor,
       title: title != null
-          ? Center(
+          ? Padding(
+              padding: const EdgeInsets.all(6),
               child: CustomText(
-              content: title!,
-              fontSize: FontSize.largeSize,
-            ))
-          : const SizedBox(),
+                content: title!,
+                fontSize: FontSize.largeSize,
+              ),
+            )
+          : null,
       leading: Padding(
         padding: const EdgeInsets.all(6),
         child: leadingChild,
@@ -53,52 +62,30 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* 뒤로 가기 버튼을 포함한 app bar
-class AppBarWithBack extends StatelessWidget with PreferredSizeWidget {
+class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
   final WidgetList? actions;
   final String? title;
+  final ReturnVoid? onPressedBack;
+  final bool transparent;
   const AppBarWithBack({
     super.key,
     this.actions,
     this.title,
+    this.onPressedBack,
+    this.transparent = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
-      leadingChild: const ExitButton(isIconType: true),
+      transparent: transparent,
+      leadingChild: ExitButton(
+        isIconType: true,
+        onPressed: onPressedBack,
+      ),
       title: title,
-      actions: actions,
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(appBarHeight);
-}
-
-//* main, search
-class MainBar extends StatelessWidget with PreferredSizeWidget {
-  final ReturnVoid? onPressed;
-  const MainBar({super.key, this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomAppBar(
-      leadingChild: halfLogo,
       actions: [
-        onPressed != null
-            ? IconButtonInRow(onPressed: onPressed!, icon: searchIcon)
-            : const SizedBox(),
-        IconButtonInRow(
-          icon: settingsIcon,
-          onPressed: toOtherPage(context, page: const MyPage()),
-        ),
-        IconButtonInRow(
-          onPressed: toOtherPage(
-            context,
-            page: const GroupForm(),
-          ),
-          icon: createGroupIcon,
-        )
+        ...?actions,
       ],
     );
   }
@@ -108,29 +95,28 @@ class MainBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* group main
-class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
-  final bool onlyBack, isMember, isAdmin;
-  final int groupId;
+class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final bool enableAdmin;
   const GroupAppBar({
     super.key,
-    this.onlyBack = false,
-    this.isMember = false,
-    this.isAdmin = false,
-    required this.groupId,
+    this.enableAdmin = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    final groupId = getGroupId(context)!;
+
     void exitThisGroup() async {
       try {
-        await GroupProvider().exitThisGroup(groupId);
-        toOtherPage(context, page: const Main())();
-        showAlert(
-          context,
-          title: '탈퇴 완료',
-          content: '그룹에서 정상적으로 탈퇴되었습니다.',
-          hasCancel: false,
-        )();
+        GroupProvider().exitThisGroup(groupId).then((_) {
+          toOtherPage(context, page: const Main())();
+          showAlert(
+            context,
+            title: '탈퇴 완료',
+            content: '그룹에서 정상적으로 탈퇴되었습니다.',
+            hasCancel: false,
+          )();
+        });
       } catch (error) {
         showAlert(
           context,
@@ -142,31 +128,41 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
     }
 
     return AppBarWithBack(
-      actions: onlyBack
-          ? null
-          : [
-              isAdmin
-                  ? IconButtonInRow(
-                      icon: settingsIcon,
-                      onPressed: toOtherPage(context,
-                          page: GroupAdmin(
-                            groupId: groupId,
-                          )))
-                  : const SizedBox(),
-              isAdmin || isMember
-                  ? IconButtonInRow(icon: shareIcon, onPressed: () {})
-                  : const SizedBox(),
-              isAdmin || isMember
-                  ? IconButtonInRow(
-                      icon: exitIcon,
-                      onPressed: showAlert(
-                        context,
-                        title: '그룹 탈퇴 확인',
-                        content: '정말 그룹을 탈퇴하시겠습니까?',
-                        onPressed: exitThisGroup,
-                      ))
-                  : const SizedBox(),
-            ],
+      transparent: true,
+      onPressedBack: () => onBackAction(context),
+      actions: enableAdmin
+          ? [
+              if (watchMemberState(context) == 2)
+                IconButtonInRow(
+                  icon: settingsIcon,
+                  onPressed: toOtherPageWithAnimation(
+                    context,
+                    page: GroupAdmin(groupId: groupId),
+                  ),
+                ),
+              if ((watchMemberState(context) != 0) &&
+                  alreadyStarted(context) == false)
+                IconButtonInRow(
+                  icon: shareIcon,
+                  onPressed: () => shareGroup(
+                    groupId: groupId,
+                    groupName: getGroupName(context),
+                  ),
+                ),
+              if (watchMemberState(context) == 1 &&
+                  alreadyStarted(context) == false)
+                IconButtonInRow(
+                  icon: tempExitIcon,
+                  onPressed: showAlert(
+                    context,
+                    title: '그룹 탈퇴 확인',
+                    content: '정말 그룹을 탈퇴하시겠습니까?',
+                    onPressed: exitThisGroup,
+                  ),
+                ),
+              const SizedBox(width: 10),
+            ]
+          : null,
     );
   }
 
@@ -175,7 +171,7 @@ class GroupAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* group admin
-class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
+class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
   final int groupId;
   const AdminAppBar({
     super.key,
@@ -186,14 +182,15 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
   Widget build(BuildContext context) {
     void deleteGroup() async {
       try {
-        await GroupProvider().deleteOwnGroup(groupId);
-        toOtherPage(context, page: const Main())();
-        showAlert(
-          context,
-          title: '삭제 완료',
-          content: '그룹이 정상적으로 삭제되었습니다.',
-          hasCancel: false,
-        )();
+        GroupProvider().deleteOwnGroup(groupId).then((_) {
+          toOtherPage(context, page: const Main())();
+          showAlert(
+            context,
+            title: '삭제 완료',
+            content: '그룹이 정상적으로 삭제되었습니다.',
+            hasCancel: false,
+          )();
+        });
       } catch (error) {
         showAlert(
           context,
@@ -205,15 +202,7 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
     }
 
     void onDeleteAction() {
-      final start = context.read<GlobalGroupProvider>().start!;
-      if (DateTime.parse(start).difference(DateTime.now()).inDays <= 0) {
-        showAlert(
-          context,
-          title: '그룹 삭제',
-          content: '시작일이 지난 그룹은 삭제할 수 없습니다',
-          hasCancel: false,
-        )();
-      } else if (context.read<GlobalGroupProvider>().count! >= 2) {
+      if (context.read<GlobalGroupProvider>().count! >= 2) {
         showAlert(
           context,
           title: '그룹 삭제',
@@ -230,19 +219,23 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
       }
     }
 
-    return AppBarWithBack(
-      actions: [
-        IconButtonInRow(
-          icon: editIcon,
-          onPressed: toOtherPage(
-            context,
-            page: GroupForm(
-              groupId: groupId,
-            ),
-          ),
+    void onEditAction() {
+      toOtherPageWithAnimation(
+        context,
+        page: GroupForm(
+          groupId: groupId,
+          hasImg: context.read<GlobalGroupProvider>().hasImage,
         ),
-        IconButtonInRow(icon: deleteIcon, onPressed: onDeleteAction),
-      ],
+      )();
+    }
+
+    return AppBarWithBack(
+      actions: onGoing(context) != true
+          ? [
+              IconButtonInRow(icon: editIcon, onPressed: onEditAction),
+              IconButtonInRow(icon: deleteIcon, onPressed: onDeleteAction),
+            ]
+          : null,
     );
   }
 
@@ -251,57 +244,52 @@ class AdminAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 //* 빙고 상세
-class BingoDetailAppBar extends StatelessWidget with PreferredSizeWidget {
-  const BingoDetailAppBar({super.key});
+class BingoDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const BingoDetailAppBar({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    FutureBool saveBingo() {
+      imagePicker(context, elseFunc: () {
+        context.read<GlobalBingoProvider>().bingoToImage().then((_) {
+          setToastString(context, '빙고판 이미지가 저장되었습니다.');
+          showToast(context);
+        }).catchError((_) {
+          showErrorModal(context, '저장 실패', '빙고판 저장에 실패했습니다.');
+        });
+      });
+      return Future.value(true);
+    }
+
+    void shareBingo() async {
+      File file = await context.read<GlobalBingoProvider>().bingoToXFile();
+
+      Share.shareXFiles(
+        [XFile(file.path)],
+        // ignore: use_build_context_synchronously
+        text: context.read<GlobalBingoProvider>().title,
+      ).then((value) => file.delete());
+    }
+
     return AppBarWithBack(
-      actions: [
-        IconButtonInRow(
-          onPressed: () {},
-          icon: shareIcon,
-        ),
-        IconButtonInRow(
-          onPressed: () {},
-          icon: saveIcon,
-        ),
-        const SizedBox(
-          width: 20,
-        )
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(appBarHeight);
-}
-
-//* 마이 페이지
-class MyPageAppBar extends StatelessWidget with PreferredSizeWidget {
-  const MyPageAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBarWithBack(
-      actions: [
-        IconButtonInRow(
-          onPressed: showModal(
-            context,
-            page: const NotificationModal(),
-          ),
-          icon: bellIcon,
-        ),
-        // IconButtonInRow(
-        //     onPressed: toOtherPage(context, page: const Help()),
-        //     icon: helpIcon),
-        // IconButtonInRow(
-        //   onPressed: showAlert(context,
-        //       title: '로그아웃 확인', content: '로그아웃하시겠습니까?', onPressed: () {}),
-        //   icon: exitIcon,
-        // ),
-        const SizedBox(width: 10)
-      ],
+      onPressedBack: () => onBackAction(context),
+      transparent: true,
+      actions: myBingoId(context) == null ||
+              getBingoId(context) == myBingoId(context)
+          ? [
+              IconButtonInRow(
+                onPressed: shareBingo,
+                icon: shareIcon,
+              ),
+              IconButtonInRow(
+                onPressed: saveBingo,
+                icon: saveIcon,
+              ),
+              const SizedBox(width: 10)
+            ]
+          : null,
     );
   }
 
