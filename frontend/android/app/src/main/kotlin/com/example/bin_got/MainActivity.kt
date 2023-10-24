@@ -1,4 +1,4 @@
-package com.example.bin_got
+package xyz.bingot.android
 
 import io.flutter.embedding.android.FlutterActivity
 
