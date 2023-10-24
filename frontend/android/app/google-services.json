@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:225967626004:android:94eb1ff0570125ad929401",
         "android_client_info": {
-          "package_name": "com.example.bin_got"
+          "package_name": "xyz.bingot.android"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "225967626004-a6nmd51hrk2rfqc407bfl9mo5fvj0mvm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.bin_got",
+            "package_name": "xyz.bingot.android",
             "certificate_hash": "ad496ebcea967a132b15008da4703d240d297327"
           }
         },
@@ -42,7 +42,7 @@
               "client_id": "225967626004-c8djb8dqut5avcc7df1pa657ciq7nr25.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.binGot"
+                "bundle_id": "xyz.bingot.android"
               }
             }
           ]

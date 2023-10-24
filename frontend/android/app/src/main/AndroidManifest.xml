@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.bin_got">
+    package="xyz.bingot.android">
     <queries>
         <intent>
             <action android:name="android.intent.action.SENDTO" />
