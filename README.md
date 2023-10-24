@@ -18,8 +18,17 @@
 
 **Bin:goT** 은 빙고판 형태의 목표 달성 모임 플랫폼입니다. 그룹을 생성하여 같은 목표를 가진 사람들과 함께 빙고판을 만들고, 기간 내에 가장 먼저 빙고판을 가득 채워보세요. <br/>
 
+### [앱 심사 중]()
+
+
+
 - 팀명: 채울(chaewool)
-- 기간: 2023.01.08 ~
+- 개발 기간: 2023.01.08 ~ 2023.10.24 (약 43주)
+
+  - 기획 및 설계 : 2023.01.08 ~ 2023.01.28 (약 3주)
+  - 학습 및 개발 : 2023.01. 25 ~ 2023. 09. 20 (약 35주)
+  - 점검 및 마무리 : 2023.09.20 ~ 2023.10.24 (약 5주)
+
 - 인원
   | [나원경](https://github.com/hitriee) | [조예지](https://github.com/celpegor216) |
   | :----------------------------------: | :--------------------------------------: |
@@ -32,24 +41,46 @@
 ### 2-1. 그룹
 
 - 그룹 생성
-- 그룹 조회, 랭킹 조회, 채팅
+
+  ![group image 1](README.assets/001.png)
+
+- 그룹 조회, 랭킹 조회
+
+  ![group image 2](README.assets/005.png)
+
+- 그룹 채팅
+
+  ![group image 3](README.assets/007.png)
+
 - 그룹 검색
+
+  ![group image 4](README.assets/004.png)
 
 <br/>
 
 ### 2-2. 빙고
 
 - 빙고 생성
-- 빙고 조회
-- 달성 인증
+
+  ![bingo image 1](README.assets/002.png)
+
+- 빙고 조회, 달성 인증
+
+  ![bingo image 2](README.assets/006.png)
 
 <br/>
 
 ### 2-3. 회원
 
 - Kakao 소셜 로그인
-- 마이페이지
-- 알림 설정
+
+- 참여 목록 확인
+
+  ![user image 1](README.assets/003.png)
+
+- 설정
+
+  ![user image 2](README.assets/008.png)
 
 <br/> <br/> <br/>
 
@@ -63,12 +94,12 @@
 
 ### 3-2. 기술 스택
 
-| **Part**               | **Stack**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Frontend**           | <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white"/><img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"/><img src="https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black"/>                                                                                                                                                                                                                    |
+| **Part**               | **Stack**                                                    |
+| ---------------------- | ------------------------------------------------------------ |
+| **Frontend**           | <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white"/><img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"/><img src="https://img.shields.io/badge/Provider-02569B?style=for-the-badge&logo=flutter&logoColor=white"/><img src="https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black"/> |
 | **Backend**            | <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"><img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green"/><img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white"/><img src="https://img.shields.io/badge/redis-%23DD0031.svg?&style=for-the-badge&logo=redis&logoColor=white"/><img src="https://img.shields.io/badge/amazon_s3-65A83A?style=for-the-badge&logo=amazons3&logoColor=white"/> |
-| **Deployment**         | <img src="https://img.shields.io/badge/amazon_ec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"><img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white"/><img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"/><img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white"/>                                                                                                         |
-| **Collaboration Tool** | <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/><img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white"/><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">                                                                                                                                                                                                                     |
+| **Deployment**         | <img src="https://img.shields.io/badge/amazon_ec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"><img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white"/><img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"/><img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white"/> |
+| **Collaboration Tool** | <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/><img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white"/><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"> |
 
 <br/> <br/> <br/>
 
