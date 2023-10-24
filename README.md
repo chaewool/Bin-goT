@@ -42,19 +42,19 @@
 
 - 그룹 생성
 
-  <img src="README.assets/001.png" alt="group image 1" style="zoom:40%;" />
+  ![group image 1](README.assets/001.png)
 
 - 그룹 조회, 랭킹 조회
 
-  <img src="README.assets/005.png" alt="group image 2" style="zoom:40%;" />
+  ![group image 2](README.assets/005.png)
 
 - 그룹 채팅
 
-  <img src="README.assets/007.png" alt="group image 3" style="zoom:40%;" />
+  ![group image 3](README.assets/007.png)
 
 - 그룹 검색
 
-  <img src="README.assets/004.png" alt="group image 4" style="zoom:40%;" />
+  ![group image 4](README.assets/004.png)
 
 <br/>
 
@@ -62,11 +62,11 @@
 
 - 빙고 생성
 
-  <img src="README.assets/002.png" alt="bingo image 1" style="zoom:40%;" />
+  ![bingo image 1](README.assets/002.png)
 
 - 빙고 조회, 달성 인증
 
-  <img src="README.assets/006.png" alt="bingo image 2" style="zoom:40%;" />
+  ![bingo image 2](README.assets/006.png)
 
 <br/>
 
@@ -76,11 +76,11 @@
 
 - 참여 목록 확인
 
-  <img src="README.assets/003.png" alt="user image 1" style="zoom:40%;" />
+  ![user image 1](README.assets/003.png)
 
 - 설정
 
-  <img src="README.assets/008.png" alt="user image 2" style="zoom:40%;" />
+  ![user image 2](README.assets/008.png)
 
 <br/> <br/> <br/>
 
