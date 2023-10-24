@@ -274,10 +274,11 @@ class GroupGrantView(APIView):
                 group.save()
                 
                 check_cnt_groups(applicant)
-                send_to_fcm(applicant, '', '가입 승인!', f'{group.groupname} 그룹에 가입되셨습니다.', f'groups/{group.id}/main')
+                send_to_fcm(applicant, '', '가입 승인', f'{group.groupname} 그룹에 가입되었습니다.', f'groups/{group.id}/main')
             else:
                 board.is_banned = 2
                 board.save()
+                send_to_fcm(applicant, '', '가입 거부', f'{group.groupname} 그룹 가입이 거부되었습니다.', '')
 
             return Response(data={}, status=status.HTTP_200_OK)
         

@@ -1,6 +1,5 @@
 # Bin-goT
-
-![graphic image](README.assets/graphic-image.png)
+<img src="README.assets/graphic-image.png" alt="graphic image" width="80%" />
 
 <br/> <br/> <br/>
 
