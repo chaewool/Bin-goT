@@ -55,7 +55,7 @@
 
 ### 2-3. 회원
 
-| 소셜 로그인(Kakao) | 참여 목록 확인 | 프로필 변경 | 설정 및 도움말 |
+| 카카오 소셜 로그인 | 참여 목록 확인 | 프로필 변경 | 설정 및 도움말 |
 | :-: | :-: | :-: | :-: |
 | <img src="README.assets/011.png" alt="user image 1" /> | <img src="README.assets/003.png" alt="user image 2" /> | <img src="README.assets/012.png" alt="user image 3" /> | <img src="README.assets/010.png" alt="user image 4" /> |
 
