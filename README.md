@@ -1,5 +1,6 @@
 # Bin-goT
-<img src="README.assets/graphic-image.png" alt="graphic image" width="80%" />
+
+![graphic image](README.assets/graphic-image.png)
 
 <br/> <br/> <br/>
 
@@ -31,7 +32,7 @@
 - 인원
   | [나원경](https://github.com/hitriee) | [조예지](https://github.com/celpegor216) |
   | :----------------------------------: | :--------------------------------------: |
-  | FE, QA | FE(Notification), BE, Infra |
+  |                FE, QA                |       FE(Notification), BE, Infra        |
 
 <br/> <br/> <br/>
 
@@ -120,15 +121,15 @@
   #git이슈번호 종류 : 내용(영어)
   ```
 - 커밋 메시지 종류
-  | 이모티콘 | 종류 | 내용 |
-  | - | - | - |
-  | ✨ | feat | 기능 추가 |
-  | 🐛 | fix | 코드 관련 버그 수정 |
-  | 📝 | docs | 문서 수정 |
-  | 🎨 | style | 코드 작성 스타일 수정 |
-  | 🙈 | chore | 패키지 매니저, 빌드 등 기타 코드 수정 |
-  | ♻️ | refactor | 코드 리팩토링 |
-  | ✅ | test | 테스트 코드 추가 |
+  | 이모티콘 | 종류     | 내용                                  |
+  | -------- | -------- | ------------------------------------- |
+  | ✨        | feat     | 기능 추가                             |
+  | 🐛        | fix      | 코드 관련 버그 수정                   |
+  | 📝        | docs     | 문서 수정                             |
+  | 🎨        | style    | 코드 작성 스타일 수정                 |
+  | 🙈        | chore    | 패키지 매니저, 빌드 등 기타 코드 수정 |
+  | ♻️        | refactor | 코드 리팩토링                         |
+  | ✅        | test     | 테스트 코드 추가                      |
 
 <br/>
 
