@@ -17,7 +17,7 @@
 
 **Bin:goT** 은 빙고판 형태의 목표 달성 모임 플랫폼입니다. 그룹을 생성하여 같은 목표를 가진 사람들과 함께 빙고판을 만들고, 기간 내에 가장 먼저 빙고판을 가득 채워보세요. <br/>
 
-### [앱 심사 중]()
+### [Google Play Store 등록 심사 중]()
 
 
 
@@ -25,7 +25,7 @@
 - 개발 기간: 2023.01.08 ~ 2023.10.24 (약 43주)
 
   - 기획 및 설계 : 2023.01.08 ~ 2023.01.28 (약 3주)
-  - 학습 및 개발 : 2023.01. 25 ~ 2023. 09. 20 (약 35주)
+  - 학습 및 개발 : 2023.01.25 ~ 2023.09.20 (약 35주)
   - 점검 및 마무리 : 2023.09.20 ~ 2023.10.24 (약 5주)
 
 - 인원
@@ -39,62 +39,44 @@
 
 ### 2-1. 그룹
 
-- 그룹 생성
-
-  <img src="README.assets/001.png" alt="group image 1" width="40%"/>
-
-- 그룹 조회, 랭킹 조회
-
-  <img src="README.assets/005.png" alt="group image 2" width="40%" />
-
-- 그룹 채팅
-
-  <img src="README.assets/007.png" alt="group image 3" width="40%" />
-
-- 그룹 검색
-
-  <img src="README.assets/004.png" alt="group image 4" width="40%" />
+| 그룹 생성 | 그룹 정보 및 랭킹 조회 | 그룹 채팅 | 그룹 검색 |
+| :-: | :-: | :-: | :-: |
+| <img src="README.assets/001.png" alt="group image 1" /> | <img src="README.assets/005.png" alt="group image 2" /> | <img src="README.assets/009.png" alt="group image 3" /> | <img src="README.assets/004.png" alt="group image 4" /> |
 
 <br/>
 
 ### 2-2. 빙고
 
-- 빙고 생성
-
-  <img src="README.assets/002.png" alt="bingo image 1" width="40%" />
-
-- 빙고 조회, 달성 인증
-
-  <img src="README.assets/006.png" alt="bingo image 2" width="40%" />
+| 빙고 생성 | 빙고 정보 및 인증 요청 생성 | 빙고 저장 | 빙고 공유 |
+| :-: | :-: | :-: | :-: |
+| <img src="README.assets/002.png" alt="bingo image 1" /> | <img src="README.assets/006.png" alt="bingo image 2" /> | <img src="README.assets/008.png" alt="bingo image 3" /> | <img src="README.assets/007.png" alt="bingo image 4" /> |
 
 <br/>
 
 ### 2-3. 회원
 
-- Kakao 소셜 로그인
-
-- 참여 목록 확인
-
-  <img src="README.assets/003.png" alt="user image 1" width="40%" />
-
-- 설정
-
-  <img src="README.assets/008.png" alt="user image 2" width="40%" />
+| 소셜 로그인(Kakao) | 참여 목록 확인 | 프로필 변경 | 설정 및 도움말 |
+| :-: | :-: | :-: | :-: |
+| <img src="README.assets/011.png" alt="user image 1" /> | <img src="README.assets/003.png" alt="user image 2" /> | <img src="README.assets/012.png" alt="user image 3" /> | <img src="README.assets/010.png" alt="user image 4" /> |
 
 <br/> <br/> <br/>
 
 ## 3. 서비스 아키텍쳐
 
-### 3-1. 서비스 아키텍쳐
+### 3-1. 서버 아키텍쳐
 
 ![architecture](README.assets/architecture.png)
+
+### 3-2. ERD
+
+![erd](README.assets/erd.png)
 
 <br/>
 
 ### 3-2. 기술 스택
 
 | **Part**               | **Stack**                                                    |
-| ---------------------- | ------------------------------------------------------------ |
+| :--------------------: | ------------------------------------------------------------ |
 | **Frontend**           | <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white"/><img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"/><img src="https://img.shields.io/badge/Provider-02569B?style=for-the-badge&logo=flutter&logoColor=white"/><img src="https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black"/> |
 | **Backend**            | <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"><img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green"/><img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white"/><img src="https://img.shields.io/badge/redis-%23DD0031.svg?&style=for-the-badge&logo=redis&logoColor=white"/><img src="https://img.shields.io/badge/amazon_s3-65A83A?style=for-the-badge&logo=amazons3&logoColor=white"/> |
 | **Deployment**         | <img src="https://img.shields.io/badge/amazon_ec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"><img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white"/><img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"/><img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white"/> |
