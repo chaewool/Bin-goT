@@ -30,7 +30,7 @@ SECRET_KEY = bingot_settings.SECRET_KEY
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'bingot.xyz', 
+    'bingot.store', 
     'localhost',
     '127.0.0.1',
 ]
@@ -151,7 +151,7 @@ AUTH_USER_MODEL = 'accounts.User'
 # CORS
 
 CORS_ALLOWED_ORIGINS = [
-    'https://bingot.xyz', 
+    'https://bingot.store', 
     'http://localhost:8080',
     'http://127.0.0.1:8080',
 ]
