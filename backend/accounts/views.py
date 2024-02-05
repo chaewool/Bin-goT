@@ -311,11 +311,11 @@ class MainBoardsView(APIView):
         filter = request.GET.get('filter')
         idx = int(request.GET.get('idx'))
 
-        boards = BoardSerializer(user.boards.filter(status__gte=0), many=True).data
+        boards = BoardSerializer(user.boards, many=True).data
 
         temp = []
         for board in boards:
-            if Board.objects.filter(group=board['group_id'], user=user, is_banned=0):
+            if board.is_banned == 0 and board.group.status >= 0:
                 temp.append(board)
         boards = temp[:]
 
