@@ -82,7 +82,6 @@ class _SearchState extends State<Search> {
         context,
         title: '필수 항목 누락',
         content: '검색어를 입력하거나\n 기간을 선택해주세요',
-        hasCancel: false,
       )();
     }
   }

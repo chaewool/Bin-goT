@@ -217,7 +217,7 @@ ReturnVoid showAlert(
   required String title,
   required String content,
   ReturnVoid? onPressed,
-  bool hasCancel = true,
+  bool hasCancel = false,
 }) {
   return () => showDialog(
         context: context,
@@ -277,11 +277,13 @@ void showErrorModal(BuildContext context, String title, String content) {
     hasCancel = true;
     onPressed = () => toOtherPageWithoutPath(context);
   }
-  return showAlert(context,
-      title: title,
-      content: content,
-      hasCancel: hasCancel,
-      onPressed: onPressed)();
+  return showAlert(
+    context,
+    title: title,
+    content: content,
+    hasCancel: hasCancel,
+    onPressed: onPressed,
+  )();
 }
 
 //* date

@@ -239,6 +239,7 @@ class _BingoFormState extends State<BingoForm> {
         );
       });
     } catch (_) {
+      showSpinner(context, false);
       showErrorModal(
         context,
         '그룹 생성 오류',

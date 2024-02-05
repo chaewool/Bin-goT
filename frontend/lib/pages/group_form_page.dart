@@ -114,8 +114,12 @@ class _GroupFormState extends State<GroupForm> {
               title: '인원 수 오류', content: '인원 수는 1명 이상 30명 이하로 입력해주세요.')();
           //* 기간
         } else if (groupData['start'] == '' || groupData['end'] == '') {
-          showAlert(context, title: '기간 미선택', content: '달성 목표 기간을 설정해주세요.')();
+          showAlert(context, title: '기간 미선택', content: '기간을 설정해주세요.')();
           //* 비밀번호
+        } else if (groupData['start'] ==
+            DateTime.now().toString().substring(0, 10)) {
+          showAlert(context,
+              title: '기간 선택 오류', content: '시작일을 오늘 이후 날짜로 선택해주세요.')();
         } else if (!groupData['is_public'] &&
             groupData['password'].length < 4) {
           showAlert(context,

@@ -190,7 +190,6 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
         title: '탈퇴 완료',
         content: '성공적으로 탈퇴되었습니다',
         onPressed: () => toOtherPageWithoutPath(context),
-        hasCancel: false,
       )();
     }).catchError((_) {
       toBack(context);
@@ -198,7 +197,6 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
         context,
         title: '탈퇴 실패',
         content: '오류가 발생해 탈퇴에 실패했습니다',
-        hasCancel: false,
       )();
     });
   }
@@ -278,6 +276,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                       title: '로그아웃 확인',
                       content: '로그아웃하시겠습니까?',
                       onPressed: logout,
+                      hasCancel: true,
                     ),
                     moveToOther: false,
                   ),
@@ -289,6 +288,7 @@ OS 버전: Android ${version['release']} (SDK ${version['sdkInt']})
                       title: '탈퇴 확인',
                       content: '서비스에서 탈퇴하시겠습니까?',
                       onPressed: exitService,
+                      hasCancel: true,
                     ),
                     moveToOther: false,
                   ),

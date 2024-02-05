@@ -107,6 +107,7 @@ class UserInfoProvider extends ApiProvider {
         MyBingoList myBingoList = data
             .map<MyBingoModel>((json) => MyBingoModel.fromJson(json))
             .toList();
+
         GlobalBingoProvider()
             .setLastId(myBingoList.length == 10 ? myBingoList.last.id : -1);
 
