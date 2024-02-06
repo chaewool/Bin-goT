@@ -64,12 +64,14 @@ class BoardSerializer(serializers.ModelSerializer):
             return '완료'
         elif obj.group.status == 1:
             return '진행 중'
-        else:
+        elif obj.group.status == 0:
             return '시작 전'
+        else:
+            return '삭제됨'
     
     def get_size(self, obj):
         return obj.group.size
     
     class Meta:
         model = Board
-        fields = ('id', 'group_id', 'groupname', 'start', 'end', 'status', 'size')
+        fields = ('id', 'group_id', 'groupname', 'start', 'end', 'status', 'size', 'is_banned')
