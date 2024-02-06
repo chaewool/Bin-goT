@@ -114,7 +114,6 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
             context,
             title: '탈퇴 완료',
             content: '그룹에서 정상적으로 탈퇴되었습니다.',
-            hasCancel: false,
           )();
         });
       } catch (error) {
@@ -122,7 +121,6 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
           context,
           title: '탈퇴 오류',
           content: '오류가 발생해 그룹에서 탈퇴되지 않았습니다.',
-          hasCancel: false,
         )();
       }
     }
@@ -158,6 +156,7 @@ class GroupAppBar extends StatelessWidget implements PreferredSizeWidget {
                     title: '그룹 탈퇴 확인',
                     content: '정말 그룹을 탈퇴하시겠습니까?',
                     onPressed: exitThisGroup,
+                    hasCancel: true,
                   ),
                 ),
               const SizedBox(width: 10),
@@ -188,7 +187,6 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
             context,
             title: '삭제 완료',
             content: '그룹이 정상적으로 삭제되었습니다.',
-            hasCancel: false,
           )();
         });
       } catch (error) {
@@ -196,7 +194,6 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
           context,
           title: '삭제 오류',
           content: '오류가 발생해 그룹이 삭제되지 않았습니다.',
-          hasCancel: false,
         )();
       }
     }
@@ -207,7 +204,6 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
           context,
           title: '그룹 삭제',
           content: '그룹장 외의 그룹원이 존재할 경우, 그룹을 삭제할 수 없습니다.',
-          hasCancel: false,
         )();
       } else {
         showAlert(
@@ -215,6 +211,7 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
           title: '그룹 삭제',
           content: '그룹을 정말 삭제하시겠습니까?',
           onPressed: deleteGroup,
+          hasCancel: true,
         )();
       }
     }

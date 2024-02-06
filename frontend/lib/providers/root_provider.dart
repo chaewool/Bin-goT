@@ -122,7 +122,10 @@ class NotiProvider extends ChangeNotifier {
     return Future.value(true);
   }
 
-  void _showSpinner(bool showState) => _spinnerState = showState;
+  void _showSpinner(bool showState) {
+    _spinnerState = showState;
+    notifyListeners();
+  }
 
   void _applyRefresh(bool state) => _refreshState = state;
 

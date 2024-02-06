@@ -52,7 +52,6 @@ class _GroupMainState extends State<GroupMain> {
         context,
         title: '오류 발생',
         content: '오류가 발생해 그룹 정보를 받아올 수 없습니다',
-        hasCancel: false,
         onPressed: () {
           toBack(context);
           toBack(context);
