@@ -1,6 +1,6 @@
 # Bin-goT
 
-![graphic image](README.assets/graphic-image.png)
+<img src="README.assets/graphic-image.png" alt="graphic image" width="80%" />
 
 <br/> <br/> <br/>
 
@@ -120,7 +120,7 @@
   ```
 - 커밋 메시지 종류
   | 이모티콘 | 종류 | 내용 |
-  | -------- | -------- | ------------------------------------- |
+  | - | - | - |
   | ✨ | feat | 기능 추가 |
   | 🐛 | fix | 코드 관련 버그 수정 |
   | 📝 | docs | 문서 수정 |
