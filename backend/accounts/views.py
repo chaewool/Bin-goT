@@ -315,9 +315,9 @@ class MainBoardsView(APIView):
 
         temp = []
         for board in boards:
-            if board.is_banned == 0 and board.group.status >= 0:
+            if board['is_banned'] == 0 and board['status'] != '삭제됨':
                 temp.append(board)
-        boards = temp[:]
+        boards = temp
 
         if filter == '1':
             boards = [board for board in boards if board['status'] == '진행 중']
