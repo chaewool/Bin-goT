@@ -98,6 +98,7 @@ class _MemberListState extends State<MemberList> {
                   '오류가 발생해 요청이 처리되지 않았습니다.');
             });
           },
+          hasCancel: true,
         )();
       } catch (error) {
         showErrorModal(

@@ -143,6 +143,7 @@ class _GroupChatState extends State<GroupChat> {
           selectedImage = null;
         });
       }).catchError((_) {
+        showSpinner(context, false);
         showErrorModal(context, '채팅 생성 오류', '채팅 생성에 실패했습니다.');
       });
     }
@@ -280,7 +281,7 @@ class _GroupChatState extends State<GroupChat> {
                   hasRoundEdge: false,
                   width: getWidth(context),
                   height: getHeight(context),
-                  color: blackColor.withOpacity(0.8),
+                  color: blackColor.withOpacity(0),
                   child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [CustomCirCularIndicator()],

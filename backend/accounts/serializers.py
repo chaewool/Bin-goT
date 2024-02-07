@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from datetime import date
 
 from .models import Badge
 from groups.models import Group, Board
@@ -61,16 +60,18 @@ class BoardSerializer(serializers.ModelSerializer):
         return obj.group.end
 
     def get_status(self, obj):
-        if obj.status == 2:
+        if obj.group.status == 2:
             return '완료'
-        elif obj.status == 1:
+        elif obj.group.status == 1:
             return '진행 중'
-        else:
+        elif obj.group.status == 0:
             return '시작 전'
+        else:
+            return '삭제됨'
     
     def get_size(self, obj):
         return obj.group.size
     
     class Meta:
         model = Board
-        fields = ('id', 'group_id', 'groupname', 'start', 'end', 'status', 'size')
+        fields = ('id', 'group_id', 'groupname', 'start', 'end', 'status', 'size', 'is_banned')

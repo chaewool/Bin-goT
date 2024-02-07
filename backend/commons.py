@@ -46,7 +46,7 @@ import redis
 from urllib.parse import quote
 
 encoded_password = quote(REDIS_PASSWORD, safe="")
-conn_ranker = redis.from_url("redis://:{}@bingot.xyz:6379/0".format(encoded_password), decode_responses=True)
+conn_ranker = redis.from_url("redis://:{}@bingot.store:6379/0".format(encoded_password), decode_responses=True)
 
 class RedisRanker:
     def __init__(self, key):
@@ -72,7 +72,7 @@ class RedisRanker:
 
 import json
 
-conn_chat = redis.from_url("redis://:{}@bingot.xyz:6379/1".format(encoded_password), decode_responses=True)
+conn_chat = redis.from_url("redis://:{}@bingot.store:6379/1".format(encoded_password), decode_responses=True)
 
 class RedisChat:
     def __init__(self, key):
@@ -101,7 +101,7 @@ class RedisChat:
 
 # Redis 2번 DB에서 사용자 별 FCM 토큰 조회 및 갱신
 
-conn_token = redis.from_url("redis://:{}@bingot.xyz:6379/2".format(encoded_password), decode_responses=True)
+conn_token = redis.from_url("redis://:{}@bingot.store:6379/2".format(encoded_password), decode_responses=True)
 
 class RedisToken:
     def __init__(self):

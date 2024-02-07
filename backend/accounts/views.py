@@ -27,7 +27,7 @@ class KakaoView(APIView):
     def get(self, request):
         # 인가 코드 받기 요청
         app_key = KAKAO_REST_API_KEY
-        redirect_uri = 'https://bingot.xyz/api/accounts/kakao/callback'
+        redirect_uri = 'https://bingot.store/api/accounts/kakao/callback'
         kakao_auth_api = 'https://kauth.kakao.com/oauth/authorize?response_type=code'
 
         # 인증 및 동의 요청(카카오 로그인 페이지로 이동)
@@ -72,7 +72,7 @@ class KaKaoCallBackView(APIView):
         data = {
             'grant_type': 'authorization_code',
             'client_id': KAKAO_REST_API_KEY,
-            'redirection_uri': 'https://bingot.xyz/api/accounts/kakao/callback',
+            'redirection_uri': 'https://bingot.store/api/accounts/kakao/callback',
             'code': auth_code
         }
 
@@ -311,13 +311,13 @@ class MainBoardsView(APIView):
         filter = request.GET.get('filter')
         idx = int(request.GET.get('idx'))
 
-        boards = BoardSerializer(user.boards.filter(status__gte=0), many=True).data
+        boards = BoardSerializer(user.boards, many=True).data
 
         temp = []
         for board in boards:
-            if Board.objects.filter(group=board['group_id'], user=user, is_banned=0):
+            if board['is_banned'] == 0 and board['status'] != '삭제됨':
                 temp.append(board)
-        boards = temp[:]
+        boards = temp
 
         if filter == '1':
             boards = [board for board in boards if board['status'] == '진행 중']

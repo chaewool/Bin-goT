@@ -239,6 +239,7 @@ class _BingoFormState extends State<BingoForm> {
         );
       });
     } catch (_) {
+      showSpinner(context, false);
       showErrorModal(
         context,
         '그룹 생성 오류',
@@ -405,7 +406,8 @@ class _BingoFormState extends State<BingoForm> {
                               child: Row(
                                 children: [
                                   CustomText(
-                                    content: '- 빙고 칸을 눌러 내용을 작성/수정할 수 있습니다.',
+                                    content:
+                                        '- 빙고 칸을 눌러 내용을 작성/수정할 수 있습니다.\n\n- 빙고 칸을 길게 눌러 드래그해 순서를 변경할 수 있습니다.',
                                     fontSize: FontSize.tinySize,
                                     color: greyColor,
                                   ),

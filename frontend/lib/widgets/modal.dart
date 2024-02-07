@@ -778,6 +778,17 @@ class InfoModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void onPressed() {
+      if (!getLoading(context)) {
+        return toBack(context);
+      }
+      return showAlert(
+        context,
+        title: '대기 필요',
+        content: '데이터를 받아오는 중입니다. \n잠시 후에 다시 시도해주세요.',
+      )();
+    }
+
     return Dialog(
       backgroundColor: whiteColor,
       child: CustomBoxContainer(
@@ -798,10 +809,16 @@ class InfoModal extends StatelessWidget {
                 ),
               ),
             ...children,
-            const RowWithPadding(
+            RowWithPadding(
               horizontal: 50,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [ExitButton(isIconType: false, buttonText: '닫기')],
+              children: [
+                ExitButton(
+                  isIconType: false,
+                  buttonText: '닫기',
+                  onPressed: onPressed,
+                )
+              ],
             )
           ],
         ),
@@ -866,28 +883,31 @@ class _LicenseModalState extends State<LicenseModal> {
 
   FutureBool loadLicenses() async {
     // merging non-dart dependency list using LicenseRegistry.
-    final lm = <String, List<String>>{};
-    await for (var l in LicenseRegistry.licenses) {
-      for (var p in l.packages) {
-        final lp = lm.putIfAbsent(p, () => []);
-        lp.addAll(l.paragraphs.map((p) => p.text));
+    if (mounted) {
+      final lm = <String, List<String>>{};
+      await for (var l in LicenseRegistry.licenses) {
+        for (var p in l.packages) {
+          final lp = lm.putIfAbsent(p, () => []);
+          lp.addAll(l.paragraphs.map((p) => p.text));
+        }
       }
+      final licenseList = ossLicenses.toList();
+      for (var key in lm.keys) {
+        licenseList.add(Package(
+          name: key,
+          description: '',
+          authors: [],
+          version: '',
+          license: lm[key]!.join('\n\n'),
+          isMarkdown: false,
+          isSdk: false,
+          isDirectDependency: false,
+        ));
+      }
+      licenses = licenseList..sort((a, b) => a.name.compareTo(b.name));
+      return Future.value(true);
     }
-    final licenseList = ossLicenses.toList();
-    for (var key in lm.keys) {
-      licenseList.add(Package(
-        name: key,
-        description: '',
-        authors: [],
-        version: '',
-        license: lm[key]!.join('\n\n'),
-        isMarkdown: false,
-        isSdk: false,
-        isDirectDependency: false,
-      ));
-    }
-    licenses = licenseList..sort((a, b) => a.name.compareTo(b.name));
-    return Future.value(true);
+    return Future.value(false);
   }
 
   @override
