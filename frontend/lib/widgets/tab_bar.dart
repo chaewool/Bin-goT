@@ -396,8 +396,8 @@ class _MainTabBarState extends State<MainTabBar> {
   ];
 
   List<IntList> idxList = [
-    [1, 1],
-    [1, 1]
+    [1, 0],
+    [1, 0]
   ];
 
   //* 정렬, 필터
